@@ -388,3 +388,15 @@
     font-size: 12px;
   }
 }
+
+.action-card--super {
+  border-color: rgba(99, 102, 241, 0.3);
+}
+.action-card--super .action-card__icon {
+  background: rgba(99, 102, 241, 0.15);
+  color: #6366f1;
+}
+.action-card--super:hover {
+  border-color: #6366f1;
+  background: rgba(99, 102, 241, 0.05);
+}

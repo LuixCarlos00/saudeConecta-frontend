@@ -35,6 +35,7 @@ import { CadastroMedicoComponent } from '../features/administrador/cadastros/cad
 import { CadastroUsuarioComponent } from '../features/administrador/cadastros/cadastro-usuario/cadastro-usuario.component';
 import { CadastroAdmComponent } from '../features/administrador/cadastros/cadastro-adm/cadastro-adm.component';
 import { CadastroSecretariaComponent } from '../features/administrador/cadastros/cadastro-secretaria/cadastro-secretaria.component';
+import { CadastroAdminOrgComponent } from '../features/administrador/cadastros/cadastro-admin-org/cadastro-admin-org.component';
 
 // ========== FEATURES PÚBLICAS ==========
 import { RecuperaCadastroComponent } from '../features/publico/recupera-cadastro/recupera-cadastro/recupera-cadastro.component';
@@ -100,6 +101,7 @@ import { RegistroConsultaDentistaComponent } from '../features/medico/impressoes
     TabelaDePacientesComponent,
     TrocaSenhaComponent,
     CadastroAdmComponent,
+    CadastroAdminOrgComponent,
     AgendaComponent,
     ObservacoesComponent,
     AvisosLembretesComponent,

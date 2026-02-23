@@ -1,0 +1,177 @@
+<div class="cadastro-container">
+  <div class="cadastro-dialog">
+    <!-- Header -->
+    <header class="cadastro-header cadastro-header--super">
+      <div class="cadastro-header__info">
+        <div class="cadastro-header__icon">
+          <i class="fa-solid fa-building-user"></i>
+        </div>
+        <div>
+          <h2 class="cadastro-header__title">Cadastro de Admin de Organização</h2>
+          <p class="cadastro-header__subtitle">Cria a organização e o administrador responsável</p>
+        </div>
+      </div>
+    </header>
+
+    <div class="cadastro-body">
+      <form [formGroup]="formulario">
+
+        <!-- Seção: Dados do Administrador -->
+        <section class="cadastro-section cadastro-section--open">
+          <div class="cadastro-section__header">
+            <i class="fa-solid fa-user-shield"></i>
+            <h3 class="cadastro-section__title">Dados do Administrador</h3>
+          </div>
+          <div class="cadastro-section__body">
+            <div class="cadastro-grid">
+
+              <div class="cadastro-field">
+                <label class="cadastro-field__label"><span class="cadastro-field__required">*</span> Nome Completo</label>
+                <input type="text" class="cadastro-field__input" formControlName="nome" placeholder="Nome completo">
+              </div>
+
+              <div class="cadastro-field">
+                <label class="cadastro-field__label"><span class="cadastro-field__required">*</span> CPF (login e senha inicial)</label>
+                <input type="text" class="cadastro-field__input" formControlName="cpf"
+                  placeholder="000.000.000-00" maxlength="14" (blur)="validateCpfOnBlur()">
+                <div *ngIf="formulario.get('cpf')?.invalid && formulario.get('cpf')?.touched" class="cadastro-field__error">
+                  <span *ngIf="formulario.get('cpf')?.errors?.['required']">CPF é obrigatório</span>
+                  <span *ngIf="formulario.get('cpf')?.errors?.['minlength']">CPF deve ter 11 dígitos</span>
+                </div>
+              </div>
+
+              <div class="cadastro-field">
+                <label class="cadastro-field__label"><span class="cadastro-field__required">*</span> Cargo</label>
+                <select class="cadastro-field__input" formControlName="cargo">
+                  <option value="">Selecione o cargo</option>
+                  <option *ngFor="let c of cargos" [value]="c.value">{{ c.label }}</option>
+                </select>
+              </div>
+
+              <div class="cadastro-field">
+                <label class="cadastro-field__label"><span class="cadastro-field__required">*</span> Email</label>
+                <input type="email" class="cadastro-field__input" formControlName="email" placeholder="email@exemplo.com">
+              </div>
+
+            </div>
+          </div>
+        </section>
+
+        <!-- Seção: Dados da Organização -->
+        <section class="cadastro-section cadastro-section--open">
+          <div class="cadastro-section__header">
+            <i class="fa-solid fa-hospital"></i>
+            <h3 class="cadastro-section__title">Dados da Organização</h3>
+          </div>
+          <div class="cadastro-section__body">
+            <div class="cadastro-grid">
+
+              <div class="cadastro-field">
+                <label class="cadastro-field__label"><span class="cadastro-field__required">*</span> Nome da Clínica</label>
+                <input type="text" class="cadastro-field__input" formControlName="nomeClinica" placeholder="Nome da clínica">
+              </div>
+
+              <div class="cadastro-field">
+                <label class="cadastro-field__label"><span class="cadastro-field__required">*</span> Razão Social</label>
+                <input type="text" class="cadastro-field__input" formControlName="razaoSocial" placeholder="Razão social">
+              </div>
+
+              <div class="cadastro-field">
+                <label class="cadastro-field__label"><span class="cadastro-field__required">*</span> CNPJ</label>
+                <input type="text" class="cadastro-field__input" formControlName="cnpj" placeholder="00.000.000/0001-00" maxlength="18">
+              </div>
+
+              <div class="cadastro-field">
+                <label class="cadastro-field__label"><span class="cadastro-field__required">*</span> Tipo</label>
+                <select class="cadastro-field__input" formControlName="tipoClinica">
+                  <option value="">Selecione o tipo</option>
+                  <option *ngFor="let t of tiposClinica" [value]="t.value">{{ t.label }}</option>
+                </select>
+              </div>
+
+              <div class="cadastro-field">
+                <label class="cadastro-field__label">Email da Clínica</label>
+                <input type="email" class="cadastro-field__input" formControlName="emailClinica" placeholder="contato@clinica.com">
+              </div>
+
+              <div class="cadastro-field">
+                <label class="cadastro-field__label">Telefone</label>
+                <input type="text" class="cadastro-field__input" formControlName="telefone" placeholder="(00) 00000-0000">
+              </div>
+
+            </div>
+          </div>
+        </section>
+
+        <!-- Seção: Endereço -->
+        <section class="cadastro-section cadastro-section--open">
+          <div class="cadastro-section__header">
+            <i class="fa-solid fa-location-dot"></i>
+            <h3 class="cadastro-section__title">Endereço</h3>
+          </div>
+          <div class="cadastro-section__body">
+            <div class="cadastro-grid">
+
+              <div class="cadastro-field">
+                <label class="cadastro-field__label"><span class="cadastro-field__required">*</span> CEP</label>
+                <input type="text" class="cadastro-field__input" formControlName="cep" placeholder="00000-000" maxlength="9">
+              </div>
+
+              <div class="cadastro-field">
+                <label class="cadastro-field__label"><span class="cadastro-field__required">*</span> UF</label>
+                <select class="cadastro-field__input" formControlName="uf">
+                  <option value="">UF</option>
+                  <option *ngFor="let uf of ufs" [value]="uf">{{ uf }}</option>
+                </select>
+              </div>
+
+              <div class="cadastro-field">
+                <label class="cadastro-field__label"><span class="cadastro-field__required">*</span> Município</label>
+                <input type="text" class="cadastro-field__input" formControlName="municipio" placeholder="Cidade">
+              </div>
+
+              <div class="cadastro-field">
+                <label class="cadastro-field__label">Bairro</label>
+                <input type="text" class="cadastro-field__input" formControlName="bairro" placeholder="Bairro">
+              </div>
+
+              <div class="cadastro-field">
+                <label class="cadastro-field__label"><span class="cadastro-field__required">*</span> Rua</label>
+                <input type="text" class="cadastro-field__input" formControlName="rua" placeholder="Rua / Avenida">
+              </div>
+
+              <div class="cadastro-field">
+                <label class="cadastro-field__label"><span class="cadastro-field__required">*</span> Número</label>
+                <input type="number" class="cadastro-field__input" formControlName="numero" placeholder="Nº">
+              </div>
+
+              <div class="cadastro-field cadastro-field--full">
+                <label class="cadastro-field__label">Complemento</label>
+                <input type="text" class="cadastro-field__input" formControlName="complemento" placeholder="Sala, andar, bloco...">
+              </div>
+
+            </div>
+          </div>
+        </section>
+
+      </form>
+    </div>
+
+    <!-- Footer -->
+    <footer class="cadastro-footer">
+      <div class="cadastro-footer__hint">
+        <i class="fa-solid fa-asterisk"></i>
+        <span>Campos obrigatórios | O CPF será o login e a senha inicial do administrador</span>
+      </div>
+      <div class="cadastro-footer__actions">
+        <button
+          class="cadastro-btn cadastro-btn--primary"
+          [disabled]="!formulario.valid || isLoading"
+          (click)="cadastrar()">
+          <i class="fa-solid" [ngClass]="isLoading ? 'fa-spinner fa-spin' : 'fa-check'"></i>
+          {{ isLoading ? 'Cadastrando...' : 'Cadastrar' }}
+        </button>
+      </div>
+    </footer>
+  </div>
+</div>

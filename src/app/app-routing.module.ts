@@ -21,6 +21,7 @@ import { CadastroComponent } from './features/administrador/cadastros/cadastro/c
 import { CadastroPacienteComponent } from './features/administrador/cadastros/cadastro-paciente/cadastro-paciente.component';
 import { CadastroMedicoComponent } from './features/administrador/cadastros/cadastro-medico/cadastro-medico.component';
 import { CadastroAdmComponent } from './features/administrador/cadastros/cadastro-adm/cadastro-adm.component';
+import { CadastroAdminOrgComponent } from './features/administrador/cadastros/cadastro-admin-org/cadastro-admin-org.component';
 import { CadastroSecretariaComponent } from './features/administrador/cadastros/cadastro-secretaria/cadastro-secretaria.component';
 import { ConfiguracoesSistemaComponent } from './features/administrador/configuracoes/configuracoes-sistema.component';
 import { TrocaSenhaComponent } from './features/administrador/troca-senha/troca-senha.component';
@@ -60,6 +61,7 @@ const routes: Routes = [
   { path: 'cadastroPaciente', component: CadastroPacienteComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: [Role.ADMIN] } },
   { path: 'cadastroMedico', component: CadastroMedicoComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: [Role.ADMIN] } },
   { path: 'cadastroSecretaria', component: CadastroSecretariaComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: [Role.ADMIN] } },
+  { path: 'cadastroAdminOrg', component: CadastroAdminOrgComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: [Role.SUPER_ADMIN] } },
   { path: 'mensageria', component: MensageriaComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: [Role.ADMIN] } },
 
   // ========== ROTAS APENAS MÉDICO ==========

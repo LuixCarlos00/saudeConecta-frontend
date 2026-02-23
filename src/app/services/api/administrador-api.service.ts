@@ -24,6 +24,11 @@ export class AdministradorApiService {
 
   constructor(private http: HttpClient) { }
 
+
+  cadastrarAdminOrgCompleto(payload: any): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/cadastrarAdminOrgCompleto`, payload);
+  }
+
   cadastrarAdminByOrg(administrador: any): Observable<Administrador> {
     return this.http.post<Administrador>(`${this.apiUrl}/cadastrarAdminByOrg`, administrador);
   }

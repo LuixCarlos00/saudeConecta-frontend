@@ -49,7 +49,10 @@
             </div>
             <div class="user-details">
               <span class="user-name">{{ usuario.nome }}</span>
-              <span class="user-code">#{{ usuario.codigo }}</span>
+              <span class="user-org" *ngIf="usuario.nomeOrganizacao">
+                <i class="fa-solid fa-building fa-xs"></i> {{ usuario.nomeOrganizacao }}
+              </span>
+              <span class="user-code" *ngIf="!usuario.nomeOrganizacao">#{{ usuario.codigo }}</span>
             </div>
           </div>
         </td>

@@ -490,3 +490,13 @@ body.theme-dark-blue .email-text {
     gap: 4px;
   }
 }
+
+.user-org {
+  font-size: 0.72rem;
+  color: #6366f1;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 2px;
+}

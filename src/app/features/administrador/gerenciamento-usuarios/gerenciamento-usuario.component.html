@@ -60,6 +60,17 @@
         </div>
         <i class="fa-solid fa-chevron-right action-card__arrow"></i>
       </button>
+
+      <button class="action-card action-card--super" *ngIf="isSuperAdmin" (click)="AdicionarAdminOrg()">
+        <div class="action-card__icon">
+          <i class="fa-solid fa-building-user"></i>
+        </div>
+        <div class="action-card__content">
+          <span class="action-card__title">Admin Org</span>
+          <span class="action-card__desc">Cadastrar organização + admin</span>
+        </div>
+        <i class="fa-solid fa-chevron-right action-card__arrow"></i>
+      </button>
     </div>
   </section>
 

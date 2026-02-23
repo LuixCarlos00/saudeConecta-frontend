@@ -35,6 +35,7 @@ export interface UsuarioUnificado {
   categoriaIcon: string;
   status: boolean;
   dadosOriginais: any;
+  nomeOrganizacao?: string;
 }
 
 @Component({
@@ -170,7 +171,8 @@ export class TabelaTodosUsuariosComponent implements OnInit, OnDestroy {
       categoria: 'Administrador',
       categoriaIcon: 'fa-user-shield',
       status: (a as any).status === 'ATIVO',
-      dadosOriginais: a
+      dadosOriginais: a,
+      nomeOrganizacao: (a as any).nomeOrganizacao ?? undefined
     }));
 
     return usuarios;
