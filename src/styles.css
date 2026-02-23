@@ -1,0 +1,643 @@
+/* You can add global styles to this file, and also import other style files */
+@import "~@fortawesome/fontawesome-free/css/all.css";
+
+html, body { 
+  height: 100%; 
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+/* ============================================
+   SISTEMA DE TEMAS - VARIÁVEIS CSS GLOBAIS
+   ============================================ */
+
+/* Tema Claro (Padrão) */
+:root,
+body.theme-light {
+  /* Cores Primárias */
+  --primary-color: #3b82f6;
+  --primary-dark: #1d4ed8;
+  --primary-light: #60a5fa;
+  --primary-rgb: 59, 130, 246;
+  
+  /* Cores de Fundo */
+  --bg-primary: #f8fafc;
+  --bg-secondary: #f1f5f9;
+  --bg-card: #ffffff;
+  --bg-input: #f9fafb;
+  --bg-hover: #f3f4f6;
+  --bg-sidebar: #1e293b;
+  
+  /* Cores de Texto */
+  --text-primary: #1f2937;
+  --text-secondary: #4b5563;
+  --text-muted: #9ca3af;
+  --text-inverse: #ffffff;
+  
+  /* Bordas */
+  --border-color: #e5e7eb;
+  --border-light: #f3f4f6;
+  
+  /* Status */
+  --success-color: #10b981;
+  --warning-color: #f59e0b;
+  --error-color: #ef4444;
+  --info-color: #3b82f6;
+  
+  /* Sombras */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  
+  /* Tabelas */
+  --table-header-bg: #f8fafc;
+  --table-row-hover: #f1f5f9;
+  --table-border: #e5e7eb;
+  
+  /* Botões */
+  --btn-secondary-bg: #f3f4f6;
+  --btn-secondary-hover: #e5e7eb;
+  --btn-secondary-text: #374151;
+  --btn-secondary-border: #d1d5db;
+}
+
+/* Tema Escuro Azul */
+body.theme-dark-blue,
+body.dark-theme.theme-dark-blue {
+  /* Cores Primárias */
+  --primary-color: #60a5fa;
+  --primary-dark: #3b82f6;
+  --primary-light: #93c5fd;
+  --primary-rgb: 96, 165, 250;
+  
+  /* Cores de Fundo - Azul Escuro */
+  --bg-primary: #0f172a;
+  --bg-secondary: #1e293b;
+  --bg-card: #1e293b;
+  --bg-input: #334155;
+  --bg-hover: #334155;
+  --bg-sidebar: #0f172a;
+  
+  /* Cores de Texto - Branco */
+  --text-primary: #f8fafc;
+  --text-secondary: #e2e8f0;
+  --text-muted: #94a3b8;
+  --text-inverse: #0f172a;
+  
+  /* Bordas */
+  --border-color: #334155;
+  --border-light: #475569;
+  
+  /* Status */
+  --success-color: #34d399;
+  --warning-color: #fbbf24;
+  --error-color: #f87171;
+  --info-color: #60a5fa;
+  
+  /* Sombras */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+  
+  /* Tabelas */
+  --table-header-bg: #1e293b;
+  --table-row-hover: #334155;
+  --table-border: #334155;
+  
+  /* Botões */
+  --btn-secondary-bg: #334155;
+  --btn-secondary-hover: #475569;
+  --btn-secondary-text: #f8fafc;
+  --btn-secondary-border: #475569;
+}
+
+/* Tema Escuro Preto */
+body.theme-dark-black,
+body.dark-theme.theme-dark-black {
+  /* Cores Primárias */
+  --primary-color: #a78bfa;
+  --primary-dark: #7c3aed;
+  --primary-light: #c4b5fd;
+  --primary-rgb: 167, 139, 250;
+  
+  /* Cores de Fundo - Preto VERDADEIRO */
+  --bg-primary: #000000;
+  --bg-secondary: #0a0a0a;
+  --bg-tertiary: #121212;
+  --bg-card: #121212;
+  --bg-input: #1a1a1a;
+  --bg-hover: #1a1a1a;
+  --bg-selected: #262626;
+  --bg-sidebar: #000000;
+  
+  /* Cores de Texto - Branco */
+  --text-primary: #ffffff;
+  --text-secondary: #e5e5e5;
+  --text-muted: #a3a3a3;
+  --text-inverse: #000000;
+  
+  /* Bordas */
+  --border-color: #262626;
+  --border-light: #333333;
+  
+  /* Status */
+  --success-color: #4ade80;
+  --warning-color: #facc15;
+  --error-color: #fb7185;
+  --info-color: #a78bfa;
+  
+  /* Sombras */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.6);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.7);
+  
+  /* Tabelas */
+  --table-header-bg: #0a0a0a;
+  --table-row-hover: #1a1a1a;
+  --table-border: #262626;
+  
+  /* Botões */
+  --btn-secondary-bg: #1a1a1a;
+  --btn-secondary-hover: #262626;
+  --btn-secondary-text: #ffffff;
+  --btn-secondary-border: #333333;
+}
+
+/* ============================================
+   FORÇAR ESTILOS PARA TEMAS ESCUROS
+   ============================================ */
+
+/* Tema Escuro Azul - Forçar cores */
+body.theme-dark-blue,
+body.theme-dark-blue * {
+  --bg-primary: #0f172a;
+  --bg-card: #1e293b;
+  --text-primary: #f8fafc;
+}
+
+body.theme-dark-blue {
+  background-color: #0f172a !important;
+}
+
+body.theme-dark-blue .usuarios-table-container,
+body.theme-dark-blue .table-container,
+body.theme-dark-blue section,
+body.theme-dark-blue .content-card,
+body.theme-dark-blue .config-section {
+  background-color: #1e293b !important;
+}
+
+body.theme-dark-blue table,
+body.theme-dark-blue .usuarios-table,
+body.theme-dark-blue .mat-mdc-table {
+  background-color: #1e293b !important;
+}
+
+body.theme-dark-blue th,
+body.theme-dark-blue .mat-mdc-header-cell {
+  background-color: #1e293b !important;
+  color: #f8fafc !important;
+}
+
+body.theme-dark-blue td,
+body.theme-dark-blue .mat-mdc-cell,
+body.theme-dark-blue .user-name,
+body.theme-dark-blue .email-text,
+body.theme-dark-blue span,
+body.theme-dark-blue p,
+body.theme-dark-blue h1,
+body.theme-dark-blue h2,
+body.theme-dark-blue h3,
+body.theme-dark-blue h4,
+body.theme-dark-blue label {
+  color: #f8fafc !important;
+}
+
+body.theme-dark-blue tr,
+body.theme-dark-blue .mat-mdc-row {
+  background-color: #1e293b !important;
+}
+
+body.theme-dark-blue tr:hover,
+body.theme-dark-blue .mat-mdc-row:hover {
+  background-color: #334155 !important;
+}
+
+/* Tema Escuro Preto - Forçar cores */
+body.theme-dark-black,
+body.theme-dark-black * {
+  --bg-primary: #000000;
+  --bg-secondary: #0a0a0a;
+  --bg-tertiary: #121212;
+  --bg-card: #121212;
+  --bg-hover: #1a1a1a;
+  --text-primary: #ffffff;
+  --text-secondary: #e5e5e5;
+  --border-color: #262626;
+}
+
+body.theme-dark-black {
+  background-color: #000000 !important;
+}
+
+body.theme-dark-black .usuarios-table-container,
+body.theme-dark-black .table-container,
+body.theme-dark-black section,
+body.theme-dark-black .content-card,
+body.theme-dark-black .config-section {
+  background-color: #121212 !important;
+}
+
+body.theme-dark-black .healthcare-content,
+body.theme-dark-black .main-content,
+body.theme-dark-black .dashboard-grid {
+  background-color: #000000 !important;
+}
+
+body.theme-dark-black .hc-card,
+body.theme-dark-black .hc-stat-card,
+body.theme-dark-black .dashboard-chart {
+  background-color: #121212 !important;
+  border-color: #262626 !important;
+}
+
+body.theme-dark-black .hc-card__header {
+  background-color: #0a0a0a !important;
+  border-color: #262626 !important;
+}
+
+body.theme-dark-black table,
+body.theme-dark-black .usuarios-table,
+body.theme-dark-black .mat-mdc-table {
+  background-color: #121212 !important;
+}
+
+body.theme-dark-black th,
+body.theme-dark-black .mat-mdc-header-cell {
+  background-color: #0a0a0a !important;
+  color: #ffffff !important;
+}
+
+body.theme-dark-black td,
+body.theme-dark-black .mat-mdc-cell,
+body.theme-dark-black .user-name,
+body.theme-dark-black .email-text,
+body.theme-dark-black span,
+body.theme-dark-black p,
+body.theme-dark-black h1,
+body.theme-dark-black h2,
+body.theme-dark-black h3,
+body.theme-dark-black h4,
+body.theme-dark-black label {
+  color: #ffffff !important;
+}
+
+body.theme-dark-black tr,
+body.theme-dark-black .mat-mdc-row {
+  background-color: #121212 !important;
+}
+
+body.theme-dark-black tr:hover,
+body.theme-dark-black .mat-mdc-row:hover {
+  background-color: #1a1a1a !important;
+}
+
+body.theme-dark-black .index-badge {
+  background-color: #1a1a1a !important;
+  color: #ffffff !important;
+}
+
+body.theme-dark-black .quick-action-btn {
+  background-color: #121212 !important;
+}
+
+body.theme-dark-black .dashboard-header__date {
+  background-color: #121212 !important;
+  border-color: #262626 !important;
+}
+
+body.theme-dark-black .table-footer,
+body.theme-dark-blue .table-footer {
+  background-color: #121212 !important;
+}
+
+body.theme-dark-blue .table-footer {
+  background-color: #0f172a !important;
+}
+
+body.theme-dark-black .loading-spinner span,
+body.theme-dark-black .empty-state p,
+body.theme-dark-black .empty-state h4,
+body.theme-dark-blue .loading-spinner span,
+body.theme-dark-blue .empty-state p,
+body.theme-dark-blue .empty-state h4 {
+  color: #e5e5e5 !important;
+}
+
+/* User code em temas escuros */
+body.theme-dark-black .user-code,
+body.theme-dark-blue .user-code {
+  color: #a3a3a3 !important;
+}
+
+/* Cadastro - Títulos e subtítulos em temas escuros */
+body.theme-dark-black .cadastro-header__title,
+body.theme-dark-black .cadastro-header__subtitle,
+body.theme-dark-black .cadastro-section__title,
+body.theme-dark-black .cadastro-field__label,
+body.theme-dark-blue .cadastro-header__title,
+body.theme-dark-blue .cadastro-header__subtitle,
+body.theme-dark-blue .cadastro-section__title,
+body.theme-dark-blue .cadastro-field__label {
+  color: #ffffff !important;
+}
+
+body.theme-dark-black .cadastro-dialog,
+body.theme-dark-blue .cadastro-dialog {
+  background-color: var(--bg-card) !important;
+}
+
+body.theme-dark-black .cadastro-section,
+body.theme-dark-blue .cadastro-section {
+  background-color: var(--bg-secondary) !important;
+  border-color: var(--border-color) !important;
+}
+
+/* ============================================
+   ESTILOS GLOBAIS APLICANDO VARIÁVEIS
+   ============================================ */
+
+body {
+  background-color: var(--bg-primary) !important;
+  color: var(--text-primary) !important;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Inputs globais */
+input, textarea, select {
+  background-color: var(--bg-input) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-color) !important;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--text-muted) !important;
+}
+
+/* Labels globais */
+label {
+  color: var(--text-primary) !important;
+}
+
+/* Textos globais */
+p, span, h1, h2, h3, h4, h5, h6, div, li, td, th {
+  color: var(--text-primary);
+}
+
+/* Cards globais */
+.mat-mdc-card,
+.mat-card {
+  background-color: var(--bg-card) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Dialogs */
+.mat-mdc-dialog-container,
+.mat-dialog-container,
+.cdk-overlay-pane .mat-mdc-dialog-surface {
+  background-color: var(--bg-card) !important;
+  color: var(--text-primary) !important;
+}
+
+/* ============================================
+   TABELAS - SUPORTE COMPLETO A TEMAS
+   ============================================ */
+
+/* Tabelas Material */
+.mat-mdc-table,
+.mat-table,
+table {
+  background-color: var(--bg-card) !important;
+  color: var(--text-primary) !important;
+}
+
+.mat-mdc-header-cell,
+.mat-header-cell,
+th {
+  background-color: var(--table-header-bg) !important;
+  color: var(--text-primary) !important;
+}
+
+.mat-mdc-cell,
+.mat-cell,
+td {
+  color: var(--text-primary) !important;
+  border-color: var(--border-color) !important;
+}
+
+.mat-mdc-row,
+.mat-row,
+tr {
+  background-color: var(--bg-card) !important;
+}
+
+.mat-mdc-row:hover,
+.mat-row:hover,
+tr:hover {
+  background-color: var(--table-row-hover) !important;
+}
+
+/* Containers de tabela */
+.usuarios-table-container,
+.table-container,
+section {
+  background-color: var(--bg-card) !important;
+}
+
+/* Headers de tabela customizados */
+.table-header {
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%) !important;
+}
+
+/* Footers de tabela */
+.table-footer {
+  background-color: var(--bg-secondary) !important;
+  border-color: var(--border-color) !important;
+}
+
+.table-footer span,
+.footer-info {
+  color: var(--text-secondary) !important;
+}
+
+/* Textos dentro de tabelas */
+.user-name,
+.user-code,
+.email-text,
+.index-badge {
+  color: var(--text-primary) !important;
+}
+
+.user-code {
+  color: var(--text-muted) !important;
+}
+
+/* Index badge */
+.index-badge {
+  background-color: var(--bg-secondary) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Loading e Empty states */
+.loading-container,
+.empty-state {
+  background-color: var(--bg-card) !important;
+}
+
+.loading-spinner span,
+.empty-state p,
+.empty-state h4 {
+  color: var(--text-secondary) !important;
+}
+
+.empty-state i {
+  color: var(--text-muted) !important;
+}
+
+/* Table wrapper scrollbar */
+.table-wrapper::-webkit-scrollbar-track {
+  background: var(--bg-secondary) !important;
+}
+
+.table-wrapper::-webkit-scrollbar-thumb {
+  background: var(--border-light) !important;
+}
+
+/* ============================================
+   MENUS E SELECTS
+   ============================================ */
+
+/* Menus */
+.mat-mdc-menu-panel,
+.mat-menu-panel {
+  background-color: var(--bg-card) !important;
+}
+
+.mat-mdc-menu-item,
+.mat-menu-item {
+  color: var(--text-primary) !important;
+}
+
+/* Selects */
+.mat-mdc-select-panel,
+.mat-select-panel {
+  background-color: var(--bg-card) !important;
+}
+
+.mat-mdc-option,
+.mat-option {
+  color: var(--text-primary) !important;
+}
+
+.mat-mdc-select-value,
+.mat-select-value {
+  color: var(--text-primary) !important;
+}
+
+/* Tooltips */
+.mat-mdc-tooltip,
+.mat-tooltip {
+  background-color: var(--bg-secondary) !important;
+  color: var(--text-primary) !important;
+}
+
+/* ============================================
+   FORMULÁRIOS
+   ============================================ */
+
+.mat-mdc-form-field,
+.mat-form-field {
+  color: var(--text-primary) !important;
+}
+
+.mat-mdc-form-field-label,
+.mat-form-field-label {
+  color: var(--text-secondary) !important;
+}
+
+.mat-mdc-input-element,
+.mat-input-element {
+  color: var(--text-primary) !important;
+}
+
+/* ============================================
+   BOTÕES
+   ============================================ */
+
+.mat-mdc-button,
+.mat-button,
+.mat-mdc-raised-button,
+.mat-raised-button {
+  color: var(--text-primary) !important;
+}
+
+/* ============================================
+   SCROLLBAR GLOBAL
+   ============================================ */
+
+/* Scrollbar customizada para temas escuros */
+body.dark-theme::-webkit-scrollbar,
+body.dark-theme *::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+body.dark-theme::-webkit-scrollbar-track,
+body.dark-theme *::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+body.dark-theme::-webkit-scrollbar-thumb,
+body.dark-theme *::-webkit-scrollbar-thumb {
+  background: var(--border-light);
+  border-radius: 5px;
+}
+
+body.dark-theme::-webkit-scrollbar-thumb:hover,
+body.dark-theme *::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+/* ============================================
+   TRANSIÇÕES
+   ============================================ */
+
+/* Transições suaves para mudança de tema */
+* {
+  transition: background-color 0.2s ease, 
+              border-color 0.2s ease,
+              color 0.2s ease,
+              box-shadow 0.2s ease;
+}
+
+/* ============================================
+   DIALOGS CUSTOMIZADOS
+   ============================================ */
+
+/* Dialog de Seleção de Relatório */
+.selecao-relatorio-dialog .mat-mdc-dialog-container {
+  padding: 0 !important;
+  border-radius: 16px !important;
+  overflow: hidden;
+}
+
+.selecao-relatorio-dialog .mdc-dialog__surface {
+  border-radius: 16px !important;
+  overflow: hidden;
+}
+
+/* Dialog de Atestado */
+.mat-mdc-dialog-container .atestado-container {
+  margin: -24px;
+}

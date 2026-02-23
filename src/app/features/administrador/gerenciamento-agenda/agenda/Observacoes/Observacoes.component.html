@@ -1,0 +1,14 @@
+<div class="dialog-simple">
+  <div class="dialog-simple__header">
+    <h3>Observações</h3>
+    <button class="close-btn" (click)="onNoClick()"><i class="fa-solid fa-xmark"></i></button>
+  </div>
+
+  <div class="dialog-simple__body">
+    <p class="obs-text">{{ data.observacoes || 'Nenhuma observação registrada.' }}</p>
+  </div>
+
+  <div class="dialog-simple__footer">
+    <button class="btn btn--ok" (click)="onNoClick()">OK</button>
+  </div>
+</div>

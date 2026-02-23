@@ -1,0 +1,82 @@
+/* =============================================================================
+   DIALOG SIMPLES - OBSERVAÇÕES
+   ============================================================================= */
+
+.dialog-simple {
+  background: #fff;
+  border-radius: 8px;
+  width: 350px;
+  max-width: 100%;
+}
+
+.dialog-simple__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 18px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.dialog-simple__header h3 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 16px;
+  color: #6b7280;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.close-btn:hover {
+  color: #1f2937;
+}
+
+.dialog-simple__body {
+  padding: 16px 18px;
+}
+
+.obs-text {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #374151;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.dialog-simple__footer {
+  display: flex;
+  justify-content: flex-end;
+  padding: 12px 18px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.btn {
+  padding: 8px 20px;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+}
+
+.btn--ok {
+  background: #0077b6;
+  color: #fff;
+}
+
+.btn--ok:hover {
+  background: #005f92;
+}
+
+@media screen and (max-width: 400px) {
+  .dialog-simple {
+    width: 100%;
+  }
+}

@@ -1,0 +1,118 @@
+<div class="grafico-container">
+  <!-- Filtros de Período Padronizados -->
+  <div class="chart-filters-wrapper">
+    <div class="filter-header">
+      <span class="filter-title">
+        <i class="fa-solid fa-filter"></i>
+        Filtrar por Período
+      </span>
+    </div>
+    
+    <!-- Botões de Período Rápido em Linha -->
+    <div class="quick-filters">
+      <button 
+        class="quick-filter-btn" 
+        [class.quick-filter-btn--active]="diaSelecionado === 1"
+        (click)="diaSelecionado = 1; atualizarGrafico()">
+        <i class="fa-solid fa-calendar-week"></i>
+        <span>7 dias</span>
+      </button>
+      <button 
+        class="quick-filter-btn" 
+        [class.quick-filter-btn--active]="diaSelecionado === 2"
+        (click)="diaSelecionado = 2; atualizarGrafico()">
+        <i class="fa-solid fa-calendar"></i>
+        <span>30 dias</span>
+      </button>
+      <button 
+        class="quick-filter-btn" 
+        [class.quick-filter-btn--active]="diaSelecionado === 3"
+        (click)="diaSelecionado = 3; atualizarGrafico()">
+        <i class="fa-solid fa-calendar-days"></i>
+        <span>60 dias</span>
+      </button>
+    </div>
+
+    <!-- Período Personalizado Abaixo -->
+    <div class="custom-period">
+      <mat-form-field appearance="outline" class="custom-period-field">
+        <mat-label>
+          <i class="fa-solid fa-calendar-range"></i>
+          Período Personalizado
+        </mat-label>
+        <mat-date-range-input [rangePicker]="picker" [formGroup]="IntervaloDeDatas">
+          <input matStartDate formControlName="start" placeholder="Data inicial">
+          <input matEndDate formControlName="end" placeholder="Data final" (dateChange)="atualizarGraficoPersonalizado()">
+        </mat-date-range-input>
+        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-date-range-picker #picker></mat-date-range-picker>
+      </mat-form-field>
+    </div>
+  </div>
+
+  <!-- Cards de Estatísticas -->
+  <div class="stats-cards" *ngIf="temDados() && !isLoading">
+    <div class="stat-card stat-card--primary">
+      <div class="stat-card__icon">
+        <i class="fa fa-clock"></i>
+      </div>
+      <div class="stat-card__content">
+        <span class="stat-card__value">{{ formatarTempo(dadosMedia.mediaTempo) }}</span>
+        <span class="stat-card__label">Tempo Médio</span>
+      </div>
+    </div>
+
+    <div class="stat-card stat-card--success">
+      <div class="stat-card__icon">
+        <i class="fa fa-calendar-check"></i>
+      </div>
+      <div class="stat-card__content">
+        <span class="stat-card__value">{{ dadosMedia.totalConsultas }}</span>
+        <span class="stat-card__label">Total de Consultas</span>
+      </div>
+    </div>
+
+    <div class="stat-card stat-card--info">
+      <div class="stat-card__icon">
+        <i class="fa fa-arrow-down"></i>
+      </div>
+      <div class="stat-card__content">
+        <span class="stat-card__value">{{ formatarTempo(dadosMedia.tempoMinimo) }}</span>
+        <span class="stat-card__label">Tempo Mínimo</span>
+      </div>
+    </div>
+
+    <div class="stat-card stat-card--danger">
+      <div class="stat-card__icon">
+        <i class="fa fa-arrow-up"></i>
+      </div>
+      <div class="stat-card__content">
+        <span class="stat-card__value">{{ formatarTempo(dadosMedia.tempoMaximo) }}</span>
+        <span class="stat-card__label">Tempo Máximo</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading-state" *ngIf="isLoading">
+    <i class="fa fa-spinner fa-spin"></i>
+    <p>Carregando dados...</p>
+  </div>
+
+  <!-- Error State -->
+  <div class="error-state" *ngIf="hasError && !isLoading">
+    <i class="fa fa-exclamation-triangle"></i>
+    <p>{{ errorMessage }}</p>
+  </div>
+
+  <!-- Gráfico -->
+  <div class="grafico-wrapper" *ngIf="temDados() && !isLoading && !hasError">
+    <canvas #tempoCanvas></canvas>
+  </div>
+
+  <!-- Empty State -->
+  <div class="empty-state" *ngIf="!temDados() && !isLoading && !hasError">
+    <i class="fa fa-chart-bar"></i>
+    <p>Nenhuma consulta encontrada no período selecionado</p>
+  </div>
+</div>

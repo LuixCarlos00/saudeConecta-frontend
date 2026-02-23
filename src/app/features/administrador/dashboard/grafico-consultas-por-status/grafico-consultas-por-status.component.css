@@ -1,0 +1,388 @@
+/* =============================================================================
+   GRÁFICO DE CONSULTAS POR STATUS
+   Design Moderno Healthcare
+   ============================================================================= */
+
+.chart-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Filtros */
+.chart-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.filter-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+}
+
+.filter-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #64748b;
+  white-space: nowrap;
+}
+
+.filter-buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.filter-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filter-btn:hover {
+  background: #e2e8f0;
+  color: #334155;
+}
+
+.filter-btn--active {
+  background: #0066CC;
+  border-color: #0066CC;
+  color: white;
+}
+
+.filter-btn--active:hover {
+  background: #0055aa;
+}
+
+.filter-btn i {
+  font-size: 0.75rem;
+}
+
+/* Date Range Picker */
+.date-range-picker {
+  flex-shrink: 0;
+}
+
+.date-field {
+  width: 260px;
+}
+
+::ng-deep .date-field .mat-mdc-form-field-subscript-wrapper {
+  display: none;
+}
+
+::ng-deep .date-field .mat-mdc-text-field-wrapper {
+  background: #f8fafc;
+  border-radius: 8px;
+}
+
+/* Forçar cores do mat-date-range-input */
+::ng-deep .date-field .mat-mdc-form-field-label {
+  color: #424242 !important;
+}
+
+::ng-deep .date-field .mat-mdc-input-element {
+  color: #212121 !important;
+}
+
+::ng-deep .date-field .mat-mdc-form-field-label.mat-mdc-form-field-label--floating {
+  color: #9e9e9e !important;
+}
+
+::ng-deep .date-field .mat-mdc-form-field-hint {
+  color: #9e9e9e !important;
+}
+
+::ng-deep .date-field .mat-mdc-form-field-error {
+  color: #d32f2f !important;
+}
+
+/* Ícones do date picker */
+::ng-deep .date-field .mat-mdc-icon-button svg {
+  color: #1565c0 !important;
+}
+
+::ng-deep .date-field .mat-datepicker-toggle-default-icon {
+  color: #1565c0 !important;
+}
+
+/* Forçar cores para mat-date-range-input específico */
+::ng-deep .date-field mat-date-range-input .mat-mdc-input-element {
+  color: #212121 !important;
+}
+
+::ng-deep .date-field mat-date-range-input .mat-mdc-input-element::placeholder {
+  color: #9e9e9e !important;
+}
+
+/* Borda focus/hover */
+::ng-deep .date-field .mdc-text-field--outlined:hover .mdc-notched-outline {
+  border-color: #1565c0 !important;
+}
+
+::ng-deep .date-field .mdc-text-field--focused .mdc-notched-outline {
+  border-color: #1565c0 !important;
+}
+
+/* Estados */
+.chart-loading,
+.chart-error,
+.chart-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 48px 24px;
+  text-align: center;
+}
+
+.chart-loading {
+  color: #0066CC;
+}
+
+.chart-loading i {
+  font-size: 2rem;
+}
+
+.chart-error {
+  color: #ef4444;
+}
+
+.chart-error i {
+  font-size: 2.5rem;
+  opacity: 0.7;
+}
+
+.chart-error span {
+  color: #64748b;
+}
+
+.retry-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: #0066CC;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.retry-btn:hover {
+  background: #0055aa;
+}
+
+.chart-empty {
+  color: #94a3b8;
+}
+
+.chart-empty i {
+  font-size: 3rem;
+  opacity: 0.5;
+}
+
+/* Wrapper do Gráfico */
+.chart-wrapper {
+  position: relative;
+  height: 280px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.chart-wrapper--hidden {
+  display: none;
+}
+
+/* Resumo */
+.chart-summary {
+  display: flex;
+  gap: 24px;
+  padding-top: 16px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.summary-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.summary-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #0066CC;
+}
+
+.summary-value--highlight {
+  font-size: 1.125rem;
+  color: #10b981;
+}
+
+.summary-label {
+  font-size: 0.75rem;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Lista de Status */
+.status-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 12px;
+}
+
+.status-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  background: #f8fafc;
+  border-radius: 8px;
+  transition: background 0.2s;
+}
+
+.status-item:hover {
+  background: #f1f5f9;
+}
+
+.status-indicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.status-label {
+  flex: 1;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #334155;
+}
+
+.status-value {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1e293b;
+  min-width: 30px;
+  text-align: right;
+}
+
+.status-percent {
+  font-size: 0.8125rem;
+  color: #64748b;
+  min-width: 40px;
+  text-align: right;
+}
+
+/* Calendário Material */
+::ng-deep .mat-calendar {
+  background-color: #1a1f2e !important;
+  border-radius: 12px;
+}
+
+::ng-deep .mat-calendar-period-button,
+::ng-deep .mat-calendar-previous-button,
+::ng-deep .mat-calendar-next-button {
+  color: #f4f4f4 !important;
+}
+
+::ng-deep .mat-calendar-body-cell-content {
+  color: #ffffff !important;
+}
+
+::ng-deep .mat-calendar-body-selected {
+  background-color: #0066CC !important;
+  color: white !important;
+}
+
+::ng-deep .mat-calendar-body-today {
+  border-color: #0066CC !important;
+}
+
+::ng-deep .mat-calendar-body-in-range::before {
+  background: rgba(0, 102, 204, 0.2) !important;
+}
+
+/* Responsividade */
+@media (max-width: 900px) {
+  .chart-filters {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .filter-group {
+    flex: none;
+    width: 100%;
+  }
+
+  .filter-buttons {
+    width: 100%;
+  }
+
+  .filter-btn {
+    flex: 1;
+    justify-content: center;
+    min-width: 80px;
+  }
+
+  .date-range-picker {
+    width: 100%;
+  }
+
+  .date-field {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .filter-buttons {
+    flex-direction: column;
+  }
+
+  .filter-btn {
+    width: 100%;
+  }
+
+  .chart-wrapper {
+    height: 220px;
+  }
+
+  .chart-summary {
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .summary-item {
+    flex: 1;
+    min-width: 120px;
+  }
+
+  .status-item {
+    padding: 8px 12px;
+  }
+}

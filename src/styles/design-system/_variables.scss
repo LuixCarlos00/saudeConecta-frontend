@@ -1,0 +1,267 @@
+// =============================================================================
+// SAUDECONECTA - DESIGN SYSTEM MÉDICO
+// Healthcare Design Variables - LGPD/HIPAA Compliant UI
+// =============================================================================
+
+// =============================================================================
+// 1. CORES - PALETA HEALTHCARE TRUST
+// =============================================================================
+
+// Cores Primárias (Confiança e Profissionalismo)
+$primary-blue: #0066CC;           // Azul confiável - ações principais
+$primary-blue-dark: #004C99;      // Hover/Active states
+$primary-blue-light: #E6F0FA;     // Backgrounds sutis
+$primary-teal: #00A3A3;           // Teal médico - secundário
+$primary-teal-dark: #007A7A;      // Hover/Active states
+$primary-teal-light: #E6F7F7;     // Backgrounds sutis
+
+// Cores de Status Clínico (CRÍTICO para Healthcare)
+$status-normal: #10B981;          // Verde - valores normais
+$status-normal-bg: #ECFDF5;       // Background verde suave
+$status-atencao: #F59E0B;         // Amarelo - atenção necessária
+$status-atencao-bg: #FFFBEB;      // Background amarelo suave
+$status-critico: #EF4444;         // Vermelho - crítico/emergência
+$status-critico-bg: #FEF2F2;      // Background vermelho suave
+$status-info: #3B82F6;            // Azul - informativo
+$status-info-bg: #EFF6FF;         // Background azul suave
+
+// Cores de Prioridade (Triagem Manchester adaptada)
+$priority-urgent: #DC2626;        // Urgente - vermelho forte
+$priority-urgent-bg: #FEE2E2;
+$priority-high: #F97316;          // Alta - laranja
+$priority-high-bg: #FFEDD5;
+$priority-medium: #EAB308;        // Média - amarelo
+$priority-medium-bg: #FEF9C3;
+$priority-low: #22C55E;           // Baixa - verde
+$priority-low-bg: #DCFCE7;
+$priority-routine: #6B7280;       // Rotina - cinza
+$priority-routine-bg: #F3F4F6;
+
+// Backgrounds (Clean Medical Environment)
+// NOTA: Usar variáveis CSS para suporte a temas dinâmicos
+$bg-primary: var(--bg-primary, #FFFFFF);             // Branco limpo - confiança
+$bg-secondary: var(--bg-secondary, #F9FAFB);         // Cinza muito claro
+$bg-tertiary: var(--bg-tertiary, #F3F4F6);           // Cinza claro
+$bg-card: var(--bg-card, #FFFFFF);                   // Cards brancos
+$bg-hover: var(--bg-hover, #F3F4F6);                 // Hover suave
+$bg-selected: var(--bg-selected, #E6F0FA);           // Item selecionado
+$bg-sidebar: var(--bg-sidebar, #1F2937);             // Sidebar escura (opcional)
+$bg-overlay: rgba(0, 0, 0, 0.5);                     // Overlay para modais
+
+// Textos (Alto Contraste - WCAG AA)
+// NOTA: Usar variáveis CSS para suporte a temas dinâmicos
+$text-primary: var(--text-primary, #111827);         // Texto principal - alto contraste
+$text-secondary: var(--text-secondary, #4B5563);     // Texto secundário
+$text-muted: var(--text-muted, #9CA3AF);             // Texto desbotado
+$text-inverse: var(--text-inverse, #FFFFFF);         // Texto em backgrounds escuros
+$text-link: var(--primary-color, #0066CC);           // Links
+$text-link-hover: var(--primary-dark, #004C99);      // Links hover
+
+// Bordas
+$border-light: var(--border-color, #E5E7EB);         // Bordas suaves
+$border-medium: var(--border-light, #D1D5DB);        // Bordas médias
+$border-dark: #9CA3AF;                               // Bordas fortes
+$border-focus: var(--primary-color, #0066CC);        // Foco em campos
+$border-error: var(--error-color, #EF4444);          // Erro em campos
+$border-success: var(--success-color, #10B981);      // Sucesso em campos
+
+// =============================================================================
+// 2. TIPOGRAFIA - LEGIBILIDADE MÉDICA
+// =============================================================================
+
+// Font Families
+$font-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+$font-heading: 'Inter', sans-serif;
+$font-mono: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+
+// Font Sizes (Escala Modular - Base 16px)
+$text-xs: 0.75rem;                // 12px - Labels pequenos
+$text-sm: 0.875rem;               // 14px - Texto secundário
+$text-base: 1rem;                 // 16px - Texto principal (MÍNIMO para dados médicos)
+$text-lg: 1.125rem;               // 18px - Destaque
+$text-xl: 1.25rem;                // 20px - Subtítulos
+$text-2xl: 1.5rem;                // 24px - Títulos
+$text-3xl: 1.875rem;              // 30px - Títulos principais
+$text-4xl: 2.25rem;               // 36px - Hero/Dashboard
+
+// REGRA CRÍTICA: Dados vitais NUNCA abaixo de 16px
+$text-patient-data: 1rem;         // 16px - mínimo para dados do paciente
+$text-vital-signs: 1.125rem;      // 18px - sinais vitais
+$text-alerts: 1.25rem;            // 20px - alertas críticos
+
+// Line Heights (Leitura Prolongada)
+$leading-tight: 1.25;             // Títulos
+$leading-normal: 1.5;             // Corpo de texto
+$leading-relaxed: 1.75;           // Leitura longa (prontuários)
+
+// Font Weights
+$font-normal: 400;
+$font-medium: 500;
+$font-semibold: 600;
+$font-bold: 700;
+
+// Letter Spacing
+$tracking-tight: -0.025em;
+$tracking-normal: 0;
+$tracking-wide: 0.025em;
+
+// =============================================================================
+// 3. ESPAÇAMENTO - SISTEMA 8px
+// =============================================================================
+
+$spacing-0: 0;
+$spacing-1: 0.25rem;              // 4px
+$spacing-2: 0.5rem;               // 8px
+$spacing-3: 0.75rem;              // 12px
+$spacing-4: 1rem;                 // 16px
+$spacing-5: 1.25rem;              // 20px
+$spacing-6: 1.5rem;               // 24px
+$spacing-8: 2rem;                 // 32px
+$spacing-10: 2.5rem;              // 40px
+$spacing-12: 3rem;                // 48px
+$spacing-16: 4rem;                // 64px
+$spacing-20: 5rem;                // 80px
+$spacing-24: 6rem;                // 96px
+
+// =============================================================================
+// 4. BORDAS E RAIOS
+// =============================================================================
+
+$radius-none: 0;
+$radius-sm: 0.25rem;              // 4px - Botões pequenos
+$radius-md: 0.5rem;               // 8px - Cards, inputs
+$radius-lg: 0.75rem;              // 12px - Modais
+$radius-xl: 1rem;                 // 16px - Cards grandes
+$radius-2xl: 1.5rem;              // 24px - Elementos destacados
+$radius-full: 9999px;             // Círculos, pills
+
+// Border Widths
+$border-width-1: 1px;
+$border-width-2: 2px;
+$border-width-4: 4px;
+
+// =============================================================================
+// 5. SOMBRAS - SUTIS E PROFISSIONAIS
+// =============================================================================
+
+$shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.05);
+$shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+$shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.06);
+$shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05);
+$shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.1), 0 10px 10px rgba(0, 0, 0, 0.04);
+$shadow-2xl: 0 25px 50px rgba(0, 0, 0, 0.25);
+
+// Sombras Especiais
+$shadow-inner: inset 0 2px 4px rgba(0, 0, 0, 0.06);
+$shadow-focus: 0 0 0 3px rgba(0, 102, 204, 0.2);
+$shadow-error: 0 0 0 3px rgba(239, 68, 68, 0.2);
+$shadow-success: 0 0 0 3px rgba(16, 185, 129, 0.2);
+$shadow-card-hover: 0 8px 16px rgba(0, 0, 0, 0.1);
+
+// =============================================================================
+// 6. TRANSIÇÕES E ANIMAÇÕES
+// =============================================================================
+
+$transition-fast: 150ms ease;
+$transition-normal: 200ms ease;
+$transition-slow: 300ms ease;
+$transition-slower: 500ms ease;
+
+// Easing Functions
+$ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+$ease-out: cubic-bezier(0, 0, 0.2, 1);
+$ease-in: cubic-bezier(0.4, 0, 1, 1);
+
+// =============================================================================
+// 7. BREAKPOINTS - RESPONSIVIDADE
+// =============================================================================
+
+$breakpoint-xs: 320px;            // Mobile pequeno
+$breakpoint-sm: 640px;            // Mobile grande
+$breakpoint-md: 768px;            // Tablet
+$breakpoint-lg: 1024px;           // Desktop pequeno
+$breakpoint-xl: 1280px;           // Desktop
+$breakpoint-2xl: 1536px;          // Desktop grande
+
+// =============================================================================
+// 8. Z-INDEX - CAMADAS
+// =============================================================================
+
+$z-dropdown: 1000;
+$z-sticky: 1020;
+$z-fixed: 1030;
+$z-modal-backdrop: 1040;
+$z-modal: 1050;
+$z-popover: 1060;
+$z-tooltip: 1070;
+$z-toast: 1080;
+$z-alert-critical: 1090;          // Alertas críticos sempre no topo
+
+// =============================================================================
+// 9. COMPONENTES ESPECÍFICOS HEALTHCARE
+// =============================================================================
+
+// Sidebar
+$sidebar-width: 280px;
+$sidebar-collapsed-width: 72px;
+
+// Header
+$header-height: 64px;
+$header-height-mobile: 56px;
+
+// Cards
+$card-padding: $spacing-6;
+$card-radius: $radius-lg;
+
+// Inputs
+$input-height: 44px;              // Mínimo para touch (44px)
+$input-height-sm: 36px;
+$input-height-lg: 52px;
+$input-padding-x: $spacing-4;
+$input-padding-y: $spacing-3;
+
+// Buttons
+$btn-height: 44px;                // Mínimo para touch
+$btn-height-sm: 36px;
+$btn-height-lg: 52px;
+$btn-padding-x: $spacing-6;
+$btn-padding-y: $spacing-3;
+
+// Tables
+$table-row-height: 52px;          // Altura confortável para leitura
+$table-header-height: 48px;
+$table-cell-padding: $spacing-4;
+
+// Modais
+$modal-sm: 400px;
+$modal-md: 560px;
+$modal-lg: 800px;
+$modal-xl: 1140px;
+
+// =============================================================================
+// 10. HEALTHCARE ESPECÍFICO
+// =============================================================================
+
+// Cores de Alergias (CRÍTICO)
+$allergy-severe: #DC2626;         // Alergia grave
+$allergy-moderate: #F97316;       // Alergia moderada
+$allergy-mild: #EAB308;           // Alergia leve
+
+// Cores de Medicamentos
+$medication-active: #10B981;      // Medicamento em uso
+$medication-suspended: #F59E0B;   // Medicamento suspenso
+$medication-discontinued: #6B7280; // Medicamento descontinuado
+
+// Status de Consulta
+$appointment-scheduled: #3B82F6;  // Agendada
+$appointment-confirmed: #10B981;  // Confirmada
+$appointment-waiting: #F59E0B;    // Aguardando
+$appointment-in-progress: #8B5CF6; // Em atendimento
+$appointment-completed: #6B7280;  // Concluída
+$appointment-cancelled: #EF4444;  // Cancelada
+$appointment-no-show: #1F2937;    // Não compareceu
+
+// Sinais Vitais - Ranges
+$vital-normal: $status-normal;
+$vital-attention: $status-atencao;
+$vital-critical: $status-critico;

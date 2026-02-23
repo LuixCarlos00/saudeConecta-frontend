@@ -1,0 +1,284 @@
+<div class="healthcare-content">
+  <!-- Header do Dashboard -->
+  <header class="dashboard-header">
+    <div class="dashboard-header__title">
+      <h1>
+        <i class="fa-solid fa-chart-line"></i>
+        Painel de Controle
+      </h1>
+      <p class="dashboard-header__subtitle">
+        Bem-vindo! Aqui está o resumo das suas atividades.
+      </p>
+    </div>
+    <div class="dashboard-header__actions">
+      <span class="dashboard-header__date">
+        <i class="fa-regular fa-calendar"></i>
+        {{ today | date:'EEEE, dd \'de\' MMMM' }}
+      </span>
+    </div>
+  </header>
+
+  <!-- ================================================================
+       Dashboard Administrativo (Super Admin, Admin)
+       ================================================================ -->
+  <div class="dashboard-grid" *ngIf="ControleAcessoService.isDashboardAdministrativo()">
+
+    <!-- Cards de Estatísticas Rápidas -->
+    <section class="dashboard-stats">
+      <div class="hc-stat-card">
+        <div class="hc-stat-card__icon hc-stat-card__icon--primary">
+          <i class="fa-solid fa-calendar-check"></i>
+        </div>
+        <div class="hc-stat-card__content">
+          <span class="hc-stat-card__value">{{ carregandoEstatisticas ? '--' : consultasHoje }}</span>
+          <span class="hc-stat-card__label">Total de Consultas</span>
+        </div>
+      </div>
+
+      <div class="hc-stat-card">
+        <div class="hc-stat-card__icon hc-stat-card__icon--success">
+          <i class="fa-solid fa-user-check"></i>
+        </div>
+        <div class="hc-stat-card__content">
+          <span class="hc-stat-card__value">{{ carregandoEstatisticas ? '--' : consultasAtendidas }}</span>
+          <span class="hc-stat-card__label">Atendidos</span>
+        </div>
+      </div>
+
+      <div class="hc-stat-card">
+        <div class="hc-stat-card__icon hc-stat-card__icon--warning">
+          <i class="fa-solid fa-clock"></i>
+        </div>
+        <div class="hc-stat-card__content">
+          <span class="hc-stat-card__value">{{ carregandoEstatisticas ? '--' : consultasAguardando }}</span>
+          <span class="hc-stat-card__label">Aguardando</span>
+        </div>
+      </div>
+
+      <div class="hc-stat-card">
+        <div class="hc-stat-card__icon hc-stat-card__icon--info">
+          <i class="fa-solid fa-user-doctor"></i>
+        </div>
+        <div class="hc-stat-card__content">
+          <span class="hc-stat-card__value">{{ carregandoEstatisticas ? '--' : medicosAtivos }}</span>
+          <span class="hc-stat-card__label">Clínico Ativos</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Gráficos Principais -->
+    <div class="dashboard-charts">
+      <div class="hc-card dashboard-chart" *ngIf="isGraficoAtivo(TipoGraficoDashboard.CONSULTAS_POR_PERIODO)">
+        <div>
+          <h3 class="hc-card__title">
+            <i class="fa-solid fa-chart-bar"></i>
+            Consultas por Período
+          </h3>
+        </div>
+        <div>
+          <app-grafico-qnt-consultas-dia-anterior></app-grafico-qnt-consultas-dia-anterior>
+        </div>
+      </div>
+
+      <div class="hc-card dashboard-chart" *ngIf="isGraficoAtivo(TipoGraficoDashboard.AGENDAMENTOS_DIAS_SEMANA)">
+        <div>
+          <h3 class="hc-card__title">
+            <i class="fa-solid fa-calendar-days"></i>
+            Agendamentos
+          </h3>
+        </div>
+        <div>
+          <app-grafico-agendamentos-dias-semanas-mes></app-grafico-agendamentos-dias-semanas-mes>
+        </div>
+      </div>
+    </div>
+
+    <!-- Gráficos Secundários -->
+    <div class="dashboard-charts dashboard-charts--secondary">
+      <div class="hc-card dashboard-chart" *ngIf="isGraficoAtivo(TipoGraficoDashboard.SALDO_FINANCEIRO)">
+        <div class="hc-card__header">
+          <h3 class="hc-card__title">
+            <i class="fa-solid fa-coins"></i>
+            Saldo Financeiro
+          </h3>
+        </div>
+        <div>
+          <app-grafico-saldo></app-grafico-saldo>
+        </div>
+      </div>
+
+      <div class="hc-card dashboard-chart" *ngIf="isGraficoAtivo(TipoGraficoDashboard.MEDICOS_POR_ESPECIALIDADE)">
+        <div class="hc-card__header">
+          <h3 class="hc-card__title">
+            <i class="fa-solid fa-stethoscope"></i>
+            Clínico por Especialidade
+          </h3>
+        </div>
+        <div>
+          <app-grafico-categoria-medicos></app-grafico-categoria-medicos>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <!-- ================================================================
+       Dashboard Profissional de Saúde (Médico / Dentista)
+       ================================================================ -->
+  <div class="dashboard-grid" *ngIf="ControleAcessoService.isDashboardProfissional()">
+
+    <!-- Banner de Boas-vindas -->
+    <section class="doctor-welcome-banner">
+      <div class="welcome-content">
+        <div class="welcome-icon">
+          <i class="fa-solid fa-user-doctor"></i>
+        </div>
+        <div class="welcome-text">
+          <h2>Área do Clínico</h2>
+          <p>Gerencie suas consultas, prontuários e acompanhe seu desempenho</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Cards de Estatísticas do Médico -->
+    <section class="dashboard-stats">
+      <div class="hc-stat-card">
+        <div class="hc-stat-card__icon hc-stat-card__icon--primary">
+          <i class="fa-solid fa-calendar-check"></i>
+        </div>
+        <div class="hc-stat-card__content">
+          <span class="hc-stat-card__value">{{ carregandoEstatisticas ? '--' : consultasHoje }}</span>
+          <span class="hc-stat-card__label">Total de Consultas Hoje</span>
+        </div>
+      </div>
+
+      <div class="hc-stat-card">
+        <div class="hc-stat-card__icon hc-stat-card__icon--success">
+          <i class="fa-solid fa-check-circle"></i>
+        </div>
+        <div class="hc-stat-card__content">
+          <span class="hc-stat-card__value">{{ carregandoEstatisticas ? '--' : consultasAtendidas }}</span>
+          <span class="hc-stat-card__label">Finalizadas</span>
+        </div>
+      </div>
+
+      <div class="hc-stat-card">
+        <div class="hc-stat-card__icon hc-stat-card__icon--warning">
+          <i class="fa-solid fa-users"></i>
+        </div>
+        <div class="hc-stat-card__content">
+          <span class="hc-stat-card__value">{{ carregandoEstatisticas ? '--' : consultasAguardando }}</span>
+          <span class="hc-stat-card__label">Aguardando</span>
+        </div>
+      </div>
+
+      <div class="hc-stat-card">
+        <div class="hc-stat-card__icon hc-stat-card__icon--info">
+          <i class="fa-solid fa-calendar-week"></i>
+        </div>
+        <div class="hc-stat-card__content">
+          <span class="hc-stat-card__value">{{ carregandoEstatisticas ? '--' : consultasSemana }}</span>
+          <span class="hc-stat-card__label">Esta Semana</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Gráficos do Profissional — controlados pelo mesmo sistema de configuração -->
+    <div class="dashboard-charts">
+
+      <div class="hc-card dashboard-chart" *ngIf="isGraficoAtivo(TipoGraficoDashboard.MEDIA_TEMPO_CONSULTA)">
+        <div class="hc-card__header">
+          <h3 class="hc-card__title">
+            <i class="fa-solid fa-clock"></i>
+            Média de Tempo de Consulta
+          </h3>
+        </div>
+        <div>
+          <app-grafico-media-tempo-consulta></app-grafico-media-tempo-consulta>
+        </div>
+      </div>
+
+      <div class="hc-card dashboard-chart" *ngIf="isGraficoAtivo(TipoGraficoDashboard.AGENDAMENTOS_MEDICO_PERIODO)">
+        <div class="hc-card__header">
+          <h3 class="hc-card__title">
+            <i class="fa-solid fa-calendar-days"></i>
+            Meus Agendamentos por Período
+          </h3>
+        </div>
+        <div>
+          <app-grafico-agendamentos-dias-semanas-mes></app-grafico-agendamentos-dias-semanas-mes>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- Acesso Rápido — visível para todos os perfis -->
+  <section class="dashboard-quick-actions">
+    <div class="hc-card">
+      <div class="hc-card__header">
+        <h3 class="hc-card__title">
+          <i class="fa-solid fa-bolt"></i>
+          Acesso Rápido
+        </h3>
+      </div>
+      <div>
+        <div class="quick-actions-grid quick-actions-grid--doctor">
+          <button class="quick-action-btn quick-action-btn--primary" (click)="navegarPara('/Agenda-Medico')">
+            <div class="quick-action-btn__icon">
+              <i class="fa-solid fa-calendar-check"></i>
+            </div>
+            <span class="quick-action-btn__label">Agenda</span>
+            <span class="quick-action-btn__description">Ver consultas do dia</span>
+          </button>
+
+          <button class="quick-action-btn quick-action-btn--info" (click)="navegarPara('/Dados-Medicos')">
+            <div class="quick-action-btn__icon">
+              <i class="fa-solid fa-user-doctor"></i>
+            </div>
+            <span class="quick-action-btn__label">Meus Dados</span>
+            <span class="quick-action-btn__description">Informações pessoais</span>
+          </button>
+
+          <button class="quick-action-btn quick-action-btn--teal" (click)="navegarPara('/trocaSenha')">
+            <div class="quick-action-btn__icon">
+              <i class="fa-solid fa-key"></i>
+            </div>
+            <span class="quick-action-btn__label">Segurança</span>
+            <span class="quick-action-btn__description">Alterar senha</span>
+          </button>
+
+          <button class="quick-action-btn quick-action-btn--warning" (click)="navegarPara('/sistema')">
+            <div class="quick-action-btn__icon">
+              <i class="fa-solid fa-cog"></i>
+            </div>
+            <span class="quick-action-btn__label">Sistema</span>
+            <span class="quick-action-btn__description">Configurações do sistema</span>
+          </button>
+
+          <button class="quick-action-btn quick-action-btn--danger" (click)="navegarPara('/suporte')">
+            <div class="quick-action-btn__icon">
+              <i class="fa-solid fa-headset"></i>
+            </div>
+            <span class="quick-action-btn__label">Suporte</span>
+            <span class="quick-action-btn__description">Fale conosco</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>

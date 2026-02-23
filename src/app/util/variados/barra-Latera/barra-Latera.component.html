@@ -1,0 +1,160 @@
+<!-- Sidebar Moderno - Healthcare Admin -->
+<aside class="sidebar" [class.expanded]="isExpanded" [class.mobile-open]="isMobileOpen" (mouseenter)="onMouseEnter()"
+  (mouseleave)="onMouseLeave()">
+
+  <!-- Header do Sidebar -->
+  <div class="sidebar-header">
+    <div class="logo-container" (click)="navegarPara('/Dashboard')">
+      <i class="fa-solid fa-heart-pulse logo-icon" (click)="navegarPara('/Dashboard')"></i>
+      <span class="logo-text" (click)="navegarPara('/Dashboard')">SaúdeConecta</span>
+    </div>
+    <button class="toggle-btn" (click)="toggleSidebar()">
+      <i class="fa-solid" [class.fa-angles-left]="isExpanded" [class.fa-angles-right]="!isExpanded"></i>
+    </button>
+  </div>
+
+  <!-- Informações do Usuário -->
+  <div class="user-info">
+    <div class="user-avatar">
+      <i class="fa-solid fa-user-doctor"></i>
+    </div>
+    <div class="user-details" (click)="navegarPara('/Dashboard')">
+      <span class="user-name">{{ getNomeExibicao() }}</span>
+      <span class="user-role">{{ getUserRole() }}</span>
+    </div>
+  </div>
+
+  <!-- Navegação Principal -->
+  <nav class="sidebar-nav">
+    <ul class="nav-list">
+
+      <!-- ========== MENU COMUM (Admin e Médico) ========== -->
+
+      <!-- Dashboard -->
+      <li class="nav-item" [class.active]="activeRoute === 'Dashboard'">
+        <button class="nav-link" (click)="navigateTo('Dashboard')" title="Dashboard">
+          <i class="fa-solid fa-chart-line nav-icon"></i>
+          <span class="nav-text">Dashboard</span>
+        </button>
+      </li>
+
+      <!-- ========== MENU SUPER ADMIN / ADMIN ========== -->
+
+      <!-- Gerenciamento de Usuários - Super Admin, Admin -->
+      <li class="nav-item" *ngIf="ControleAcessoService.podeVerMenuUsuarios()"
+        [class.active]="activeRoute === 'Usuarios'">
+        <button class="nav-link" (click)="navigateTo('Usuarios')" title="Gerenciar Usuários">
+          <i class="fa-solid fa-users-gear nav-icon"></i>
+          <span class="nav-text">Usuários</span>
+        </button>
+      </li>
+
+      <!-- Gerenciamento de Agenda - Admin apenas -->
+      <li class="nav-item" *ngIf="ControleAcessoService.podeVerMenuAgenda()"
+        [class.active]="activeRoute === 'gerenciamento'">
+        <button class="nav-link" (click)="navigateTo('gerenciamento')" title="Gerenciamento de Agenda">
+          <i class="fa-solid fa-calendar-check nav-icon"></i>
+          <span class="nav-text">Agenda</span>
+        </button>
+      </li>
+
+      <!-- Mensageria - Admin apenas -->
+      <li class="nav-item" *ngIf="ControleAcessoService.podeVerMenuMensageria()"
+        [class.active]="activeRoute === 'Mensageria'">
+        <button class="nav-link" (click)="navigateTo('Mensageria')" title="Mensageria">
+          <i class="fa-solid fa-envelope nav-icon"></i>
+          <span class="nav-text">Mensageria</span>
+        </button>
+      </li>
+
+      <!-- ========== MENU PROFISSIONAL DE SAÚDE ========== -->
+
+      <!-- Minha Agenda - Profissional -->
+      <li class="nav-item" *ngIf="ControleAcessoService.podeVerMenuMinhaAgenda()"
+        [class.active]="activeRoute === 'AgendaMedico'">
+        <button class="nav-link" (click)="navigateTo('AgendaMedico')" title="Minha Agenda">
+          <i class="fa-solid fa-calendar-check nav-icon"></i>
+          <span class="nav-text">Minha Agenda</span>
+        </button>
+      </li>
+
+
+      <!-- ========== MENU COMUM ========== -->
+
+      <!-- Meus Dados - Admin, Profissional -->
+      <li class="nav-item" *ngIf="ControleAcessoService.podeVerMenuMeusDados()"
+        [class.active]="activeRoute === 'DadosMedicos'">
+        <button class="nav-link" (click)="navigateTo('DadosMedicos')" title="Meus Dados">
+          <i class="fa-solid fa-user-doctor nav-icon"></i>
+          <span class="nav-text">Meus Dados</span>
+        </button>
+      </li>
+
+      <!-- Divisor -->
+      <li class="nav-divider"></li>
+
+      <!-- ========== CONFIGURAÇÕES ========== -->
+      <li class="nav-item has-submenu" [class.submenu-open]="isConfigOpen">
+        <button class="nav-link" (click)="toggleConfig()" title="Configurações">
+          <i class="fa-solid fa-gear nav-icon"></i>
+          <span class="nav-text">Configurações</span>
+          <i class="fa-solid fa-chevron-down submenu-arrow"></i>
+        </button>
+        <ul class="submenu">
+          <!-- Sistema - Todos -->
+          <li class="submenu-item">
+            <button class="submenu-link" (click)="navigateTo('sistema')">
+              <i class="fa-solid fa-sliders"></i>
+              <span>Sistema</span>
+            </button>
+          </li>
+          <!-- Alterar Senha - Todos -->
+          <li class="submenu-item">
+            <button class="submenu-link" (click)="navigateTo('trocar_senha')">
+              <i class="fa-solid fa-key"></i>
+              <span>Alterar Senha</span>
+            </button>
+          </li>
+          <!-- Suporte - Todos -->
+          <li class="submenu-item">
+            <button class="submenu-link" (click)="navigateTo('suporte')">
+              <i class="fa-solid fa-headset"></i>
+              <span>Suporte</span>
+            </button>
+          </li>
+          <!-- Sobre - Todos -->
+          <li class="submenu-item">
+            <button class="submenu-link" (click)="navigateTo('sobre')">
+              <i class="fa-solid fa-circle-info"></i>
+              <span>Sobre</span>
+            </button>
+          </li>
+        </ul>
+      </li>
+
+    </ul>
+  </nav>
+
+  <!-- Footer do Sidebar -->
+  <div class="sidebar-footer">
+    <!-- Toggle de Tema -->
+    <!--    <button class="theme-toggle-btn" (click)="toggleTheme()" [title]="isDarkMode ? 'Modo Claro' : 'Modo Escuro'">-->
+    <!--      <i class="fa-solid nav-icon" [class.fa-sun]="isDarkMode" [class.fa-moon]="!isDarkMode"></i>-->
+    <!--      <span class="nav-text">{{ isDarkMode ? 'Modo Claro' : 'Modo Escuro' }}</span>-->
+    <!--    </button>-->
+    <!--    -->
+    <button class="logout-btn" (click)="Deslogar()" title="Sair">
+      <i class="fa-solid fa-right-from-bracket nav-icon"></i>
+      <span class="nav-text">Sair</span>
+    </button>
+  </div>
+</aside>
+
+<!-- Overlay para Mobile -->
+<div class="sidebar-overlay" [class.active]="isMobileOpen" (click)="closeMobileMenu()">
+</div>
+
+<!-- Botão Mobile para abrir menu -->
+<button class="mobile-menu-btn" [class.hidden]="isMobileOpen" (click)="openMobileMenu()">
+  <i class="fa-solid fa-bars"></i>
+</button>

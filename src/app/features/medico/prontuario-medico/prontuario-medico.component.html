@@ -1,0 +1,548 @@
+<div class="pep-container">
+  <!-- Header Moderno com Gradiente -->
+  <header class="pep-header">
+    <div class="pep-header__content">
+      <div class="pep-header__left">
+        <div class="pep-header__icon">
+          <i class="fa-solid fa-file-medical"></i>
+        </div>
+        <div class="pep-header__info">
+          <h1 class="pep-header__title">Prontuário Eletrônico do Paciente</h1>
+          <p class="pep-header__subtitle" *ngIf="Consulta">
+            <i class="fa-solid fa-user-injured"></i>
+            {{ Consulta?.pacienteNome || 'Não identificado' }}
+          </p>
+        </div>
+      </div>
+
+      <div class="pep-header__right">
+        <!-- Timer Moderno -->
+        <div class="pep-timer" [class.pep-timer--warning]="minutes >= 20" [class.pep-timer--danger]="minutes >= 30">
+          <div class="pep-timer__content">
+            <i class="fa-solid fa-stopwatch pep-timer__icon"></i>
+            <div class="pep-timer__display">
+              <span class="pep-timer__value">{{ minutes | number:'2.0-0' }}</span>
+              <span class="pep-timer__separator">:</span>
+              <span class="pep-timer__value">{{ seconds | number:'2.0-0' }}</span>
+            </div>
+          </div>
+          <span class="pep-timer__label">Duração da Consulta</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Card de Informações do Paciente -->
+  <div class="patient-card" *ngIf="Consulta">
+    <div class="patient-card__avatar">
+      <span class="patient-card__initial">{{ (Consulta?.pacienteNome || 'P').charAt(0).toUpperCase() }}</span>
+    </div>
+    <div class="patient-card__info">
+      <div class="patient-card__row">
+        <div class="patient-card__item">
+          <span class="patient-card__label">Nome do Paciente</span>
+          <span class="patient-card__value patient-card__value--name">{{ Consulta?.pacienteNome || '-' }}</span>
+        </div>
+        <div class="patient-card__item">
+          <span class="patient-card__label">Clínico Responsável</span>
+          <span class="patient-card__value">{{ Consulta?.profissionalNome || '-' }}</span>
+        </div>
+        <div class="patient-card__item">
+          <span class="patient-card__label">Especialidade</span>
+          <span class="patient-card__value">{{ Consulta?.especialidadeNome || '-' }}</span>
+        </div>
+      </div>
+      <div class="patient-card__row">
+        <div class="patient-card__item">
+          <span class="patient-card__label">Data e Hora</span>
+          <span class="patient-card__value">{{ Consulta?.dataHora | date:'dd/MM/yyyy HH:mm' }}</span>
+        </div>
+        <div class="patient-card__item">
+          <span class="patient-card__label">Duração</span>
+          <span class="patient-card__value">{{ Consulta?.duracaoMinutos || 30 }} minutos</span>
+        </div>
+        <div class="patient-card__item">
+          <span class="patient-card__label">Forma de Pagamento</span>
+          <span class="patient-card__value">{{ Consulta?.formaPagamentoNome || '-' }}</span>
+        </div>
+      </div>
+    </div>
+    <div class="patient-card__meta">
+      <div class="patient-card__badge">
+        <i class="fa-solid fa-calendar-check"></i>
+        {{ Consulta?.status || 'AGENDADA' }}
+      </div>
+      <div class="patient-card__badge" *ngIf="Consulta?.valor">
+        <i class="fa-solid fa-dollar-sign"></i>
+        R$ {{ Consulta?.valor | number:'1.2-2' }}
+      </div>
+    </div>
+  </div>
+
+  <!-- Navegação por Abas Moderna -->
+  <nav class="pep-tabs">
+    <button class="pep-tab" [class.pep-tab--active]="selectedTabIndex === 0" (click)="selectedTabIndex = 0">
+      <i class="fa-solid fa-stethoscope"></i>
+      <span>Exame Físico</span>
+      <div class="pep-tab__indicator"></div>
+    </button>
+    <button class="pep-tab" [class.pep-tab--active]="selectedTabIndex === 1" (click)="selectedTabIndex = 1">
+      <i class="fa-solid fa-clipboard-list"></i>
+      <span>Diagnóstico</span>
+      <div class="pep-tab__indicator"></div>
+    </button>
+    <button class="pep-tab" [class.pep-tab--active]="selectedTabIndex === 2" (click)="selectedTabIndex = 2">
+      <i class="fa-solid fa-prescription"></i>
+      <span>Prescrição</span>
+      <div class="pep-tab__indicator"></div>
+    </button>
+  </nav>
+
+  <!-- Conteúdo Principal do PEP -->
+  <main class="pep-content">
+
+    <!-- ABA 1: EXAMES FÍSICOS E SINAIS VITAIS -->
+    <section class="pep-section" *ngIf="selectedTabIndex === 0">
+      <div class="pep-section__header">
+        <h2 class="pep-section__title">
+          <i class="fa-solid fa-stethoscope"></i>
+          Exame Físico e Sinais Vitais
+        </h2>
+        <div class="pep-section__actions">
+          <button class="btn-icon" title="Salvar rascunho">
+            <i class="fa-solid fa-floppy-disk"></i>
+          </button>
+        </div>
+      </div>
+      <div class="pep-section__body">
+        <div class="exame-fisico-container">
+          <!-- Sinais Vitais -->
+          <div class="form-section">
+            <h3 class="form-section__title">
+              <i class="fa-solid fa-heart-pulse"></i>
+              Sinais Vitais
+            </h3>
+            <div class="form-grid form-grid--3">
+              <div class="form-group">
+                <label class="form-label">
+                  <i class="fa-solid fa-weight-scale"></i>
+                  Peso (kg)
+                </label>
+                <input type="text" class="form-input" [(ngModel)]="peso" name="peso" placeholder="Ex: 70.5">
+              </div>
+              <div class="form-group">
+                <label class="form-label">
+                  <i class="fa-solid fa-ruler-vertical"></i>
+                  Altura (m)
+                </label>
+                <input type="text" class="form-input" [(ngModel)]="altura" name="altura" placeholder="Ex: 1.75">
+              </div>
+              <div class="form-group">
+                <label class="form-label">
+                  <i class="fa-solid fa-temperature-half"></i>
+                  Temperatura (°C)
+                </label>
+                <input type="text" class="form-input" [(ngModel)]="Temperatura" name="Temperatura"
+                  placeholder="Ex: 36.5">
+              </div>
+            </div>
+          </div>
+
+          <!-- Dados Complementares -->
+          <div class="form-section">
+            <h3 class="form-section__title">
+              <i class="fa-solid fa-droplet"></i>
+              Dados Complementares
+            </h3>
+            <div class="form-grid form-grid--3">
+              <div class="form-group">
+                <label class="form-label">
+                  <i class="fa-solid fa-lungs"></i>
+                  Saturação (%)
+                </label>
+                <input type="text" class="form-input" [(ngModel)]="Saturacao" name="Saturacao" placeholder="Ex: 98">
+              </div>
+              <div class="form-group">
+                <label class="form-label">
+                  <i class="fa-solid fa-syringe"></i>
+                  Hemoglobina (g/dL)
+                </label>
+                <input type="text" class="form-input" [(ngModel)]="Hemoglobinacao" name="Hemoglobinacao"
+                  placeholder="Ex: 14.5">
+              </div>
+              <div class="form-group">
+                <label class="form-label">
+                  <i class="fa-solid fa-heart"></i>
+                  Pressão Arterial
+                </label>
+                <input type="text" class="form-input" [(ngModel)]="PressArterial" name="PressArterial"
+                  placeholder="Ex: 120/80">
+              </div>
+            </div>
+          </div>
+
+          <!-- Frequências -->
+          <div class="form-section">
+            <h3 class="form-section__title">
+              <i class="fa-solid fa-wave-square"></i>
+              Frequências
+            </h3>
+            <div class="form-grid form-grid--3">
+              <div class="form-group">
+                <label class="form-label">
+                  <i class="fa-solid fa-wind"></i>
+                  Freq. Respiratória (IRPM)
+                </label>
+                <input type="text" class="form-input" [(ngModel)]="FreqRespiratoria" name="FreqRespiratoria"
+                  placeholder="Ex: 18">
+              </div>
+              <div class="form-group">
+                <label class="form-label">
+                  <i class="fa-solid fa-arrow-up"></i>
+                  Freq. Arterial Sistólica (mmHg)
+                </label>
+                <input type="text" class="form-input" [(ngModel)]="FreqArterialSistolica" name="FreqArterialSistolica"
+                  placeholder="Ex: 120">
+              </div>
+              <div class="form-group">
+                <label class="form-label">
+                  <i class="fa-solid fa-arrow-down"></i>
+                  Freq. Arterial Diastólica (mmHg)
+                </label>
+                <input type="text" class="form-input" [(ngModel)]="FreqArterialDiastolica" name="FreqArterialDiastolica"
+                  placeholder="Ex: 80">
+              </div>
+            </div>
+          </div>
+
+          <!-- Queixa Principal -->
+          <div class="form-section form-section--highlight">
+            <h3 class="form-section__title">
+              <i class="fa-solid fa-comment-medical"></i>
+              Queixa Principal
+            </h3>
+            <div class="form-group">
+              <textarea class="form-textarea form-textarea--lg" [(ngModel)]="QueixaPrincipal" name="QueixaPrincipal"
+                placeholder="Descreva a queixa principal do paciente..."></textarea>
+            </div>
+          </div>
+
+          <!-- Anamnese e Conduta -->
+          <div class="form-section">
+            <div class="form-grid form-grid--2">
+              <div class="form-group">
+                <label class="form-label form-label--lg">
+                  <i class="fa-solid fa-clipboard-list"></i>
+                  Anamnese
+                </label>
+                <textarea class="form-textarea" [(ngModel)]="Anamnese" name="Anamnese"
+                  placeholder="Histórico médico, antecedentes..."></textarea>
+              </div>
+              <div class="form-group">
+                <label class="form-label form-label--lg">
+                  <i class="fa-solid fa-list-check"></i>
+                  Conduta
+                </label>
+                <textarea class="form-textarea" [(ngModel)]="Conduta" name="Conduta"
+                  placeholder="Conduta médica adotada..."></textarea>
+              </div>
+            </div>
+          </div>
+
+          <!-- Observações -->
+          <div class="form-section">
+            <h3 class="form-section__title">
+              <i class="fa-solid fa-note-sticky"></i>
+              Observações Gerais
+            </h3>
+            <div class="form-group">
+              <textarea class="form-textarea" [(ngModel)]="observacao" name="observacao"
+                placeholder="Observações adicionais sobre o paciente..."></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ABA 2: DIAGNÓSTICO (CID-10) -->
+    <section class="pep-section" *ngIf="selectedTabIndex === 1">
+      <div class="pep-section__header">
+        <h2 class="pep-section__title">
+          <i class="fa-solid fa-clipboard-list"></i>
+          Diagnóstico (CID-10)
+        </h2>
+        <div class="pep-section__badge" *ngIf="selectedOptionsCid.length > 0">
+          <i class="fa-solid fa-check-circle"></i>
+          {{ selectedOptionsCid.length }} selecionado(s)
+        </div>
+      </div>
+      <div class="pep-section__body">
+        <div class="diagnostico-container">
+          <!-- Barra de Pesquisa CID -->
+          <div class="search-section">
+            <div class="search-header">
+              <h3 class="search-title">
+                <i class="fa-solid fa-magnifying-glass-chart"></i>
+                Buscar Diagnóstico (CID-10)
+              </h3>
+            </div>
+            <div class="search-input-wrapper">
+              <i class="fa-solid fa-search search-icon"></i>
+              <input type="text" class="search-input" [formControl]="myControlCid"
+                placeholder="Ex: Diabetes Mellitus, Hipertensão, Pneumonia..." (input)="onSearchChangeCid()"
+                (keyup.enter)="onSearchChangeCid()">
+              <button class="search-btn search-btn--clear" (click)="limparPesquisaCid()" title="Limpar pesquisa">
+                <i class="fa-solid fa-xmark"></i>
+              </button>
+              <button class="search-btn search-btn--reset" (click)="resetarPesquisaCid()" title="Recarregar lista">
+                <i class="fa-solid fa-rotate-right"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Lista de CIDs -->
+          <div class="cid-list">
+            <div class="cid-grid">
+              <!-- Primeira coluna -->
+              <div class="cid-column">
+                <div class="cid-item" *ngFor="let option of primeiraColunaCid"
+                  [class.cid-item--selected]="isSelectedCid(option)" (click)="selectOptionCid(option)">
+                  <div class="cid-item__radio">
+                    <input type="checkbox" [checked]="isSelectedCid(option)">
+                  </div>
+                  <div class="cid-item__content">
+                    <span class="cid-item__code">{{ option.codigo }}</span>
+                    <span class="cid-item__label">{{ option.label }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Segunda coluna -->
+              <div class="cid-column">
+                <div class="cid-item" *ngFor="let option of segundaColunaCid"
+                  [class.cid-item--selected]="isSelectedCid(option)" (click)="selectOptionCid(option)">
+                  <div class="cid-item__radio">
+                    <input type="checkbox" [checked]="isSelectedCid(option)">
+                  </div>
+                  <div class="cid-item__content">
+                    <span class="cid-item__code">{{ option.codigo }}</span>
+                    <span class="cid-item__label">{{ option.label }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Paginação CID -->
+          <div class="pagination">
+            <button class="pagination__btn pagination__btn--prev" (click)="goToPageCid(currentPageCid - 1)"
+              [disabled]="currentPageCid === 1">
+              <i class="fa-solid fa-chevron-left"></i>
+              Anterior
+            </button>
+            <div class="pagination__info">
+              <span class="pagination__current">{{ currentPageCid }}</span>
+              <span class="pagination__separator">de</span>
+              <span class="pagination__total">{{ totalPagesCid }}</span>
+            </div>
+            <button class="pagination__btn pagination__btn--next" (click)="goToPageCid(currentPageCid + 1)"
+              [disabled]="currentPageCid === totalPagesCid">
+              Próxima
+              <i class="fa-solid fa-chevron-right"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ABA 3: PRESCRIÇÃO E EXAMES -->
+    <section class="pep-section" *ngIf="selectedTabIndex === 2">
+      <div class="pep-section__header">
+        <h2 class="pep-section__title">
+          <i class="fa-solid fa-prescription"></i>
+          Prescrição e Exames
+        </h2>
+        <div class="pep-section__badge" *ngIf="selectedOptionsTuss.length > 0">
+          <i class="fa-solid fa-check-circle"></i>
+          {{ selectedOptionsTuss.length }} procedimento(s)
+        </div>
+      </div>
+      <div class="pep-section__body">
+        <div class="prescricao-container">
+          <!-- Busca TUSS -->
+          <div class="search-section">
+            <div class="search-header">
+              <h3 class="search-title">
+                <i class="fa-solid fa-pills"></i>
+                Buscar Procedimentos (TUSS)
+              </h3>
+            </div>
+            <div class="search-input-wrapper">
+              <i class="fa-solid fa-search search-icon"></i>
+              <input type="text" class="search-input" [formControl]="myControlTuss"
+                placeholder="Ex: Consulta, Hemograma, Ultrassonografia..." (input)="onSearchChangeTuss()"
+                (keyup.enter)="onSearchChangeTuss()">
+              <button class="search-btn search-btn--clear" (click)="limparPesquisaTuss()" title="Limpar pesquisa">
+                <i class="fa-solid fa-xmark"></i>
+              </button>
+              <button class="search-btn search-btn--reset" (click)="resetarPesquisaTuss()" title="Recarregar lista">
+                <i class="fa-solid fa-rotate-right"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Lista de Procedimentos TUSS -->
+          <div class="tuss-list">
+            <div class="tuss-items">
+              <div class="tuss-item" *ngFor="let option of primeiraColunaTuss"
+                [class.tuss-item--selected]="isSelectedTuss(option)" (click)="selectOptionTuss(option)">
+                <div class="tuss-item__radio">
+                  <input type="checkbox" [checked]="isSelectedTuss(option)">
+                </div>
+                <div class="tuss-item__content">
+                  <span class="tuss-item__code">{{ option.codigo }}</span>
+                  <span class="tuss-item__desc">{{ option.descricao }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Paginação TUSS -->
+          <div class="pagination">
+            <button class="pagination__btn pagination__btn--prev" (click)="goToPageTuss(currentPageTuss - 1)"
+              [disabled]="currentPageTuss === 1">
+              <i class="fa-solid fa-chevron-left"></i>
+              Anterior
+            </button>
+            <div class="pagination__info">
+              <span class="pagination__current">{{ currentPageTuss }}</span>
+              <span class="pagination__separator">de</span>
+              <span class="pagination__total">{{ totalPagesTuss }}</span>
+            </div>
+            <button class="pagination__btn pagination__btn--next" (click)="goToPageTuss(currentPageTuss + 1)"
+              [disabled]="currentPageTuss === totalPagesTuss">
+              Próxima
+              <i class="fa-solid fa-chevron-right"></i>
+            </button>
+          </div>
+
+          <!-- Prescrição e Exames -->
+          <div class="forms-grid">
+            <!-- Card: Prescrição -->
+            <div class="form-card">
+              <div class="form-card__header form-card__header--blue">
+                <i class="fa-solid fa-prescription-bottle-medical"></i>
+                <h4>Prescrição Médica</h4>
+              </div>
+              <div class="form-card__body">
+                <div class="form-group">
+                  <label class="form-label">
+                    <i class="fa-solid fa-tag"></i>
+                    Tipo de Prescrição
+                  </label>
+                  <select class="form-select" [(ngModel)]="TituloPrescricao">
+                    <option value="Prescrição Médica Geral">Prescrição Médica Geral</option>
+                    <option value="Prescrição de Medicamento">Prescrição de Medicamento</option>
+                    <option value="Prescrição de Procedimento">Prescrição de Procedimento</option>
+                    <option value="Prescrição de Exames">Prescrição de Exames</option>
+                    <option value="Prescrição de Farmacéutica">Prescrição Farmacêutica</option>
+                    <option value="Prescrição de Diagnóstico">Prescrição de Diagnóstico</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">
+                    <i class="fa-solid fa-file-prescription"></i>
+                    Detalhes da Prescrição
+                  </label>
+                  <textarea class="form-textarea" [(ngModel)]="PrescricaoText"
+                    placeholder="Descreva os medicamentos, dosagens e orientações..."></textarea>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card: Exames -->
+            <div class="form-card">
+              <div class="form-card__header form-card__header--green">
+                <i class="fa-solid fa-flask"></i>
+                <h4>Solicitação de Exames</h4>
+              </div>
+              <div class="form-card__body">
+                <div class="form-group">
+                  <label class="form-label">
+                    <i class="fa-solid fa-tag"></i>
+                    Tipo de Exame
+                  </label>
+                  <select class="form-select" [(ngModel)]="TituloExame">
+                    <option value="Exames Gerais">Exames Gerais</option>
+                    <option value="Exames de Diagnóstico">Exames de Diagnóstico</option>
+                    <option value="Exames de Laboratório">Exames de Laboratório</option>
+                    <option value="Exames de Radiologia">Exames de Radiologia</option>
+                    <option value="Exames de Imagem">Exames de Imagem</option>
+                    <option value="Exames de Patologia">Exames de Patologia</option>
+                    <option value="Teste de Esforço">Teste de Esforço</option>
+                    <option value="Exames de Patologia Clínica">Exames de Patologia Clínica</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">
+                    <i class="fa-solid fa-vial"></i>
+                    Exames Solicitados
+                  </label>
+                  <textarea class="form-textarea" [(ngModel)]="ExameText"
+                    placeholder="Liste os exames solicitados e indicações clínicas..."></textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer Moderno com Ações -->
+  <footer class="pep-footer">
+    <div class="pep-footer__left">
+      <div class="pep-footer__info">
+        <i class="fa-solid fa-clock"></i>
+        <span>Tempo decorrido: <strong>{{ minutes }}min {{ seconds }}s</strong></span>
+      </div>
+      <div class="pep-footer__progress">
+        <div class="progress-indicator">
+          <div class="progress-step" [class.progress-step--completed]="selectedTabIndex >= 0">
+            <i class="fa-solid fa-check"></i>
+          </div>
+          <div class="progress-line" [class.progress-line--active]="selectedTabIndex >= 1"></div>
+          <div class="progress-step" [class.progress-step--completed]="selectedTabIndex >= 1">
+            <i class="fa-solid fa-check"></i>
+          </div>
+          <div class="progress-line" [class.progress-line--active]="selectedTabIndex >= 2"></div>
+          <div class="progress-step" [class.progress-step--completed]="selectedTabIndex >= 2">
+            <i class="fa-solid fa-check"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pep-footer__actions">
+      <button class="btn btn--outline" (click)="pausarTempo()" [disabled]="FinalizarConsulta" title="Pausar cronômetro">
+        <i class="fa-solid fa-pause"></i>
+        <span>Pausar</span>
+      </button>
+      <button class="btn btn--secondary" (click)="selectedTabIndex = selectedTabIndex > 0 ? selectedTabIndex - 1 : 0"
+        [disabled]="selectedTabIndex === 0 || FinalizarConsulta">
+        <i class="fa-solid fa-arrow-left"></i>
+        <span>Anterior</span>
+      </button>
+      <button class="btn btn--primary" *ngIf="selectedTabIndex < 2" (click)="selectedTabIndex = selectedTabIndex + 1"
+        [disabled]="FinalizarConsulta">
+        <span>Próximo</span>
+        <i class="fa-solid fa-arrow-right"></i>
+      </button>
+      <button class="btn btn--success" *ngIf="selectedTabIndex === 2" (click)="finalizar()"
+        [disabled]="FinalizarConsulta">
+        <i class="fa-solid fa-check-circle"></i>
+        <span>Finalizar Consulta</span>
+      </button>
+    </div>
+  </footer>
+</div>

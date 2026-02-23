@@ -1,0 +1,143 @@
+<div class="atestado-container">
+  <!-- Header do Dialog -->
+  <header class="dialog-header">
+    <div class="header-info">
+      <div class="header-icon">
+        <i class="fa-solid fa-file-signature"></i>
+      </div>
+      <div class="header-text">
+        <h2 class="header-title">Atestado Odontológico</h2>
+        <p class="header-subtitle">Documento oficial de atendimento</p>
+      </div>
+    </div>
+    <button class="close-btn" mat-dialog-close>
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+  </header>
+
+  <!-- Conteúdo do PDF -->
+  <div class="dialog-body">
+    <div id="pdfContent" class="pdf-content">
+      <!-- Cabeçalho do Documento -->
+      <div class="pdf-header">
+        <h1 class="pdf-title">ATESTADO ODONTOLÓGICO</h1>
+        <div class="pdf-number">Nº: {{ codigoProntuario }}</div>
+      </div>
+
+      <!-- Seção: Dados do Paciente -->
+      <div class="pdf-section">
+        <div class="section-header section-header--executive">
+          <h2>DADOS DO PACIENTE</h2>
+        </div>
+        <div class="section-content section-content--horizontal">
+          <div class="pdf-field">
+            <span class="field-label">NOME</span>
+            <span class="field-value">{{ nomePaciente }}</span>
+          </div>
+          <div class="pdf-field">
+            <span class="field-label">CPF</span>
+            <span class="field-value">{{ cpfPaciente }}</span>
+          </div>
+          <div class="pdf-field">
+            <span class="field-label">DATA NASCIMENTO</span>
+            <span class="field-value">{{ dataNascimento }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Seção: Dados da Consulta -->
+      <div class="pdf-section">
+        <div class="section-header section-header--executive">
+          <h2>DADOS DA CONSULTA</h2>
+        </div>
+        <div class="section-content section-content--horizontal">
+          <div class="pdf-field">
+            <span class="field-label">DATA</span>
+            <span class="field-value">{{ dataConsulta }}</span>
+          </div>
+          <div class="pdf-field">
+            <span class="field-label">HORÁRIO</span>
+            <span class="field-value">{{ horarioConsulta }}</span>
+          </div>
+          <div class="pdf-field">
+            <span class="field-label">DIA DA SEMANA</span>
+            <span class="field-value">{{ diaSemana }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Seção: Dentista Atendente -->
+      <div class="pdf-section">
+        <div class="section-header section-header--executive">
+          <h2>DENTISTA ATENDENTE</h2>
+        </div>
+        <div class="section-content section-content--horizontal">
+          <div class="pdf-field">
+            <span class="field-label">NOME</span>
+            <span class="field-value">Dr. {{ nomeDentista }}</span>
+          </div>
+          <div class="pdf-field">
+            <span class="field-label">CRO</span>
+            <span class="field-value">{{ cro }}</span>
+          </div>
+          <div class="pdf-field">
+            <span class="field-label">EMAIL</span>
+            <span class="field-value">{{ emailDentista }}</span>
+          </div>
+          <div class="pdf-field">
+            <span class="field-label">TELEFONE</span>
+            <span class="field-value">{{ telefoneDentista }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Seção: Declaração -->
+      <div class="pdf-section">
+        <div class="section-header section-header--executive">
+          <h2>DECLARAÇÃO</h2>
+        </div>
+        <div class="section-content section-content--vertical">
+          <div class="declaration-content">
+            Atesto para os devidos fins que o(a) paciente acima identificado(a) foi atendido(a) por mim
+            na data e horário mencionados, necessitando de repouso por <span class="days-input">______</span>
+            <strong>dias</strong>.
+          </div>
+        </div>
+      </div>
+
+      <!-- Seção: Assinatura -->
+      <div class="pdf-section">
+        <div class="section-header section-header--executive">
+          <h2>ASSINATURA</h2>
+        </div>
+        <div class="section-content section-content--vertical">
+          <div class="signature-content">
+            <div class="signature-label">Carimbo e Assinatura:</div>
+            <div class="signature-line"></div>
+            <div class="signature-name">{{ nomeDentista }}</div>
+            <div class="signature-crm">CRO: {{ cro }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Rodapé -->
+      <div class="pdf-footer">
+        <div class="footer-line"></div>
+        <div class="footer-date">Emitido em: {{ getDataAtual() }} às {{ getHoraAtual() }}</div>
+        <div class="footer-info">Documento válido apenas com assinatura e carimbo</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer com Ações -->
+  <footer class="dialog-footer">
+    <button class="btn btn--secondary" mat-dialog-close>
+      <i class="fa-solid fa-xmark"></i>
+      Cancelar
+    </button>
+    <button class="btn btn--primary" (click)="GerarPDF()">
+      <i class="fa-solid fa-file-pdf"></i>
+      Gerar PDF
+    </button>
+  </footer>
+</div>

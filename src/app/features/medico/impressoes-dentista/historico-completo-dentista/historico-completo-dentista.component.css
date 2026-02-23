@@ -1,0 +1,449 @@
+/* =============================================================================
+   HISTÓRICO COMPLETO DENTISTA - LAYOUT EXECUTIVO IGUAL AO PDF (SEM CORES)
+   ============================================================================= */
+
+.documento-container {
+  background: var(--bg-card, #ffffff);
+  border-radius: 16px;
+  overflow: hidden;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* =============================================================================
+   HEADER DO DIALOG
+   ============================================================================= */
+.dialog-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+  color: white;
+}
+
+.header-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.header-icon {
+  width: 50px;
+  height: 50px;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+}
+
+.header-text {
+  flex: 1;
+}
+
+.header-title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.header-subtitle {
+  margin: 4px 0 0;
+  font-size: 13px;
+  opacity: 0.9;
+}
+
+.close-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  transition: all 0.2s ease;
+}
+
+.close-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.05);
+}
+
+/* =============================================================================
+   BODY
+   ============================================================================= */
+.dialog-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+  background: #f8fafc;
+}
+
+/* =============================================================================
+   CONTEÚDO DO PDF
+   ============================================================================= */
+.pdf-content {
+  background: white;
+  border-radius: 12px;
+  padding: 32px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+/* Cabeçalho Executivo — cinza escuro igual ao PDF */
+.pdf-header {
+  background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+  padding: 20px;
+  text-align: center;
+  color: white;
+  margin: -32px -32px 20px -32px;
+  border-radius: 12px 12px 0 0;
+}
+
+.pdf-title {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0;
+  letter-spacing: 0.5px;
+}
+
+.pdf-subtitle {
+  font-size: 10px;
+  opacity: 0.8;
+  margin-top: 4px;
+  font-weight: 400;
+}
+
+/* Seções com Barra Lateral Cinza */
+.pdf-section {
+  margin-bottom: 20px;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  background: #f8f9fa;
+  height: 32px;
+  border-radius: 4px;
+  margin-bottom: 8px;
+  position: relative;
+}
+
+.section-bar {
+  width: 8px;
+  height: 100%;
+  background: #6b7280;
+  border-radius: 4px 0 0 4px;
+}
+
+.section-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: #6b7280;
+  margin-left: 12px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+/* Subseções */
+.subsection-header {
+  margin-bottom: 8px;
+}
+
+.subsection-title {
+  font-size: 10px;
+  font-weight: 600;
+  color: #374151;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.subsection-icon {
+  color: #6b7280;
+  font-size: 10px;
+}
+
+/* Layout de Formulário Horizontal */
+.form-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.form-field {
+  flex: 1;
+  min-width: 0;
+  border: 1px solid #e5e7eb;
+  border-radius: 4px;
+  background: white;
+  position: relative;
+}
+
+.field-label {
+  font-size: 8px;
+  font-weight: 700;
+  color: #666666;
+  text-transform: uppercase;
+  padding: 4px 8px 2px 8px;
+  letter-spacing: 0.3px;
+}
+
+.field-value {
+  font-size: 10px;
+  color: #000000;
+  padding: 2px 8px 6px 8px;
+  line-height: 1.4;
+  word-wrap: break-word;
+}
+
+/* Caixa Expansível */
+.expansible-box {
+  margin: 12px 0;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 4px;
+  padding: 8px;
+}
+
+.expansible-label {
+  font-size: 8px;
+  font-weight: 700;
+  color: #6b7280;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+  letter-spacing: 0.3px;
+}
+
+.expansible-content {
+  font-size: 10px;
+  color: #374151;
+  line-height: 1.4;
+  white-space: pre-wrap;
+}
+
+/* Separador */
+.separator-line {
+  height: 1px;
+  background: #e5e7eb;
+  margin: 16px 0;
+  border: none;
+}
+
+/* Item de Consulta */
+.consulta-item {
+  margin-bottom: 8px;
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 64px 24px;
+  color: #9ca3af;
+}
+
+.empty-state i {
+  font-size: 64px;
+  margin-bottom: 20px;
+  opacity: 0.4;
+  color: #9ca3af;
+}
+
+.empty-state p {
+  margin: 0 0 8px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #6b7280;
+}
+
+.empty-state small {
+  font-size: 13px;
+  color: #9ca3af;
+}
+
+/* =============================================================================
+   FOOTER DO DIALOG
+   ============================================================================= */
+.dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 16px 24px;
+  background: var(--bg-card, #ffffff);
+  border-top: 1px solid #e5e7eb;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.btn--primary {
+  background: linear-gradient(135deg, #374151 0%, #1f2937 100%);
+  color: white;
+}
+
+.btn--primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(55, 65, 81, 0.4);
+}
+
+.btn--secondary {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+.btn--secondary:hover {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* =============================================================================
+   EXPANSIBLE META (subtítulo da prescrição)
+   ============================================================================= */
+.expansible-meta {
+  font-weight: 400;
+  font-size: 10px;
+  color: #6b7280;
+  margin-left: 4px;
+}
+
+/* =============================================================================
+   ODONTOGRAMA
+   ============================================================================= */
+.odontograma-section {
+  margin-top: 12px;
+  margin-bottom: 8px;
+}
+
+.odontograma-header {
+  margin-bottom: 8px;
+}
+
+.odontograma-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 8px 0;
+  border-bottom: 1px dashed #e5e7eb;
+}
+
+.odontograma-grid--inferior {
+  border-bottom: none;
+  border-top: 1px dashed #e5e7eb;
+  padding-top: 8px;
+}
+
+.dente-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  min-height: 46px;
+  border-radius: 4px;
+  border: 1px solid #d1d5db;
+  background: #f9fafb;
+  cursor: default;
+  transition: transform 0.15s;
+  padding: 4px 2px;
+}
+
+.dente-card:hover {
+  transform: scale(1.08);
+  border-color: #6b7280;
+}
+
+.dente-numero {
+  font-size: 11px;
+  font-weight: 700;
+  color: #374151;
+  line-height: 1;
+}
+
+.dente-status {
+  font-size: 8px;
+  color: #6b7280;
+  text-align: center;
+  margin-top: 2px;
+  line-height: 1.1;
+}
+
+/* Status dos dentes — tons de cinza diferenciados */
+.dente-sadio      { background: #f9fafb; border-color: #9ca3af; }
+.dente-sadio      .dente-numero { color: #374151; }
+
+.dente-cariado    { background: #f3f4f6; border-color: #6b7280; border-style: dashed; }
+.dente-cariado    .dente-numero { color: #1f2937; }
+
+.dente-obturado   { background: #e5e7eb; border-color: #4b5563; }
+.dente-obturado   .dente-numero { color: #1f2937; }
+
+.dente-ausente    { background: #ffffff; border-color: #d1d5db; border-style: dotted; }
+.dente-ausente    .dente-numero { color: #9ca3af; }
+
+.dente-protese    { background: #f3f4f6; border-color: #374151; border-style: double; }
+.dente-protese    .dente-numero { color: #111827; }
+
+.dente-canal      { background: #e5e7eb; border-color: #1f2937; }
+.dente-canal      .dente-numero { color: #111827; }
+
+.dente-fratura    { background: #f9fafb; border-color: #6b7280; border-style: dashed; }
+.dente-fratura    .dente-numero { color: #374151; }
+
+.dente-implante   { background: #d1d5db; border-color: #374151; }
+.dente-implante   .dente-numero { color: #111827; }
+
+/* =============================================================================
+   RESPONSIVIDADE
+   ============================================================================= */
+@media (max-width: 768px) {
+  .pdf-content {
+    padding: 20px;
+  }
+
+  .form-row {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .form-field {
+    min-width: auto;
+  }
+
+  .dialog-footer {
+    flex-direction: column;
+  }
+
+  .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .dente-card {
+    width: 38px;
+    min-height: 38px;
+  }
+}

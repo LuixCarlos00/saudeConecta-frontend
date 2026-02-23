@@ -1,0 +1,257 @@
+<div class="mensageria-container">
+
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-info">
+      <div class="header-icon">
+        <i class="fa-solid fa-envelope"></i>
+      </div>
+      <div>
+        <h1 class="page-title">Mensageria</h1>
+        <p class="page-subtitle">Controle de mensagens enviadas pelo sistema</p>
+      </div>
+    </div>
+    <div class="header-badges" *ngIf="totalFalhasPendentes > 0">
+      <span class="alert-badge">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        {{ totalFalhasPendentes }} falha(s) pendente(s)
+      </span>
+    </div>
+  </div>
+
+  <!-- Filtros -->
+  <div class="filters-card">
+    <div class="filters-row">
+      <div class="filter-group">
+        <label class="filter-label">Status</label>
+        <select class="filter-select" [(ngModel)]="filtroStatus">
+          <option *ngFor="let opt of statusOptions" [value]="opt.value">{{ opt.label }}</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label class="filter-label">Tipo</label>
+        <select class="filter-select" [(ngModel)]="filtroTipo">
+          <option *ngFor="let opt of tipoOptions" [value]="opt.value">{{ opt.label }}</option>
+        </select>
+      </div>
+      <div class="filter-actions">
+        <button class="btn btn--primary" (click)="aplicarFiltros()">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          Filtrar
+        </button>
+        <button class="btn btn--secondary" (click)="limparFiltros()">
+          <i class="fa-solid fa-xmark"></i>
+          Limpar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Erro -->
+  <div class="error-banner" *ngIf="erro">
+    <i class="fa-solid fa-circle-exclamation"></i>
+    {{ erro }}
+    <button class="error-close" (click)="erro = null">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+  </div>
+
+  <!-- Loading -->
+  <div class="loading-state" *ngIf="isLoading">
+    <i class="fa-solid fa-spinner fa-spin"></i>
+    <span>Carregando mensagens...</span>
+  </div>
+
+  <!-- Tabela -->
+  <div class="table-card" *ngIf="!isLoading">
+
+    <!-- Estado vazio -->
+    <div class="empty-state" *ngIf="mensagens.length === 0">
+      <i class="fa-solid fa-inbox"></i>
+      <p>Nenhuma mensagem encontrada</p>
+      <span>Tente ajustar os filtros ou aguarde novos registros</span>
+    </div>
+
+    <!-- Tabela com dados -->
+    <div class="table-wrapper" *ngIf="mensagens.length > 0">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Destinatário</th>
+            <th>Tipo</th>
+            <th>Assunto</th>
+            <th>Status</th>
+            <th>Tentativas</th>
+            <th>Data</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let msg of mensagens" [class.row--falha]="msg.status === 'FALHOU' && !msg.adminNotificado">
+            <td class="col-id">#{{ msg.id }}</td>
+            <td class="col-destinatario">
+              <div class="destinatario-info">
+                <span class="destinatario-nome">{{ msg.destinatarioNome || '-' }}</span>
+                <span class="destinatario-email">{{ msg.destinatarioEmail }}</span>
+              </div>
+            </td>
+            <td>
+              <span class="tipo-badge">{{ getTipoLabel(msg.tipoMensagem) }}</span>
+            </td>
+            <td class="col-assunto">{{ msg.assunto }}</td>
+            <td>
+              <span class="status-badge" [ngClass]="getStatusClass(msg.status)">
+                {{ getStatusLabel(msg.status) }}
+              </span>
+            </td>
+            <td class="col-tentativas">
+              <span [class.tentativas--alta]="msg.tentativas >= 3">{{ msg.tentativas }}</span>
+            </td>
+            <td class="col-data">{{ formatarData(msg.dataCriacao) }}</td>
+            <td class="col-acoes">
+              <button class="action-btn action-btn--view" (click)="abrirDetalhe(msg)" title="Ver detalhes">
+                <i class="fa-solid fa-eye"></i>
+              </button>
+              <button
+                class="action-btn action-btn--notify"
+                *ngIf="msg.status === 'FALHOU' && !msg.adminNotificado"
+                (click)="marcarComoNotificado(msg)"
+                [disabled]="isNotificando"
+                title="Marcar como notificado">
+                <i class="fa-solid fa-bell"></i>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Paginação -->
+    <div class="pagination" *ngIf="totalPaginas > 1">
+      <button class="page-btn" [disabled]="paginaAtual === 0" (click)="irParaPagina(paginaAtual - 1)">
+        <i class="fa-solid fa-chevron-left"></i>
+      </button>
+      <button
+        *ngFor="let p of paginasArray"
+        class="page-btn"
+        [class.page-btn--active]="p === paginaAtual"
+        (click)="irParaPagina(p)">
+        {{ p + 1 }}
+      </button>
+      <button class="page-btn" [disabled]="paginaAtual === totalPaginas - 1" (click)="irParaPagina(paginaAtual + 1)">
+        <i class="fa-solid fa-chevron-right"></i>
+      </button>
+      <span class="pagination-info">
+        {{ paginaAtual + 1 }} de {{ totalPaginas }} ({{ totalElementos }} registros)
+      </span>
+    </div>
+  </div>
+
+</div>
+
+<!-- Modal de Detalhe -->
+<div class="modal-overlay" *ngIf="mostrarDetalhe" (click)="fecharDetalhe()">
+  <div class="modal-dialog" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-header-info">
+        <i class="fa-solid fa-envelope-open-text"></i>
+        <h2>Detalhes da Mensagem #{{ mensagemSelecionada?.id }}</h2>
+      </div>
+      <button class="modal-close" (click)="fecharDetalhe()">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <div class="modal-body" *ngIf="mensagemSelecionada">
+
+      <!-- Badges de status -->
+      <div class="detail-badges">
+        <span class="status-badge" [ngClass]="getStatusClass(mensagemSelecionada.status)">
+          {{ getStatusLabel(mensagemSelecionada.status) }}
+        </span>
+        <span class="tipo-badge">{{ getTipoLabel(mensagemSelecionada.tipoMensagem) }}</span>
+        <span class="notif-badge" *ngIf="mensagemSelecionada.adminNotificado">
+          <i class="fa-solid fa-check"></i> Admin notificado
+        </span>
+      </div>
+
+      <!-- Informações do destinatário -->
+      <div class="detail-section">
+        <h3 class="section-title">
+          <i class="fa-solid fa-user"></i> Destinatário
+        </h3>
+        <div class="detail-grid">
+          <div class="detail-field">
+            <span class="field-label">Nome</span>
+            <span class="field-value">{{ mensagemSelecionada.destinatarioNome || '-' }}</span>
+          </div>
+          <div class="detail-field">
+            <span class="field-label">Email</span>
+            <span class="field-value">{{ mensagemSelecionada.destinatarioEmail }}</span>
+          </div>
+          <div class="detail-field" *ngIf="mensagemSelecionada.destinatarioProfissionalNome">
+            <span class="field-label">Profissional</span>
+            <span class="field-value">{{ mensagemSelecionada.destinatarioProfissionalNome }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Informações da mensagem -->
+      <div class="detail-section">
+        <h3 class="section-title">
+          <i class="fa-solid fa-envelope"></i> Mensagem
+        </h3>
+        <div class="detail-grid">
+          <div class="detail-field detail-field--full">
+            <span class="field-label">Assunto</span>
+            <span class="field-value">{{ mensagemSelecionada.assunto }}</span>
+          </div>
+          <div class="detail-field">
+            <span class="field-label">Tentativas</span>
+            <span class="field-value" [class.tentativas--alta]="mensagemSelecionada.tentativas >= 3">
+              {{ mensagemSelecionada.tentativas }}
+            </span>
+          </div>
+          <div class="detail-field">
+            <span class="field-label">Data de criação</span>
+            <span class="field-value">{{ formatarData(mensagemSelecionada.dataCriacao) }}</span>
+          </div>
+          <div class="detail-field">
+            <span class="field-label">Última atualização</span>
+            <span class="field-value">{{ formatarData(mensagemSelecionada.dataAtualizacao) }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Erro (se houver) -->
+      <div class="detail-section" *ngIf="mensagemSelecionada.erroDetalhe">
+        <h3 class="section-title section-title--error">
+          <i class="fa-solid fa-triangle-exclamation"></i> Detalhe do Erro
+        </h3>
+        <div class="error-detail-box">{{ mensagemSelecionada.erroDetalhe }}</div>
+      </div>
+
+      <!-- Corpo da mensagem -->
+      <div class="detail-section">
+        <h3 class="section-title">
+          <i class="fa-solid fa-file-lines"></i> Conteúdo Registrado
+        </h3>
+        <div class="message-body-box">{{ mensagemSelecionada.corpoMensagem }}</div>
+      </div>
+
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn--secondary" (click)="fecharDetalhe()">Fechar</button>
+      <button
+        class="btn btn--warning"
+        *ngIf="mensagemSelecionada?.status === 'FALHOU' && !mensagemSelecionada?.adminNotificado"
+        (click)="marcarComoNotificado(mensagemSelecionada!)"
+        [disabled]="isNotificando">
+        <i class="fa-solid fa-bell" [class.fa-spin]="isNotificando"></i>
+        {{ isNotificando ? 'Marcando...' : 'Marcar como Notificado' }}
+      </button>
+    </div>
+  </div>
+</div>

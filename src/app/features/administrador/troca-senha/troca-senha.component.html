@@ -1,0 +1,80 @@
+<div class="password-page">
+  <!-- Header -->
+  <header class="page-header">
+    <div class="header-content">
+      <div class="header-icon">
+        <i class="fa-solid fa-shield-halved"></i>
+      </div>
+      <div class="header-text">
+        <h1>Segurança da Conta</h1>
+        <p>Gerencie suas credenciais de acesso</p>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="page-content">
+    <div class="content-card">
+      <!-- Tabs de Navegação -->
+      <div class="tabs-container">
+        <button class="tab-btn" [class.active]="trocaMinhaSenha" (click)="TrocarSenha()">
+          <i class="fa-solid fa-key"></i>
+          <span>Trocar Senha</span>
+        </button>
+
+      </div>
+
+      <!-- Formulário Trocar Senha -->
+      <div class="form-container" *ngIf="trocaMinhaSenha" [formGroup]="FormularioTrocaSenha">
+        <div class="form-header">
+          <i class="fa-solid fa-pen-to-square"></i>
+          <h2>Alterar Senha Atual</h2>
+          <p>Preencha os campos abaixo para alterar sua senha</p>
+        </div>
+
+        <div class="form-body">
+
+          <div class="form-group">
+            <label class="form-label">
+              <i class="fa-solid fa-lock"></i>
+              Nova Senha
+            </label>
+            <input type="password" class="form-input" placeholder="Digite sua senha atual"
+              formControlName="SenhaAntiga">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">
+              <i class="fa-solid fa-lock-open"></i>
+              Repita a Senha
+            </label>
+            <input type="password" class="form-input" placeholder="Digite a nova senha" formControlName="SenhaNova">
+          </div>
+
+          <button class="btn-submit" type="button" (click)="enviar()">
+            <i class="fa-solid fa-check"></i>
+            Alterar Senha
+          </button>
+        </div>
+      </div>
+
+
+    </div>
+
+    <!-- Info Card -->
+    <div class="info-card">
+      <div class="info-icon">
+        <i class="fa-solid fa-lightbulb"></i>
+      </div>
+      <div class="info-content">
+        <h3>Dicas de Segurança</h3>
+        <ul>
+          <li>Use pelo menos 8 caracteres</li>
+          <li>Combine letras maiúsculas, minúsculas e números</li>
+          <li>Evite usar informações pessoais</li>
+          <li>Não reutilize senhas de outros serviços</li>
+        </ul>
+      </div>
+    </div>
+  </main>
+</div>

@@ -1,0 +1,39 @@
+<div class="dialog-simple" [formGroup]="AvisoLembreteForm">
+  <div class="dialog-simple__header">
+    <h3>Enviar Lembrete</h3>
+    <button class="close-btn" (click)="onNoClick()"><i class="fa-solid fa-xmark"></i></button>
+  </div>
+
+  <div class="dialog-simple__body">
+    <div class="radio-group">
+      <span class="radio-group__title">Clínico</span>
+      <label class="radio-item">
+        <input formControlName="destinatario" type="radio" [value]="1">
+        <span>{{ data.Consulta.medico?.medEmail || 'E-mail não informado' }}</span>
+      </label>
+      <label class="radio-item">
+        <input formControlName="destinatario" type="radio" [value]="2">
+        <span>{{ data.Consulta.medico?.medTelefone || 'Telefone não informado' }}</span>
+      </label>
+    </div>
+
+    <div class="radio-group">
+      <span class="radio-group__title">Paciente</span>
+      <label class="radio-item">
+        <input formControlName="destinatario" type="radio" [value]="3">
+        <span>{{ data.Consulta.paciente?.paciEmail || 'E-mail não informado' }}</span>
+      </label>
+      <label class="radio-item">
+        <input formControlName="destinatario" type="radio" [value]="4">
+        <span>{{ data.Consulta.paciente?.paciTelefone || 'Telefone não informado' }}</span>
+      </label>
+    </div>
+
+    <textarea formControlName="mensagem" placeholder="Digite sua mensagem..." rows="3"></textarea>
+  </div>
+
+  <div class="dialog-simple__footer">
+    <button class="btn btn--cancel" (click)="onNoClick()">Cancelar</button>
+    <button class="btn btn--send" (click)="EnviarMensagem()">Enviar</button>
+  </div>
+</div>

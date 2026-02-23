@@ -1,0 +1,109 @@
+<div class="sobre-container">
+  <!-- Header -->
+  <div class="sobre-header">
+    <div class="logo-container">
+      <div class="logo-icon">
+        <i class="fa-solid fa-heart-pulse"></i>
+      </div>
+      <div class="logo-text">
+        <h1>Saúde Conecta</h1>
+        <p class="tagline">Sistema de Gestão em Saúde</p>
+      </div>
+    </div>
+    <div class="version-badge">
+      <span class="version">v{{ versao }}</span>
+      <span class="date">Atualizado em {{ dataAtualizacao }}</span>
+    </div>
+  </div>
+
+  <!-- Descrição -->
+  <section class="section descricao">
+    <div class="section-icon">
+      <i class="fa-solid fa-info-circle"></i>
+    </div>
+    <div class="section-content">
+      <h2>Sobre o Sistema</h2>
+      <p>
+        O <strong>Saúde Conecta</strong> é uma plataforma completa para gestão de clínicas e consultórios médicos.
+        Desenvolvido com as mais modernas tecnologias, oferece uma experiência intuitiva e eficiente para
+        profissionais de saúde, permitindo o gerenciamento de agendas, prontuários eletrônicos,
+        cadastro de pacientes e muito mais.
+      </p>
+      <p>
+        Nossa missão é simplificar a rotina de clínicas médicas, proporcionando mais tempo para o que
+        realmente importa: o cuidado com os pacientes.
+      </p>
+    </div>
+  </section>
+
+  <!-- Funcionalidades -->
+  <section class="section funcionalidades">
+    <h2>
+      <i class="fa-solid fa-star"></i>
+      Funcionalidades Principais
+    </h2>
+    <div class="funcionalidades-grid">
+      <div class="funcionalidade-card" *ngFor="let func of funcionalidades">
+        <div class="func-icon">
+          <i [class]="func.icone"></i>
+        </div>
+        <div class="func-info">
+          <h3>{{ func.titulo }}</h3>
+          <p>{{ func.descricao }}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+
+  <!-- Equipe -->
+  <section class="section equipe">
+    <h2>
+      <i class="fa-solid fa-users"></i>
+      Desenvolvido por
+    </h2>
+    <div class="equipe-grid">
+      <div class="membro-card" *ngFor="let membro of equipe">
+        <div class="membro-avatar">
+          <i [class]="membro.avatar"></i>
+        </div>
+        <div class="membro-info">
+          <strong>{{ membro.nome }}</strong>
+          <span>{{ membro.cargo }}</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contato -->
+  <section class="section contato">
+    <h2>
+      <i class="fa-solid fa-envelope"></i>
+      Contato e Suporte
+    </h2>
+    <div class="contato-content">
+      <div class="contato-item">
+        <i class="fa-solid fa-envelope"></i>
+        <span>suporte&#64;saudeconecta.com.br</span>
+      </div>
+      <div class="contato-item">
+        <i class="fa-solid fa-phone"></i>
+        <span>(11) 99999-9999</span>
+      </div>
+      <div class="contato-item">
+        <i class="fa-solid fa-globe"></i>
+        <span>www.saudeconecta.com.br</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="sobre-footer">
+    <p>&copy; 2024 Saúde Conecta. Todos os direitos reservados.</p>
+    <p class="lgpd">
+      <i class="fa-solid fa-shield-halved"></i>
+      Este sistema está em conformidade com a LGPD
+    </p>
+  </footer>
+</div>

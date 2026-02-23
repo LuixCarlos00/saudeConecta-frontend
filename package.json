@@ -1,0 +1,53 @@
+{
+  "name": "saude-conecta",
+  "version": "0.0.0",
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve --proxy-config src/proxy.conf.json",
+    "build": "ng build",
+    "watch": "ng build --watch --configuration development",
+    "test": "ng test"
+  },
+  "private": true,
+  "dependencies": {
+    "@angular/animations": "^17.3.1",
+    "@angular/cdk": "^17.3.5",
+    "@angular/common": "^17.3.1",
+    "@angular/compiler": "^17.3.1",
+    "@angular/core": "^17.3.1",
+    "@angular/flex-layout": "^15.0.0-beta.42",
+    "@angular/forms": "^17.3.1",
+    "@angular/material": "^17.3.1",
+    "@angular/platform-browser": "^17.3.1",
+    "@angular/platform-browser-dynamic": "^17.3.1",
+    "@angular/router": "^17.3.1",
+    "@auth0/angular-jwt": "^5.2.0",
+    "@fortawesome/fontawesome-free": "^6.5.2",
+    "@types/jwt-decode": "^3.1.0",
+    "chart.js": "^4.4.3",
+    "date-fns": "^2.30.0",
+    "jspdf": "^3.0.4",
+    "jwt-decode": "^4.0.0",
+    "ng2-charts": "^5.0.4",
+    "ngx-quill": "^25.3.3",
+    "quill": "^2.0.2",
+    "rxjs": "~7.5.0",
+    "sweetalert": "^2.1.2",
+    "sweetalert2": "^11.10.7",
+    "tslib": "^2.3.0",
+    "zone.js": "~0.14.4"
+  },
+  "devDependencies": {
+    "@angular-devkit/build-angular": "^17.3.2",
+    "@angular/cli": "~17.3.2",
+    "@angular/compiler-cli": "^17.3.1",
+    "@types/jasmine": "~4.0.0",
+    "jasmine-core": "~4.1.0",
+    "karma": "~6.3.0",
+    "karma-chrome-launcher": "~3.1.0",
+    "karma-coverage": "~2.2.0",
+    "karma-jasmine": "~5.0.0",
+    "karma-jasmine-html-reporter": "~1.7.0",
+    "typescript": "~5.4.3"
+  }
+}

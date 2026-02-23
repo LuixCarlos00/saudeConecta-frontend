@@ -1,0 +1,1863 @@
+// =============================================================================
+// PRONTUÁRIO ELETRÔNICO (PEP) - DESIGN MINIMALISTA FORMAL
+// Interface limpa e profissional para atendimento médico
+// =============================================================================
+
+// =============================================================================
+// VARIÁVEIS LOCAIS - Design Minimalista
+// =============================================================================
+
+$color-primary: #1a1a2e;
+$color-secondary: #16213e;
+$color-accent: #0f3460;
+$color-highlight: #e94560;
+
+$color-bg: #fafbfc;
+$color-surface: #ffffff;
+$color-border: #e8ecf0;
+$color-border-light: #f0f3f5;
+
+$color-text: #1a1a2e;
+$color-text-secondary: #5a6270;
+$color-text-muted: #8b95a5;
+$color-text-inverse: #ffffff;
+
+$font-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+$font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+$spacing-1: 4px;
+$spacing-2: 8px;
+$spacing-3: 12px;
+$spacing-4: 16px;
+$spacing-5: 20px;
+$spacing-6: 24px;
+$spacing-8: 32px;
+
+$radius-sm: 4px;
+$radius-md: 6px;
+$radius-lg: 8px;
+
+$shadow-subtle: 0 1px 2px rgba(0, 0, 0, 0.04);
+$shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
+$shadow-md: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+$transition: 0.15s ease;
+
+// =============================================================================
+// CONTAINER PRINCIPAL
+// =============================================================================
+
+.pep-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: $color-bg;
+  font-family: $font-primary;
+  color: $color-text;
+  -webkit-font-smoothing: antialiased;
+}
+
+// =============================================================================
+// HEADER - Minimalista
+// =============================================================================
+
+.pep-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $spacing-4 $spacing-6;
+  background: $color-surface;
+  border-bottom: 1px solid $color-border;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: $spacing-4;
+    padding: $spacing-4;
+  }
+
+  &__info {
+    flex: 1;
+  }
+
+  &__title {
+    display: flex;
+    align-items: center;
+    gap: $spacing-3;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: $color-text;
+    margin: 0;
+    letter-spacing: -0.02em;
+
+    i {
+      color: $color-accent;
+      font-size: 1.125rem;
+    }
+  }
+
+  &__subtitle {
+    font-size: 0.875rem;
+    color: $color-text-secondary;
+    margin: $spacing-1 0 0 0;
+    font-weight: 400;
+
+    strong {
+      color: $color-text;
+      font-weight: 500;
+    }
+  }
+}
+
+// =============================================================================
+// TIMER - Discreto e Funcional
+// =============================================================================
+
+.pep-timer {
+  display: flex;
+  align-items: center;
+  gap: $spacing-3;
+  padding: $spacing-3 $spacing-4;
+  background: $color-bg;
+  border: 1px solid $color-border;
+  border-radius: $radius-md;
+  transition: all $transition;
+
+  &--warning {
+    background: #fffbeb;
+    border-color: #fbbf24;
+  }
+
+  &--danger {
+    background: #fef2f2;
+    border-color: $color-highlight;
+  }
+
+  &__icon {
+    font-size: 1rem;
+    color: $color-text-muted;
+
+    .pep-timer--warning & { color: #d97706; }
+    .pep-timer--danger & { color: $color-highlight; }
+  }
+
+  &__display {
+    display: flex;
+    align-items: baseline;
+    gap: 2px;
+  }
+
+  &__value {
+    font-family: $font-mono;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: $color-text;
+    min-width: 32px;
+    text-align: center;
+    letter-spacing: -0.02em;
+
+    .pep-timer--warning & { color: #d97706; }
+    .pep-timer--danger & { color: $color-highlight; }
+  }
+
+  &__separator {
+    font-family: $font-mono;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: $color-text-muted;
+  }
+
+  &__label {
+    font-size: 0.6875rem;
+    color: $color-text-muted;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 500;
+  }
+}
+
+// =============================================================================
+// CARD DO PACIENTE - Clean e Organizado
+// =============================================================================
+
+.patient-card {
+  display: flex;
+  align-items: flex-start;
+  gap: $spacing-5;
+  margin: $spacing-5 $spacing-6;
+  padding: $spacing-5;
+  background: $color-surface;
+  border: 1px solid $color-border;
+  border-radius: $radius-lg;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    margin: $spacing-4;
+    padding: $spacing-4;
+    gap: $spacing-4;
+  }
+
+  &__avatar {
+    flex-shrink: 0;
+    width: 56px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: $color-primary;
+    border-radius: $radius-md;
+  }
+
+  &__initial {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: $color-text-inverse;
+    text-transform: uppercase;
+  }
+
+  &__info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-4;
+  }
+
+  &__row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: $spacing-5;
+
+    @media (max-width: 992px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @media (max-width: 576px) {
+      grid-template-columns: 1fr;
+      gap: $spacing-3;
+    }
+  }
+
+  &__item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  &__label {
+    font-size: 0.6875rem;
+    font-weight: 500;
+    color: $color-text-muted;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  &__value {
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: $color-text;
+
+    &--name {
+      font-size: 1.0625rem;
+      font-weight: 600;
+      color: $color-primary;
+    }
+  }
+
+  &__meta {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-2;
+    align-items: flex-end;
+
+    @media (max-width: 768px) {
+      flex-direction: row;
+      width: 100%;
+      justify-content: flex-start;
+    }
+  }
+
+  &__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: $spacing-2;
+    padding: $spacing-2 $spacing-3;
+    background: $color-bg;
+    border: 1px solid $color-border;
+    border-radius: $radius-sm;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: $color-text-secondary;
+
+    i {
+      color: $color-text-muted;
+      font-size: 0.75rem;
+    }
+  }
+}
+
+// =============================================================================
+// ALERTAS - Sutil mas Visível
+// =============================================================================
+
+.pep-alerts {
+  margin: 0 $spacing-6;
+
+  @media (max-width: 768px) {
+    margin: 0 $spacing-4;
+  }
+
+  .hc-alert--critical {
+    display: flex;
+    align-items: center;
+    gap: $spacing-3;
+    padding: $spacing-3 $spacing-4;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-left: 3px solid $color-highlight;
+    border-radius: $radius-sm;
+    font-size: 0.875rem;
+    color: #991b1b;
+
+    i {
+      font-size: 1rem;
+      color: $color-highlight;
+    }
+
+    strong {
+      font-weight: 600;
+    }
+  }
+}
+
+// =============================================================================
+// CONTEÚDO PRINCIPAL
+// =============================================================================
+
+.pep-content {
+  flex: 1;
+  padding: $spacing-6;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-5;
+  max-width: 1100px;
+  margin: 0 auto;
+  width: 100%;
+
+  @media (max-width: 768px) {
+    padding: $spacing-4;
+    gap: $spacing-4;
+  }
+}
+
+// =============================================================================
+// SEÇÕES - Bordas Limpas
+// =============================================================================
+
+.pep-section {
+  background: $color-surface;
+  border: 1px solid $color-border;
+  border-radius: $radius-lg;
+  overflow: hidden;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: $spacing-4 $spacing-5;
+    border-bottom: 1px solid $color-border-light;
+  }
+
+  &__title {
+    display: flex;
+    align-items: center;
+    gap: $spacing-2;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: $color-text;
+    margin: 0;
+    letter-spacing: -0.01em;
+
+    i {
+      color: $color-accent;
+      font-size: 0.875rem;
+    }
+  }
+
+  &__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: $spacing-1;
+    padding: $spacing-1 $spacing-2;
+    font-size: 0.6875rem;
+    font-weight: 500;
+    border-radius: $radius-sm;
+    background: #f0f9ff;
+    color: #0369a1;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+
+    i {
+      font-size: 8px;
+    }
+
+    &--info {
+      background: #f0f9ff;
+      color: #0369a1;
+    }
+
+    &--success {
+      background: #f0fdf4;
+      color: #15803d;
+    }
+
+    &--warning {
+      background: #fffbeb;
+      color: #b45309;
+    }
+  }
+
+  &__body {
+    padding: $spacing-5;
+
+    @media (max-width: 768px) {
+      padding: $spacing-4;
+    }
+  }
+}
+
+// =============================================================================
+// FOOTER - Ações Claras
+// =============================================================================
+
+.pep-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $spacing-4 $spacing-6;
+  background: $color-surface;
+  border-top: 1px solid $color-border;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: $spacing-4;
+    padding: $spacing-4;
+  }
+
+  &__info {
+    display: flex;
+    align-items: center;
+    gap: $spacing-4;
+  }
+
+  &__time {
+    display: flex;
+    align-items: center;
+    gap: $spacing-2;
+    font-size: 0.8125rem;
+    color: $color-text-secondary;
+    font-weight: 500;
+
+    i {
+      color: $color-text-muted;
+    }
+  }
+
+  &__actions {
+    display: flex;
+    gap: $spacing-3;
+
+    @media (max-width: 768px) {
+      width: 100%;
+      flex-direction: column;
+    }
+  }
+}
+
+// =============================================================================
+// BOTÕES - Minimalistas
+// =============================================================================
+
+.hc-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-2;
+  padding: $spacing-3 $spacing-5;
+  font-size: 0.875rem;
+  font-weight: 500;
+  font-family: $font-primary;
+  border-radius: $radius-md;
+  border: none;
+  cursor: pointer;
+  transition: all $transition;
+  letter-spacing: -0.01em;
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  &--lg {
+    padding: $spacing-3 $spacing-6;
+    font-size: 0.9375rem;
+
+    @media (max-width: 768px) {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+
+  &--secondary {
+    background: $color-surface;
+    color: $color-text;
+    border: 1px solid $color-border;
+
+    &:hover:not(:disabled) {
+      background: $color-bg;
+      border-color: darken($color-border, 5%);
+    }
+  }
+
+  &--success {
+    background: $color-primary;
+    color: $color-text-inverse;
+
+    &:hover:not(:disabled) {
+      background: lighten($color-primary, 5%);
+    }
+  }
+}
+
+// =============================================================================
+// IMPRESSÃO
+// =============================================================================
+
+@media print {
+  .pep-container {
+    background: white;
+  }
+
+  .pep-header,
+  .pep-footer {
+    position: static;
+    box-shadow: none;
+  }
+
+  .pep-section {
+    break-inside: avoid;
+    page-break-inside: avoid;
+    border: 1px solid #ddd;
+  }
+
+  .hc-btn,
+  .pep-section__badge {
+    display: none;
+  }
+}
+/* =============================================================================
+   EXAME FÍSICO - Design Minimalista Formal
+   ============================================================================= */
+
+.exame-fisico-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* =============================================================================
+   SEÇÕES DO FORMULÁRIO
+   ============================================================================= */
+
+.form-section {
+  background: #fafbfc;
+  border-radius: 6px;
+  padding: 20px;
+  border: 1px solid #e8ecf0;
+}
+
+.form-section--highlight {
+  background: #f8fafc;
+  border-left: 3px solid #0f3460;
+}
+
+.form-section__title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 16px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #1a1a2e;
+  letter-spacing: -0.01em;
+}
+
+.form-section__title i {
+  color: #0f3460;
+  font-size: 0.8125rem;
+}
+
+/* =============================================================================
+   GRID DO FORMULÁRIO
+   ============================================================================= */
+
+.form-grid {
+  display: grid;
+  gap: 16px;
+}
+
+.form-grid--2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.form-grid--3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.form-grid--4 {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+@media (max-width: 992px) {
+  .form-grid--4,
+  .form-grid--3 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 576px) {
+  .form-grid--4,
+  .form-grid--3,
+  .form-grid--2 {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* =============================================================================
+   GRUPOS DE FORMULÁRIO
+   ============================================================================= */
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.form-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  color: #8b95a5;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.form-label i {
+  color: #8b95a5;
+  font-size: 0.625rem;
+}
+
+.form-label--lg {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #5a6270;
+  margin-bottom: 4px;
+}
+
+.form-label--lg i {
+  color: #0f3460;
+}
+
+/* =============================================================================
+   INPUTS
+   ============================================================================= */
+
+.form-input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #e8ecf0;
+  border-radius: 4px;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: #1a1a2e;
+  background: #ffffff;
+  transition: border-color 0.15s ease;
+  box-sizing: border-box;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #0f3460;
+}
+
+.form-input::placeholder {
+  color: #b8c0cc;
+  font-weight: 400;
+}
+
+/* =============================================================================
+   TEXTAREA
+   ============================================================================= */
+
+.form-textarea {
+  width: 100%;
+  min-height: 80px;
+  padding: 10px 12px;
+  border: 1px solid #e8ecf0;
+  border-radius: 4px;
+  font-size: 0.9375rem;
+  font-family: inherit;
+  font-weight: 500;
+  color: #1a1a2e;
+  background: #ffffff;
+  resize: vertical;
+  transition: border-color 0.15s ease;
+  box-sizing: border-box;
+}
+
+.form-textarea:focus {
+  outline: none;
+  border-color: #0f3460;
+}
+
+.form-textarea::placeholder {
+  color: #b8c0cc;
+  font-weight: 400;
+}
+
+.form-textarea--lg {
+  min-height: 100px;
+}
+
+/* =============================================================================
+   RESPONSIVIDADE
+   ============================================================================= */
+
+@media (max-width: 768px) {
+  .exame-fisico-container {
+    gap: 16px;
+  }
+
+  .form-section {
+    padding: 16px;
+  }
+
+  .form-section__title {
+    font-size: 0.8125rem;
+  }
+}
+/* =============================================================================
+   DIAGNÓSTICO (CID-10) - Layout Moderno Healthcare
+   ============================================================================= */
+
+.diagnostico-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* =============================================================================
+   SEÇÃO DE PESQUISA
+   ============================================================================= */
+
+.search-section {
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 16px 20px;
+  border: 1px solid #e2e8f0;
+}
+
+.search-header {
+  margin-bottom: 12px;
+}
+
+.search-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.search-title i {
+  color: #0066CC;
+}
+
+.search-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+}
+
+.search-icon {
+  position: absolute;
+  left: 14px;
+  color: #94a3b8;
+  font-size: 0.875rem;
+}
+
+.search-input {
+  flex: 1;
+  padding: 12px 14px 12px 40px;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 0.9375rem;
+  color: #1e293b;
+  background: white;
+  transition: all 0.2s ease;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #0066CC;
+  box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+}
+
+.search-input::placeholder {
+  color: #94a3b8;
+}
+
+.search-btn {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.search-btn--clear {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.search-btn--clear:hover {
+  background: #fecaca;
+}
+
+.search-btn--reset {
+  background: #dbeafe;
+  color: #2563eb;
+}
+
+.search-btn--reset:hover {
+  background: #bfdbfe;
+}
+
+/* =============================================================================
+   LISTA DE CIDs
+   ============================================================================= */
+
+.cid-list {
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.cid-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0;
+}
+
+@media (max-width: 768px) {
+  .cid-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.cid-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.cid-column:first-child {
+  border-right: 1px solid #e2e8f0;
+}
+
+@media (max-width: 768px) {
+  .cid-column:first-child {
+    border-right: none;
+    border-bottom: 1px solid #e2e8f0;
+  }
+}
+
+.cid-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid #f1f5f9;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.cid-item:last-child {
+  border-bottom: none;
+}
+
+.cid-item:hover {
+  background: #f8fafc;
+}
+
+.cid-item--selected {
+  background: #eff6ff;
+  border-left: 3px solid #0066CC;
+}
+
+.cid-item__radio {
+  flex-shrink: 0;
+}
+
+.cid-item__radio input[type="radio"] {
+  width: 18px;
+  height: 18px;
+  accent-color: #0066CC;
+  cursor: pointer;
+}
+
+.cid-item__content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.cid-item__code {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #0066CC;
+  text-transform: uppercase;
+}
+
+.cid-item__label {
+  font-size: 0.875rem;
+  color: #334155;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* =============================================================================
+   PAGINAÇÃO
+   ============================================================================= */
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 16px;
+  background: #f8fafc;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+}
+
+.pagination__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pagination__btn--prev {
+  background: #e2e8f0;
+  color: #475569;
+}
+
+.pagination__btn--prev:hover:not(:disabled) {
+  background: #cbd5e1;
+}
+
+.pagination__btn--next {
+  background: #0066CC;
+  color: white;
+}
+
+.pagination__btn--next:hover:not(:disabled) {
+  background: #0055aa;
+}
+
+.pagination__btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pagination__info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9375rem;
+  color: #64748b;
+}
+
+.pagination__current {
+  font-weight: 600;
+  color: #0066CC;
+  background: #dbeafe;
+  padding: 4px 12px;
+  border-radius: 6px;
+}
+
+.pagination__total {
+  font-weight: 500;
+  color: #334155;
+}
+/* =============================================================================
+   PRESCRIÇÃO E EXAMES - Layout Moderno Healthcare
+   ============================================================================= */
+
+.prescricao-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* =============================================================================
+   SEÇÃO DE PESQUISA
+   ============================================================================= */
+
+.search-section {
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 16px 20px;
+  border: 1px solid #e2e8f0;
+}
+
+.search-header {
+  margin-bottom: 12px;
+}
+
+.search-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.search-title i {
+  color: #0066CC;
+}
+
+.search-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+}
+
+.search-icon {
+  position: absolute;
+  left: 14px;
+  color: #94a3b8;
+  font-size: 0.875rem;
+}
+
+.search-input {
+  flex: 1;
+  padding: 12px 14px 12px 40px;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 0.9375rem;
+  color: #1e293b;
+  background: white;
+  transition: all 0.2s ease;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #0066CC;
+  box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+}
+
+.search-input::placeholder {
+  color: #94a3b8;
+}
+
+.search-btn {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.search-btn--clear {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.search-btn--clear:hover {
+  background: #fecaca;
+}
+
+.search-btn--reset {
+  background: #dbeafe;
+  color: #2563eb;
+}
+
+.search-btn--reset:hover {
+  background: #bfdbfe;
+}
+
+/* =============================================================================
+   LISTA TUSS
+   ============================================================================= */
+
+.tuss-list {
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  max-height: 250px;
+  overflow-y: auto;
+}
+
+.tuss-items {
+  display: flex;
+  flex-direction: column;
+}
+
+.tuss-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid #f1f5f9;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.tuss-item:last-child {
+  border-bottom: none;
+}
+
+.tuss-item:hover {
+  background: #f8fafc;
+}
+
+.tuss-item--selected {
+  background: #eff6ff;
+  border-left: 3px solid #0066CC;
+}
+
+.tuss-item__radio {
+  flex-shrink: 0;
+}
+
+.tuss-item__radio input[type="radio"] {
+  width: 18px;
+  height: 18px;
+  accent-color: #0066CC;
+  cursor: pointer;
+}
+
+.tuss-item__content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.tuss-item__code {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #0066CC;
+}
+
+.tuss-item__desc {
+  font-size: 0.875rem;
+  color: #334155;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* =============================================================================
+   PAGINAÇÃO
+   ============================================================================= */
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 12px;
+  background: #f8fafc;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+}
+
+.pagination__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pagination__btn--prev {
+  background: #e2e8f0;
+  color: #475569;
+}
+
+.pagination__btn--prev:hover:not(:disabled) {
+  background: #cbd5e1;
+}
+
+.pagination__btn--next {
+  background: #0066CC;
+  color: white;
+}
+
+.pagination__btn--next:hover:not(:disabled) {
+  background: #0055aa;
+}
+
+.pagination__btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pagination__info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.875rem;
+  color: #64748b;
+}
+
+.pagination__current {
+  font-weight: 600;
+  color: #0066CC;
+  background: #dbeafe;
+  padding: 4px 10px;
+  border-radius: 6px;
+}
+
+.pagination__total {
+  font-weight: 500;
+  color: #334155;
+}
+
+/* =============================================================================
+   GRID DE FORMULÁRIOS
+   ============================================================================= */
+
+.forms-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+@media (max-width: 900px) {
+  .forms-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* =============================================================================
+   CARDS DE FORMULÁRIO
+   ============================================================================= */
+
+.form-card {
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.form-card__header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 18px;
+  color: white;
+}
+
+.form-card__header h4 {
+  margin: 0;
+  font-size: 0.9375rem;
+  font-weight: 600;
+}
+
+.form-card__header i {
+  font-size: 1rem;
+}
+
+.form-card__header--blue {
+  background: linear-gradient(135deg, #0066CC 0%, #0052a3 100%);
+}
+
+.form-card__header--green {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.form-card__body {
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* =============================================================================
+   GRUPOS DE FORMULÁRIO
+   ============================================================================= */
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: #475569;
+}
+
+.form-label i {
+  color: #64748b;
+  font-size: 0.75rem;
+}
+
+.form-input,
+.form-select {
+  width: 100%;
+  padding: 10px 14px;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 0.9375rem;
+  color: #1e293b;
+  background: white;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.form-input:focus,
+.form-select:focus {
+  outline: none;
+  border-color: #0066CC;
+  box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+}
+
+.form-textarea {
+  width: 100%;
+  min-height: 100px;
+  padding: 12px 14px;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 0.9375rem;
+  font-family: inherit;
+  color: #1e293b;
+  background: white;
+  resize: vertical;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.form-textarea:focus {
+  outline: none;
+  border-color: #0066CC;
+  box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+}
+
+.form-textarea::placeholder {
+  color: #94a3b8;
+}
+
+// =============================================================================
+// HEADER MODERNO - Gradiente e Layout Aprimorado
+// =============================================================================
+
+.pep-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: $spacing-6;
+  border-bottom: none;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+
+  &__content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: $spacing-6;
+
+    @media (max-width: 992px) {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+
+  &__left {
+    display: flex;
+    align-items: center;
+    gap: $spacing-4;
+  }
+
+  &__icon {
+    width: 56px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    
+    i {
+      font-size: 1.75rem;
+      color: white;
+    }
+  }
+
+  &__info {
+    flex: 1;
+  }
+
+  &__title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: white;
+    margin: 0 0 $spacing-1 0;
+    letter-spacing: -0.02em;
+  }
+
+  &__subtitle {
+    display: flex;
+    align-items: center;
+    gap: $spacing-2;
+    font-size: 0.9375rem;
+    color: rgba(255, 255, 255, 0.9);
+    margin: 0;
+
+    i {
+      font-size: 0.875rem;
+    }
+  }
+
+  &__right {
+    @media (max-width: 992px) {
+      width: 100%;
+    }
+  }
+}
+
+.pep-timer {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  padding: $spacing-4;
+
+  &__content {
+    display: flex;
+    align-items: center;
+    gap: $spacing-3;
+  }
+
+  &__icon {
+    font-size: 1.25rem;
+    color: white;
+  }
+
+  &__display {
+    display: flex;
+    align-items: baseline;
+    gap: 2px;
+  }
+
+  &__value {
+    font-family: $font-mono;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: white;
+    min-width: 40px;
+    text-align: center;
+  }
+
+  &__separator {
+    font-family: $font-mono;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  &__label {
+    display: block;
+    margin-top: $spacing-1;
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.8);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 500;
+  }
+
+  &--warning {
+    background: rgba(251, 191, 36, 0.2);
+    border-color: rgba(251, 191, 36, 0.4);
+
+    .pep-timer__icon,
+    .pep-timer__value {
+      color: #fbbf24;
+    }
+  }
+
+  &--danger {
+    background: rgba(239, 68, 68, 0.2);
+    border-color: rgba(239, 68, 68, 0.4);
+
+    .pep-timer__icon,
+    .pep-timer__value {
+      color: #ef4444;
+    }
+  }
+}
+
+// =============================================================================
+// NAVEGAÇÃO POR ABAS MODERNA
+// =============================================================================
+
+.pep-tabs {
+  display: flex;
+  gap: $spacing-2;
+  padding: 0 $spacing-6;
+  background: $color-surface;
+  border-bottom: 2px solid $color-border;
+  overflow-x: auto;
+
+  @media (max-width: 768px) {
+    padding: 0 $spacing-4;
+  }
+}
+
+.pep-tab {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: $spacing-2;
+  padding: $spacing-4 $spacing-5;
+  background: transparent;
+  border: none;
+  color: $color-text-secondary;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+
+  i {
+    font-size: 1rem;
+    transition: transform 0.2s ease;
+  }
+
+  &:hover:not(&--active) {
+    color: $color-text;
+    background: rgba(0, 0, 0, 0.02);
+  }
+
+  &--active {
+    color: #667eea;
+    font-weight: 600;
+
+    i {
+      transform: scale(1.1);
+    }
+
+    .pep-tab__indicator {
+      opacity: 1;
+      transform: scaleX(1);
+    }
+  }
+
+  &__indicator {
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    border-radius: 3px 3px 0 0;
+    opacity: 0;
+    transform: scaleX(0);
+    transition: all 0.3s ease;
+  }
+}
+
+// =============================================================================
+// SEÇÕES COM AÇÕES
+// =============================================================================
+
+.pep-section__actions {
+  display: flex;
+  gap: $spacing-2;
+}
+
+.btn-icon {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid $color-border;
+  border-radius: $radius-md;
+  color: $color-text-secondary;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: $color-bg;
+    border-color: $color-accent;
+    color: $color-accent;
+  }
+}
+
+.pep-section__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: $spacing-2;
+  padding: $spacing-2 $spacing-3;
+  background: #f0fdf4;
+  color: #15803d;
+  border-radius: $radius-md;
+  font-size: 0.8125rem;
+  font-weight: 500;
+
+  i {
+    font-size: 0.875rem;
+  }
+}
+
+// =============================================================================
+// FOOTER MODERNO COM PROGRESSO
+// =============================================================================
+
+.pep-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $spacing-5 $spacing-6;
+  background: $color-surface;
+  border-top: 1px solid $color-border;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.05);
+
+  @media (max-width: 992px) {
+    flex-direction: column;
+    gap: $spacing-4;
+    padding: $spacing-4;
+  }
+
+  &__left {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-3;
+    flex: 1;
+
+    @media (max-width: 992px) {
+      width: 100%;
+    }
+  }
+
+  &__info {
+    display: flex;
+    align-items: center;
+    gap: $spacing-2;
+    font-size: 0.9375rem;
+    color: $color-text-secondary;
+
+    i {
+      color: $color-accent;
+    }
+
+    strong {
+      color: $color-text;
+      font-weight: 600;
+    }
+  }
+
+  &__progress {
+    width: 100%;
+    max-width: 300px;
+  }
+
+  &__actions {
+    display: flex;
+    gap: $spacing-3;
+
+    @media (max-width: 992px) {
+      width: 100%;
+      flex-wrap: wrap;
+    }
+  }
+}
+
+// =============================================================================
+// INDICADOR DE PROGRESSO
+// =============================================================================
+
+.progress-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+.progress-step {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: $color-border;
+  border-radius: 50%;
+  color: $color-text-muted;
+  font-size: 0.75rem;
+  transition: all 0.3s ease;
+
+  &--completed {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    transform: scale(1.1);
+  }
+}
+
+.progress-line {
+  flex: 1;
+  height: 3px;
+  background: $color-border;
+  margin: 0 -1px;
+  transition: all 0.3s ease;
+
+  &--active {
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  }
+}
+
+// =============================================================================
+// BOTÕES MODERNOS
+// =============================================================================
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-2;
+  padding: $spacing-3 $spacing-5;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  font-family: $font-primary;
+  border-radius: $radius-md;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+
+  @media (max-width: 992px) {
+    flex: 1;
+    min-width: 120px;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  i {
+    font-size: 1rem;
+  }
+
+  &--outline {
+    background: transparent;
+    color: $color-text;
+    border: 1px solid $color-border;
+
+    &:hover:not(:disabled) {
+      background: $color-bg;
+      border-color: $color-accent;
+      color: $color-accent;
+    }
+  }
+
+  &--secondary {
+    background: #f1f5f9;
+    color: $color-text;
+    border: 1px solid #e2e8f0;
+
+    &:hover:not(:disabled) {
+      background: #e2e8f0;
+      border-color: #cbd5e1;
+    }
+  }
+
+  &--primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+
+    &:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    }
+  }
+
+  &--success {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+
+    &:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+    }
+  }
+}
+
+// =============================================================================
+// ANIMAÇÕES SUAVES
+// =============================================================================
+
+.pep-section {
+  animation: fadeInUp 0.4s ease;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+

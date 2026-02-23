@@ -1,0 +1,153 @@
+<div class="suporte-container">
+  <!-- Header -->
+  <div class="suporte-header">
+    <div class="header-content">
+      <div class="header-icon">
+        <i class="fa-solid fa-headset"></i>
+      </div>
+      <div class="header-text">
+        <h1>Central de Suporte</h1>
+        <p>Estamos aqui para ajudar você</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="suporte-grid">
+    <!-- Coluna Esquerda -->
+    <div class="coluna-esquerda">
+      <!-- Canais de Contato -->
+      <section class="card canais-contato">
+        <h2>
+          <i class="fa-solid fa-phone-volume"></i>
+          Fale Conosco
+        </h2>
+        <div class="canais-grid">
+          <div class="canal-card" *ngFor="let canal of canaisContato">
+            <div class="canal-icon" [style.background]="canal.cor + '20'" [style.color]="canal.cor">
+              <i [class]="canal.icone"></i>
+            </div>
+            <div class="canal-info">
+              <span class="canal-titulo">{{ canal.titulo }}</span>
+              <span class="canal-valor">{{ canal.valor }}</span>
+              <span class="canal-descricao">{{ canal.descricao }}</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Links Úteis -->
+      <section class="card links-uteis">
+        <h2>
+          <i class="fa-solid fa-link"></i>
+          Links Úteis
+        </h2>
+        <div class="links-grid">
+          <a class="link-card" *ngFor="let link of linksUteis" [href]="link.url">
+            <i [class]="link.icone"></i>
+            <span>{{ link.titulo }}</span>
+            <i class="fa-solid fa-arrow-right arrow"></i>
+          </a>
+        </div>
+      </section>
+
+      <!-- Horário de Atendimento -->
+      <section class="card horario">
+        <h2>
+          <i class="fa-solid fa-clock"></i>
+          Horário de Atendimento
+        </h2>
+        <div class="horario-content">
+          <div class="horario-item">
+            <span class="dia">Segunda a Sexta</span>
+            <span class="hora">08:00 - 18:00</span>
+          </div>
+          <div class="horario-item">
+            <span class="dia">Sábado</span>
+            <span class="hora">09:00 - 13:00</span>
+          </div>
+          <div class="horario-item fechado">
+            <span class="dia">Domingo e Feriados</span>
+            <span class="hora">Fechado</span>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Coluna Direita -->
+    <div class="coluna-direita">
+      <!-- FAQ Rápido -->
+      <section class="card faq">
+        <h2>
+          <i class="fa-solid fa-circle-question"></i>
+          Perguntas Frequentes
+        </h2>
+        <div class="faq-list">
+          <div class="faq-item" *ngFor="let item of faqRapido; let i = index" [class.active]="faqAberto === i">
+            <div class="faq-question" (click)="toggleFaq(i)">
+              <span>{{ item.pergunta }}</span>
+              <i class="fa-solid" [class.fa-plus]="faqAberto !== i" [class.fa-minus]="faqAberto === i"></i>
+            </div>
+            <div class="faq-answer" [class.open]="faqAberto === i">
+              <p>{{ item.resposta }}</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Formulário de Contato -->
+      <section class="card formulario">
+        <h2>
+          <i class="fa-solid fa-paper-plane"></i>
+          Enviar Mensagem
+        </h2>
+
+        <!-- Mensagem de Sucesso -->
+        <div class="mensagem-sucesso" *ngIf="mensagemEnviada">
+          <i class="fa-solid fa-circle-check"></i>
+          <span>Mensagem enviada com sucesso! Responderemos em breve.</span>
+        </div>
+
+        <form class="form-contato" *ngIf="!mensagemEnviada">
+          <div class="form-group">
+            <label for="assunto">
+              <i class="fa-solid fa-tag"></i>
+              Assunto
+            </label>
+            <select id="assunto" [(ngModel)]="formContato.assunto" name="assunto">
+              <option value="">Selecione o assunto</option>
+              <option *ngFor="let assunto of assuntos" [value]="assunto">{{ assunto }}</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="mensagem">
+              <i class="fa-solid fa-message"></i>
+              Mensagem
+            </label>
+            <textarea 
+              id="mensagem" 
+              [(ngModel)]="formContato.mensagem" 
+              name="mensagem"
+              rows="5" 
+              placeholder="Descreva sua dúvida ou problema..."></textarea>
+          </div>
+
+          <button 
+            type="button" 
+            class="btn-enviar" 
+            (click)="enviarMensagem()"
+            [disabled]="!formContato.assunto || !formContato.mensagem || enviando">
+            <span *ngIf="!enviando">
+              <i class="fa-solid fa-paper-plane"></i>
+              Enviar Mensagem
+            </span>
+            <span *ngIf="enviando">
+              <i class="fa-solid fa-spinner fa-spin"></i>
+              Enviando...
+            </span>
+          </button>
+        </form>
+      </section>
+    </div>
+  </div>
+</div>

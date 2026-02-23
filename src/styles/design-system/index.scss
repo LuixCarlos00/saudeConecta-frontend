@@ -1,0 +1,19 @@
+// =============================================================================
+// SAUDECONECTA - DESIGN SYSTEM INDEX
+// Ponto de entrada principal do Design System Healthcare
+// =============================================================================
+
+// 1. Variáveis (tokens de design)
+@import 'variables';
+
+// 2. Mixins (funções reutilizáveis)
+@import 'mixins';
+
+// 3. Componentes (classes de componentes)
+@import 'components';
+
+// 4. Utilitários (classes helper)
+@import 'utilities';
+
+// 5. Componentes específicos
+@import '../components/cadastro-form';

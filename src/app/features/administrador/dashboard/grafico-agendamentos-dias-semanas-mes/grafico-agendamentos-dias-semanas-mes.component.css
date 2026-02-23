@@ -1,0 +1,234 @@
+/* =============================================================================
+   GRÁFICO DE AGENDAMENTOS POR DIA
+   Design Moderno Healthcare
+   ============================================================================= */
+
+/* Importar estilos compartilhados padronizados */
+@import '../shared-chart-styles.css';
+
+.chart-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Filtros */
+.chart-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.filter-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.filter-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.filter-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.filter-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: var(--btn-secondary-bg);
+  border: 1px solid var(--btn-secondary-border);
+  border-radius: 8px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filter-btn:hover {
+  background: var(--btn-secondary-hover);
+  color: var(--text-primary);
+}
+
+.filter-btn--active {
+  background: var(--btn-primary-bg);
+  border-color: var(--btn-primary-bg);
+  color: var(--btn-primary-text);
+}
+
+.filter-btn--active:hover {
+  background: var(--btn-primary-hover);
+}
+
+.filter-btn i {
+  font-size: 0.75rem;
+}
+
+/* Date Range Picker */
+.date-range-picker {
+  margin-left: auto;
+}
+
+.date-field {
+  width: 240px;
+}
+
+::ng-deep .date-field .mat-mdc-form-field-subscript-wrapper {
+  display: none;
+}
+
+::ng-deep .date-field .mat-mdc-text-field-wrapper {
+  background: var(--bg-input);
+  border-radius: 8px;
+}
+
+/* Estados */
+.chart-loading,
+.chart-error,
+.chart-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 48px 24px;
+  text-align: center;
+}
+
+.chart-loading {
+  color: var(--primary-color);
+}
+
+.chart-loading i {
+  font-size: 2rem;
+}
+
+.chart-error {
+  color: var(--error-color);
+}
+
+.chart-error i {
+  font-size: 2.5rem;
+  opacity: 0.7;
+}
+
+.chart-error span {
+  color: var(--text-secondary);
+}
+
+.retry-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: var(--btn-primary-bg);
+  border: none;
+  border-radius: 8px;
+  color: var(--btn-primary-text);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.retry-btn:hover {
+  background: var(--btn-primary-hover);
+}
+
+.chart-empty {
+  color: var(--text-muted);
+}
+
+.chart-empty i {
+  font-size: 3rem;
+  opacity: 0.5;
+}
+
+/* Wrapper do Gráfico */
+.chart-wrapper {
+  position: relative;
+  height: 300px;
+  width: 100%;
+}
+
+.chart-wrapper--hidden {
+  display: none;
+}
+
+/* Resumo */
+.chart-summary {
+  display: flex;
+  gap: 24px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border-color);
+}
+
+.summary-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.summary-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--success-color);
+}
+
+.summary-label {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .chart-filters {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .filter-group {
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+  }
+
+  .filter-buttons {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .filter-btn {
+    flex: 1;
+    justify-content: center;
+    min-width: 80px;
+  }
+
+  .date-range-picker {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .date-field {
+    width: 100%;
+  }
+
+  .chart-wrapper {
+    height: 250px;
+  }
+
+  .chart-summary {
+    flex-wrap: wrap;
+  }
+}

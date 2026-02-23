@@ -1,0 +1,161 @@
+<div class="agenda-medico-container">
+  <!-- Header da Página -->
+  <header class="page-header">
+    <div class="header-content">
+      <div class="header-icon">
+        <i class="fa-solid fa-calendar-check"></i>
+      </div>
+      <div class="header-text">
+        <h1>Minha Agenda</h1>
+        <p>Consultas agendadas para hoje</p>
+      </div>
+    </div>
+    <div class="header-stats">
+      <div class="stat-badge">
+        <i class="fa-solid fa-users"></i>
+        <span>{{ dataSource.length }} consultas</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Barra de Pesquisa -->
+  <div class="search-section">
+    <div class="search-wrapper">
+      <div class="search-input-container">
+        <i class="fa-solid fa-magnifying-glass search-icon"></i>
+        <input 
+          type="text" 
+          class="search-input" 
+          [(ngModel)]="pesquisa" 
+          placeholder="Buscar por nome, dia, horário..."
+          (keyup.enter)="chamandoPesquisa()">
+        <button 
+          class="search-clear-btn" 
+          *ngIf="pesquisa" 
+          (click)="limparPesquisa()"
+          title="Limpar pesquisa">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="search-actions">
+        <button class="action-btn action-btn--primary" (click)="chamandoPesquisa()" title="Pesquisar">
+          <i class="fa-solid fa-search"></i>
+          Buscar
+        </button>
+        <button class="action-btn action-btn--secondary" (click)="resetarPesquisa()" title="Recarregar">
+          <i class="fa-solid fa-rotate-right"></i>
+          Atualizar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabela de Consultas -->
+  <div class="table-container">
+    <!-- Estado Vazio -->
+    <div class="empty-state" *ngIf="dataSource.length === 0 || (dataSource.length === 1 && dataSource[0].ConDia_semana === 'Sem Dados')">
+      <div class="empty-icon">
+        <i class="fa-solid fa-calendar-xmark"></i>
+      </div>
+      <h3>Nenhuma consulta agendada</h3>
+      <p>Você não possui consultas agendadas para hoje.</p>
+    </div>
+
+    <!-- Tabela -->
+    <div class="table-wrapper" *ngIf="dataSource.length > 0 && dataSource[0].ConDia_semana !== 'Sem Dados'">
+      <table mat-table [dataSource]="dataSource" class="agenda-table">
+        
+        <!-- Coluna: Número -->
+        <ng-container matColumnDef="ConCodigoConsulta">
+          <th mat-header-cell *matHeaderCellDef class="col-numero">#</th>
+          <td mat-cell *matCellDef="let element; let i = index" class="col-numero">
+            <span class="row-number">{{ i + 1 }}</span>
+          </td>
+        </ng-container>
+
+        <!-- Coluna: Paciente -->
+        <ng-container matColumnDef="NomePaciente">
+          <th mat-header-cell *matHeaderCellDef class="col-paciente">
+            <i class="fa-solid fa-user"></i> Paciente
+          </th>
+          <td mat-cell *matCellDef="let element" class="col-paciente">
+            <div class="patient-info">
+              <div class="patient-avatar">
+                {{ (element.ConPaciente?.paciNome || element.ConPaciente || 'P').charAt(0).toUpperCase() }}
+              </div>
+              <span class="patient-name">{{ element.ConPaciente?.paciNome || element.ConPaciente }}</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Coluna: Dia da Semana -->
+        <ng-container matColumnDef="ConDia_semana">
+          <th mat-header-cell *matHeaderCellDef class="col-dia">
+            <i class="fa-solid fa-calendar-day"></i> Dia
+          </th>
+          <td mat-cell *matCellDef="let element" class="col-dia">
+            <span class="day-badge">{{ element.ConDia_semana }}</span>
+          </td>
+        </ng-container>
+
+        <!-- Coluna: Data -->
+        <ng-container matColumnDef="ConData">
+          <th mat-header-cell *matHeaderCellDef class="col-data">
+            <i class="fa-solid fa-calendar"></i> Data
+          </th>
+          <td mat-cell *matCellDef="let element" class="col-data">
+            <span class="date-value">{{ element.ConData | date: 'dd/MM/yyyy' }}</span>
+          </td>
+        </ng-container>
+
+        <!-- Coluna: Horário -->
+        <ng-container matColumnDef="ConHorario">
+          <th mat-header-cell *matHeaderCellDef class="col-horario">
+            <i class="fa-solid fa-clock"></i> Horário
+          </th>
+          <td mat-cell *matCellDef="let element" class="col-horario">
+            <span class="time-badge">{{ element.ConHorario }}</span>
+          </td>
+        </ng-container>
+
+        <!-- Coluna: Observações -->
+        <ng-container matColumnDef="ConObservacoes">
+          <th mat-header-cell *matHeaderCellDef class="col-obs">
+            <i class="fa-solid fa-note-sticky"></i> Aviso
+          </th>
+          <td mat-cell *matCellDef="let element" class="col-obs">
+            <button 
+              *ngIf="element.ConObservacoes" 
+              class="obs-btn"
+              (click)="openObservacoesDialog(element.ConObservacoes)"
+              title="Ver observações">
+              <i class="fa-solid fa-note-sticky"></i>
+            </button>
+            <span *ngIf="!element.ConObservacoes" class="no-obs">-</span>
+          </td>
+        </ng-container>
+
+        <!-- Coluna: Ação -->
+        <ng-container matColumnDef="Consulta">
+          <th mat-header-cell *matHeaderCellDef class="col-action">Ação</th>
+          <td mat-cell *matCellDef="let element" class="col-action">
+            <button 
+              class="start-btn" 
+              (click)="DesejaAbrirConsulta(element)"
+              title="Iniciar consulta">
+              <i class="fa-solid fa-stethoscope"></i>
+              <span>Iniciar</span>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row 
+            *matRowDef="let row; columns: displayedColumns;"
+            [class.row-selected]="clickedRows.has(row)"
+            (click)="clickedRows.add(row)">
+        </tr>
+      </table>
+    </div>
+  </div>
+</div>

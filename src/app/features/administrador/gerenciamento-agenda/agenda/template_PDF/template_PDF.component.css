@@ -1,0 +1,1142 @@
+/* =============================================================================
+   TEMPLATE PDF - LAYOUT FORMAL RESPONSIVO (4 COLUNAS)
+   ============================================================================= */
+
+.documento-container {
+  background: #ffffff;
+  border-radius: 8px;
+  overflow: hidden;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* =============================================================================
+   HEADER DO DIALOG (não aparece no PDF)
+   ============================================================================= */
+.dialog-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  background: #2c3e50;
+  color: white;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.header-text {
+  flex: 1;
+  min-width: 200px;
+}
+
+.header-title {
+  margin: 0;
+  font-size: clamp(16px, 3vw, 18px);
+  font-weight: 600;
+}
+
+.header-subtitle {
+  margin: 4px 0 0;
+  font-size: clamp(12px, 2.5vw, 13px);
+  opacity: 0.8;
+}
+
+.close-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  border: none;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  cursor: pointer;
+  font-size: 20px;
+  line-height: 1;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+
+.close-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* =============================================================================
+   STEP INDICATOR
+   ============================================================================= */
+.step-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-right: 16px;
+}
+
+.step {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(11px, 2.5vw, 13px);
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.6);
+  transition: all 0.3s;
+  flex-shrink: 0;
+}
+
+.step.active {
+  background: white;
+  color: #2c3e50;
+}
+
+.step.completed {
+  background: #27ae60;
+  color: white;
+}
+
+.step-line {
+  width: 30px;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.3);
+  transition: background 0.3s;
+  flex-shrink: 0;
+}
+
+.step-line.completed {
+  background: #27ae60;
+}
+
+/* =============================================================================
+   PAINEL DE CONFIGURAÇÃO DE CAMPOS (FULLSCREEN - 4 COLUNAS)
+   ============================================================================= */
+.config-panel-fullscreen {
+  flex: 1;
+  background: #f8f9fa;
+  padding: clamp(12px, 3vw, 24px);
+  overflow-y: auto;
+}
+
+.config-header {
+  margin-bottom: 16px;
+}
+
+.config-header h3 {
+  margin: 0 0 6px;
+  font-size: clamp(14px, 2.5vw, 15px);
+  font-weight: 600;
+  color: #333;
+}
+
+.config-hint {
+  margin: 0;
+  font-size: clamp(11px, 2vw, 12px);
+  color: #666;
+  line-height: 1.4;
+}
+
+/* GRID DE 4 COLUNAS */
+.config-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: clamp(12px, 2vw, 20px);
+}
+
+/* Tablets grandes - 2 colunas */
+@media (max-width: 1200px) {
+  .config-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Tablets pequenos - 1 coluna */
+@media (max-width: 768px) {
+  .config-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.config-section {
+  background: white;
+  border-radius: 6px;
+  padding: clamp(10px, 2vw, 14px);
+  border: 1px solid #e0e0e0;
+  min-width: 0;
+  animation: fadeInUp 0.3s ease;
+}
+
+.config-section:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: box-shadow 0.2s ease;
+}
+
+.config-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #eee;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.config-section-header h4 {
+  margin: 0;
+  font-size: clamp(12px, 2.5vw, 13px);
+  font-weight: 600;
+  color: #2c3e50;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.campo-counter {
+  font-size: clamp(10px, 2vw, 11px);
+  color: #888;
+  background: #f0f0f0;
+  padding: 2px 8px;
+  border-radius: 10px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.config-actions {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.action-link {
+  background: none;
+  border: none;
+  color: #3498db;
+  font-size: clamp(10px, 2vw, 11px);
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+  white-space: nowrap;
+}
+
+.action-link:hover {
+  color: #2980b9;
+}
+
+.campos-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.campo-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.15s;
+  font-size: clamp(12px, 2.5vw, 13px);
+  animation: fadeIn 0.2s ease;
+}
+
+.campo-item:not(.disabled):hover {
+  background: linear-gradient(90deg, #f8f9fa 0%, #e9ecef 100%);
+  border-left: 3px solid #3498db;
+  padding-left: 5px;
+  transition: all 0.2s ease;
+}
+
+.campo-item.disabled {
+  cursor: default;
+}
+
+.campo-item.disabled:hover {
+  background: transparent;
+}
+
+.campo-item input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: #2c3e50;
+  flex-shrink: 0;
+}
+
+.campo-item.disabled input[type="checkbox"] {
+  cursor: default;
+}
+
+.campo-label {
+  flex: 1;
+  color: #333;
+  word-break: break-word;
+  min-width: 0;
+}
+
+.obrigatorio-badge {
+  font-size: clamp(8px, 1.8vw, 9px);
+  text-transform: uppercase;
+  background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+  color: white;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  box-shadow: 0 2px 4px rgba(231, 76, 60, 0.3);
+}
+
+.indisponivel-badge {
+  background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+  color: white;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 9px;
+  font-weight: 600;
+  margin-left: auto;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  box-shadow: 0 2px 4px rgba(255, 152, 0, 0.3);
+}
+
+.campo-item.indisponivel {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: #fafafa;
+}
+
+.campo-item.indisponivel .campo-label {
+  text-decoration: line-through;
+  color: #999;
+}
+
+/* Footer com ações separadas */
+.footer-actions-right {
+  display: flex;
+  gap: 12px;
+  margin-left: auto;
+  flex-wrap: wrap;
+}
+
+.btn-arrow {
+  margin-left: 6px;
+  font-size: 14px;
+}
+
+.btn--outline .btn-arrow {
+  margin-left: 0;
+  margin-right: 6px;
+}
+
+/* =============================================================================
+   BODY DO DIALOG
+   ============================================================================= */
+.dialog-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: clamp(12px, 3vw, 20px);
+  background: #f5f5f5;
+}
+
+/* =============================================================================
+   CONTEÚDO DO PDF - CABEÇALHO
+   ============================================================================= */
+.pdf-content {
+  background: white;
+  padding: clamp(20px, 4vw, 40px);
+  max-width: 210mm;
+  margin: 0 auto;
+  font-family: 'Times New Roman', Times, serif;
+  color: #333;
+  line-height: 1.4;
+}
+
+/* Cabeçalho do Documento */
+.document-header {
+  text-align: center;
+  margin-bottom: clamp(20px, 4vw, 30px);
+}
+
+.document-title {
+  font-size: clamp(16px, 3.5vw, 20px);
+  font-weight: bold;
+  color: #1a1a1a;
+  margin: 0 0 10px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  line-height: 1.2;
+}
+
+.document-line {
+  height: 2px;
+  background: #333;
+  margin: 15px 0;
+}
+
+.document-info {
+  display: flex;
+  justify-content: center;
+  gap: clamp(16px, 4vw, 40px);
+  font-size: clamp(11px, 2.5vw, 13px);
+  color: #444;
+  flex-wrap: wrap;
+}
+
+.document-info span {
+  display: inline-block;
+}
+
+/* =============================================================================
+   PRÉ-VISUALIZAÇÃO VERTICAL ULTRA COMPACTA (IGUAL AO PDF)
+   ============================================================================= */
+.pdf-preview-vertical {
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  margin-top: 20px;
+  font-family: 'Helvetica', Arial, sans-serif;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+/* Cabeçalho */
+.pdf-header {
+  background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+  color: white;
+  padding: 20px;
+  text-align: center;
+  position: relative;
+}
+
+.header-title {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 8px;
+  letter-spacing: 1px;
+}
+
+.header-info {
+  font-size: 10px;
+  margin-bottom: 6px;
+  opacity: 0.9;
+}
+
+.header-status {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 3px;
+  font-size: 7px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0 auto;
+}
+
+/* Seções */
+.pdf-section {
+  margin-bottom: 8px;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  background: #f8f9fa;
+  height: 24px;
+  position: relative;
+}
+
+.section-bar {
+  width: 8px;
+  height: 24px;
+  border-radius: 0;
+}
+
+.section-header.profissional .section-bar {
+  background: #3498db;
+}
+
+.section-header.paciente .section-bar {
+  background: #27ae60;
+}
+
+.section-header.consulta .section-bar {
+  background: #e67e22;
+}
+
+.section-header.observacoes .section-bar {
+  background: #9b59b6;
+}
+
+.section-header.calendario .section-bar {
+  background: #8e44ad;
+}
+
+.section-title {
+  font-size: 11px;
+  font-weight: bold;
+  margin-left: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.section-header.profissional .section-title {
+  color: #3498db;
+}
+
+.section-header.paciente .section-title {
+  color: #27ae60;
+}
+
+.section-header.consulta .section-title {
+  color: #e67e22;
+}
+
+.section-header.observacoes .section-title {
+  color: #9b59b6;
+}
+
+.section-header.calendario .section-title {
+  color: #8e44ad;
+}
+
+/* Conteúdo das seções */
+.section-content {
+  padding: 8px 12px;
+}
+
+/* Campos */
+.pdf-field {
+  margin-bottom: 6px;
+  position: relative;
+}
+
+.pdf-field:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 12px;
+  right: 12px;
+  height: 1px;
+  background: #f0f0f0;
+}
+
+.field-label {
+  font-size: 8px;
+  font-weight: bold;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 2px;
+}
+
+.field-value {
+  font-size: 10px;
+  color: #333;
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+.field-value.observacoes {
+  font-size: 9px;
+  line-height: 1.5;
+  color: #555;
+  background: #fafafa;
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid #f0f0f0;
+}
+
+/* Calendário */
+.calendar-card {
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  padding: 8px;
+  margin-top: 8px;
+}
+
+.calendar-card mat-calendar {
+  font-size: 10px;
+}
+
+/* Rodapé */
+.pdf-footer {
+  margin-top: 16px;
+  padding: 12px 20px;
+}
+
+.footer-line {
+  height: 1px;
+  background: #3498db;
+  margin-bottom: 8px;
+}
+
+.footer-info {
+  text-align: center;
+}
+
+.emissao {
+  font-size: 8px;
+  color: #888;
+  font-style: italic;
+  margin-bottom: 4px;
+}
+
+.validade {
+  font-size: 7px;
+  color: #999;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+/* Responsividade */
+@media (max-width: 900px) {
+  .pdf-preview-vertical {
+    margin: 20px 10px;
+  }
+  
+  .pdf-header {
+    padding: 16px;
+  }
+  
+  .header-title {
+    font-size: 16px;
+  }
+  
+  .section-content {
+    padding: 6px 10px;
+  }
+  
+  .field-value {
+    font-size: 9px;
+  }
+}
+
+/* =============================================================================
+   CALENDÁRIO
+   ============================================================================= */
+.calendar-section {
+  margin: clamp(16px, 3vw, 25px) 0;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.calendar-card {
+  border: 1px solid #ddd;
+  max-width: min(100%, 300px);
+  box-shadow: none;
+}
+
+/* =============================================================================
+   RODAPÉ DO DOCUMENTO
+   ============================================================================= */
+.document-footer {
+  margin-top: clamp(24px, 4vw, 40px);
+  padding-top: clamp(12px, 3vw, 20px);
+}
+
+.footer-line {
+  height: 1px;
+  background: #ccc;
+  margin-bottom: clamp(12px, 3vw, 20px);
+}
+
+.footer-info {
+  display: flex;
+  justify-content: center;
+  font-size: clamp(11px, 2.2vw, 12px);
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.data-emissao {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-align: center;
+}
+
+.footer-label {
+  font-weight: bold;
+  color: #555;
+  font-size: clamp(10px, 2vw, 11px);
+  text-transform: uppercase;
+}
+
+.footer-value {
+  color: #1a1a1a;
+  font-size: clamp(12px, 2.5vw, 13px);
+  word-break: break-word;
+}
+
+/* =============================================================================
+   FOOTER DO DIALOG (não aparece no PDF)
+   ============================================================================= */
+.dialog-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: clamp(12px, 2vw, 16px) clamp(16px, 3vw, 24px);
+  background: white;
+  border-top: 1px solid #ddd;
+  flex-wrap: wrap;
+}
+
+.btn {
+  padding: clamp(8px, 1.5vw, 10px) clamp(16px, 3vw, 24px);
+  border-radius: 4px;
+  font-size: clamp(13px, 2.5vw, 14px);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 1px solid transparent;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn--primary {
+  background: #2c3e50;
+  color: white;
+  border-color: #2c3e50;
+}
+
+.btn--primary:hover:not(:disabled) {
+  background: #1a252f;
+}
+
+.btn--secondary {
+  background: #f5f5f5;
+  color: #666;
+  border-color: #ddd;
+}
+
+.btn--secondary:hover:not(:disabled) {
+  background: #e8e8e8;
+}
+
+.btn--outline {
+  background: white;
+  color: #666;
+  border: 1px solid #ccc;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-size: clamp(12px, 2.5vw, 13px);
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.btn--outline:hover {
+  background: #f5f5f5;
+  border-color: #999;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn i {
+  margin-right: 6px;
+  font-size: 14px;
+}
+
+.btn .fa-spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* =============================================================================
+   LOADING OVERLAY
+   ============================================================================= */
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.95);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(2px);
+}
+
+.loading-content {
+  text-align: center;
+  padding: clamp(20px, 4vw, 40px);
+  max-width: 90%;
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+}
+
+.loading-content {
+  text-align: center;
+  background: white;
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+}
+
+.loading-content i {
+  color: #3498db;
+  margin-bottom: 1rem;
+}
+
+.loading-content p {
+  color: #666;
+  font-size: 14px;
+  margin-top: 12px;
+}
+
+.loading-icon {
+  margin-bottom: 20px;
+}
+
+.spinner {
+  width: clamp(40px, 8vw, 60px);
+  height: clamp(40px, 8vw, 60px);
+  animation: rotate 2s linear infinite;
+}
+
+.spinner .path {
+  stroke: #2c3e50;
+  stroke-linecap: round;
+  animation: dash 1.5s ease-in-out infinite;
+}
+
+@keyframes rotate {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes dash {
+  0% {
+    stroke-dasharray: 1, 150;
+    stroke-dashoffset: 0;
+  }
+
+  50% {
+    stroke-dasharray: 90, 150;
+    stroke-dashoffset: -35;
+  }
+
+  100% {
+    stroke-dasharray: 90, 150;
+    stroke-dashoffset: -124;
+  }
+}
+
+.loading-title {
+  margin: 0 0 8px;
+  font-size: clamp(16px, 3vw, 18px);
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.loading-subtitle {
+  margin: 0 0 24px;
+  font-size: clamp(12px, 2.5vw, 14px);
+  color: #666;
+}
+
+.progress-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: min(100%, 300px);
+  margin: 0 auto;
+}
+
+.progress-bar {
+  flex: 1;
+  height: 8px;
+  background: #e0e0e0;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #2c3e50, #3498db);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.progress-text {
+  font-size: clamp(12px, 2.5vw, 14px);
+  font-weight: 600;
+  color: #2c3e50;
+  min-width: 45px;
+}
+
+/* =============================================================================
+   ANIMAÇÕES
+   ============================================================================= */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+/* =============================================================================
+   SNACKBAR CUSTOMIZADO
+   ============================================================================= */
+::ng-deep .mat-snack-bar-container.info-snackbar {
+  background: #3498db;
+  color: white;
+}
+
+::ng-deep .mat-simple-snackbar-action {
+  color: white !important;
+}
+
+/* =============================================================================
+   MEDIA QUERIES PARA RESPONSIVIDADE
+   ============================================================================= */
+
+/* Desktops grandes - 4 colunas (padrão) */
+@media (min-width: 1400px) {
+  .config-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* Desktops médios - 4 colunas */
+@media (min-width: 1200px) and (max-width: 1399px) {
+  .config-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+}
+
+/* Tablets grandes e laptops pequenos - 2 colunas */
+@media (min-width: 769px) and (max-width: 1199px) {
+  .config-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Tablets e dispositivos médios - 1 coluna */
+@media (max-width: 768px) {
+  .documento-container {
+    max-height: 95vh;
+  }
+
+  .dialog-header {
+    padding: 12px 16px;
+  }
+
+  .step-indicator {
+    margin-right: 8px;
+  }
+
+  .step-line {
+    width: 20px;
+  }
+
+  .config-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .footer-actions-right {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}
+
+/* Smartphones */
+@media (max-width: 600px) {
+  .dialog-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .header-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .step-indicator {
+    order: 1;
+  }
+
+  .close-btn {
+    order: 2;
+  }
+
+  .pdf-content {
+    padding: 16px;
+  }
+
+  .document-info {
+    flex-direction: column;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .dialog-footer {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+
+  .footer-actions-right {
+    width: 100%;
+    flex-direction: column-reverse;
+  }
+
+  .btn {
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+  }
+
+  .config-actions {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .action-link {
+    text-align: left;
+  }
+
+  .calendar-section {
+    overflow-x: auto;
+  }
+
+  .calendar-card {
+    min-width: 280px;
+  }
+}
+
+/* Dispositivos muito pequenos */
+@media (max-width: 400px) {
+  .documento-container {
+    border-radius: 0;
+  }
+
+  .dialog-header {
+    border-radius: 0;
+  }
+
+  .config-section-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .campo-counter {
+    align-self: flex-end;
+  }
+}
+
+/* Landscape em smartphones */
+@media (max-width: 900px) and (orientation: landscape) {
+  .documento-container {
+    max-height: 98vh;
+  }
+
+  .dialog-header {
+    padding: 8px 16px;
+  }
+
+  .config-panel-fullscreen {
+    padding: 12px;
+  }
+
+  .dialog-footer {
+    padding: 8px 16px;
+  }
+}
+
+/* =============================================================================
+   ESTILOS PARA IMPRESSÃO / PDF
+   ============================================================================= */
+@media print {
+
+  .dialog-header,
+  .dialog-footer,
+  .loading-overlay,
+  .config-panel-fullscreen {
+    display: none !important;
+  }
+
+  .dialog-body {
+    padding: 0;
+    background: white;
+    overflow: visible;
+  }
+
+  .pdf-content {
+    box-shadow: none;
+    max-width: 100%;
+    padding: 20px;
+  }
+
+  .calendar-section {
+    page-break-inside: avoid;
+  }
+
+  .preview-column {
+    page-break-inside: avoid;
+  }
+}
+
+/* =============================================================================
+   SUPORTE PARA MODO ESCURO (opcional)
+   ============================================================================= */
+@media (prefers-color-scheme: dark) {
+
+  /* Manter PDF sempre em modo claro para impressão */
+  .pdf-content,
+  .pdf-content * {
+    background-color: white !important;
+    color: #333 !important;
+  }
+}

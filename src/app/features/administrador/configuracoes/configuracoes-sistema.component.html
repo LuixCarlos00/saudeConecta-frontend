@@ -1,0 +1,296 @@
+<div class="config-container">
+  <!-- Header -->
+  <header class="config-header">
+    <div class="header-content">
+      <div class="header-icon">
+        <i class="fa-solid fa-gear"></i>
+      </div>
+      <div class="header-text">
+        <h1>Configurações do Sistema</h1>
+        <p>Personalize a aparência e comportamento do sistema</p>
+      </div>
+    </div>
+  </header>
+
+  <!-- Content -->
+  <main class="config-content">
+    <!-- Tabs de Navegação -->
+    <div class="tabs-container">
+      <!-- <button
+        class="tab-button"
+         (click)="setActiveTab('temas')">
+        <i class="fa-solid fa-palette"></i>
+        <span>Temas</span>
+      </button> -->
+
+      <button class="tab-button" (click)="setActiveTab('graficos')">
+        <i class="fa-solid fa-chart-line"></i>
+        <span>Gráficos do Dashboard</span>
+      </button>
+    </div>
+
+    <!-- Seção de Temas -->
+    <section class="config-section" *ngIf="activeTab === 'temas'">
+      <div class="section-header">
+        <i class="fa-solid fa-palette"></i>
+        <h2>Aparência</h2>
+      </div>
+      <p class="section-description">
+        Escolha o tema de cores que melhor se adapta às suas preferências.
+        As alterações serão aplicadas imediatamente em todo o sistema.
+      </p>
+
+      <div class="themes-grid">
+        <!-- Tema Claro -->
+        <div class="theme-card" [class.selected]="isThemeSelected('light')" (click)="selectTheme('light')">
+          <div class="theme-preview light-preview">
+            <div class="preview-header"></div>
+            <div class="preview-sidebar"></div>
+            <div class="preview-content">
+              <div class="preview-card"></div>
+              <div class="preview-card"></div>
+            </div>
+          </div>
+          <div class="theme-info">
+            <div class="theme-name">
+              <i class="fa-solid fa-sun"></i>
+              <span>Claro</span>
+            </div>
+            <p class="theme-description">Tema claro padrão</p>
+            <div class="theme-check" *ngIf="isThemeSelected('light')">
+              <i class="fa-solid fa-check"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tema Escuro Azul -->
+        <div class="theme-card" [class.selected]="isThemeSelected('dark-blue')" (click)="selectTheme('dark-blue')">
+          <div class="theme-preview dark-blue-preview">
+            <div class="preview-header"></div>
+            <div class="preview-sidebar"></div>
+            <div class="preview-content">
+              <div class="preview-card"></div>
+              <div class="preview-card"></div>
+            </div>
+          </div>
+          <div class="theme-info">
+            <div class="theme-name">
+              <i class="fa-solid fa-moon"></i>
+              <span>Escuro Azul</span>
+            </div>
+            <p class="theme-description">Fundo azul escuro com labels brancas</p>
+            <div class="theme-check" *ngIf="isThemeSelected('dark-blue')">
+              <i class="fa-solid fa-check"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tema Escuro Preto -->
+        <div class="theme-card" [class.selected]="isThemeSelected('dark-black')" (click)="selectTheme('dark-black')">
+          <div class="theme-preview dark-black-preview">
+            <div class="preview-header"></div>
+            <div class="preview-sidebar"></div>
+            <div class="preview-content">
+              <div class="preview-card"></div>
+              <div class="preview-card"></div>
+            </div>
+          </div>
+          <div class="theme-info">
+            <div class="theme-name">
+              <i class="fa-solid fa-circle"></i>
+              <span>Escuro Preto</span>
+            </div>
+            <p class="theme-description">Fundo preto com labels brancas</p>
+            <div class="theme-check" *ngIf="isThemeSelected('dark-black')">
+              <i class="fa-solid fa-check"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Info Card -->
+    <section class="info-card" *ngIf="activeTab === 'temas'">
+      <div class="info-icon">
+        <i class="fa-solid fa-circle-info"></i>
+      </div>
+      <div class="info-content">
+        <h3>Sobre os Temas</h3>
+        <p>
+          Os temas escuros são ideais para uso em ambientes com pouca luz e podem
+          ajudar a reduzir a fadiga ocular. O tema escolhido será salvo e aplicado
+          automaticamente em suas próximas sessões.
+        </p>
+      </div>
+    </section>
+
+    <!-- Seção de Gráficos do Dashboard -->
+    <section class="config-section graficos-section" *ngIf="activeTab === 'graficos'">
+      <!-- Header da Seção -->
+      <div class="section-header">
+        <i class="fa-solid fa-chart-line"></i>
+        <div>
+          <h2>Gráficos do Dashboard</h2>
+          <p class="section-subtitle">Personalize a visualização dos dados em tempo real</p>
+        </div>
+      </div>
+
+      <!-- Descrição com Estatísticas -->
+      <div class="section-stats-wrapper">
+        <p class="section-description">
+          <i class="fa-solid fa-circle-info"></i>
+          <span>
+            Controle quais gráficos serão exibidos no dashboard. Ative ou desative os gráficos
+            de acordo com suas necessidades. As alterações serão aplicadas imediatamente.
+          </span>
+        </p>
+        <div class="stats-badges" *ngIf="!loading && configuracoes.length > 0">
+          <div class="stat-badge stat-badge--total">
+            <i class="fa-solid fa-chart-bar"></i>
+            <div class="stat-content">
+              <span class="stat-value">{{ configuracoes.length }}</span>
+              <span class="stat-label">Total</span>
+            </div>
+          </div>
+          <div class="stat-badge stat-badge--active">
+            <i class="fa-solid fa-circle-check"></i>
+            <div class="stat-content">
+              <span class="stat-value">{{ (configuracoes | filter: 'ativo': true).length }}</span>
+              <span class="stat-label">Ativos</span>
+            </div>
+          </div>
+          <div class="stat-badge stat-badge--inactive">
+            <i class="fa-solid fa-circle-xmark"></i>
+            <div class="stat-content">
+              <span class="stat-value">{{ (configuracoes | filter: 'ativo': false).length }}</span>
+              <span class="stat-label">Inativos</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Loading State Aprimorado -->
+      <div class="loading-state" *ngIf="loading">
+        <div class="loading-spinner">
+          <i class="fa-solid fa-spinner fa-spin"></i>
+        </div>
+        <span class="loading-text">Carregando configurações...</span>
+        <p class="loading-subtext">Aguarde enquanto buscamos suas preferências</p>
+      </div>
+
+      <!-- Gráficos Grid Aprimorado -->
+      <div class="grafico-grid" *ngIf="!loading && configuracoes.length > 0">
+        <div class="grafico-card" *ngFor="let config of configuracoes; let i = index"
+          [class.grafico-card--active]="config.ativo" [style.animation-delay]="i * 0.05 + 's'">
+
+          <!-- Header do Card -->
+          <div class="grafico-header">
+            <div class="grafico-icon-wrapper">
+              <div class="grafico-icon" [class.active]="config.ativo">
+                <i class="fa-solid" [ngClass]="getGraficoIcon(config.tipoGrafico)"></i>
+              </div>
+              <div class="grafico-pulse" *ngIf="config.ativo"></div>
+            </div>
+
+            <div class="grafico-info">
+              <h3 class="grafico-title">{{ config.descricao }}</h3>
+              <div class="grafico-meta">
+                <span class="grafico-ordem">{{ config.ordemExibicao }}</span>
+                <span class="grafico-tipo">{{ config.tipoGrafico }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Body do Card -->
+          <div class="grafico-card-body">
+            <div class="toggle-container">
+              <div class="status-badge" [class.active]="config.ativo">
+                <i class="fa-solid" [ngClass]="config.ativo ? 'fa-circle-check' : 'fa-circle-xmark'"></i>
+                <span>{{ config.ativo ? 'Ativo' : 'Inativo' }}</span>
+              </div>
+
+              <label class="toggle-switch" [attr.aria-label]="'Alternar ' + config.descricao">
+                <input type="checkbox" [checked]="config.ativo" (change)="toggleGrafico(config)"
+                  [attr.aria-checked]="config.ativo">
+                <span class="toggle-slider">
+                  <span class="toggle-icon toggle-icon--off">
+                    <i class="fa-solid fa-xmark"></i>
+                  </span>
+                  <span class="toggle-icon toggle-icon--on">
+                    <i class="fa-solid fa-check"></i>
+                  </span>
+                </span>
+              </label>
+            </div>
+
+            <!-- Indicador de Posição -->
+            <div class="position-indicator" *ngIf="config.ativo">
+              <i class="fa-solid fa-arrow-up-short-wide"></i>
+              <span>Posição {{ config.ordemExibicao }} no dashboard</span>
+            </div>
+          </div>
+
+          <!-- Overlay de Ativo -->
+          <div class="active-overlay" *ngIf="config.ativo">
+            <i class="fa-solid fa-eye"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Empty State Aprimorado -->
+      <div class="empty-state" *ngIf="!loading && configuracoes.length === 0">
+        <div class="empty-icon">
+          <i class="fa-solid fa-chart-line"></i>
+        </div>
+        <h3 class="empty-title">Nenhuma configuração encontrada</h3>
+        <p class="empty-description">
+          As configurações de gráficos serão criadas automaticamente no primeiro acesso.
+        </p>
+        <button class="btn-primary" (click)="carregarConfiguracoes()">
+          <i class="fa-solid fa-rotate"></i>
+          Recarregar
+        </button>
+      </div>
+
+      <!-- Botões de Ação Aprimorados -->
+      <div class="action-buttons" *ngIf="!loading && configuracoes.length > 0">
+        <button class="btn-secondary" (click)="resetarConfiguracoes()">
+          <i class="fa-solid fa-rotate-left"></i>
+          <span>Resetar para Padrão</span>
+        </button>
+        <button class="btn-primary" (click)="salvarConfiguracoes()">
+          <i class="fa-solid fa-floppy-disk"></i>
+          <span>Salvar Configurações</span>
+        </button>
+      </div>
+
+      <!-- Info Card Aprimorado -->
+      <section class="info-card info-card--enhanced">
+        <div class="info-icon">
+          <i class="fa-solid fa-lightbulb"></i>
+        </div>
+        <div class="info-content">
+          <h3>💡 Dicas de Uso</h3>
+          <ul class="info-list">
+            <li>
+              <i class="fa-solid fa-check-circle"></i>
+              <span>Gráficos <strong>desativados</strong> não aparecem no dashboard</span>
+            </li>
+            <li>
+              <i class="fa-solid fa-check-circle"></i>
+              <span>A <strong>ordem de exibição</strong> determina a posição no dashboard</span>
+            </li>
+            <li>
+              <i class="fa-solid fa-check-circle"></i>
+              <span>Alterações são aplicadas <strong>imediatamente</strong> após salvar</span>
+            </li>
+            <li>
+              <i class="fa-solid fa-check-circle"></i>
+              <span>Use <strong>"Resetar"</strong> para ativar todos os gráficos</span>
+            </li>
+          </ul>
+        </div>
+      </section>
+    </section>
+  </main>
+</div>

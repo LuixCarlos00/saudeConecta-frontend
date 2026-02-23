@@ -1,0 +1,66 @@
+<div class="dialog-container">
+  <!-- Header -->
+  <header class="dialog-header">
+    <div class="header-info">
+      <div class="header-icon">
+        <i class="fa-solid fa-hospital-user"></i>
+      </div>
+      <div class="header-text">
+        <h2 class="header-title">Selecionar Paciente</h2>
+        <p class="header-subtitle">{{ dataSource.length }} paciente(s) encontrado(s)</p>
+      </div>
+    </div>
+    <button class="close-btn" mat-dialog-close>
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+  </header>
+
+  <!-- Lista de Pacientes -->
+  <div class="dialog-body">
+    <div class="list-container">
+      <!-- Empty State -->
+      <div class="empty-state" *ngIf="dataSource.length === 0">
+        <i class="fa-solid fa-user-slash"></i>
+        <p>Nenhum paciente encontrado</p>
+        <span>Tente ajustar os filtros de pesquisa</span>
+      </div>
+
+      <!-- Lista -->
+      <div class="person-list" *ngIf="dataSource.length > 0">
+        <div class="person-item" *ngFor="let element of (dataSource | slice: lowValue : highValue)">
+          <div class="person-avatar">
+            <i class="fa-solid fa-user"></i>
+          </div>
+          <div class="person-info">
+            <span class="person-name">{{ element.nome }}</span>
+            <div class="person-details">
+              <span class="detail-badge detail-badge--code">
+                <i class="fa-solid fa-hashtag"></i>
+                Cód: {{ element.codigo }}
+              </span>
+              <span class="detail-item">
+                <i class="fa-solid fa-id-card"></i>
+                CPF: {{ element.cpf }}
+              </span>
+              <span class="detail-item" *ngIf="element.dataNascimento">
+                <i class="fa-solid fa-cake-candles"></i>
+                {{ element.dataNascimento }}
+              </span>
+            </div>
+          </div>
+          <button class="btn-select" (click)="SelecionaPaciente(element)">
+            <i class="fa-solid fa-check"></i>
+            Selecionar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer com Paginação -->
+  <footer class="dialog-footer">
+    <mat-paginator [pageSizeOptions]="[5, 10, 20]" (page)="getPaginatorData($event)" [length]="dataSource.length"
+      showFirstLastButtons>
+    </mat-paginator>
+  </footer>
+</div>

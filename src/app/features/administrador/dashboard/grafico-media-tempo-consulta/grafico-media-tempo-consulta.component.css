@@ -1,0 +1,245 @@
+/* =============================================================================
+   GRÁFICO DE MÉDIA DE TEMPO DE CONSULTA
+   Design Moderno Healthcare - Padronizado
+   ============================================================================= */
+
+/* Importar estilos compartilhados padronizados */
+@import '../shared-chart-styles.css';
+
+.grafico-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Filtros */
+.chart-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.filter-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.filter-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.filter-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.filter-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: var(--btn-secondary-bg);
+  border: 1px solid var(--btn-secondary-border);
+  border-radius: 8px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filter-btn:hover {
+  background: var(--btn-secondary-hover);
+  color: var(--text-primary);
+}
+
+.filter-btn--active {
+  background: var(--btn-primary-bg);
+  border-color: var(--btn-primary-bg);
+  color: var(--btn-primary-text);
+}
+
+.filter-btn--active:hover {
+  background: var(--btn-primary-hover);
+}
+
+.filter-btn i {
+  font-size: 0.75rem;
+}
+
+/* Date Range Picker */
+.date-range-picker {
+  margin-left: auto;
+}
+
+.date-field {
+  width: 240px;
+}
+
+::ng-deep .date-field .mat-mdc-form-field-subscript-wrapper {
+  display: none;
+}
+
+::ng-deep .date-field .mat-mdc-text-field-wrapper {
+  background: var(--bg-input);
+  border-radius: 8px;
+}
+
+/* Estados */
+.loading-state,
+.error-state,
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 48px 24px;
+  text-align: center;
+}
+
+.loading-state {
+  color: var(--primary-color);
+}
+
+.loading-state i {
+  font-size: 2rem;
+}
+
+.error-state {
+  color: var(--error-color);
+}
+
+.error-state i {
+  font-size: 2.5rem;
+  opacity: 0.7;
+}
+
+.error-state p {
+  color: var(--text-secondary);
+}
+
+.empty-state {
+  color: var(--text-muted);
+}
+
+.empty-state i {
+  font-size: 3rem;
+  opacity: 0.5;
+}
+
+/* Cards de Estatísticas */
+.stats-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.stat-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: var(--bg-card, #fff);
+  border-radius: 12px;
+  box-shadow: var(--shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.1));
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md, 0 4px 6px rgba(0, 0, 0, 0.1));
+}
+
+.stat-card__icon {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  font-size: 1.5rem;
+}
+
+.stat-card--primary .stat-card__icon {
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+}
+
+.stat-card--success .stat-card__icon {
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+}
+
+.stat-card--info .stat-card__icon {
+  background: rgba(99, 102, 241, 0.1);
+  color: #6366f1;
+}
+
+.stat-card--danger .stat-card__icon {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+.stat-card__content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.stat-card__value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary, #1f2937);
+}
+
+.stat-card__label {
+  font-size: 0.875rem;
+  color: var(--text-secondary, #6b7280);
+}
+
+.grafico-wrapper {
+  flex: 1;
+  min-height: 300px;
+  position: relative;
+}
+
+.loading-state,
+.error-state,
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  text-align: center;
+  gap: 1rem;
+}
+
+.loading-state i,
+.error-state i,
+.empty-state i {
+  font-size: 3rem;
+  color: var(--text-muted, #9ca3af);
+}
+
+.loading-state i {
+  color: var(--primary-color, #3b82f6);
+}
+
+.error-state i {
+  color: var(--error-color, #ef4444);
+}
+
+.loading-state p,
+.error-state p,
+.empty-state p {
+  color: var(--text-secondary, #6b7280);
+  font-size: 1rem;
+}

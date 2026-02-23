@@ -1,0 +1,378 @@
+/* =============================================================================
+   FORMULÁRIOS DE CADASTRO - ESTILOS MODERNOS COMPARTILHADOS
+   ============================================================================= */
+
+.cadastro-dialog {
+  padding: 0;
+  max-height: 90vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header do Modal */
+.cadastro-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  background: linear-gradient(135deg, #0066CC 0%, #004C99 100%);
+  color: white;
+  flex-shrink: 0;
+}
+
+.cadastro-header__info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.cadastro-header__icon {
+  width: 48px;
+  height: 48px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+}
+
+.cadastro-header__title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.cadastro-header__subtitle {
+  margin: 4px 0 0;
+  font-size: 13px;
+  opacity: 0.85;
+}
+
+.cadastro-header__close {
+  width: 36px;
+  height: 36px;
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  border-radius: 8px;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  transition: background 0.2s;
+}
+
+.cadastro-header__close:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* Corpo do Modal */
+.cadastro-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+  background: #f8fafc;
+}
+
+/* Seções do Formulário */
+.cadastro-section {
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+
+.cadastro-section__header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 20px;
+  background: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.cadastro-section__header:hover {
+  background: #f1f5f9;
+}
+
+.cadastro-section__header i {
+  color: #0066CC;
+  font-size: 16px;
+}
+
+.cadastro-section__title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: #1e293b;
+  flex: 1;
+}
+
+.cadastro-section__toggle {
+  color: #94a3b8;
+  font-size: 12px;
+  transition: transform 0.2s;
+}
+
+.cadastro-section--open .cadastro-section__toggle {
+  transform: rotate(180deg);
+}
+
+.cadastro-section__body {
+  padding: 20px;
+}
+
+/* Grid de Campos */
+.cadastro-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.cadastro-grid--3cols {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.cadastro-field--full {
+  grid-column: 1 / -1;
+}
+
+/* Campos do Formulário */
+.cadastro-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cadastro-field__label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #475569;
+}
+
+.cadastro-field__required {
+  color: #ef4444;
+  font-weight: 600;
+}
+
+.cadastro-field__input,
+.cadastro-field__select {
+  width: 100%;
+  padding: 12px 14px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #1e293b;
+  transition: all 0.2s;
+}
+
+.cadastro-field__input:focus,
+.cadastro-field__select:focus {
+  outline: none;
+  border-color: #0066CC;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+}
+
+.cadastro-field__input::placeholder {
+  color: #94a3b8;
+}
+
+.cadastro-field__input--error,
+.cadastro-field__select--error {
+  border-color: #ef4444;
+  background: #fef2f2;
+}
+
+.cadastro-field__error {
+  font-size: 12px;
+  color: #ef4444;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Footer do Modal */
+.cadastro-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  background: white;
+  border-top: 1px solid #e2e8f0;
+  flex-shrink: 0;
+}
+
+.cadastro-footer__hint {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #64748b;
+}
+
+.cadastro-footer__hint i {
+  color: #ef4444;
+}
+
+.cadastro-footer__actions {
+  display: flex;
+  gap: 12px;
+}
+
+.cadastro-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+}
+
+.cadastro-btn--secondary {
+  background: #f1f5f9;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+}
+
+.cadastro-btn--secondary:hover {
+  background: #e2e8f0;
+}
+
+.cadastro-btn--primary {
+  background: #0066CC;
+  color: white;
+}
+
+.cadastro-btn--primary:hover {
+  background: #0055aa;
+}
+
+.cadastro-btn--primary:disabled {
+  background: #94a3b8;
+  cursor: not-allowed;
+}
+
+/* Variantes de cor para diferentes tipos de cadastro */
+.cadastro-header--medico {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.cadastro-header--paciente {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+}
+
+.cadastro-header--secretaria {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+}
+
+.cadastro-header--admin {
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .cadastro-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cadastro-grid--3cols {
+    grid-template-columns: 1fr;
+  }
+
+  .cadastro-header {
+    padding: 16px 20px;
+  }
+
+  .cadastro-header__icon {
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+  }
+
+  .cadastro-header__title {
+    font-size: 18px;
+  }
+
+  .cadastro-body {
+    padding: 16px;
+  }
+
+  .cadastro-section__body {
+    padding: 16px;
+  }
+
+  .cadastro-footer {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .cadastro-footer__actions {
+    width: 100%;
+  }
+
+  .cadastro-btn {
+    flex: 1;
+  }
+}
+
+/* Tema Escuro */
+body.dark-theme .cadastro-body {
+  background: var(--dark-bg-primary);
+}
+
+body.dark-theme .cadastro-section {
+  background: var(--dark-bg-card);
+  border-color: var(--dark-border);
+}
+
+body.dark-theme .cadastro-section__header {
+  background: var(--dark-bg-secondary);
+  border-color: var(--dark-border);
+}
+
+body.dark-theme .cadastro-section__title {
+  color: var(--dark-text-primary);
+}
+
+body.dark-theme .cadastro-field__label {
+  color: var(--dark-text-secondary);
+}
+
+body.dark-theme .cadastro-field__input,
+body.dark-theme .cadastro-field__select {
+  background: var(--dark-bg-secondary);
+  border-color: var(--dark-border);
+  color: var(--dark-text-primary);
+}
+
+body.dark-theme .cadastro-field__input:focus,
+body.dark-theme .cadastro-field__select:focus {
+  background: var(--dark-bg-card);
+}
+
+body.dark-theme .cadastro-footer {
+  background: var(--dark-bg-card);
+  border-color: var(--dark-border);
+}
+
+body.dark-theme .cadastro-btn--secondary {
+  background: var(--dark-bg-secondary);
+  border-color: var(--dark-border);
+  color: var(--dark-text-secondary);
+}

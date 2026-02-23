@@ -1,0 +1,91 @@
+<div class="chart-container">
+  <!-- Filtros de Período Padronizados -->
+  <div class="chart-filters-wrapper">
+    <div class="filter-header">
+      <span class="filter-title">
+        <i class="fa-solid fa-filter"></i>
+        Filtrar por Período
+      </span>
+    </div>
+
+    <!-- Botões de Período Rápido em Linha -->
+    <div class="quick-filters">
+      <button
+        class="quick-filter-btn"
+        [class.quick-filter-btn--active]="diaSelecionado === 1"
+        (click)="diaSelecionado = 1; atualizarGrafico()">
+        <i class="fa-solid fa-calendar-week"></i>
+        <span>7 dias</span>
+      </button>
+      <button
+        class="quick-filter-btn"
+        [class.quick-filter-btn--active]="diaSelecionado === 2"
+        (click)="diaSelecionado = 2; atualizarGrafico()">
+        <i class="fa-solid fa-calendar"></i>
+        <span>30 dias</span>
+      </button>
+      <button
+        class="quick-filter-btn"
+        [class.quick-filter-btn--active]="diaSelecionado === 3"
+        (click)="diaSelecionado = 3; atualizarGrafico()">
+        <i class="fa-solid fa-calendar-days"></i>
+        <span>60 dias</span>
+      </button>
+    </div>
+
+    <!-- Período Personalizado Abaixo -->
+    <div class="custom-period">
+      <mat-form-field appearance="outline" class="custom-period-field">
+        <mat-label>
+          <i class="fa-solid fa-calendar-range"></i>
+          Período Personalizado
+        </mat-label>
+        <mat-date-range-input [rangePicker]="picker" [formGroup]="IntervaloDeDatas">
+          <input matStartDate formControlName="start" placeholder="Data inicial">
+          <input matEndDate formControlName="end" placeholder="Data final" (dateChange)="atualizarGraficoPersonalizado()">
+        </mat-date-range-input>
+        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-date-range-picker #picker></mat-date-range-picker>
+      </mat-form-field>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div class="chart-loading" *ngIf="isLoading">
+    <i class="fa-solid fa-spinner fa-spin"></i>
+    <span>Carregando dados...</span>
+  </div>
+
+  <!-- Error State -->
+  <div class="chart-error" *ngIf="hasError && !isLoading">
+    <i class="fa-solid fa-exclamation-triangle"></i>
+    <span>{{ errorMessage }}</span>
+    <button class="retry-btn" (click)="atualizarGrafico()">
+      <i class="fa-solid fa-rotate-right"></i>
+      Tentar novamente
+    </button>
+  </div>
+
+  <!-- Empty State -->
+  <div class="chart-empty" *ngIf="!isLoading && !hasError && TodasConsultas.length === 0">
+    <i class="fa-solid fa-chart-bar"></i>
+    <span>Nenhuma consulta encontrada no período</span>
+  </div>
+
+  <!-- Gráfico -->
+  <div class="chart-wrapper" [class.chart-wrapper--hidden]="isLoading || hasError || TodasConsultas.length === 0">
+    <canvas #menuCanvas></canvas>
+  </div>
+
+  <!-- Resumo -->
+  <div class="chart-summary" *ngIf="!isLoading && !hasError && TodasConsultas.length > 0">
+    <div class="summary-item">
+      <span class="summary-value">{{ TodasConsultas.length }}</span>
+      <span class="summary-label">Total de Consultas</span>
+    </div>
+    <div class="summary-item">
+      <span class="summary-value">{{ getEspecialidadesCount() }}</span>
+      <span class="summary-label">Especialidades</span>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,136 @@
+<div class="usuarios-page">
+  <!-- Header da Página -->
+  <header class="page-header">
+    <div class="page-header__title">
+      <h1>
+        <i class="fa-solid fa-users-gear"></i>
+        Gerenciamento de Usuários
+      </h1>
+      <p class="page-header__subtitle">Cadastre, visualize e gerencie todos os usuários do sistema</p>
+    </div>
+  </header>
+
+  <!-- Cards de Ações Rápidas -->
+  <section class="quick-actions-section">
+    <h2 class="section-title">
+      <i class="fa-solid fa-plus-circle"></i>
+      Cadastrar Novo Usuário
+    </h2>
+    <div class="action-cards">
+      <button class="action-card action-card--success" (click)="AdicionarClinico()">
+        <div class="action-card__icon">
+          <i class="fa-solid fa-user-doctor"></i>
+        </div>
+        <div class="action-card__content">
+          <span class="action-card__title">Clínico</span>
+          <span class="action-card__desc">Cadastrar novo clínico</span>
+        </div>
+        <i class="fa-solid fa-chevron-right action-card__arrow"></i>
+      </button>
+
+      <button class="action-card action-card--warning" (click)="AdicionarPaciente()">
+        <div class="action-card__icon">
+          <i class="fa-solid fa-hospital-user"></i>
+        </div>
+        <div class="action-card__content">
+          <span class="action-card__title">Paciente</span>
+          <span class="action-card__desc">Cadastrar novo paciente</span>
+        </div>
+        <i class="fa-solid fa-chevron-right action-card__arrow"></i>
+      </button>
+
+      <button class="action-card action-card--info" (click)="AdicionarSecretaria()">
+        <div class="action-card__icon">
+          <i class="fa-solid fa-user-pen"></i>
+        </div>
+        <div class="action-card__content">
+          <span class="action-card__title">Secretária</span>
+          <span class="action-card__desc">Cadastrar nova secretária</span>
+        </div>
+        <i class="fa-solid fa-chevron-right action-card__arrow"></i>
+      </button>
+
+      <button class="action-card action-card--purple" (click)="AdicionarAdministrador()">
+        <div class="action-card__icon">
+          <i class="fa-solid fa-user-shield"></i>
+        </div>
+        <div class="action-card__content">
+          <span class="action-card__title">Administrador</span>
+          <span class="action-card__desc">Cadastrar novo admin</span>
+        </div>
+        <i class="fa-solid fa-chevron-right action-card__arrow"></i>
+      </button>
+    </div>
+  </section>
+
+  <!-- Seção de Listagem -->
+  <section class="list-section">
+    <div class="list-header">
+      <h2 class="section-title">
+        <i class="fa-solid fa-list"></i>
+        Lista de Usuários
+        <button class="refresh-btn" (click)="recarregarDados()" [disabled]="isLoading" title="Atualizar lista">
+          <i class="fa-solid" [ngClass]="isLoading ? 'fa-spinner fa-spin' : 'fa-rotate-right'"></i>
+        </button>
+      </h2>
+
+      <!-- Barra de Pesquisa -->
+      <div class="search-box">
+        <i class="fa-solid fa-magnifying-glass search-box__icon"></i>
+        <input
+          type="text"
+          class="search-box__input"
+          [(ngModel)]="searchText"
+          placeholder="Buscar por nome, email ou CPF..."
+          (keyup.enter)="PesquisaDados()">
+        <button class="search-box__btn" (click)="PesquisaDados()">
+          Buscar
+        </button>
+      </div>
+    </div>
+
+    <!-- Filtros por Categoria -->
+    <div class="filter-tabs">
+      <button
+        class="filter-tab"
+        [class.active]="radioValue == 5 || radioValue == 0"
+        (click)="radioValue = 5; PesquisaCategoria()">
+        <i class="fa-solid fa-users"></i>
+        <span>Todos</span>
+      </button>
+      <button
+        class="filter-tab"
+        [class.active]="radioValue == 1"
+        (click)="radioValue = 1; PesquisaCategoria()">
+        <i class="fa-solid fa-hospital-user"></i>
+        <span>Pacientes</span>
+      </button>
+      <button
+        class="filter-tab"
+        [class.active]="radioValue == 2"
+        (click)="radioValue = 2; PesquisaCategoria()">
+        <i class="fa-solid fa-user-doctor"></i>
+        <span>Clínico</span>
+      </button>
+      <button
+        class="filter-tab"
+        [class.active]="radioValue == 3"
+        (click)="radioValue = 3; PesquisaCategoria()">
+        <i class="fa-solid fa-user-pen"></i>
+        <span>Secretárias</span>
+      </button>
+      <button
+        class="filter-tab"
+        [class.active]="radioValue == 4"
+        (click)="radioValue = 4; PesquisaCategoria()">
+        <i class="fa-solid fa-user-shield"></i>
+        <span>Admins</span>
+      </button>
+    </div>
+
+    <!-- Tabela de Usuários -->
+    <div class="table-wrapper">
+      <app-tabela-todos-usuarios (LimparCampos)="limparCampos()"></app-tabela-todos-usuarios>
+    </div>
+  </section>
+</div>

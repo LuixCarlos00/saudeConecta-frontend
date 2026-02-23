@@ -1,0 +1,29 @@
+<head>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Página de Cadastro</title>
+
+</head>
+
+<body>
+  <div class="model">
+
+    <div class="container">
+      <div style="  justify-content: left; display: flex; margin-top: -15px; margin-left: -20px;">
+        <button style="border: hidden; background-color: white;" (click)="voltarParaHome()">
+          <i class="fa-solid fa-arrow-left fa-xl"></i>
+        </button>
+      </div>
+
+      <br>
+      <h1>Selecione uma das opçõess abaixo para realizar o cadastrar</h1>
+      <p> Cadastra-se como Administrador, Medico ou Secretaria para utilizar o sistema.</p>
+
+      <div class="buttons">
+        <a (click)="cadastraAdmin()" class="btn">Criar conta como Admin</a>
+        <a (click)="cadastraSecretaria()" class="btn">Criar conta como Secretaria</a>
+        <a (click)="cadastraMedico()" class="btn">Criar conta como Clínico</a>
+      </div>
+    </div>
+  </div>
+</body>

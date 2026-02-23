@@ -1,0 +1,241 @@
+/* ===== Dialog Container ===== */
+.dialog-container {
+  padding: 0;
+  min-width: 380px;
+  max-width: 450px;
+  background: var(--bg-card, #ffffff);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+/* ===== Header ===== */
+.dialog-header {
+  background: linear-gradient(135deg, var(--primary-color, #3b82f6) 0%, var(--primary-dark, #1d4ed8) 100%);
+  padding: 24px;
+  text-align: center;
+  color: white;
+}
+
+.header-icon {
+  width: 64px;
+  height: 64px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+  font-size: 28px;
+  backdrop-filter: blur(10px);
+}
+
+.dialog-title {
+  margin: 0 0 8px;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: white;
+}
+
+.dialog-subtitle {
+  margin: 0;
+  font-size: 0.9rem;
+  opacity: 0.9;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* ===== Content ===== */
+.dialog-content {
+  padding: 24px;
+}
+
+.form-group {
+  margin-bottom: 8px;
+}
+
+.form-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary, #1f2937);
+  margin-bottom: 8px;
+}
+
+.form-label i {
+  color: var(--primary-color, #3b82f6);
+  font-size: 14px;
+}
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.form-input {
+  width: 100%;
+  padding: 14px 48px 14px 16px;
+  font-size: 1rem;
+  border: 2px solid var(--border-color, #e5e7eb);
+  border-radius: 12px;
+  background: var(--bg-input, #f9fafb);
+  color: var(--text-primary, #1f2937);
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+.form-input:focus {
+  border-color: var(--primary-color, #3b82f6);
+  background: var(--bg-card, #ffffff);
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+}
+
+.form-input::placeholder {
+  color: var(--text-muted, #9ca3af);
+}
+
+.toggle-password-btn {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+  padding: 8px;
+  cursor: pointer;
+  color: var(--text-muted, #6b7280);
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.toggle-password-btn:hover {
+  color: var(--primary-color, #3b82f6);
+  background: var(--bg-hover, #f3f4f6);
+}
+
+/* ===== Password Strength ===== */
+.password-strength {
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.strength-bar {
+  flex: 1;
+  height: 6px;
+  background: var(--bg-secondary, #e5e7eb);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.strength-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: all 0.3s ease;
+}
+
+.strength-fill.strength-weak {
+  background: linear-gradient(90deg, #ef4444, #f87171);
+}
+
+.strength-fill.strength-medium {
+  background: linear-gradient(90deg, #f59e0b, #fbbf24);
+}
+
+.strength-fill.strength-good {
+  background: linear-gradient(90deg, #10b981, #34d399);
+}
+
+.strength-fill.strength-strong {
+  background: linear-gradient(90deg, #059669, #10b981);
+}
+
+.strength-text {
+  font-size: 0.75rem;
+  font-weight: 600;
+  min-width: 50px;
+  color: var(--text-secondary, #6b7280);
+}
+
+/* ===== Actions ===== */
+.dialog-actions {
+  display: flex;
+  gap: 12px;
+  padding: 16px 24px 24px;
+  background: var(--bg-secondary, #f9fafb);
+  border-top: 1px solid var(--border-color, #e5e7eb);
+}
+
+.btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-cancel {
+  background: var(--bg-card, #ffffff);
+  color: var(--text-secondary, #6b7280);
+  border: 2px solid var(--border-color, #e5e7eb);
+}
+
+.btn-cancel:hover {
+  background: var(--bg-hover, #f3f4f6);
+  border-color: var(--text-muted, #9ca3af);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary-color, #3b82f6) 0%, var(--primary-dark, #1d4ed8) 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.btn-primary:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ===== Responsivo ===== */
+@media (max-width: 480px) {
+  .dialog-container {
+    min-width: 100%;
+    border-radius: 16px 16px 0 0;
+  }
+  
+  .dialog-header {
+    padding: 20px;
+  }
+  
+  .header-icon {
+    width: 56px;
+    height: 56px;
+    font-size: 24px;
+  }
+  
+  .dialog-title {
+    font-size: 1.25rem;
+  }
+  
+  .dialog-content {
+    padding: 20px;
+  }
+  
+  .dialog-actions {
+    flex-direction: column-reverse;
+    padding: 16px 20px 20px;
+  }
+}

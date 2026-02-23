@@ -1,0 +1,225 @@
+@import 'design-system/variables';
+@import 'design-system/mixins';
+
+.alert-toast-container {
+  position: fixed;
+  z-index: $z-toast;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-3;
+  max-width: 420px;
+  width: calc(100% - #{$spacing-8});
+  padding: $spacing-4;
+  pointer-events: none;
+
+  &.position-top-right {
+    top: calc(#{$header-height} + #{$spacing-4});
+    right: 0;
+  }
+
+  &.position-top-left {
+    top: calc(#{$header-height} + #{$spacing-4});
+    left: 0;
+  }
+
+  &.position-top-center {
+    top: calc(#{$header-height} + #{$spacing-4});
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  &.position-bottom-right {
+    bottom: 0;
+    right: 0;
+  }
+
+  &.position-bottom-left {
+    bottom: 0;
+    left: 0;
+  }
+
+  &.position-bottom-center {
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+}
+
+.alert-toast {
+  display: flex;
+  align-items: flex-start;
+  gap: $spacing-3;
+  padding: $spacing-4;
+  border-radius: $radius-lg;
+  border-left: 4px solid;
+  background: $bg-card;
+  box-shadow: $shadow-lg;
+  pointer-events: auto;
+  animation: slideIn 0.3s ease-out;
+
+  &--info {
+    border-color: $status-info;
+
+    .alert-toast__icon {
+      color: $status-info;
+    }
+  }
+
+  &--success {
+    border-color: $status-normal;
+
+    .alert-toast__icon {
+      color: $status-normal;
+    }
+  }
+
+  &--warning {
+    border-color: $status-atencao;
+    background: $status-atencao-bg;
+
+    .alert-toast__icon {
+      color: $status-atencao;
+    }
+  }
+
+  &--danger {
+    border-color: $status-critico;
+    background: $status-critico-bg;
+
+    .alert-toast__icon {
+      color: $status-critico;
+    }
+  }
+
+  &--critical {
+    border-color: $status-critico;
+    background: $status-critico;
+    color: $text-inverse;
+    animation: slideIn 0.3s ease-out, pulse-critical 1.5s infinite;
+
+    .alert-toast__icon,
+    .alert-toast__title,
+    .alert-toast__message,
+    .alert-toast__close {
+      color: $text-inverse;
+    }
+
+    .alert-toast__title {
+      font-size: $text-lg;
+    }
+  }
+
+  &__icon {
+    flex-shrink: 0;
+    font-size: $text-xl;
+    line-height: 1;
+  }
+
+  &__content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__title {
+    font-weight: $font-semibold;
+    font-size: $text-base;
+    margin-bottom: $spacing-1;
+    color: $text-primary;
+  }
+
+  &__message {
+    font-size: $text-sm;
+    color: $text-secondary;
+    line-height: $leading-normal;
+  }
+
+  &__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $spacing-2;
+    margin-top: $spacing-3;
+  }
+
+  &__action-btn {
+    padding: $spacing-1 $spacing-3;
+    font-size: $text-sm;
+    font-weight: $font-medium;
+    border-radius: $radius-md;
+    border: 1px solid currentColor;
+    background: transparent;
+    cursor: pointer;
+    transition: all $transition-fast;
+
+    &:hover {
+      opacity: 0.8;
+    }
+
+    &--primary {
+      background: $text-inverse;
+      color: $status-critico;
+      border-color: transparent;
+    }
+
+    &--danger {
+      background: darken($status-critico, 10%);
+      color: $text-inverse;
+      border-color: transparent;
+    }
+  }
+
+  &__close {
+    flex-shrink: 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: $spacing-1;
+    color: $text-muted;
+    opacity: 0.6;
+    transition: opacity $transition-fast;
+    font-size: $text-lg;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes pulse-critical {
+  0%, 100% {
+    box-shadow: $shadow-lg, 0 0 0 0 rgba($status-critico, 0.4);
+  }
+  50% {
+    box-shadow: $shadow-lg, 0 0 0 8px rgba($status-critico, 0);
+  }
+}
+
+@include mobile {
+  .alert-toast-container {
+    max-width: 100%;
+    width: 100%;
+    padding: $spacing-3;
+
+    &.position-top-right,
+    &.position-top-left,
+    &.position-top-center {
+      left: 0;
+      right: 0;
+      transform: none;
+    }
+  }
+
+  .alert-toast {
+    border-radius: $radius-md;
+  }
+}

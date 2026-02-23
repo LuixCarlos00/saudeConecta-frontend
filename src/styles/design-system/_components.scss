@@ -1,0 +1,1139 @@
+// =============================================================================
+// SAUDECONECTA - COMPONENTES HEALTHCARE
+// Classes CSS reutilizáveis para interface médica
+// =============================================================================
+
+@import 'variables';
+@import 'mixins';
+
+// =============================================================================
+// 1. LAYOUT BASE
+// =============================================================================
+
+.healthcare-layout {
+  display: flex;
+  min-height: 100vh;
+  background: $bg-secondary;
+}
+
+.healthcare-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+}
+
+.healthcare-content {
+  flex: 1;
+  padding: $spacing-6;
+  max-width: 1600px;
+  margin: 0 auto;
+  width: 100%;
+
+  @include mobile {
+    padding: $spacing-4;
+  }
+}
+
+// =============================================================================
+// 2. HEADER DO SISTEMA
+// =============================================================================
+
+.hc-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: $header-height;
+  padding: 0 $spacing-6;
+  background: $bg-card;
+  border-bottom: 1px solid $border-light;
+  position: sticky;
+  top: 0;
+  z-index: $z-sticky;
+
+  @include mobile {
+    height: $header-height-mobile;
+    padding: 0 $spacing-4;
+  }
+
+  &__logo {
+    display: flex;
+    align-items: center;
+    gap: $spacing-3;
+
+    img {
+      height: 40px;
+      width: auto;
+    }
+
+    span {
+      font-size: $text-xl;
+      font-weight: $font-bold;
+      color: $primary-blue;
+    }
+  }
+
+  &__user {
+    display: flex;
+    align-items: center;
+    gap: $spacing-4;
+  }
+
+  &__avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: $radius-full;
+    object-fit: cover;
+    border: 2px solid $border-light;
+  }
+
+  &__info {
+    display: flex;
+    flex-direction: column;
+
+    @include mobile {
+      display: none;
+    }
+  }
+
+  &__name {
+    font-weight: $font-semibold;
+    color: $text-primary;
+    font-size: $text-sm;
+  }
+
+  &__role {
+    font-size: $text-xs;
+    color: $text-muted;
+  }
+}
+
+// =============================================================================
+// 3. SIDEBAR / NAVEGAÇÃO
+// =============================================================================
+
+.hc-sidebar {
+  width: $sidebar-width;
+  background: $bg-sidebar;
+  color: $text-inverse;
+  display: flex;
+  flex-direction: column;
+  transition: width $transition-normal;
+
+  @include mobile {
+    position: fixed;
+    left: -$sidebar-width;
+    top: 0;
+    bottom: 0;
+    z-index: $z-fixed;
+
+    &.open {
+      left: 0;
+    }
+  }
+
+  &--collapsed {
+    width: $sidebar-collapsed-width;
+
+    .hc-sidebar__text {
+      display: none;
+    }
+  }
+
+  &__nav {
+    flex: 1;
+    padding: $spacing-4;
+    overflow-y: auto;
+    @include scrollbar;
+  }
+
+  &__item {
+    display: flex;
+    align-items: center;
+    gap: $spacing-3;
+    padding: $spacing-3 $spacing-4;
+    border-radius: $radius-md;
+    color: rgba($text-inverse, 0.7);
+    text-decoration: none;
+    transition: all $transition-fast;
+    margin-bottom: $spacing-1;
+
+    &:hover {
+      background: rgba($text-inverse, 0.1);
+      color: $text-inverse;
+    }
+
+    &--active {
+      background: $primary-blue;
+      color: $text-inverse;
+    }
+  }
+
+  &__icon {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+  }
+
+  &__text {
+    font-size: $text-sm;
+    font-weight: $font-medium;
+  }
+
+  &__section {
+    margin-top: $spacing-6;
+    padding-top: $spacing-4;
+    border-top: 1px solid rgba($text-inverse, 0.1);
+
+    &-title {
+      font-size: $text-xs;
+      font-weight: $font-semibold;
+      text-transform: uppercase;
+      letter-spacing: $tracking-wide;
+      color: rgba($text-inverse, 0.5);
+      padding: 0 $spacing-4;
+      margin-bottom: $spacing-2;
+    }
+  }
+}
+
+// =============================================================================
+// 4. CARDS
+// =============================================================================
+
+.hc-card {
+  @include card;
+
+  &--flat {
+    @include card-flat;
+  }
+
+  &--elevated {
+    @include card-elevated;
+  }
+
+  &--patient {
+    @include patient-card;
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: $spacing-4;
+    padding-bottom: $spacing-4;
+    border-bottom: 1px solid $border-light;
+  }
+
+  &__title {
+    @include heading-4;
+    margin: 0;
+  }
+
+  &__subtitle {
+    @include body-text-sm;
+    margin-top: $spacing-1;
+  }
+
+  &__body {
+    @include body-text;
+  }
+
+  &__footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: $spacing-3;
+    margin-top: $spacing-4;
+    padding-top: $spacing-4;
+    border-top: 1px solid $border-light;
+  }
+}
+
+// =============================================================================
+// 5. BOTÕES
+// =============================================================================
+
+.hc-btn {
+  @include btn-base;
+
+  &--primary {
+    @include btn-primary;
+  }
+
+  &--secondary {
+    @include btn-secondary;
+  }
+
+  &--danger {
+    @include btn-danger;
+  }
+
+  &--success {
+    @include btn-success;
+  }
+
+  &--ghost {
+    @include btn-ghost;
+  }
+
+  &--link {
+    @include btn-link;
+  }
+
+  &--emergency {
+    @include btn-emergency;
+  }
+
+  &--sm {
+    height: $btn-height-sm;
+    padding: 0 $spacing-4;
+    font-size: $text-sm;
+  }
+
+  &--lg {
+    height: $btn-height-lg;
+    padding: 0 $spacing-8;
+    font-size: $text-lg;
+  }
+
+  &--block {
+    width: 100%;
+  }
+
+  &--icon {
+    width: $btn-height;
+    padding: 0;
+  }
+}
+
+// =============================================================================
+// 6. FORMULÁRIOS
+// =============================================================================
+
+.hc-form {
+  &__group {
+    @include form-group;
+  }
+
+  &__label {
+    @include form-label;
+
+    &--required::after {
+      content: ' *';
+      color: $status-critico;
+    }
+  }
+
+  &__input {
+    @include input-base;
+  }
+
+  &__textarea {
+    @include textarea;
+  }
+
+  &__select {
+    @include select;
+  }
+
+  &__error {
+    @include form-error;
+  }
+
+  &__hint {
+    @include form-hint;
+  }
+
+  &__row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: $spacing-4;
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: $spacing-3;
+    margin-top: $spacing-6;
+    padding-top: $spacing-6;
+    border-top: 1px solid $border-light;
+  }
+}
+
+// =============================================================================
+// 7. TABELAS
+// =============================================================================
+
+.hc-table {
+  @include table;
+
+  &__wrapper {
+    overflow-x: auto;
+    @include scrollbar;
+  }
+
+  thead {
+    @include table-header;
+  }
+
+  tbody tr {
+    @include table-row;
+
+    &--urgent {
+      @include table-row-status($priority-urgent);
+    }
+
+    &--high {
+      @include table-row-status($priority-high);
+    }
+
+    &--medium {
+      @include table-row-status($priority-medium);
+    }
+
+    &--low {
+      @include table-row-status($priority-low);
+    }
+
+    &--selected {
+      background: $bg-selected;
+    }
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: $spacing-2;
+  }
+}
+
+// =============================================================================
+// 8. BADGES
+// =============================================================================
+
+.hc-badge {
+  @include badge-base;
+
+  &--primary {
+    @include badge-primary;
+  }
+
+  &--success {
+    @include badge-success;
+  }
+
+  &--warning {
+    @include badge-warning;
+  }
+
+  &--danger {
+    @include badge-danger;
+  }
+
+  &--info {
+    @include badge-info;
+  }
+
+  &--neutral {
+    @include badge-neutral;
+  }
+
+  &--allergy {
+    @include badge-allergy;
+  }
+
+  &--lg {
+    padding: $spacing-2 $spacing-3;
+    font-size: $text-sm;
+  }
+}
+
+// =============================================================================
+// 9. ALERTAS
+// =============================================================================
+
+.hc-alert {
+  @include alert-base;
+
+  &--info {
+    @include alert-info;
+  }
+
+  &--success {
+    @include alert-success;
+  }
+
+  &--warning {
+    @include alert-warning;
+  }
+
+  &--danger {
+    @include alert-danger;
+  }
+
+  &--critical {
+    @include alert-critical-medical;
+  }
+
+  &__icon {
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+  }
+
+  &__content {
+    flex: 1;
+  }
+
+  &__title {
+    font-weight: $font-semibold;
+    margin-bottom: $spacing-1;
+  }
+
+  &__message {
+    font-size: $text-sm;
+  }
+
+  &__close {
+    flex-shrink: 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: $spacing-1;
+    opacity: 0.7;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+}
+
+// =============================================================================
+// 10. COMPONENTES ESPECÍFICOS HEALTHCARE
+// =============================================================================
+
+// --- Header do Paciente (Sticky) ---
+.hc-patient-header {
+  position: sticky;
+  top: $header-height;
+  z-index: $z-sticky - 1;
+  background: $bg-card;
+  padding: $spacing-4 $spacing-6;
+  border-bottom: 1px solid $border-light;
+  box-shadow: $shadow-sm;
+
+  @include mobile {
+    top: $header-height-mobile;
+    padding: $spacing-3 $spacing-4;
+  }
+
+  &__main {
+    display: flex;
+    align-items: center;
+    gap: $spacing-4;
+  }
+
+  &__photo {
+    width: 64px;
+    height: 64px;
+    border-radius: $radius-full;
+    object-fit: cover;
+    border: 3px solid $primary-blue;
+
+    @include mobile {
+      width: 48px;
+      height: 48px;
+    }
+  }
+
+  &__identity {
+    flex: 1;
+  }
+
+  &__name {
+    @include heading-3;
+    margin: 0;
+    color: $text-primary;
+  }
+
+  &__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $spacing-3;
+    margin-top: $spacing-1;
+
+    span {
+      font-size: $text-sm;
+      color: $text-secondary;
+
+      &::after {
+        content: '•';
+        margin-left: $spacing-3;
+        color: $text-muted;
+      }
+
+      &:last-child::after {
+        display: none;
+      }
+    }
+  }
+
+  &__alerts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $spacing-2;
+    margin-top: $spacing-3;
+  }
+
+  &__actions {
+    display: flex;
+    gap: $spacing-2;
+
+    @include mobile {
+      display: none;
+    }
+  }
+}
+
+// --- Alertas Críticos do Paciente ---
+.hc-critical-alerts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-2;
+  padding: $spacing-3 $spacing-6;
+  background: $status-critico-bg;
+  border-bottom: 2px solid $status-critico;
+
+  @include mobile {
+    padding: $spacing-3 $spacing-4;
+  }
+}
+
+.hc-allergy-badge {
+  @include badge-allergy;
+  display: inline-flex;
+  align-items: center;
+  gap: $spacing-2;
+
+  &__icon {
+    font-size: $text-lg;
+  }
+}
+
+// --- Sinais Vitais ---
+.hc-vital-signs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: $spacing-4;
+}
+
+.hc-vital-card {
+  @include card-flat;
+  padding: $spacing-4;
+  text-align: center;
+
+  &__label {
+    @include label;
+    margin-bottom: $spacing-2;
+  }
+
+  &__value {
+    @include vital-signs;
+    color: $text-primary;
+  }
+
+  &__unit {
+    font-size: $text-sm;
+    color: $text-muted;
+    margin-left: $spacing-1;
+  }
+
+  &__status {
+    margin-top: $spacing-2;
+    font-size: $text-xs;
+    font-weight: $font-medium;
+    padding: $spacing-1 $spacing-2;
+    border-radius: $radius-full;
+
+    &--normal {
+      background: $status-normal-bg;
+      color: $status-normal;
+    }
+
+    &--attention {
+      background: $status-atencao-bg;
+      color: darken($status-atencao, 15%);
+    }
+
+    &--critical {
+      background: $status-critico-bg;
+      color: $status-critico;
+    }
+  }
+
+  &--normal {
+    border-color: $status-normal;
+  }
+
+  &--attention {
+    border-color: $status-atencao;
+  }
+
+  &--critical {
+    border-color: $status-critico;
+    background: $status-critico-bg;
+  }
+}
+
+// --- Fila de Pacientes ---
+.hc-patient-queue {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-3;
+}
+
+.hc-queue-item {
+  @include card-flat;
+  padding: $spacing-4;
+  display: flex;
+  align-items: center;
+  gap: $spacing-4;
+  cursor: pointer;
+  transition: all $transition-fast;
+
+  &:hover {
+    background: $bg-hover;
+    transform: translateX(4px);
+  }
+
+  &--current {
+    border-left: 4px solid $appointment-in-progress;
+    background: rgba($appointment-in-progress, 0.05);
+  }
+
+  &--waiting {
+    border-left: 4px solid $appointment-waiting;
+  }
+
+  &--delayed {
+    border-left: 4px solid $status-critico;
+    background: $status-critico-bg;
+  }
+
+  &__status {
+    @include badge-base;
+    font-size: $text-xs;
+  }
+
+  &__info {
+    flex: 1;
+  }
+
+  &__name {
+    font-weight: $font-semibold;
+    color: $text-primary;
+  }
+
+  &__details {
+    font-size: $text-sm;
+    color: $text-secondary;
+    margin-top: $spacing-1;
+  }
+
+  &__time {
+    font-size: $text-sm;
+    color: $text-muted;
+    text-align: right;
+  }
+
+  &__alerts {
+    display: flex;
+    gap: $spacing-1;
+  }
+}
+
+// --- Agenda Médica ---
+.hc-schedule {
+  &__header {
+    @include flex-between;
+    margin-bottom: $spacing-6;
+    flex-wrap: wrap;
+    gap: $spacing-4;
+  }
+
+  &__navigation {
+    display: flex;
+    align-items: center;
+    gap: $spacing-3;
+  }
+
+  &__title {
+    @include heading-3;
+    margin: 0;
+  }
+
+  &__views {
+    display: flex;
+    background: $bg-secondary;
+    border-radius: $radius-md;
+    padding: $spacing-1;
+  }
+
+  &__view-btn {
+    padding: $spacing-2 $spacing-4;
+    border: none;
+    background: transparent;
+    border-radius: $radius-sm;
+    font-size: $text-sm;
+    font-weight: $font-medium;
+    color: $text-secondary;
+    cursor: pointer;
+    transition: all $transition-fast;
+
+    &:hover {
+      color: $text-primary;
+    }
+
+    &--active {
+      background: $bg-card;
+      color: $primary-blue;
+      box-shadow: $shadow-sm;
+    }
+  }
+
+  &__legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $spacing-4;
+    margin-bottom: $spacing-4;
+  }
+
+  &__legend-item {
+    display: flex;
+    align-items: center;
+    gap: $spacing-2;
+    font-size: $text-sm;
+    color: $text-secondary;
+  }
+
+  &__legend-color {
+    width: 12px;
+    height: 12px;
+    border-radius: $radius-sm;
+  }
+}
+
+// --- Timeline de Histórico ---
+.hc-timeline {
+  position: relative;
+  padding-left: $spacing-8;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 11px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: $border-light;
+  }
+
+  &__item {
+    position: relative;
+    padding-bottom: $spacing-6;
+
+    &:last-child {
+      padding-bottom: 0;
+    }
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: calc(-#{$spacing-8} + 4px);
+      top: 4px;
+      width: 14px;
+      height: 14px;
+      border-radius: $radius-full;
+      background: $bg-card;
+      border: 2px solid $primary-blue;
+    }
+  }
+
+  &__date {
+    font-size: $text-xs;
+    color: $text-muted;
+    margin-bottom: $spacing-1;
+  }
+
+  &__content {
+    @include card-flat;
+    padding: $spacing-3;
+  }
+
+  &__title {
+    font-weight: $font-semibold;
+    color: $text-primary;
+    margin-bottom: $spacing-1;
+  }
+
+  &__description {
+    font-size: $text-sm;
+    color: $text-secondary;
+  }
+}
+
+// --- Widget de Estatísticas ---
+.hc-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: $spacing-4;
+}
+
+.hc-stat-card {
+  @include card-flat;
+  padding: $spacing-4;
+  text-align: center;
+
+  &__value {
+    font-size: $text-3xl;
+    font-weight: $font-bold;
+    color: $primary-blue;
+    line-height: 1;
+  }
+
+  &__label {
+    font-size: $text-sm;
+    color: $text-secondary;
+    margin-top: $spacing-2;
+  }
+
+  &--warning {
+    .hc-stat-card__value {
+      color: $status-atencao;
+    }
+  }
+
+  &--danger {
+    .hc-stat-card__value {
+      color: $status-critico;
+    }
+  }
+
+  &--success {
+    .hc-stat-card__value {
+      color: $status-normal;
+    }
+  }
+}
+
+// --- Tabs de Navegação ---
+.hc-tabs {
+  display: flex;
+  border-bottom: 2px solid $border-light;
+  margin-bottom: $spacing-6;
+  overflow-x: auto;
+  @include scrollbar;
+
+  &__tab {
+    padding: $spacing-4 $spacing-6;
+    border: none;
+    background: transparent;
+    font-size: $text-base;
+    font-weight: $font-medium;
+    color: $text-secondary;
+    cursor: pointer;
+    white-space: nowrap;
+    position: relative;
+    transition: color $transition-fast;
+
+    &:hover {
+      color: $text-primary;
+    }
+
+    &--active {
+      color: $primary-blue;
+
+      &::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: $primary-blue;
+      }
+    }
+  }
+}
+
+// --- Modal ---
+.hc-modal {
+  &__overlay {
+    position: fixed;
+    inset: 0;
+    background: $bg-overlay;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: $z-modal-backdrop;
+    padding: $spacing-4;
+  }
+
+  &__container {
+    background: $bg-card;
+    border-radius: $radius-xl;
+    box-shadow: $shadow-2xl;
+    max-height: 90vh;
+    overflow-y: auto;
+    width: 100%;
+    max-width: $modal-md;
+    @include scrollbar;
+
+    &--sm {
+      max-width: $modal-sm;
+    }
+
+    &--lg {
+      max-width: $modal-lg;
+    }
+
+    &--xl {
+      max-width: $modal-xl;
+    }
+  }
+
+  &__header {
+    @include flex-between;
+    padding: $spacing-6;
+    border-bottom: 1px solid $border-light;
+  }
+
+  &__title {
+    @include heading-3;
+    margin: 0;
+  }
+
+  &__close {
+    @include btn-ghost;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border-radius: $radius-full;
+  }
+
+  &__body {
+    padding: $spacing-6;
+  }
+
+  &__footer {
+    @include flex-between;
+    padding: $spacing-6;
+    border-top: 1px solid $border-light;
+    gap: $spacing-3;
+
+    &--right {
+      justify-content: flex-end;
+    }
+  }
+}
+
+// --- Skeleton Loading ---
+.hc-skeleton {
+  @include skeleton;
+
+  &--text {
+    height: 16px;
+    margin-bottom: $spacing-2;
+
+    &:last-child {
+      width: 60%;
+    }
+  }
+
+  &--title {
+    height: 24px;
+    width: 40%;
+    margin-bottom: $spacing-4;
+  }
+
+  &--avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: $radius-full;
+  }
+
+  &--card {
+    height: 120px;
+    border-radius: $radius-lg;
+  }
+
+  &--button {
+    height: 44px;
+    width: 120px;
+    border-radius: $radius-md;
+  }
+}
+
+// --- Empty State ---
+.hc-empty {
+  text-align: center;
+  padding: $spacing-12 $spacing-6;
+
+  &__icon {
+    font-size: 64px;
+    color: $text-muted;
+    margin-bottom: $spacing-4;
+  }
+
+  &__title {
+    @include heading-4;
+    color: $text-secondary;
+    margin-bottom: $spacing-2;
+  }
+
+  &__message {
+    @include body-text-sm;
+    max-width: 400px;
+    margin: 0 auto $spacing-6;
+  }
+}
+
+// --- Tooltip ---
+.hc-tooltip {
+  position: relative;
+
+  &__content {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: $spacing-2 $spacing-3;
+    background: $bg-sidebar;
+    color: $text-inverse;
+    font-size: $text-xs;
+    border-radius: $radius-sm;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: all $transition-fast;
+    z-index: $z-tooltip;
+    margin-bottom: $spacing-2;
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 6px solid transparent;
+      border-top-color: $bg-sidebar;
+    }
+  }
+
+  &:hover .hc-tooltip__content {
+    opacity: 1;
+    visibility: visible;
+  }
+}

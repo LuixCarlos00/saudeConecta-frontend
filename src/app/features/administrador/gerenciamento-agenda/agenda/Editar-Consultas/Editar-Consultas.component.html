@@ -1,0 +1,207 @@
+<div class="edit-dialog" [formGroup]="FormGroupConsulta">
+  <!-- Header -->
+  <div class="edit-dialog__header">
+    <h2>Editar Consulta</h2>
+    <span class="edit-dialog__id">Registro #{{consulta.id}}</span>
+    <button class="edit-dialog__close" (click)="onNoClick()" type="button">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+  </div>
+
+  <!-- Content -->
+  <div class="edit-dialog__content">
+    <!-- Seção Paciente -->
+    <section class="edit-section">
+      <div class="edit-section__header">
+        <i class="fa-solid fa-user"></i>
+        <h3>Paciente</h3>
+      </div>
+
+      <div class="search-row">
+        <div class="search-input-group">
+          <input type="text" formControlName="PesquisaPaciente" placeholder="Buscar paciente..."
+            (keyup.enter)="PesquisarPacientes()">
+          <button class="btn-search" type="button" (click)="PesquisarPacientes()">
+            <i class="fa-solid fa-search"></i>
+          </button>
+        </div>
+        <div class="filter-options">
+          <label><input formControlName="FiltroPesquisaPaciente" type="radio" [value]="1"> Nome</label>
+          <label><input formControlName="FiltroPesquisaPaciente" type="radio" [value]="2"> CPF</label>
+          <label><input formControlName="FiltroPesquisaPaciente" type="radio" [value]="3"> RG</label>
+          <label><input formControlName="FiltroPesquisaPaciente" type="radio" [value]="4"> Telefone</label>
+          <label><input formControlName="FiltroPesquisaPaciente" type="radio" [value]="5"> Todos</label>
+        </div>
+      </div>
+
+      <app-tabela-editar-Paciente-Consultas *ngIf="showResultadoPaciente" [dadosPaciente]="dadosPacientePassandoTabela"
+        (fechar)="fecharTabelaPacinte()" (selecionaPaciente)="PacienteSelecionado($event)">
+      </app-tabela-editar-Paciente-Consultas>
+
+      <div class="info-card" *ngIf="pacienteSelecionado">
+        <div class="info-card__avatar">
+          <i class="fa-solid fa-user"></i>
+        </div>
+        <div class="info-card__details">
+          <span class="info-card__name">{{pacienteSelecionado.nome}}</span>
+          <div class="info-card__row">
+            <span><strong>CPF:</strong> {{pacienteSelecionado.cpf}}</span>
+            <span><strong>RG:</strong> {{pacienteSelecionado.rg}}</span>
+          </div>
+          <div class="info-card__row">
+            <span><strong>Email:</strong> {{pacienteSelecionado.email}}</span>
+            <span><strong>Telefone:</strong> {{pacienteSelecionado.telefone}}</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Seção Médico -->
+    <section class="edit-section">
+      <div class="edit-section__header">
+        <i class="fa-solid fa-user-doctor"></i>
+        <h3>Clínico</h3>
+      </div>
+
+      <div class="search-row">
+        <div class="search-input-group">
+          <input type="text" formControlName="PesquisaMedico" placeholder="Buscar Clínico..."
+            (keyup.enter)="PesquisarMedicosFiltro()">
+          <button class="btn-search" type="button" (click)="PesquisarMedicosFiltro()">
+            <i class="fa-solid fa-search"></i>
+          </button>
+        </div>
+        <div class="filter-options">
+          <label><input formControlName="FiltroPesquisaMedico" type="radio" [value]="1"> Nome</label>
+          <label><input formControlName="FiltroPesquisaMedico" type="radio" [value]="2"> CRM</label>
+          <label><input formControlName="FiltroPesquisaMedico" type="radio" [value]="3"> Cidade</label>
+          <label><input formControlName="FiltroPesquisaMedico" type="radio" [value]="4"> Especialidade</label>
+          <label><input formControlName="FiltroPesquisaMedico" type="radio" [value]="5"> Todos</label>
+        </div>
+      </div>
+
+      <app-tabela-editar-Medicos-Consultas *ngIf="showResultadoMedico" [dadosMedicos]="dadosMedicoPassandoTabela"
+        (fechar)="fecharTabelaMedicos()" (selecionaMedico)="MedicoSelecionado($event)">
+      </app-tabela-editar-Medicos-Consultas>
+
+      <div class="info-card" *ngIf="medicoSelecionado">
+        <div class="info-card__avatar info-card__avatar--doctor">
+          <i class="fa-solid fa-user-doctor"></i>
+        </div>
+        <div class="info-card__details">
+          <span class="info-card__name">{{medicoSelecionado.nome}}</span>
+          <div class="info-card__row">
+            <span><strong>CRM:</strong> {{medicoSelecionado.registroConselho}}</span>
+            <span><strong>Especialidade:</strong> {{getEspecialidade(medicoSelecionado.especialidades)}}</span>
+          </div>
+          <div class="info-card__row">
+            <span><strong>Email:</strong> {{medicoSelecionado.email}}</span>
+            <span><strong>Telefone:</strong> {{medicoSelecionado.telefone}}</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Seção Data/Hora -->
+    <section class="edit-section">
+      <div class="edit-section__header">
+        <i class="fa-solid fa-calendar"></i>
+        <h3>Agendamento</h3>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Data <span class="required">*</span></label>
+          <input type="date" formControlName="data" (change)="onDateChange($event)"
+            [class.invalid]="FormGroupConsulta.get('data')?.invalid && FormGroupConsulta.get('data')?.touched">
+          <span class="error-message"
+            *ngIf="FormGroupConsulta.get('data')?.invalid && FormGroupConsulta.get('data')?.touched">
+            Campo obrigatório
+          </span>
+        </div>
+        <div class="form-group">
+          <label>Horário <span class="required">*</span></label>
+          <select formControlName="horario"
+            [class.invalid]="FormGroupConsulta.get('horario')?.invalid && FormGroupConsulta.get('horario')?.touched">
+            <option value="">Selecione um horário</option>
+            <option *ngFor="let time of Hora" [value]="time.value">{{time.label}}</option>
+          </select>
+          <span class="error-message"
+            *ngIf="FormGroupConsulta.get('horario')?.invalid && FormGroupConsulta.get('horario')?.touched">
+            Campo obrigatório
+          </span>
+        </div>
+      </div>
+    </section>
+
+    <!-- NOVA SEÇÃO: Valor da Consulta -->
+    <section class="edit-section">
+      <div class="edit-section__header">
+        <i class="fa-solid fa-dollar-sign"></i>
+        <h3>Valor da Consulta</h3>
+      </div>
+
+      <div class="form-group">
+        <label>Valor (R$) <span class="required">*</span></label>
+        <div class="input-with-icon">
+          <span class="input-icon">R$</span>
+          <input type="number" formControlName="valor" placeholder="0,00" step="0.01" min="0"
+            [class.invalid]="FormGroupConsulta.get('valor')?.invalid && FormGroupConsulta.get('valor')?.touched">
+        </div>
+        <span class="error-message"
+          *ngIf="FormGroupConsulta.get('valor')?.invalid && FormGroupConsulta.get('valor')?.touched">
+          <span *ngIf="FormGroupConsulta.get('valor')?.errors?.['required']">Campo obrigatório</span>
+          <span *ngIf="FormGroupConsulta.get('valor')?.errors?.['min']">O valor deve ser maior ou igual a zero</span>
+        </span>
+      </div>
+    </section>
+
+    <!-- Seção Pagamento -->
+    <section class="edit-section">
+      <div class="edit-section__header">
+        <i class="fa-solid fa-credit-card"></i>
+        <h3>Pagamento</h3>
+      </div>
+
+      <div class="payment-options">
+        <label class="payment-option">
+          <input formControlName="formaPagamento" type="radio" [value]="1">
+          <i class="fa-solid fa-money-bill"></i>
+          <span>Dinheiro</span>
+        </label>
+        <label class="payment-option">
+          <input formControlName="formaPagamento" type="radio" [value]="2">
+          <i class="fa-solid fa-credit-card"></i>
+          <span>Convênio</span>
+        </label>
+        <label class="payment-option">
+          <input formControlName="formaPagamento" type="radio" [value]="3">
+          <i class="fa-brands fa-pix"></i>
+          <span>PIX</span>
+        </label>
+      </div>
+      <span class="error-message"
+        *ngIf="FormGroupConsulta.get('formaPagamento')?.invalid && FormGroupConsulta.get('formaPagamento')?.touched">
+        Selecione uma forma de pagamento
+      </span>
+    </section>
+
+    <!-- Seção Observação -->
+    <section class="edit-section">
+      <div class="edit-section__header">
+        <i class="fa-solid fa-note-sticky"></i>
+        <h3>Observações</h3>
+      </div>
+
+      <textarea formControlName="observacao" placeholder="Adicione observações sobre a consulta..." rows="3"></textarea>
+    </section>
+  </div>
+
+  <!-- Footer -->
+  <div class="edit-dialog__footer">
+    <button class="btn btn--cancel" type="button" (click)="onNoClick()">Cancelar</button>
+    <button class="btn btn--save" type="button" (click)="Salvar()" [disabled]="FormGroupConsulta.invalid">
+      <i class="fa-solid fa-check"></i> Salvar
+    </button>
+  </div>
+</div>

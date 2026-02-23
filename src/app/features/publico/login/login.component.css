@@ -1,0 +1,374 @@
+/* ========================================
+   PÁGINA DE LOGIN - SAÚDE CONECTA
+   ======================================== */
+
+/* Container Principal */
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Formas decorativas de fundo */
+.bg-shapes {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.shape {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.1;
+  animation: float 20s infinite ease-in-out;
+}
+
+.shape-1 {
+  width: 400px;
+  height: 400px;
+  background: linear-gradient(45deg, #00d9ff, #00ff88);
+  top: -100px;
+  left: -100px;
+  animation-delay: 0s;
+}
+
+.shape-2 {
+  width: 300px;
+  height: 300px;
+  background: linear-gradient(45deg, #ff6b6b, #feca57);
+  bottom: -50px;
+  right: -50px;
+  animation-delay: -5s;
+}
+
+.shape-3 {
+  width: 200px;
+  height: 200px;
+  background: linear-gradient(45deg, #a55eea, #5f27cd);
+  top: 50%;
+  right: 10%;
+  animation-delay: -10s;
+}
+
+.shape-4 {
+  width: 150px;
+  height: 150px;
+  background: linear-gradient(45deg, #00d9ff, #00ff88);
+  bottom: 20%;
+  left: 10%;
+  animation-delay: -15s;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  25% {
+    transform: translate(30px, -30px) rotate(90deg);
+  }
+  50% {
+    transform: translate(0, -50px) rotate(180deg);
+  }
+  75% {
+    transform: translate(-30px, -30px) rotate(270deg);
+  }
+}
+
+/* Container do Login */
+.login-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 1;
+  padding: 20px;
+}
+
+/* Card de Login */
+.login-card {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 24px;
+  padding: 48px 40px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 
+    0 25px 50px -12px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  animation: cardAppear 0.6s ease-out;
+}
+
+@keyframes cardAppear {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Header do Login */
+.login-header {
+  text-align: center;
+  margin-bottom: 36px;
+}
+
+.logo-icon {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, #00d9ff 0%, #00a8cc 100%);
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+  box-shadow: 0 10px 30px rgba(0, 217, 255, 0.3);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    box-shadow: 0 10px 30px rgba(0, 217, 255, 0.3);
+  }
+  50% {
+    box-shadow: 0 10px 40px rgba(0, 217, 255, 0.5);
+  }
+}
+
+.logo-icon i {
+  font-size: 36px;
+  color: white;
+}
+
+.login-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin: 0 0 8px 0;
+  letter-spacing: -0.5px;
+}
+
+.login-subtitle {
+  font-size: 15px;
+  color: #6b7280;
+  margin: 0;
+  font-weight: 400;
+}
+
+/* Formulário */
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Grupo de Input */
+.input-group {
+  position: relative;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 16px 16px 16px 52px;
+  border: 2px solid #e5e7eb;
+  border-radius: 14px;
+  font-size: 15px;
+  color: #1a1a2e;
+  background: #f9fafb;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+  outline: none;
+}
+
+.input-group input:focus {
+  border-color: #00d9ff;
+  background: white;
+  box-shadow: 0 0 0 4px rgba(0, 217, 255, 0.1);
+}
+
+.input-group input::placeholder {
+  color: #9ca3af;
+}
+
+.input-group label {
+  position: absolute;
+  top: -8px;
+  left: 44px;
+  background: white;
+  padding: 0 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b7280;
+  transition: all 0.3s ease;
+}
+
+.input-group input:focus + label {
+  color: #00d9ff;
+}
+
+.input-icon {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #9ca3af;
+  transition: color 0.3s ease;
+}
+
+.input-group input:focus ~ .input-icon,
+.input-group:focus-within .input-icon {
+  color: #00d9ff;
+}
+
+/* Link Esqueci Senha */
+.forgot-password {
+  text-align: right;
+  margin-top: -8px;
+}
+
+.forgot-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #6b7280;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  padding: 4px 0;
+}
+
+.forgot-link:hover {
+  color: #00d9ff;
+}
+
+.forgot-link i {
+  font-size: 12px;
+}
+
+/* Botão de Login */
+.btn-login {
+  width: 100%;
+  padding: 16px 24px;
+  background: linear-gradient(135deg, #00d9ff 0%, #00a8cc 100%);
+  border: none;
+  border-radius: 14px;
+  font-size: 16px;
+  font-weight: 600;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: all 0.3s ease;
+  margin-top: 8px;
+  box-shadow: 0 8px 25px rgba(0, 217, 255, 0.35);
+}
+
+.btn-login:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 35px rgba(0, 217, 255, 0.45);
+}
+
+.btn-login:active {
+  transform: translateY(0);
+}
+
+.btn-login .btn-icon {
+  transition: transform 0.3s ease;
+}
+
+.btn-login:hover .btn-icon {
+  transform: translateX(4px);
+}
+
+/* Footer do Card */
+.login-footer {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid #e5e7eb;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #6b7280;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  padding: 8px 16px;
+  border-radius: 8px;
+}
+
+.back-link:hover {
+  color: #00d9ff;
+  background: rgba(0, 217, 255, 0.08);
+}
+
+.back-link i {
+  font-size: 12px;
+  transition: transform 0.3s ease;
+}
+
+.back-link:hover i {
+  transform: translateX(-4px);
+}
+
+.footer-text {
+  font-size: 13px;
+  color: #9ca3af;
+  margin: 0;
+}
+
+/* Versão */
+.version-info {
+  margin-top: 24px;
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+}
+
+.version-info span {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 500;
+}
+
+/* Responsividade */
+@media (max-width: 480px) {
+  .login-card {
+    padding: 36px 24px;
+    margin: 0 16px;
+  }
+
+  .login-title {
+    font-size: 24px;
+  }
+
+  .logo-icon {
+    width: 70px;
+    height: 70px;
+  }
+
+  .logo-icon i {
+    font-size: 30px;
+  }
+}

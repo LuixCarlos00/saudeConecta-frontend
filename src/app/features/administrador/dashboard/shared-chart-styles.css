@@ -1,0 +1,356 @@
+/* =============================================================================
+   ESTILOS COMPARTILHADOS PARA GRÁFICOS DO DASHBOARD
+   Layout padronizado de filtros e cards com cores de fundo
+   ============================================================================= */
+
+/* ===== Container Principal do Gráfico (Reduzido 20%) ===== */
+.chart-container,
+.grafico-container {
+  background: var(--bg-card);
+  border-radius: 8px;
+  padding: 16px; /* Reduzido de 24px para 16px (-33%) */
+  box-shadow: none;
+  border: 1px solid var(--border-color);
+  margin-bottom: 16px; /* Reduzido de 24px para 16px */
+}
+
+/* ===== Wrapper de Filtros Simplificado ===== */
+.chart-filters-wrapper {
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 0;
+  margin-bottom: 12px; /* Reduzido de 24px para 12px */
+}
+
+/* ===== Header do Filtro Simplificado ===== */
+.filter-header {
+  margin-bottom: 8px; /* Reduzido de 16px para 8px */
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.filter-title {
+  display: flex;
+  align-items: center;
+  gap: 6px; /* Reduzido de 10px para 6px */
+  font-size: 12px; /* Reduzido de 15px para 12px */
+  font-weight: 600; /* Reduzido de 700 para 600 */
+  color: var(--text-secondary);
+  letter-spacing: 0;
+}
+
+.filter-title i {
+  color: var(--text-muted);
+  font-size: 12px; /* Reduzido de 16px para 12px */
+}
+
+/* ===== Botões de Período Rápido Simplificados ===== */
+.quick-filters {
+  display: flex;
+  gap: 6px; /* Reduzido de 12px para 6px */
+  margin-bottom: 10px; /* Reduzido de 16px para 10px */
+  flex-wrap: wrap;
+}
+
+.quick-filter-btn {
+  flex: 1;
+  min-width: 70px; /* Reduzido de 110px para 70px */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px; /* Reduzido de 8px para 4px */
+  padding: 6px 10px; /* Reduzido de 12px 20px para 6px 10px */
+  background: transparent;
+  border: 1px solid var(--border-color); /* Reduzido de 2px para 1px */
+  border-radius: 4px; /* Reduzido de 10px para 4px */
+  font-size: 11px; /* Reduzido de 14px para 11px */
+  font-weight: 500; /* Reduzido de 600 para 500 */
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.quick-filter-btn i {
+  font-size: 11px; /* Reduzido de 16px para 11px */
+  opacity: 0.7;
+}
+
+.quick-filter-btn:hover:not(.quick-filter-btn--active) {
+  border-color: #3b82f6;
+  background: transparent;
+}
+
+.quick-filter-btn--active {
+  background: #3b82f6;
+  border-color: #3b82f6;
+  color: white;
+}
+
+.quick-filter-btn--active i {
+  opacity: 1;
+}
+
+/* ===== Período Personalizado Simplificado ===== */
+.custom-period {
+  margin-top: 10px; /* Reduzido de 16px para 10px */
+  padding-top: 0;
+  border-top: none;
+}
+
+.custom-period-field {
+  width: 100%;
+}
+
+.custom-period-field .mat-mdc-form-field {
+  width: 100%;
+}
+
+/* Estilos para Material Date Picker Simplificados */
+.custom-period-field .mat-mdc-text-field-wrapper {
+  background: transparent;
+  border-radius: 4px;
+}
+
+.custom-period-field .mdc-text-field--outlined .mdc-notched-outline {
+  border-color: #9e9e9e;
+  border-width: 1px;
+}
+
+.custom-period-field .mdc-text-field--outlined:hover .mdc-notched-outline {
+  border-color: #1565c0;
+}
+
+.custom-period-field .mdc-text-field--focused .mdc-notched-outline {
+  border-color: #1565c0;
+}
+
+.custom-period-field .mat-mdc-form-field-label {
+  color: #424242 !important;
+  font-weight: 500;
+  font-size: 12px;
+}
+
+.custom-period-field .mat-mdc-input-element {
+  color: #212121 !important;
+}
+
+.custom-period-field .mat-mdc-form-field-label.mat-mdc-form-field-label--floating {
+  color: #9e9e9e !important;
+}
+
+.custom-period-field .mat-mdc-form-field-hint {
+  color: #9e9e9e !important;
+}
+
+.custom-period-field .mat-mdc-form-field-error {
+  color: #d32f2f !important;
+}
+
+/* Ícones do date picker */
+.custom-period-field .mat-mdc-icon-button svg {
+  color: #1565c0 !important;
+}
+
+.custom-period-field .mat-datepicker-toggle-default-icon {
+  color: #1565c0 !important;
+}
+
+/* Forçar cores para mat-date-range-input específico */
+.custom-period-field mat-date-range-input .mat-mdc-input-element {
+  color: #212121 !important;
+}
+
+.custom-period-field mat-date-range-input .mat-mdc-input-element::placeholder {
+  color: #9e9e9e !important;
+}
+
+/* ===== Responsividade ===== */
+@media (max-width: 768px) {
+  .quick-filters {
+    flex-direction: column;
+  }
+
+  .quick-filter-btn {
+    min-width: auto;
+    width: 100%;
+  }
+
+  .chart-container,
+  .grafico-container {
+    padding: 12px;
+  }
+}
+
+/* ===== Estados de Loading, Error e Empty (Reduzidos 20%) ===== */
+.chart-loading,
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 16px; /* Reduzido de 60px 20px */
+  gap: 12px; /* Reduzido de 16px */
+  background: transparent;
+  border-radius: 8px;
+  border: 1px dashed var(--border-color);
+  margin: 12px 0; /* Reduzido de 20px */
+}
+
+.chart-loading i,
+.loading-state i {
+  font-size: 32px; /* Reduzido de 48px */
+  color: var(--primary-color);
+  animation: spin 1.5s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.chart-loading span,
+.loading-state p {
+  font-size: 13px; /* Reduzido de 16px */
+  font-weight: 500;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.chart-error,
+.error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 16px; /* Reduzido de 60px 20px */
+  gap: 12px; /* Reduzido de 16px */
+  background: transparent;
+  border-radius: 8px;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  margin: 12px 0; /* Reduzido de 20px */
+}
+
+.chart-error i,
+.error-state i {
+  font-size: 32px; /* Reduzido de 48px */
+  color: var(--error-color);
+}
+
+.chart-error span,
+.error-state p {
+  font-size: 13px; /* Reduzido de 16px */
+  font-weight: 500;
+  color: var(--error-color);
+  margin: 0;
+}
+
+.chart-empty,
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 16px; /* Reduzido de 60px 20px */
+  gap: 12px; /* Reduzido de 16px */
+  background: transparent;
+  border-radius: 8px;
+  border: 1px dashed var(--border-color);
+  margin: 12px 0; /* Reduzido de 20px */
+  text-align: center;
+}
+
+.chart-empty i,
+.empty-state i {
+  font-size: 32px; /* Reduzido de 48px */
+  color: var(--text-muted);
+  opacity: 0.5;
+}
+
+.chart-empty span,
+.empty-state p {
+  font-size: 13px; /* Reduzido de 16px */
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.retry-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px; /* Reduzido de 8px */
+  padding: 6px 12px; /* Reduzido de 10px 20px */
+  background: var(--error-color);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 12px; /* Reduzido de 14px */
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 6px; /* Reduzido de 8px */
+}
+
+.retry-btn:hover {
+  opacity: 0.9;
+}
+
+/* ===== Chart Wrapper (Reduzido 20%) ===== */
+.chart-wrapper,
+.grafico-wrapper {
+  margin: 12px 0; /* Reduzido de 20px */
+  padding: 12px; /* Reduzido de 20px */
+  background: transparent;
+  border-radius: 8px;
+  border: none;
+}
+
+.chart-wrapper--hidden {
+  display: none;
+}
+
+/* ===== Chart Summary (Reduzido 20%) ===== */
+.chart-summary {
+  display: flex;
+  gap: 10px; /* Reduzido de 16px */
+  margin-top: 16px; /* Reduzido de 24px */
+  padding-top: 12px; /* Reduzido de 20px */
+  border-top: 1px dashed var(--border-color);
+  flex-wrap: wrap;
+}
+
+.summary-item {
+  flex: 1;
+  min-width: 120px; /* Reduzido de 150px */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px; /* Reduzido de 8px */
+  padding: 10px; /* Reduzido de 16px */
+  background: transparent;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.summary-item:hover {
+  border-color: #3b82f6;
+}
+
+.summary-value {
+  font-size: 20px; /* Reduzido de 28px */
+  font-weight: 700;
+  color: var(--primary-color);
+  line-height: 1;
+}
+
+.summary-label {
+  font-size: 11px; /* Reduzido de 13px */
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+

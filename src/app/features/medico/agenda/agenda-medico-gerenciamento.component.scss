@@ -1,0 +1,766 @@
+// =============================================================================
+// AGENDA DO MÉDICO - ESTILOS HEALTHCARE
+// Interface otimizada para gestão de agendamentos do médico
+// =============================================================================
+
+@import 'design-system/variables';
+@import 'design-system/mixins';
+
+// =============================================================================
+// CONTAINER PRINCIPAL DO GERENCIAMENTO
+// =============================================================================
+
+.gerenciamento-container {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - #{$header-height});
+  background: $bg-secondary;
+}
+
+// =============================================================================
+// PAGE HEADER
+// =============================================================================
+
+.page-header {
+  background: linear-gradient(135deg, #0066CC 0%, #004C99 100%);
+  border-radius: 16px;
+  padding: 24px 32px;
+  margin-bottom: 24px;
+  color: white;
+  box-shadow: 0 4px 20px rgba(0, 102, 204, 0.3);
+}
+
+.page-header__content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+}
+
+.page-header__info {
+  flex: 1;
+}
+
+.page-header__title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin: 0 0 8px 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.page-header__title i {
+  font-size: 1.5rem;
+  opacity: 0.9;
+}
+
+.page-header__subtitle {
+  font-size: 0.95rem;
+  opacity: 0.85;
+  margin: 0;
+}
+
+// =============================================================================
+// STAT CARD
+// =============================================================================
+
+.page-header__stats {
+  display: flex;
+  gap: 16px;
+}
+
+.stat-card {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.stat-card i {
+  font-size: 24px;
+  opacity: 0.9;
+}
+
+.stat-card__info {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-card__value {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.stat-card__label {
+  font-size: 0.75rem;
+  opacity: 0.8;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+// =============================================================================
+// CONTAINER DA AGENDA
+// =============================================================================
+
+.agenda-container {
+  padding: $spacing-6;
+  background: $bg-secondary;
+  flex: 1;
+
+  @include mobile {
+    padding: $spacing-4;
+  }
+}
+
+// =============================================================================
+// HEADER DA AGENDA
+// =============================================================================
+
+.agenda-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-6;
+  flex-wrap: wrap;
+  gap: $spacing-4;
+
+  @include mobile {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  &__info {
+    flex: 1;
+  }
+
+  &__title {
+    display: flex;
+    align-items: center;
+    gap: $spacing-3;
+    font-size: $text-2xl;
+    font-weight: $font-bold;
+    color: $text-primary;
+    margin: 0;
+
+    i {
+      color: $primary-blue;
+    }
+
+    @include mobile {
+      font-size: $text-xl;
+    }
+  }
+
+  &__subtitle {
+    font-size: $text-base;
+    color: $text-secondary;
+    margin: $spacing-1 0 0 0;
+  }
+
+  &__filters {
+    display: flex;
+    gap: $spacing-2;
+    background: $bg-card;
+    padding: $spacing-1;
+    border-radius: $radius-lg;
+    border: 1px solid $border-light;
+  }
+
+  &__period-filter {
+    display: flex;
+    align-items: center;
+    gap: $spacing-3;
+
+    @include mobile {
+      flex-direction: column;
+      align-items: flex-start;
+      width: 100%;
+    }
+  }
+}
+
+// =============================================================================
+// FILTRO DE PERÍODO
+// =============================================================================
+
+.agenda-period-label {
+  font-size: $text-sm;
+  font-weight: $font-medium;
+  color: $text-secondary;
+}
+
+.agenda-period-buttons {
+  display: flex;
+  gap: $spacing-1;
+  background: $bg-card;
+  padding: $spacing-1;
+  border-radius: $radius-lg;
+  border: 1px solid $border-light;
+}
+
+.agenda-period-btn {
+  display: flex;
+  align-items: center;
+  gap: $spacing-2;
+  padding: $spacing-2 $spacing-3;
+  font-size: $text-sm;
+  font-weight: $font-medium;
+  color: $text-secondary;
+  background: transparent;
+  border: none;
+  border-radius: $radius-md;
+  cursor: pointer;
+  transition: all $transition-fast;
+
+  i {
+    font-size: $text-xs;
+  }
+
+  &:hover {
+    background: $bg-hover;
+    color: $text-primary;
+  }
+
+  &--active {
+    background: $primary-blue;
+    color: $text-inverse;
+
+    &:hover {
+      background: $primary-blue-dark;
+      color: $text-inverse;
+    }
+  }
+}
+
+// =============================================================================
+// BOTÕES DE FILTRO
+// =============================================================================
+
+.agenda-filter-btn {
+  display: flex;
+  align-items: center;
+  gap: $spacing-2;
+  padding: $spacing-2 $spacing-4;
+  font-size: $text-sm;
+  font-weight: $font-medium;
+  color: $text-secondary;
+  background: transparent;
+  border: none;
+  border-radius: $radius-md;
+  cursor: pointer;
+  transition: all $transition-fast;
+
+  &:hover {
+    background: $bg-hover;
+    color: $text-primary;
+  }
+
+  &--active {
+    background: $primary-blue;
+    color: $text-inverse;
+
+    &:hover {
+      background: $primary-blue-dark;
+    }
+  }
+}
+
+// =============================================================================
+// TOOLBAR DE AÇÕES
+// =============================================================================
+
+.agenda-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $spacing-4;
+  padding: $spacing-4 $spacing-5;
+  background: $bg-card;
+  border-radius: $radius-lg;
+  border: 1px solid $border-light;
+  margin-bottom: $spacing-6;
+  flex-wrap: wrap;
+
+  @include mobile {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+// =============================================================================
+// BUSCA
+// =============================================================================
+
+.agenda-search {
+  display: flex;
+  gap: $spacing-3;
+  flex: 1;
+  max-width: 500px;
+
+  @include mobile {
+    max-width: 100%;
+    flex-direction: column;
+  }
+
+  &__input-group {
+    display: flex;
+    align-items: center;
+    gap: $spacing-3;
+    flex: 1;
+    padding: $spacing-3 $spacing-4;
+    background: $bg-secondary;
+    border: 1px solid $border-light;
+    border-radius: $radius-md;
+    transition: all $transition-fast;
+
+    &:focus-within {
+      border-color: $primary-blue;
+      box-shadow: $shadow-focus;
+    }
+
+    i {
+      color: $text-muted;
+    }
+
+    input {
+      flex: 1;
+      border: none;
+      background: transparent;
+      font-size: $text-base;
+      color: $text-primary;
+      outline: none;
+
+      &::placeholder {
+        color: $text-muted;
+      }
+    }
+  }
+}
+
+// =============================================================================
+// AÇÕES RÁPIDAS
+// =============================================================================
+
+.agenda-actions {
+  display: flex;
+  align-items: center;
+  gap: $spacing-2;
+  flex-wrap: wrap;
+
+  &__divider {
+    width: 1px;
+    height: 32px;
+    background: $border-light;
+    margin: 0 $spacing-2;
+
+    @include mobile {
+      display: none;
+    }
+  }
+}
+
+.agenda-action-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $spacing-1;
+  padding: $spacing-2 $spacing-3;
+  font-size: $text-xs;
+  font-weight: $font-medium;
+  color: $text-secondary;
+  background: $bg-secondary;
+  border: 1px solid $border-light;
+  border-radius: $radius-md;
+  cursor: pointer;
+  transition: all $transition-fast;
+  min-width: 70px;
+
+  i {
+    font-size: $text-lg;
+    color: $primary-blue;
+  }
+
+  span {
+    white-space: nowrap;
+  }
+
+  &:hover {
+    background: $bg-hover;
+    border-color: $border-medium;
+    transform: translateY(-2px);
+  }
+
+  &--success {
+    i { color: $status-normal; }
+    &:hover { border-color: $status-normal; }
+  }
+
+  &--warning {
+    i { color: $status-atencao; }
+    &:hover { border-color: $status-atencao; }
+  }
+
+  &--info {
+    i { color: $status-info; }
+    &:hover { border-color: $status-info; }
+  }
+
+  &--danger {
+    i { color: $status-critico; }
+    &:hover { border-color: $status-critico; }
+  }
+}
+
+// =============================================================================
+// TABELA DE CONSULTAS
+// =============================================================================
+
+.agenda-table-container {
+  background: $bg-card;
+  border-radius: $radius-lg;
+  border: 1px solid $border-light;
+  overflow: hidden;
+  box-shadow: $shadow-sm;
+}
+
+.hc-table-wrapper {
+  overflow-x: auto;
+  @include scrollbar;
+}
+
+.hc-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  // Header
+  th[mat-header-cell] {
+    background: $bg-secondary;
+    padding: $spacing-4 $spacing-3;
+    font-size: $text-sm;
+    font-weight: $font-semibold;
+    color: $text-secondary;
+    text-align: left;
+    border-bottom: 2px solid $border-light;
+    white-space: nowrap;
+
+    i {
+      margin-right: $spacing-2;
+      color: $text-muted;
+      font-size: $text-xs;
+    }
+  }
+
+  // Cells
+  td[mat-cell] {
+    padding: $spacing-4 $spacing-3;
+    font-size: $text-base;
+    color: $text-primary;
+    border-bottom: 1px solid $border-light;
+    vertical-align: middle;
+  }
+
+  // Rows
+  tr[mat-row] {
+    transition: background $transition-fast;
+
+    &:hover {
+      background: $bg-hover;
+    }
+
+    &:last-child td[mat-cell] {
+      border-bottom: none;
+    }
+  }
+
+  // Código
+  &__code {
+    font-family: $font-mono;
+    font-size: $text-sm;
+    font-weight: $font-medium;
+    color: $text-muted;
+    background: $bg-tertiary;
+    padding: $spacing-1 $spacing-2;
+    border-radius: $radius-sm;
+  }
+
+  // Pessoa (médico/paciente)
+  &__person {
+    display: flex;
+    align-items: center;
+    gap: $spacing-2;
+
+    &-name {
+      font-weight: $font-medium;
+    }
+
+    &--patient {
+      .hc-table__person-name {
+        color: $primary-blue;
+      }
+    }
+  }
+
+  // Dia da semana
+  &__day {
+    font-size: $text-sm;
+    color: $text-secondary;
+  }
+
+  // Data
+  &__date {
+    font-family: $font-mono;
+    font-size: $text-sm;
+    font-weight: $font-medium;
+  }
+
+  // Horário
+  &__time {
+    font-family: $font-mono;
+    font-size: $text-base;
+    font-weight: $font-semibold;
+    color: $primary-blue;
+    background: $primary-blue-light;
+    padding: $spacing-1 $spacing-2;
+    border-radius: $radius-sm;
+  }
+
+  // Ações
+  &__actions {
+    display: flex;
+    gap: $spacing-1;
+    justify-content: flex-end;
+  }
+
+  // Linha concluída
+  &__row--completed {
+    background: $bg-tertiary;
+    opacity: 0.8;
+
+    td[mat-cell] {
+      color: $text-muted;
+    }
+  }
+
+  // Estado vazio
+  &__empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: $spacing-12 $spacing-6;
+    text-align: center;
+    color: $text-muted;
+
+    i {
+      font-size: 64px;
+      margin-bottom: $spacing-4;
+      opacity: 0.3;
+    }
+
+    p {
+      font-size: $text-lg;
+      margin: 0 0 $spacing-4 0;
+    }
+  }
+}
+
+// =============================================================================
+// BOTÕES DE AÇÃO NA TABELA
+// =============================================================================
+
+.hc-action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  font-size: $text-sm;
+  color: $text-secondary;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: $radius-md;
+  cursor: pointer;
+  transition: all $transition-fast;
+
+  &:hover:not(:disabled) {
+    background: $bg-hover;
+    border-color: $border-light;
+  }
+
+  &:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+
+  &--primary {
+    color: $primary-blue;
+    &:hover:not(:disabled) {
+      background: $primary-blue-light;
+      border-color: $primary-blue;
+    }
+  }
+
+  &--success {
+    color: $status-normal;
+    &:hover:not(:disabled) {
+      background: $status-normal-bg;
+      border-color: $status-normal;
+    }
+  }
+
+  &--warning {
+    color: darken($status-atencao, 10%);
+    &:hover:not(:disabled) {
+      background: $status-atencao-bg;
+      border-color: $status-atencao;
+    }
+  }
+
+  &--danger {
+    color: $status-critico;
+    &:hover:not(:disabled) {
+      background: $status-critico-bg;
+      border-color: $status-critico;
+    }
+  }
+
+  &--info {
+    color: $status-info;
+    &:hover:not(:disabled) {
+      background: $status-info-bg;
+      border-color: $status-info;
+    }
+  }
+}
+
+// =============================================================================
+// BOTÕES HEALTHCARE
+// =============================================================================
+
+.hc-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-2;
+  padding: $spacing-3 $spacing-5;
+  font-size: $text-base;
+  font-weight: $font-medium;
+  border-radius: $radius-md;
+  border: none;
+  cursor: pointer;
+  transition: all $transition-fast;
+  white-space: nowrap;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  &--primary {
+    background: $primary-blue;
+    color: $text-inverse;
+
+    &:hover:not(:disabled) {
+      background: $primary-blue-dark;
+    }
+  }
+
+  &--secondary {
+    background: $bg-tertiary;
+    color: $text-primary;
+    border: 1px solid $border-medium;
+
+    &:hover:not(:disabled) {
+      background: $bg-hover;
+    }
+  }
+}
+
+// =============================================================================
+// RESPONSIVIDADE
+// =============================================================================
+
+@include tablet {
+  .agenda-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .agenda-search {
+    max-width: 100%;
+  }
+
+  .agenda-actions {
+    justify-content: center;
+  }
+}
+
+@include mobile {
+  .hc-table {
+    th[mat-header-cell],
+    td[mat-cell] {
+      padding: $spacing-3 $spacing-2;
+    }
+
+    // Esconde colunas menos importantes em mobile
+    .hc-table__day {
+      display: none;
+    }
+  }
+
+  .hc-table__actions {
+    flex-wrap: wrap;
+    gap: $spacing-1;
+  }
+
+  .hc-action-btn {
+    width: 28px;
+    height: 28px;
+    font-size: $text-xs;
+  }
+}
+
+// =============================================================================
+// ANIMAÇÕES
+// =============================================================================
+
+.agenda-container {
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+tr[mat-row] {
+  animation: slideInLeft 0.3s ease-out;
+  animation-fill-mode: both;
+
+  @for $i from 1 through 10 {
+    &:nth-child(#{$i}) {
+      animation-delay: #{$i * 0.03}s;
+    }
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}

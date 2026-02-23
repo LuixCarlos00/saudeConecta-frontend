@@ -1,0 +1,183 @@
+<div class="cadastro-container">
+  <div class="cadastro-dialog">
+    <!-- Header -->
+    <header class="cadastro-header cadastro-header--paciente">
+      <div class="cadastro-header__info">
+        <div class="cadastro-header__icon">
+          <i class="fa-solid fa-hospital-user"></i>
+        </div>
+        <div>
+          <h2 class="cadastro-header__title">Cadastro de Paciente</h2>
+          <p class="cadastro-header__subtitle">Preencha os dados do paciente</p>
+        </div>
+      </div>
+    </header>
+
+    <!-- Body -->
+    <div class="cadastro-body">
+      <!-- Seção: Dados Pessoais -->
+      <section class="cadastro-section cadastro-section--open">
+        <div class="cadastro-section__header">
+          <i class="fa-solid fa-user"></i>
+          <h3 class="cadastro-section__title">Dados Pessoais</h3>
+        </div>
+        <div class="cadastro-section__body">
+          <form [formGroup]="FormularioPaciente" class="cadastro-grid">
+            <div class="cadastro-field">
+              <label class="cadastro-field__label">
+                <span class="cadastro-field__required">*</span> Nome Completo
+              </label>
+              <input type="text" class="cadastro-field__input" formControlName="nome"
+                placeholder="Digite o nome completo">
+            </div>
+
+            <div class="cadastro-field">
+              <label class="cadastro-field__label">
+                <span class="cadastro-field__required">*</span> Sexo
+              </label>
+              <select class="cadastro-field__select" formControlName="sexo">
+                <option value="" disabled>Selecione</option>
+                <option value="1">Masculino</option>
+                <option value="2">Feminino</option>
+              </select>
+            </div>
+
+            <div class="cadastro-field">
+              <label class="cadastro-field__label">
+                <span class="cadastro-field__required">*</span> Data de Nascimento
+              </label>
+              <input type="date" class="cadastro-field__input" formControlName="dataNascimento">
+            </div>
+
+            <div class="cadastro-field">
+              <label class="cadastro-field__label">
+                <span class="cadastro-field__required">*</span> CPF
+              </label>
+              <input type="text" class="cadastro-field__input"
+                [class.invalid]="FormularioPaciente.get('cpf')?.invalid && FormularioPaciente.get('cpf')?.touched"
+                [class.valid]="FormularioPaciente.get('cpf')?.valid && FormularioPaciente.get('cpf')?.touched"
+                formControlName="cpf" placeholder="000.000.000-00" maxlength="14" (blur)="validateCpfOnBlur()">
+
+              <!-- Mensagens de erro do CPF -->
+              <div *ngIf="FormularioPaciente.get('cpf')?.invalid && FormularioPaciente.get('cpf')?.touched"
+                class="error-message">
+                <small *ngIf="FormularioPaciente.get('cpf')?.errors?.['required']" class="error-text">
+                  CPF é obrigatório.
+                </small>
+                <small *ngIf="FormularioPaciente.get('cpf')?.errors?.['cpfInvalid']" class="error-text">
+                  CPF inválido.
+                </small>
+              </div>
+            </div>
+
+            <div class="cadastro-field">
+              <label class="cadastro-field__label">RG</label>
+              <input type="text" class="cadastro-field__input" formControlName="rg" placeholder="00.000.000-0"
+                maxlength="12">
+            </div>
+
+            <div class="cadastro-field">
+              <label class="cadastro-field__label">Telefone</label>
+              <input type="text" class="cadastro-field__input" formControlName="telefone" placeholder="(00) 00000-0000"
+                maxlength="17">
+            </div>
+
+            <div class="cadastro-field cadastro-field--full">
+              <label class="cadastro-field__label">
+                <span class="cadastro-field__required">*</span> Email
+              </label>
+              <input type="email" class="cadastro-field__input" formControlName="email" placeholder="email@exemplo.com">
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <!-- Seção: Endereço -->
+      <section class="cadastro-section cadastro-section--open">
+        <div class="cadastro-section__header">
+          <i class="fa-solid fa-location-dot"></i>
+          <h3 class="cadastro-section__title">Endereço</h3>
+        </div>
+        <div class="cadastro-section__body">
+          <form [formGroup]="FormularioEndereco" class="cadastro-grid">
+            <div class="cadastro-field">
+              <label class="cadastro-field__label">
+                Nacionalidade
+              </label>
+              <input type="text" class="cadastro-field__input" formControlName="nacionalidade"
+                placeholder="Brasileiro(a)">
+            </div>
+
+            <div class="cadastro-field">
+              <label class="cadastro-field__label">
+                <span class="cadastro-field__required">*</span>UF</label>
+              <select class="cadastro-field__select" formControlName="uf">
+                <option value="" disabled>Selecione</option>
+                <option *ngFor="let ufOption of ufOptions" [value]="ufOption.value">
+                  {{ufOption.label}}
+                </option>
+              </select>
+            </div>
+
+            <div class="cadastro-field">
+              <label class="cadastro-field__label">
+                <span class="cadastro-field__required">*</span> CEP
+              </label>
+              <input type="text" class="cadastro-field__input" formControlName="cep" placeholder="00000-000"
+                maxlength="9">
+            </div>
+
+            <div class="cadastro-field">
+              <label class="cadastro-field__label">
+                <span class="cadastro-field__required">*</span> Município
+              </label>
+              <input type="text" class="cadastro-field__input" formControlName="municipio" placeholder="Nome da cidade">
+            </div>
+
+            <div class="cadastro-field">
+              <label class="cadastro-field__label">
+                <span class="cadastro-field__required">*</span> Bairro
+              </label>
+              <input type="text" class="cadastro-field__input" formControlName="bairro" placeholder="Nome do bairro">
+            </div>
+
+            <div class="cadastro-field cadastro-field--full">
+              <label class="cadastro-field__label">
+                <span class="cadastro-field__required">*</span> Rua
+              </label>
+              <input type="text" class="cadastro-field__input" formControlName="rua" placeholder="Nome da rua">
+            </div>
+
+            <div class="cadastro-field">
+              <label class="cadastro-field__label">
+                <span class="cadastro-field__required">*</span> Número
+              </label>
+              <input type="number" class="cadastro-field__input" formControlName="numero" placeholder="000">
+            </div>
+
+            <div class="cadastro-field">
+              <label class="cadastro-field__label">Complemento</label>
+              <input type="text" class="cadastro-field__input" formControlName="complemento"
+                placeholder="Apto, Bloco, etc.">
+            </div>
+          </form>
+        </div>
+      </section>
+    </div>
+
+    <!-- Footer -->
+    <footer class="cadastro-footer">
+      <div class="cadastro-footer__hint">
+        <i class="fa-solid fa-asterisk"></i>
+        <span>Campos obrigatórios</span>
+      </div>
+      <div class="cadastro-footer__actions">
+        <button class="cadastro-btn cadastro-btn--primary"
+          [disabled]="!FormularioEndereco.valid || !FormularioPaciente.valid || isLoading" (click)="cadastra()">
+          <i class="fa-solid" [ngClass]="isLoading ? 'fa-spinner fa-spin' : 'fa-check'"></i>
+          {{ isLoading ? 'Cadastrando...' : 'Cadastrar Paciente' }}
+        </button>
+      </div>
+    </footer>
+  </div>
+</div>

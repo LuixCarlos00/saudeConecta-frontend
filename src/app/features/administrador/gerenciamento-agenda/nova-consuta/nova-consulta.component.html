@@ -1,0 +1,270 @@
+<div class="agenda-container">
+  <!-- Header da Página -->
+  <header class="page-header">
+
+    <div class="header-content">
+      <div class="header-icon">
+        <i class="fa-solid fa-calendar-plus"></i>
+      </div>
+      <div class="header-text">
+        <h1>Agendar Consulta</h1>
+        <p>Selecione o Clínico, paciente e horário para agendar</p>
+      </div>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <!-- Grid de Seleção -->
+    <div class="selection-grid">
+
+      <!-- Card: Selecionar Médico -->
+      <section class="selection-card" [formGroup]="FormularioMedicos">
+        <div class="card-header card-header--medico">
+          <i class="fa-solid fa-user-doctor"></i>
+          <h2>Selecionar Clínico</h2>
+        </div>
+
+        <div class="card-body">
+          <!-- Área de Pesquisa -->
+          <div class="search-area">
+            <div class="search-input-group">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <input type="text" placeholder="Digite para pesquisar..." formControlName="PesquisaMedicos">
+              <button class="btn-search" (click)="Pesquisar('medico')">
+                <i class="fa-solid fa-search"></i>
+                Buscar
+              </button>
+            </div>
+
+            <!-- Filtros -->
+            <div class="filter-options">
+              <span class="filter-label">Filtrar por:</span>
+              <div class="filter-chips">
+                <label class="filter-chip">
+                  <input type="radio" formControlName="OptionsFindMedicos" [value]="1">
+                  <span>Nome</span>
+                </label>
+                <label class="filter-chip">
+                  <input type="radio" formControlName="OptionsFindMedicos" [value]="2">
+                  <span>CRM</span>
+                </label>
+                <label class="filter-chip">
+                  <input type="radio" formControlName="OptionsFindMedicos" [value]="3">
+                  <span>Cidade</span>
+                </label>
+                <label class="filter-chip">
+                  <input type="radio" formControlName="OptionsFindMedicos" [value]="4">
+                  <span>Especialidade</span>
+                </label>
+                <label class="filter-chip">
+                  <input type="radio" formControlName="OptionsFindMedicos" [value]="5">
+                  <span>Todos</span>
+                </label>
+
+              </div>
+            </div>
+          </div>
+
+          <!-- Médico Selecionado -->
+          <div class="selected-person" [class.selected-person--empty]="!Medico.id">
+            <div class="person-avatar person-avatar--medico">
+              <i class="fa-solid fa-user-doctor"></i>
+            </div>
+            <div class="person-info" *ngIf="Medico.id">
+              <h3 class="person-name">{{ Medico.nome }}</h3>
+              <div class="person-details">
+                <span class="detail-item">
+                  <i class="fa-solid fa-id-badge"></i>
+                  CRM: {{ Medico.registroConselho }}
+                </span>
+                <span class="detail-item">
+                  <i class="fa-solid fa-stethoscope"></i>
+                  {{ getPrimeiraEspecialidade(Medico) }}
+                </span>
+                <span class="detail-item">
+                  <i class="fa-solid fa-phone"></i>
+                  {{ Medico.telefone }}
+                </span>
+                <span class="detail-item">
+                  <i class="fa-solid fa-envelope"></i>
+                  {{ Medico.email }}
+                </span>
+              </div>
+            </div>
+            <div class="person-empty" *ngIf="!Medico.id">
+              <p>Nenhum Clínico selecionado</p>
+              <span>Use a pesquisa acima para selecionar</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Card: Selecionar Paciente -->
+      <section class="selection-card" [formGroup]="FormularioPaciente">
+        <div class="card-header card-header--paciente">
+          <i class="fa-solid fa-hospital-user"></i>
+          <h2>Selecionar Paciente</h2>
+        </div>
+
+        <div class="card-body">
+          <!-- Área de Pesquisa -->
+          <div class="search-area">
+            <div class="search-input-group">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <input type="text" placeholder="Digite para pesquisar..." formControlName="PesquisaPaciente">
+              <button class="btn-search btn-search--paciente" (click)="Pesquisar('paciente')">
+                <i class="fa-solid fa-search"></i>
+                Buscar
+              </button>
+            </div>
+
+            <!-- Filtros -->
+            <div class="filter-options">
+              <span class="filter-label">Filtrar por:</span>
+              <div class="filter-chips">
+                <label class="filter-chip filter-chip--paciente">
+                  <input type="radio" formControlName="OptionsFindPaciente" [value]="1">
+                  <span>Nome</span>
+                </label>
+                <label class="filter-chip filter-chip--paciente">
+                  <input type="radio" formControlName="OptionsFindPaciente" [value]="2">
+                  <span>CPF</span>
+                </label>
+                <label class="filter-chip filter-chip--paciente">
+                  <input type="radio" formControlName="OptionsFindPaciente" [value]="3">
+                  <span>RG</span>
+                </label>
+                <label class="filter-chip filter-chip--paciente">
+                  <input type="radio" formControlName="OptionsFindPaciente" [value]="4">
+                  <span>Telefone</span>
+                </label>
+                <label class="filter-chip filter-chip--paciente">
+                  <input type="radio" formControlName="OptionsFindPaciente" [value]="5">
+                  <span>Todos</span>
+                </label>
+                <label class="filter-chip">
+                  <input type="radio" (click)="AdicionarPaciente()" [value]="6">
+                  <span>Criar</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Paciente Selecionado -->
+          <div class="selected-person" [class.selected-person--empty]="!Paciente.codigo">
+            <div class="person-avatar person-avatar--paciente">
+              <i class="fa-solid fa-user"></i>
+            </div>
+            <div class="person-info" *ngIf="Paciente.codigo">
+              <h3 class="person-name">{{ Paciente.nome }}</h3>
+              <div class="person-details">
+                <span class="detail-item">
+                  <i class="fa-solid fa-id-card"></i>
+                  CPF: {{ Paciente.cpf }}
+                </span>
+                <span class="detail-item">
+                  <i class="fa-solid fa-address-card"></i>
+                  RG: {{ Paciente.rg }}
+                </span>
+                <span class="detail-item">
+                  <i class="fa-solid fa-phone"></i>
+                  {{ Paciente.telefone }}
+                </span>
+                <span class="detail-item">
+                  <i class="fa-solid fa-envelope"></i>
+                  {{ Paciente.email }}
+                </span>
+              </div>
+            </div>
+            <div class="person-empty" *ngIf="!Paciente.codigo">
+              <p>Nenhum paciente selecionado</p>
+              <span>Use a pesquisa acima para selecionar</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Seção: Detalhes da Consulta -->
+    <section class="consulta-details" [formGroup]="FormularioConsulta">
+      <div class="section-header">
+        <i class="fa-solid fa-clipboard-list"></i>
+        <h2>Detalhes da Consulta</h2>
+      </div>
+
+      <div class="details-grid">
+        <!-- Data -->
+        <div class="form-group">
+          <label class="form-label">
+            <i class="fa-solid fa-calendar-day"></i>
+            Data da Consulta
+            <span class="required">*</span>
+          </label>
+          <input type="date" class="form-input" formControlName="date" (change)="onDateChange($event)">
+        </div>
+
+        <!-- Hora -->
+        <div class="form-group">
+          <label class="form-label">
+            <i class="fa-solid fa-clock"></i>
+            Horário
+            <span class="required">*</span>
+          </label>
+          <select class="form-input form-select" formControlName="Hora">
+            <option value="" disabled>Horarios Disponiveis</option>
+            <option *ngFor="let time of Hora" [value]="time.value">{{ time.label }}</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">
+            <i class="fa-solid fa-dollar-sign"></i>
+            Valor da Consulta
+            <span class="required">*</span>
+          </label>
+          <div class="input-with-icon">
+            <span class="input-icon">R$</span>
+            <input type="number" class="form-input form-input--with-icon" formControlName="valor" placeholder="0,00"
+              step="0.01" min="0">
+          </div>
+          <span class="input-hint" *ngIf="FormularioConsulta.get('valor')?.value">
+            {{ formatarValor(FormularioConsulta.get('valor')?.value) }}
+          </span>
+        </div>
+
+        <!-- Forma de Pagamento -->
+        <div class="form-group">
+          <label class="form-label">
+            <i class="fa-solid fa-credit-card"></i>
+            Forma de Pagamento
+            <span class="required">*</span>
+          </label>
+          <select class="form-input form-select" formControlName="Pagamento">
+            <option value="" disabled>Selecione a forma</option>
+            <option value="Cartao">Cartão</option>
+            <option value="Dinheiro">Dinheiro</option>
+            <option value="Pix">PIX</option>
+          </select>
+        </div>
+
+        <!-- Observação -->
+        <div class="form-group form-group--full">
+          <label class="form-label">
+            <i class="fa-solid fa-note-sticky"></i>
+            Observações
+          </label>
+          <textarea class="form-input form-textarea" formControlName="observacao"
+            placeholder="Adicione observações sobre a consulta (opcional)..." rows="3"></textarea>
+        </div>
+      </div>
+    </section>
+
+    <!-- Botão de Ação -->
+    <div class="action-footer">
+      <button class="btn-agendar" (click)="marcarConsulta()">
+        <i class="fa-solid fa-calendar-check"></i>
+        Confirmar Agendamento
+      </button>
+    </div>
+  </main>
+</div>

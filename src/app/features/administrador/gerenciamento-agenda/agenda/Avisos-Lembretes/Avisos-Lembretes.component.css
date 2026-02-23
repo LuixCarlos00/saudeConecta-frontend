@@ -1,0 +1,129 @@
+/* =============================================================================
+   DIALOG SIMPLES - AVISOS E LEMBRETES
+   ============================================================================= */
+
+.dialog-simple {
+  background: #fff;
+  border-radius: 8px;
+  width: 400%;
+  max-width: 100%;  
+}
+
+.dialog-simple__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.dialog-simple__header h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 18px;
+  color: #6b7280;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.close-btn:hover {
+  color: #1f2937;
+}
+
+.dialog-simple__body {
+  padding: 16px 20px;
+}
+
+.radio-group {
+  margin-bottom: 16px;
+}
+
+.radio-group__title {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 8px;
+}
+
+.radio-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
+  cursor: pointer;
+  font-size: 14px;
+  color: #4b5563;
+}
+
+.radio-item input[type="radio"] {
+  accent-color: #0077b6;
+}
+
+.radio-item:hover {
+  color: #1f2937;
+}
+
+.dialog-simple__body textarea {
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 14px;
+  font-family: inherit;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  resize: vertical;
+  box-sizing: border-box;
+}
+
+.dialog-simple__body textarea:focus {
+  outline: none;
+  border-color: #0077b6;
+}
+
+.dialog-simple__footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 12px 20px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.btn {
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+}
+
+.btn--cancel {
+  background: #f3f4f6;
+  color: #4b5563;
+}
+
+.btn--cancel:hover {
+  background: #e5e7eb;
+}
+
+.btn--send {
+  background: #0077b6;
+  color: #fff;
+}
+
+.btn--send:hover {
+  background: #005f92;
+}
+
+@media screen and (max-width: 450px) {
+  .dialog-simple {
+    width: 100%;
+  }
+}

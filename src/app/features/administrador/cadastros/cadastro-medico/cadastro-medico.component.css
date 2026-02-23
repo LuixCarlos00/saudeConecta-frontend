@@ -1,0 +1,666 @@
+/* =============================================================================
+   CADASTRO DE MÉDICO - ESTILOS DO COMPONENTE (DIALOG)
+   ============================================================================= */
+
+/* Container Principal - Adaptado para Dialog */
+:host {
+  display: block;
+  height: 100%;
+}
+
+/* Container que envolve tudo */
+.cadastro-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+/* Validação de CPF */
+.cadastro-field__error {
+  margin-top: 4px;
+  font-size: 12px;
+  color: #dc3545;
+  font-weight: 500;
+}
+
+.cadastro-field__input.ng-invalid.ng-touched {
+  border-color: #dc3545;
+  box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}
+
+.cadastro-field__input.ng-valid.ng-touched {
+  border-color: #28a745;
+  box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+}
+
+/* Dialog do Cadastro */
+.cadastro-dialog {
+  background: white;
+  overflow: hidden;
+  animation: fadeIn 0.3s ease-out;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.cadastro-dialog--disabled {
+  opacity: 0.5;
+  pointer-events: none;
+  filter: grayscale(30%);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Header */
+.cadastro-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 32px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  position: relative;
+  overflow: hidden;
+}
+
+.cadastro-header::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -20%;
+  width: 300px;
+  height: 300px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+}
+
+.cadastro-header::after {
+  content: '';
+  position: absolute;
+  bottom: -60%;
+  left: -10%;
+  width: 200px;
+  height: 200px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 50%;
+}
+
+.cadastro-header__info {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  position: relative;
+  z-index: 1;
+}
+
+.cadastro-header__icon {
+  width: 64px;
+  height: 64px;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.cadastro-header__title {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.cadastro-header__subtitle {
+  margin: 6px 0 0;
+  font-size: 14px;
+  opacity: 0.9;
+  font-weight: 400;
+}
+
+/* Body */
+.cadastro-body {
+  padding: 24px;
+  background: #f8fafc;
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* Seções */
+.cadastro-section {
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  margin-bottom: 24px;
+  overflow: hidden;
+  transition: box-shadow 0.2s ease;
+}
+
+.cadastro-section:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.cadastro-section:last-child {
+  margin-bottom: 0;
+}
+
+.cadastro-section__header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 18px 24px;
+  background: linear-gradient(to right, #f8fafc, #ffffff);
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.cadastro-section__header i {
+  width: 36px;
+  height: 36px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+}
+
+.cadastro-section__title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.cadastro-section__body {
+  padding: 24px;
+}
+
+/* Grid de Campos */
+.cadastro-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+/* Campos */
+.cadastro-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cadastro-field--full {
+  grid-column: 1 / -1;
+}
+
+.cadastro-field__label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.cadastro-field__required {
+  color: #ef4444;
+  font-weight: 700;
+}
+
+.cadastro-field__input,
+.cadastro-field__select {
+  width: 100%;
+  padding: 14px 16px;
+  background: #f8fafc;
+  border: 2px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 15px;
+  color: #1e293b;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.cadastro-field__input:hover,
+.cadastro-field__select:hover {
+  border-color: #cbd5e1;
+  background: #f1f5f9;
+}
+
+.cadastro-field__input:focus,
+.cadastro-field__select:focus {
+  outline: none;
+  border-color: #10b981;
+  background: white;
+  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+}
+
+.cadastro-field__input::placeholder {
+  color: #94a3b8;
+}
+
+/* Radio Group */
+.cadastro-radio-group {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+.cadastro-radio {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #475569;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.cadastro-radio:hover {
+  color: #1e293b;
+}
+
+.cadastro-radio input[type="radio"] {
+  display: none;
+}
+
+.cadastro-radio__checkmark {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #e2e8f0;
+  border-radius: 50%;
+  background: #f8fafc;
+  position: relative;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.cadastro-radio input[type="radio"]:checked + .cadastro-radio__checkmark {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  border-color: #10b981;
+}
+
+.cadastro-radio input[type="radio"]:checked + .cadastro-radio__checkmark::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  background: white;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.cadastro-radio:hover .cadastro-radio__checkmark {
+  border-color: #cbd5e1;
+  background: #f1f5f9;
+}
+
+.cadastro-radio input[type="radio"]:checked:hover + .cadastro-radio__checkmark {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+}
+
+.cadastro-field__select {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 18px;
+  padding-right: 44px;
+}
+
+/* Footer */
+.cadastro-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  background: white;
+  border-top: 1px solid #e2e8f0;
+  flex-shrink: 0;
+  position: sticky;
+  bottom: 0;
+}
+
+.cadastro-footer__hint {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #64748b;
+}
+
+.cadastro-footer__hint i {
+  color: #ef4444;
+  font-size: 10px;
+}
+
+.cadastro-footer__actions {
+  display: flex;
+  gap: 12px;
+}
+
+/* Botões */
+.cadastro-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 28px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.cadastro-btn--primary {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);
+}
+
+.cadastro-btn--primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.5);
+}
+
+.cadastro-btn--primary:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.cadastro-btn--primary:disabled {
+  background: #94a3b8;
+  box-shadow: none;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+/* Estado Blur */
+.blurred {
+  pointer-events: none;
+  opacity: 0.5;
+  filter: blur(2px);
+}
+
+/* Scrollbar Personalizada */
+.cadastro-body::-webkit-scrollbar {
+  width: 8px;
+}
+
+.cadastro-body::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+
+.cadastro-body::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+.cadastro-body::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .cadastro-header {
+    padding: 20px;
+  }
+
+  .cadastro-header__icon {
+    width: 48px;
+    height: 48px;
+    font-size: 20px;
+  }
+
+  .cadastro-header__title {
+    font-size: 20px;
+  }
+
+  .cadastro-body {
+    padding: 16px;
+    max-height: 50vh;
+  }
+
+  .cadastro-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .cadastro-section__body {
+    padding: 16px;
+  }
+
+  .cadastro-footer {
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px 20px;
+  }
+
+  .cadastro-footer__actions {
+    width: 100%;
+  }
+
+  .cadastro-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* Tema Escuro */
+:host-context(body.dark-theme) .cadastro-container {
+  background: #0f172a;
+}
+
+:host-context(body.dark-theme) .cadastro-dialog {
+  background: #1e293b;
+}
+
+:host-context(body.dark-theme) .cadastro-body {
+  background: #0f172a;
+}
+
+:host-context(body.dark-theme) .cadastro-section {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+:host-context(body.dark-theme) .cadastro-section__header {
+  background: linear-gradient(to right, #1e293b, #334155);
+  border-color: #334155;
+}
+
+:host-context(body.dark-theme) .cadastro-section__title {
+  color: #f1f5f9;
+}
+
+:host-context(body.dark-theme) .cadastro-field__label {
+  color: #94a3b8;
+}
+
+:host-context(body.dark-theme) .cadastro-field__input,
+:host-context(body.dark-theme) .cadastro-field__select {
+  background: #0f172a;
+  border-color: #334155;
+  color: #f1f5f9;
+}
+
+:host-context(body.dark-theme) .cadastro-field__input:focus,
+:host-context(body.dark-theme) .cadastro-field__select:focus {
+  background: #1e293b;
+  border-color: #10b981;
+}
+
+:host-context(body.dark-theme) .cadastro-footer {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+:host-context(body.dark-theme) .cadastro-footer__hint {
+  color: #94a3b8;
+}
+
+:host-context(body.dark-theme) .cadastro-body::-webkit-scrollbar-track {
+  background: #1e293b;
+}
+
+:host-context(body.dark-theme) .cadastro-body::-webkit-scrollbar-thumb {
+  background: #475569;
+}
+
+/* Modal Overlay */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  animation: fadeIn 0.2s ease-out;
+}
+
+/* Modal Dialog */
+.modal-dialog {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  max-width: 500px;
+  width: 90%;
+  max-height: 90vh;
+  overflow: hidden;
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Modal Header */
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+}
+
+.modal-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.modal-close {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: white;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.modal-close:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: rotate(90deg);
+}
+
+/* Modal Body */
+.modal-body {
+  padding: 24px;
+}
+
+/* Modal Footer */
+.modal-footer {
+  display: flex;
+  gap: 12px;
+  padding: 20px 24px;
+  background: #f8fafc;
+  border-top: 1px solid #e2e8f0;
+}
+
+/* Botão Secundário */
+.cadastro-btn--secondary {
+  background: white;
+  color: #475569;
+  border: 2px solid #e2e8f0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.cadastro-btn--secondary:hover:not(:disabled) {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.cadastro-btn--secondary:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.cadastro-btn--secondary:disabled {
+  background: #f1f5f9;
+  color: #94a3b8;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+/* Tema Escuro - Modal */
+:host-context(body.dark-theme) .modal-dialog {
+  background: #1e293b;
+}
+
+:host-context(body.dark-theme) .modal-footer {
+  background: #0f172a;
+  border-color: #334155;
+}
+
+:host-context(body.dark-theme) .cadastro-btn--secondary {
+  background: #0f172a;
+  color: #94a3b8;
+  border-color: #334155;
+}
+
+:host-context(body.dark-theme) .cadastro-btn--secondary:hover:not(:disabled) {
+  background: #1e293b;
+  border-color: #475569;
+}

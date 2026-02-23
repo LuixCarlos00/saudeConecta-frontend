@@ -1,0 +1,174 @@
+<div class="documento-container">
+  <!-- Header do Dialog -->
+  <header class="dialog-header">
+    <div class="header-info">
+      <div class="header-icon">
+        <i class="fa-solid fa-folder-open"></i>
+      </div>
+      <div class="header-text">
+        <h2 class="header-title">Histórico Clínico Completo</h2>
+        <p class="header-subtitle">Prontuário e consultas realizadas</p>
+      </div>
+    </div>
+    <button class="close-btn" mat-dialog-close>
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+  </header>
+
+  <!-- Conteúdo do PDF -->
+  <div class="dialog-body">
+    <div id="pdfContent" class="pdf-content">
+      <!-- Cabeçalho Executivo -->
+      <div class="pdf-header">
+        <h1 class="pdf-title">HISTÓRICO MÉDICO COMPLETO</h1>
+        <div class="pdf-subtitle">Relatório Executivo de Consultas e Prontuários</div>
+      </div>
+
+      <!-- Seção: Dados do Paciente -->
+      <div class="pdf-section" *ngIf="pacienteInfo">
+        <div class="section-header">
+          <div class="section-bar"></div>
+          <span class="section-title">DADOS DO PACIENTE</span>
+        </div>
+        <div class="form-row">
+          <div class="form-field">
+            <div class="field-label">NOME</div>
+            <div class="field-value">{{ pacienteInfo.nome }}</div>
+          </div>
+          <div class="form-field">
+            <div class="field-label">CPF</div>
+            <div class="field-value">{{ pacienteInfo.cpf }}</div>
+          </div>
+          <div class="form-field">
+            <div class="field-label">DATA NASC.</div>
+            <div class="field-value">{{ pacienteInfo.dataNascimento | date: 'dd/MM/yyyy' }}</div>
+          </div>
+          <div class="form-field">
+            <div class="field-label">TELEFONE</div>
+            <div class="field-value">{{ pacienteInfo.telefone }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Seção: Histórico de Consultas -->
+      <div class="pdf-section">
+        <div class="section-header">
+          <div class="section-bar"></div>
+          <span class="section-title">HISTÓRICO DE CONSULTAS ({{ historico?.length || 0 }} REGISTROS)</span>
+        </div>
+      </div>
+
+      <!-- Loop de Consultas com Layout Horizontal -->
+      <div class="consulta-item" *ngFor="let item of historico; let i = index">
+        <!-- Subseção -->
+        <div class="subsection-header">
+          <span class="subsection-title">Consulta {{ i + 1 }} - {{ item.dataHora | date: 'dd/MM/yyyy' }}</span>
+        </div>
+
+        <!-- Data/Hora e Profissional -->
+        <div class="form-row">
+          <div class="form-field">
+            <div class="field-label">DATA</div>
+            <div class="field-value">{{ item.dataHora | date: 'dd/MM/yyyy' }}</div>
+          </div>
+          <div class="form-field">
+            <div class="field-label">HORÁRIO</div>
+            <div class="field-value">{{ item.dataHora | date: 'HH:mm' }}</div>
+          </div>
+          <div class="form-field">
+            <div class="field-label">PROFISSIONAL</div>
+            <div class="field-value">Dr(a). {{ item.profissionalNome }}</div>
+          </div>
+          <div class="form-field">
+            <div class="field-label">CRM/ESP</div>
+            <div class="field-value">{{ item.profissionalCrm }} | {{ item.profissionalEspecialidade }}</div>
+          </div>
+        </div>
+
+        <!-- Dados Vitais -->
+        <div class="form-row" *ngIf="item.peso || item.altura || item.temperatura || item.pressao || item.saturacao">
+          <div class="form-field" *ngIf="item.peso">
+            <div class="field-label">PESO</div>
+            <div class="field-value">{{ item.peso }}kg</div>
+          </div>
+          <div class="form-field" *ngIf="item.altura">
+            <div class="field-label">ALTURA</div>
+            <div class="field-value">{{ item.altura }}m</div>
+          </div>
+          <div class="form-field" *ngIf="item.temperatura">
+            <div class="field-label">TEMP</div>
+            <div class="field-value">{{ item.temperatura }}°C</div>
+          </div>
+          <div class="form-field" *ngIf="item.pressao">
+            <div class="field-label">PA</div>
+            <div class="field-value">{{ item.pressao }}</div>
+          </div>
+          <div class="form-field" *ngIf="item.saturacao">
+            <div class="field-label">SPO2</div>
+            <div class="field-value">{{ item.saturacao }}%</div>
+          </div>
+        </div>
+
+        <!-- Informações Clínicas -->
+        <div class="form-row" *ngIf="item.queixaPrincipal || item.diagnostico">
+          <div class="form-field" *ngIf="item.queixaPrincipal">
+            <div class="field-label">QUEIXA</div>
+            <div class="field-value">{{ item.queixaPrincipal }}</div>
+          </div>
+          <div class="form-field" *ngIf="item.diagnostico">
+            <div class="field-label">DIAGNÓSTICO</div>
+            <div class="field-value">{{ item.diagnostico }}</div>
+          </div>
+        </div>
+
+        <!-- Prescrição e Exames -->
+        <div class="form-row" *ngIf="item.prescricao || item.exame">
+          <div class="form-field" *ngIf="item.prescricao">
+            <div class="field-label">PRESCRIÇÃO</div>
+            <div class="field-value">{{ item.prescricao }}</div>
+          </div>
+          <div class="form-field" *ngIf="item.exame">
+            <div class="field-label">EXAMES</div>
+            <div class="field-value">{{ item.exame }}</div>
+          </div>
+        </div>
+
+        <!-- Observações (Caixa Expansível) -->
+        <div class="expansible-box" *ngIf="item.observacao">
+          <div class="expansible-label">OBSERVAÇÕES:</div>
+          <div class="expansible-content">{{ item.observacao }}</div>
+        </div>
+
+        <!-- Informações Adicionais -->
+        <div class="form-row" *ngIf="item.tempoDuracao">
+          <div class="form-field">
+            <div class="field-label">DURAÇÃO</div>
+            <div class="field-value">{{ item.tempoDuracao }}</div>
+          </div>
+        </div>
+
+        <!-- Linha Separadora -->
+        <div class="separator-line"></div>
+      </div>
+        
+      <!-- Mensagem se não houver consultas -->
+      <div class="empty-state" *ngIf="!historico || historico.length === 0">
+        <i class="fa-solid fa-folder-open"></i>
+        <p>Nenhum registro de consulta encontrado</p>
+        <small>Este paciente ainda não possui consultas realizadas</small>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer com Ações -->
+  <footer class="dialog-footer">
+    <button class="btn btn--secondary" mat-dialog-close>
+      <i class="fa-solid fa-xmark"></i>
+      Fechar
+    </button>
+    <button class="btn btn--primary" (click)="GerarPDF()" [disabled]="!historico || historico.length === 0">
+      <i class="fa-solid fa-file-pdf"></i>
+      Gerar PDF
+    </button>
+  </footer>
+</div>

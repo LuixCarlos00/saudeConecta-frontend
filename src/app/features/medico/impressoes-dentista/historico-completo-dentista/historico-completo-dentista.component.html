@@ -1,0 +1,231 @@
+<div class="documento-container">
+  <!-- Header do Dialog -->
+  <header class="dialog-header">
+    <div class="header-info">
+      <div class="header-icon">
+        <i class="fa-solid fa-tooth"></i>
+      </div>
+      <div class="header-text">
+        <h2 class="header-title">Histórico Odontológico Completo</h2>
+        <p class="header-subtitle">Prontuários e consultas odontológicas realizadas</p>
+      </div>
+    </div>
+    <button class="close-btn" mat-dialog-close>
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+  </header>
+
+  <!-- Conteúdo do PDF -->
+  <div class="dialog-body">
+    <div id="pdfContent" class="pdf-content">
+
+      <!-- Cabeçalho Executivo -->
+      <div class="pdf-header">
+        <h1 class="pdf-title">HISTÓRICO ODONTOLÓGICO COMPLETO</h1>
+        <div class="pdf-subtitle">Relatório Executivo de Consultas Odontológicas</div>
+      </div>
+
+      <!-- Seção: Dados do Paciente -->
+      <div class="pdf-section" *ngIf="pacienteInfo">
+        <div class="section-header">
+          <div class="section-bar"></div>
+          <span class="section-title">DADOS DO PACIENTE</span>
+        </div>
+        <div class="form-row">
+          <div class="form-field">
+            <div class="field-label">NOME</div>
+            <div class="field-value">{{ pacienteInfo.nome }}</div>
+          </div>
+          <div class="form-field">
+            <div class="field-label">CPF</div>
+            <div class="field-value">{{ pacienteInfo.cpf }}</div>
+          </div>
+          <div class="form-field">
+            <div class="field-label">DATA NASC.</div>
+            <div class="field-value">{{ pacienteInfo.dataNascimento | date: 'dd/MM/yyyy' }}</div>
+          </div>
+          <div class="form-field">
+            <div class="field-label">TELEFONE</div>
+            <div class="field-value">{{ pacienteInfo.telefone }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Seção: Histórico de Consultas -->
+      <div class="pdf-section">
+        <div class="section-header">
+          <div class="section-bar"></div>
+          <span class="section-title">
+            HISTÓRICO DE CONSULTAS ODONTOLÓGICAS ({{ historico?.length || 0 }} REGISTROS)
+          </span>
+        </div>
+      </div>
+
+      <!-- Loop de Consultas -->
+      <div class="consulta-item" *ngFor="let item of historico; let i = index">
+
+        <div class="subsection-header">
+          <span class="subsection-title">
+            <i class="fa-solid fa-tooth subsection-icon"></i>
+            Consulta {{ i + 1 }} — {{ item.dataHora | date: 'dd/MM/yyyy' }}
+          </span>
+        </div>
+
+        <!-- Data / Dentista -->
+        <div class="form-row">
+          <div class="form-field">
+            <div class="field-label">DATA</div>
+            <div class="field-value">{{ item.dataHora | date: 'dd/MM/yyyy' }}</div>
+          </div>
+          <div class="form-field">
+            <div class="field-label">HORÁRIO</div>
+            <div class="field-value">{{ item.dataHora | date: 'HH:mm' }}</div>
+          </div>
+          <div class="form-field">
+            <div class="field-label">DENTISTA</div>
+            <div class="field-value">Dr(a). {{ item.profissionalNome || '-' }}</div>
+          </div>
+          <div class="form-field">
+            <div class="field-label">CRO / ESPECIALIDADE</div>
+            <div class="field-value">{{ item.profissionalCrm || '-' }} | {{ item.profissionalEspecialidade || '-' }}</div>
+          </div>
+        </div>
+
+        <!-- Queixa / Diagnóstico -->
+        <div class="form-row" *ngIf="item.queixaPrincipal || item.diagnostico">
+          <div class="form-field" *ngIf="item.queixaPrincipal">
+            <div class="field-label">QUEIXA PRINCIPAL</div>
+            <div class="field-value">{{ item.queixaPrincipal }}</div>
+          </div>
+          <div class="form-field" *ngIf="item.diagnostico">
+            <div class="field-label">DIAGNÓSTICO</div>
+            <div class="field-value">{{ item.diagnostico }}</div>
+          </div>
+        </div>
+
+        <!-- Exame Clínico Bucal -->
+        <div class="form-row" *ngIf="item.higieneBucal || item.condicaoGengival || item.oclusal || item.atm">
+          <div class="form-field" *ngIf="item.higieneBucal">
+            <div class="field-label">HIGIENE BUCAL</div>
+            <div class="field-value">{{ item.higieneBucal }}</div>
+          </div>
+          <div class="form-field" *ngIf="item.condicaoGengival">
+            <div class="field-label">CONDIÇÃO GENGIVAL</div>
+            <div class="field-value">{{ item.condicaoGengival }}</div>
+          </div>
+          <div class="form-field" *ngIf="item.oclusal">
+            <div class="field-label">OCLUSAL</div>
+            <div class="field-value">{{ item.oclusal }}</div>
+          </div>
+          <div class="form-field" *ngIf="item.atm">
+            <div class="field-label">ATM</div>
+            <div class="field-value">{{ item.atm }}</div>
+          </div>
+        </div>
+
+        <!-- Anamnese -->
+        <div class="expansible-box" *ngIf="item.anamnese">
+          <div class="expansible-label">ANAMNESE:</div>
+          <div class="expansible-content">{{ item.anamnese }}</div>
+        </div>
+
+        <!-- Plano de Tratamento / Procedimentos -->
+        <div class="form-row" *ngIf="item.planoTratamento || item.procedimentos">
+          <div class="form-field" *ngIf="item.planoTratamento">
+            <div class="field-label">PLANO DE TRATAMENTO</div>
+            <div class="field-value">{{ item.planoTratamento }}</div>
+          </div>
+          <div class="form-field" *ngIf="item.procedimentos">
+            <div class="field-label">PROCEDIMENTOS</div>
+            <div class="field-value">{{ item.procedimentos }}</div>
+          </div>
+        </div>
+
+        <!-- Orientações -->
+        <div class="expansible-box" *ngIf="item.orientacoes">
+          <div class="expansible-label">ORIENTAÇÕES:</div>
+          <div class="expansible-content">{{ item.orientacoes }}</div>
+        </div>
+
+        <!-- Prescrição -->
+        <div class="expansible-box" *ngIf="item.prescricao">
+          <div class="expansible-label">
+            PRESCRIÇÃO
+            <span class="expansible-meta" *ngIf="item.tituloPrescricao || item.dataPrescricao">
+              — {{ item.tituloPrescricao }} {{ item.dataPrescricao ? '(' + item.dataPrescricao + ')' : '' }}
+            </span>
+          </div>
+          <div class="expansible-content">{{ item.prescricao }}</div>
+        </div>
+
+        <!-- Exames -->
+        <div class="form-row" *ngIf="item.tituloExame">
+          <div class="form-field">
+            <div class="field-label">EXAME SOLICITADO</div>
+            <div class="field-value">{{ item.tituloExame }}</div>
+          </div>
+          <div class="form-field" *ngIf="item.dataExame">
+            <div class="field-label">DATA DO EXAME</div>
+            <div class="field-value">{{ item.dataExame }}</div>
+          </div>
+        </div>
+
+        <!-- Observações -->
+        <div class="expansible-box" *ngIf="item.observacao">
+          <div class="expansible-label">OBSERVAÇÕES:</div>
+          <div class="expansible-content">{{ item.observacao }}</div>
+        </div>
+
+        <!-- Odontograma -->
+        <div class="odontograma-section" *ngIf="item.dentes && item.dentes.length > 0">
+          <div class="section-header odontograma-header">
+            <div class="section-bar"></div>
+            <span class="section-title">ODONTOGRAMA</span>
+          </div>
+          <div class="odontograma-grid">
+            <div
+              class="dente-card"
+              [ngClass]="getClasseDente(dente.status)"
+              *ngFor="let dente of item.dentes | slice:0:16"
+              [title]="dente.observacao || ''">
+              <div class="dente-numero">{{ dente.numeroFdi }}</div>
+              <div class="dente-status">{{ getLabelStatus(dente.status) }}</div>
+            </div>
+          </div>
+          <div class="odontograma-grid odontograma-grid--inferior">
+            <div
+              class="dente-card"
+              [ngClass]="getClasseDente(dente.status)"
+              *ngFor="let dente of item.dentes | slice:16"
+              [title]="dente.observacao || ''">
+              <div class="dente-numero">{{ dente.numeroFdi }}</div>
+              <div class="dente-status">{{ getLabelStatus(dente.status) }}</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="separator-line"></div>
+      </div>
+
+      <!-- Empty State -->
+      <div class="empty-state" *ngIf="!historico || historico.length === 0">
+        <i class="fa-solid fa-tooth"></i>
+        <p>Nenhum registro odontológico encontrado</p>
+        <small>Este paciente ainda não possui consultas odontológicas realizadas</small>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="dialog-footer">
+    <button class="btn btn--secondary" mat-dialog-close>
+      <i class="fa-solid fa-xmark"></i>
+      Fechar
+    </button>
+    <button class="btn btn--primary" (click)="GerarPDF()" [disabled]="!historico || historico.length === 0">
+      <i class="fa-solid fa-file-pdf"></i>
+      Gerar PDF
+    </button>
+  </footer>
+</div>

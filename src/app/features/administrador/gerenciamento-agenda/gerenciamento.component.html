@@ -1,0 +1,54 @@
+<!-- Container Principal do Gerenciamento -->
+<div class="gerenciamento-container">
+
+  <!-- Header da Página -->
+  <header class="page-header">
+    <div class="page-header__content">
+      <div class="page-header__info">
+        <h1 class="page-header__title">
+          <i class="fa-solid fa-calendar-check"></i>
+          Central de Agendamentos
+        </h1>
+        <p class="page-header__subtitle">
+          Gerencie consultas, clinicos e pacientes em um só lugar
+        </p>
+      </div>
+      <div class="page-header__stats">
+        <div class="stat-card">
+          <i class="fa-solid fa-calendar-day"></i>
+          <div class="stat-card__info">
+            <span class="stat-card__value">{{ today | date:'dd/MM' }}</span>
+            <span class="stat-card__label">Hoje</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Navegação por Tabs -->
+  <nav class="tabs-nav">
+    <button class="tab-btn" [class.tab-btn--active]="activeTab === 'agenda'" (click)="setActiveTab('agenda')">
+      <i class="fa-solid fa-calendar-days"></i>
+      <span>Agenda de Consultas</span>
+    </button>
+    <button class="tab-btn" [class.tab-btn--active]="activeTab === 'novo'" (click)="setActiveTab('novo')">
+      <i class="fa-solid fa-plus-circle"></i>
+      <span>Nova Consulta</span>
+    </button>
+  </nav>
+
+  <!-- Conteúdo das Tabs -->
+  <div class="tabs-content">
+
+    <!-- Tab: Agenda de Consultas -->
+    <div class="tab-panel" [class.tab-panel--active]="activeTab === 'agenda'">
+      <app-agenda></app-agenda>
+    </div>
+
+    <!-- Tab: Nova Consulta -->
+    <div class="tab-panel" [class.tab-panel--active]="activeTab === 'novo'">
+      <app-nova-consulta></app-nova-consulta>
+    </div>
+
+  </div>
+</div>

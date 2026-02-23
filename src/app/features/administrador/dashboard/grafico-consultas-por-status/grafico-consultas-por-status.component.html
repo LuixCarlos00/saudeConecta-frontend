@@ -1,0 +1,89 @@
+<div class="chart-container">
+  <!-- Filtros de Período -->
+  <div class="chart-filters">
+    <div class="filter-group">
+      <span class="filter-label">Período:</span>
+      <div class="filter-buttons">
+        <button class="filter-btn" [class.filter-btn--active]="diaSelecionado === 1"
+          (click)="diaSelecionado = 1; atualizarGrafico()">
+          <i class="fa-solid fa-calendar-week"></i>
+          7 dias
+        </button>
+        <button class="filter-btn" [class.filter-btn--active]="diaSelecionado === 2"
+          (click)="diaSelecionado = 2; atualizarGrafico()">
+          <i class="fa-solid fa-calendar"></i>
+          30 dias
+        </button>
+        <button class="filter-btn" [class.filter-btn--active]="diaSelecionado === 3"
+          (click)="diaSelecionado = 3; atualizarGrafico()">
+          <i class="fa-solid fa-calendar-days"></i>
+          60 dias
+        </button>
+      </div>
+    </div>
+
+    <!-- Date Range Picker -->
+    <div class="date-range-picker">
+      <mat-form-field appearance="outline" class="date-field">
+        <mat-label>Período personalizado</mat-label>
+        <mat-date-range-input [rangePicker]="picker" [formGroup]="IntervaloDeDatas">
+          <input matStartDate formControlName="start" placeholder="Início">
+          <input matEndDate formControlName="end" placeholder="Fim" (dateChange)="atualizarGraficoPersonalizado()">
+        </mat-date-range-input>
+        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-date-range-picker #picker></mat-date-range-picker>
+      </mat-form-field>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div class="chart-loading" *ngIf="isLoading">
+    <i class="fa-solid fa-spinner fa-spin"></i>
+    <span>Carregando dados...</span>
+  </div>
+
+  <!-- Error State -->
+  <div class="chart-error" *ngIf="hasError && !isLoading">
+    <i class="fa-solid fa-exclamation-triangle"></i>
+    <span>{{ errorMessage }}</span>
+    <button class="retry-btn" (click)="atualizarGrafico()">
+      <i class="fa-solid fa-rotate-right"></i>
+      Tentar novamente
+    </button>
+  </div>
+
+  <!-- Empty State -->
+  <div class="chart-empty" *ngIf="!isLoading && !hasError && dadosStatus.length === 0">
+    <i class="fa-solid fa-chart-pie"></i>
+    <span>Nenhuma consulta encontrada no período</span>
+  </div>
+
+  <!-- Gráfico -->
+  <div class="chart-wrapper" [class.chart-wrapper--hidden]="isLoading || hasError || dadosStatus.length === 0">
+    <canvas #statusCanvas></canvas>
+  </div>
+
+  <!-- Resumo -->
+  <div class="chart-summary" *ngIf="!isLoading && !hasError && dadosStatus.length > 0">
+    <div class="summary-item">
+      <span class="summary-value">{{ totalConsultas }}</span>
+      <span class="summary-label">Total de Consultas</span>
+    </div>
+    <div class="summary-item">
+      <span class="summary-value summary-value--highlight">{{ getStatusPrincipal() }}</span>
+      <span class="summary-label">Status Predominante</span>
+    </div>
+  </div>
+
+  <!-- Lista de Status -->
+  <div class="status-list" *ngIf="!isLoading && !hasError && dadosStatus.length > 0">
+    <div class="status-item" *ngFor="let item of dadosStatus">
+      <div class="status-indicator" [style.background-color]="item.cor"></div>
+      <span class="status-label">{{ item.label }}</span>
+      <span class="status-value">{{ item.quantidade }}</span>
+      <span class="status-percent">
+        {{ totalConsultas > 0 ? ((item.quantidade / totalConsultas) * 100).toFixed(0) : 0 }}%
+      </span>
+    </div>
+  </div>
+</div>

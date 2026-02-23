@@ -1,0 +1,86 @@
+<div class="usuario-card" [class.usuario-card--validated]="loginValidado">
+  <!-- Header com aviso -->
+  <div class="usuario-card__header">
+    <div class="usuario-card__icon" [class.usuario-card__icon--success]="loginValidado">
+      <i class="fa-solid" [ngClass]="loginValidado ? 'fa-check' : 'fa-key'"></i>
+    </div>
+    <div class="usuario-card__info">
+      <h3 class="usuario-card__title">
+        {{ loginValidado ? 'Credenciais Validadas' : 'Credenciais de Acesso' }}
+      </h3>
+      <p class="usuario-card__subtitle">
+        <i class="fa-solid" [ngClass]="loginValidado ? 'fa-circle-check' : 'fa-circle-info'"></i>
+        {{ loginValidado ? 'Login verificado com sucesso!' : 'Esse login será usado para entrar no sistema' }}
+      </p>
+    </div>
+  </div>
+
+  <!-- Formulário -->
+  <form [formGroup]="FormularioUsuario" class="usuario-form">
+    <div class="usuario-field">
+      <label class="usuario-field__label">
+        <i class="fa-solid fa-user"></i>
+        <span class="usuario-field__required">*</span> Login
+      </label>
+      <input 
+        type="text" 
+        class="usuario-field__input"
+        [class.usuario-field__input--validated]="loginValidado"
+        formControlName="login"
+        placeholder="CPF, Email ou Telefone">
+      <span class="usuario-field__hint" *ngIf="!loginValidado">
+        <i class="fa-solid fa-lightbulb"></i>
+        Use um identificador único como CPF ou email
+      </span>
+    </div>
+
+    <div class="usuario-field">
+      <label class="usuario-field__label">
+        <i class="fa-solid fa-lock"></i>
+        <span class="usuario-field__required">*</span> Senha
+      </label>
+      <div class="usuario-field__password-wrapper">
+        <input 
+          [type]="showPassword ? 'text' : 'password'"
+          class="usuario-field__input"
+          [class.usuario-field__input--validated]="loginValidado"
+          formControlName="password"
+          placeholder="Mínimo 8 caracteres">
+        <button 
+          type="button" 
+          class="usuario-field__toggle-password"
+          (click)="showPassword = !showPassword"
+          *ngIf="!loginValidado">
+          <i class="fa-solid" [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+        </button>
+      </div>
+      <div class="usuario-field__requirements" *ngIf="!loginValidado">
+        <span class="requirement" [class.valid]="FormularioUsuario.get('password')?.value?.length >= 8">
+          <i class="fa-solid" [ngClass]="FormularioUsuario.get('password')?.value?.length >= 8 ? 'fa-check' : 'fa-circle'"></i>
+          Mínimo 8 caracteres
+        </span>
+      </div>
+    </div>
+  </form>
+
+  <!-- Botões -->
+  <div class="usuario-card__actions">
+    <button 
+      type="button"
+      class="usuario-btn usuario-btn--secondary"
+      *ngIf="loginValidado"
+      (click)="editarCredenciais()">
+      <i class="fa-solid fa-pen"></i>
+      Editar
+    </button>
+    <button 
+      type="button"
+      class="usuario-btn usuario-btn--primary"
+      [disabled]="!FormularioUsuario.valid || isLoading || loginValidado"
+      (click)="verificarLogin()">
+      <i class="fa-solid" [ngClass]="isLoading ? 'fa-spinner fa-spin' : 'fa-arrow-right'"></i>
+      {{ isLoading ? 'Verificando...' : 'Verificar e Continuar' }}
+    </button>
+  </div>
+</div>
+

@@ -1,0 +1,12 @@
+<!-- Área logada: com sidebar -->
+<main *ngIf="estaLogado()">
+  <app-barra-Latera></app-barra-Latera>
+  <div class="main-content">
+    <router-outlet></router-outlet>
+  </div>
+</main>
+
+<!-- Área pública: sem sidebar (Landing Page, Login, etc) -->
+<router-outlet *ngIf="!estaLogado()"></router-outlet>
+
+

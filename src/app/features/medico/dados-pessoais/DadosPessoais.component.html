@@ -1,0 +1,441 @@
+<div class="dados-pessoais-container">
+  <!-- Header com avatar e nome -->
+  <div class="profile-header">
+    <div class="avatar-section">
+      <div class="avatar">
+        <i class="fa" [ngClass]="isAdmin ? 'fa-user-tie' : 'fa-user-md'"></i>
+      </div>
+      <div class="profile-info">
+        <h1>{{ isAdmin ? (dadosPessoaisForm.get('nome')?.value || 'Carregando...') :
+          (dadosPessoaisForm.get('nome')?.value || 'Carregando...') }}</h1>
+        <span class="specialty-badge">
+          <i class="fa fa-stethoscope" *ngIf="isProfissional"></i>
+          {{ isProfissional ? (dadosPessoaisForm.get('especialidade')?.value || 'Especialidade') :
+          (dadosPessoaisForm.get('cargo')?.value || 'Cargo') }}
+        </span>
+        <span class="crm-badge" *ngIf="isProfissional">
+          <i class="fa fa-id-card"></i>
+          CRM: {{ dadosPessoaisForm.get('registroConselho')?.value || '---' }}
+        </span>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button class="btn-save" (click)="salvar()" [disabled]="isLoading">
+        <i class="fa" [ngClass]="isLoading ? 'fa-spinner fa-spin' : 'fa-save'"></i>
+        {{ isLoading ? 'Salvando...' : 'Salvar Alterações' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading-overlay" *ngIf="isLoading">
+    <div class="spinner"></div>
+    <p>Carregando dados...</p>
+  </div>
+
+  <!-- Tabs de navegação -->
+  <div class="tabs-container">
+    <button class="tab-btn" [class.active]="activeTab === 'pessoais'" (click)="activeTab = 'pessoais'">
+      <i class="fa fa-user"></i> Dados Pessoais
+    </button>
+    <button class="tab-btn" [class.active]="activeTab === 'endereco'" (click)="activeTab = 'endereco'"
+      *ngIf="isProfissional">
+      <i class="fa fa-map-marker-alt"></i> Endereço
+    </button>
+    <button class="tab-btn" [class.active]="activeTab === 'profissional'" (click)="activeTab = 'profissional'"
+      *ngIf="isProfissional">
+      <i class="fa fa-briefcase-medical"></i> Profissional
+    </button>
+  </div>
+
+  <!-- Conteúdo das Tabs -->
+  <div class="tab-content">
+    <!-- Tab Dados Pessoais -->
+    <div class="tab-panel" *ngIf="activeTab === 'pessoais'">
+      <!-- Formulário AdminOrg -->
+      <form [formGroup]="dadosPessoaisForm" *ngIf="isAdmin">
+        <div class="card">
+          <div class="card-header">
+            <i class="fa fa-user-circle"></i>
+            <h2>Informações Pessoais</h2>
+          </div>
+          <div class="card-body">
+            <div class="form-grid">
+              <div class="form-group full-width">
+                <label for="Nome">
+                  <i class="fa fa-user"></i> Nome Completo <span class="required">*</span>
+                </label>
+                <input formControlName="nome" type="text" id="Nome" placeholder="Digite seu nome completo">
+                <span class="error-message"
+                  *ngIf="dadosPessoaisForm.get('nome')?.touched && dadosPessoaisForm.get('nome')?.invalid">
+                  {{ getCampoErro('nome') }}
+                </span>
+              </div>
+
+              <!-- <div class="form-group full-width">
+                <label for="Cargo">
+                  <i class="fa fa-briefcase"></i> Cargo <span class="required">*</span>
+                </label>
+                <input formControlName="cargo" type="text" id="Cargo" placeholder="Digite seu cargo">
+                <span class="error-message"
+                  *ngIf="dadosPessoaisForm.get('cargo')?.touched && dadosPessoaisForm.get('cargo')?.invalid">
+                  {{ getCampoErro('cargo') }}
+                </span>
+              </div> -->
+
+              <div class="form-group">
+                <label for="Email">
+                  <i class="fa fa-envelope"></i> E-mail <span class="required">*</span>
+                </label>
+                <input formControlName="email" type="email" id="Email" placeholder="seu@email.com">
+                <span class="error-message"
+                  *ngIf="dadosPessoaisForm.get('email')?.touched && dadosPessoaisForm.get('email')?.invalid">
+                  {{ getCampoErro('email') }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+
+      <!-- Formulário Profissional -->
+      <form [formGroup]="dadosPessoaisForm" *ngIf="isProfissional">
+        <div class="card">
+          <div class="card-header">
+            <i class="fa fa-user-circle"></i>
+            <h2>Informações Pessoais</h2>
+          </div>
+          <div class="card-body">
+            <div class="form-grid">
+              <div class="form-group full-width">
+                <label for="Nome">
+                  <i class="fa fa-user"></i> Nome Completo <span class="required">*</span>
+                </label>
+                <input formControlName="nome" type="text" id="Nome" placeholder="Digite seu nome completo">
+                <span class="error-message"
+                  *ngIf="dadosPessoaisForm.get('nome')?.touched && dadosPessoaisForm.get('nome')?.invalid">
+                  {{ getCampoErro('nome') }}
+                </span>
+              </div>
+
+              <div class="form-group">
+                <label for="Email">
+                  <i class="fa fa-envelope"></i> E-mail <span class="required">*</span>
+                </label>
+                <input formControlName="email" type="email" id="Email" placeholder="seu@email.com">
+                <span class="error-message"
+                  *ngIf="dadosPessoaisForm.get('email')?.touched && dadosPessoaisForm.get('email')?.invalid">
+                  {{ getCampoErro('email') }}
+                </span>
+              </div>
+
+              <div class="form-group" *ngIf="isProfissional">
+                <label for="Telefone">
+                  <i class="fa fa-phone"></i> Telefone <span class="required">*</span>
+                </label>
+                <input formControlName="telefone" type="tel" id="Telefone" placeholder="(00) 00000-0000">
+                <span class="error-message"
+                  *ngIf="dadosPessoaisForm.get('telefone')?.touched && dadosPessoaisForm.get('telefone')?.invalid">
+                  {{ getCampoErro('telefone') }}
+                </span>
+              </div>
+
+              <div class="form-group" *ngIf="isProfissional">
+                <label for="DataNacimento">
+                  <i class="fa fa-calendar"></i> Data de Nascimento <span class="required">*</span>
+                </label>
+                <input formControlName="dataNascimento" type="date" id="DataNacimento">
+                <span class="error-message"
+                  *ngIf="dadosPessoaisForm.get('dataNascimento')?.touched && dadosPessoaisForm.get('dataNascimento')?.invalid">
+                  {{ getCampoErro('dataNascimento') }}
+                </span>
+              </div>
+
+              <!-- Substituir o select de Sexo -->
+              <div class="form-group" *ngIf="isProfissional">
+                <label for="Sexo">
+                  <i class="fa fa-venus-mars"></i> Sexo <span class="required">*</span>
+                </label>
+                <select formControlName="sexo" id="Sexo">
+                  <option value="" disabled>Selecione</option>
+                  <option value="MASCULINO">Masculino</option>
+                  <option value="FEMININO">Feminino</option>
+                  <option value="OUTRO">Outro</option>
+                </select>
+              </div>
+
+              <div class="form-group" *ngIf="isProfissional">
+                <label for="Cpf">
+                  <i class="fa fa-id-card"></i> CPF <span class="required">*</span>
+                </label>
+                <input formControlName="cpf" type="text" id="Cpf" placeholder="000.000.000-00">
+                <span class="error-message"
+                  *ngIf="dadosPessoaisForm.get('cpf')?.touched && dadosPessoaisForm.get('cpf')?.invalid">
+                  {{ getCampoErro('cpf') }}
+                </span>
+              </div>
+
+              <div class="form-group" *ngIf="isProfissional">
+                <label for="Rg">
+                  <i class="fa fa-address-card"></i> RG
+                </label>
+                <input formControlName="rg" type="text" id="Rg" placeholder="00.000.000-0">
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- Tab Endereço -->
+    <div class="tab-panel" *ngIf="activeTab === 'endereco'">
+      <form [formGroup]="enderecoForm">
+        <div class="card">
+          <div class="card-header">
+            <i class="fa fa-map-marked-alt"></i>
+            <h2>Endereço</h2>
+          </div>
+          <div class="card-body">
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="cep">
+                  <i class="fa fa-mail-bulk"></i> CEP <span class="required">*</span>
+                </label>
+                <input formControlName="cep" type="text" id="cep" placeholder="00000-000">
+                <span class="error-message"
+                  *ngIf="enderecoForm.get('cep')?.touched && enderecoForm.get('cep')?.invalid">
+                  {{ getCampoErro('cep') }}
+                </span>
+              </div>
+
+              <div class="form-group full-width">
+                <label for="rua">
+                  <i class="fa fa-road"></i> Rua <span class="required">*</span>
+                </label>
+                <input formControlName="rua" type="text" id="rua" placeholder="Nome da rua">
+                <span class="error-message"
+                  *ngIf="enderecoForm.get('rua')?.touched && enderecoForm.get('rua')?.invalid">
+                  {{ getCampoErro('rua') }}
+                </span>
+              </div>
+
+              <div class="form-group small">
+                <label for="numero">
+                  <i class="fa fa-home"></i> Número <span class="required">*</span>
+                </label>
+                <input formControlName="numero" type="text" id="numero" placeholder="Nº">
+                <span class="error-message"
+                  *ngIf="enderecoForm.get('numero')?.touched && enderecoForm.get('numero')?.invalid">
+                  {{ getCampoErro('numero') }}
+                </span>
+              </div>
+
+              <div class="form-group">
+                <label for="complemento">
+                  <i class="fa fa-building"></i> Complemento
+                </label>
+                <input formControlName="complemento" type="text" id="complemento" placeholder="Apto, Bloco...">
+              </div>
+
+              <div class="form-group">
+                <label for="bairro">
+                  <i class="fa fa-map"></i> Bairro <span class="required">*</span>
+                </label>
+                <input formControlName="bairro" type="text" id="bairro" placeholder="Nome do bairro">
+                <span class="error-message"
+                  *ngIf="enderecoForm.get('bairro')?.touched && enderecoForm.get('bairro')?.invalid">
+                  {{ getCampoErro('bairro') }}
+                </span>
+              </div>
+
+              <div class="form-group">
+                <label for="municipio">
+                  <i class="fa fa-city"></i> Município <span class="required">*</span>
+                </label>
+                <input formControlName="municipio" type="text" id="municipio" placeholder="Cidade">
+                <span class="error-message"
+                  *ngIf="enderecoForm.get('municipio')?.touched && enderecoForm.get('municipio')?.invalid">
+                  {{ getCampoErro('municipio') }}
+                </span>
+              </div>
+
+              <div class="form-group small">
+                <label for="uf">
+                  <i class="fa fa-flag"></i> UF <span class="required">*</span>
+                </label>
+                <input formControlName="uf" type="text" id="uf" placeholder="SP" maxlength="2">
+                <span class="error-message" *ngIf="enderecoForm.get('uf')?.touched && enderecoForm.get('uf')?.invalid">
+                  {{ getCampoErro('uf') }}
+                </span>
+              </div>
+
+              <div class="form-group">
+                <label for="nacionalidade">
+                  <i class="fa fa-globe"></i> Nacionalidade
+                </label>
+                <input formControlName="nacionalidade" type="text" id="nacionalidade" placeholder="Brasileiro">
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- Tab Profissional -->
+    <div class="tab-panel" *ngIf="activeTab === 'profissional'">
+      <form [formGroup]="dadosPessoaisForm">
+        <div class="card">
+          <div class="card-header">
+            <i class="fa fa-user-md"></i>
+            <h2>Dados Profissionais</h2>
+          </div>
+          <div class="card-body">
+            <!-- Tab Profissional - card-body completo -->
+            <div class="form-grid">
+
+              <!-- Conselho (readonly) + Registro -->
+              <div class="form-group">
+                <label for="Conselho">
+                  <i class="fa fa-id-badge"></i> Conselho
+                </label>
+                <input formControlName="conselho" type="text" id="Conselho" readonly
+                  style="background:#f3f4f6; color:#6b7280; cursor:default;">
+              </div>
+
+              <div class="form-group">
+                <label for="Crm">
+                  <i class="fa fa-id-badge"></i> Nº Registro <span class="required">*</span>
+                </label>
+                <input formControlName="registroConselho" type="text" id="Crm" placeholder="000000">
+                <span class="error-message"
+                  *ngIf="dadosPessoaisForm.get('registroConselho')?.touched && dadosPessoaisForm.get('registroConselho')?.invalid">
+                  {{ getCampoErro('registroConselho') }}
+                </span>
+              </div>
+
+              <!-- Especialidade -->
+              <div class="form-group full-width">
+                <label for="Especialidade">
+                  <i class="fa fa-stethoscope"></i> Especialidade <span class="required">*</span>
+                </label>
+                <div style="display: flex; gap: 8px; align-items: center;">
+                  <select formControlName="especialidade" id="Especialidade" style="flex: 1;" class="form-control">
+                    <option value="" disabled>
+                      {{ isLoadingEspecialidades ? 'Carregando...' : 'Selecione a especialidade' }}
+                    </option>
+                    <option *ngFor="let especialidade of especialidades" [value]="especialidade.nome">
+                      {{ especialidade.nome }}
+                    </option>
+                  </select>
+                  <button type="button" class="btn btn-secondary" (click)="abrirModalNovaEspecialidade()"
+                    style="padding: 8px 12px; min-width: auto;">
+                    <i class="fa-solid fa-plus"></i>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Tempo de Consulta + Valor -->
+              <div class="form-group">
+                <label for="TempoDeConsulta">
+                  <i class="fa fa-clock"></i> Tempo de Consulta (min) <span class="required">*</span>
+                </label>
+                <select formControlName="tempoConsultaMinutos" id="TempoDeConsulta">
+                  <option value="" disabled>Selecione</option>
+                  <option value="10">10 minutos</option>
+                  <option value="15">15 minutos</option>
+                  <option value="20">20 minutos</option>
+                  <option value="25">25 minutos</option>
+                  <option value="30">30 minutos</option>
+                  <option value="35">35 minutos</option>
+                  <option value="40">40 minutos</option>
+                  <option value="45">45 minutos</option>
+                  <option value="60">60 minutos</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="ValorConsulta">
+                  <i class="fa fa-dollar-sign"></i> Valor da Consulta (R$)
+                </label>
+                <input formControlName="valorConsulta" type="number" id="ValorConsulta" placeholder="0.00" step="0.01"
+                  min="0">
+              </div>
+
+              <!-- Formação + Instituição -->
+              <div class="form-group">
+                <label for="Formacao">
+                  <i class="fa fa-graduation-cap"></i> Formação
+                </label>
+                <input formControlName="formacao" type="text" id="Formacao" placeholder="Ex: Medicina">
+              </div>
+
+              <div class="form-group">
+                <label for="Instituicao">
+                  <i class="fa fa-building"></i> Instituição
+                </label>
+                <input formControlName="instituicao" type="text" id="Instituicao" placeholder="Ex: USP">
+              </div>
+
+              <!-- Status (readonly) -->
+              <div class="form-group">
+                <label for="Status">
+                  <i class="fa fa-circle-check"></i> Status
+                </label>
+                <input formControlName="status" type="text" id="Status" readonly
+                  style="background:#f3f4f6; color:#6b7280; cursor:default;">
+              </div>
+
+            </div>
+
+            <!-- Info Card -->
+            <div class="info-card">
+              <i class="fa fa-info-circle"></i>
+              <div>
+                <strong>Tempo de Consulta</strong>
+                <p>Este valor define a duração padrão das suas consultas e é usado para calcular os horários disponíveis
+                  na sua agenda.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Nova Especialidade -->
+<div class="modal-overlay" *ngIf="mostrarModalEspecialidade" (click)="fecharModalEspecialidade()">
+  <div class="modal-dialog" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3 class="modal-title">
+        <i class="fa-solid fa-plus-circle"></i>
+        Nova Especialidade
+      </h3>
+      <button type="button" class="modal-close" (click)="fecharModalEspecialidade()">
+        <i class="fa-solid fa-times"></i>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <div class="cadastro-field">
+        <label class="cadastro-field__label">
+          <span class="cadastro-field__required">*</span> Nome da Especialidade
+        </label>
+        <input type="text" class="cadastro-field__input" [(ngModel)]="novaEspecialidadeNome"
+          placeholder="Ex: Cardiologia Pediátrica" maxlength="100" (keyup.enter)="criarNovaEspecialidade()">
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button type="button" class="cadastro-btn cadastro-btn--secondary" (click)="fecharModalEspecialidade()">
+        <i class="fa-solid fa-times"></i>
+        Cancelar
+      </button>
+      <button type="button" class="cadastro-btn cadastro-btn--primary" [disabled]="!novaEspecialidadeNome || isLoading"
+        (click)="criarNovaEspecialidade()">
+        <i class="fa-solid" [ngClass]="isLoading ? 'fa-spinner fa-spin' : 'fa-check'"></i>
+        {{ isLoading ? 'Criando...' : 'Criar Especialidade' }}
+      </button>
+    </div>
+  </div>
+</div>

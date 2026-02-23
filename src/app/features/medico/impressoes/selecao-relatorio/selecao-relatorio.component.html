@@ -1,0 +1,35 @@
+<div class="selecao-dialog">
+  <!-- Header -->
+  <header class="dialog-header">
+    <div class="header-icon">
+      <i class="fa-solid fa-print"></i>
+    </div>
+    <div class="header-text">
+      <h2 class="header-title">Gerar Relatório</h2>
+      <p class="header-subtitle">Clique no documento que deseja gerar</p>
+    </div>
+    <button class="close-btn" (click)="cancelar()">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+  </header>
+
+  <!-- Body -->
+  <div class="dialog-body">
+    <div class="opcoes-grid">
+      <div 
+        *ngFor="let opcao of opcoes" 
+        class="opcao-card"
+        (click)="selecionarOpcao(opcao.id)">
+        
+        <div class="opcao-icon" [style.background]="opcao.cor + '15'" [style.color]="opcao.cor">
+          <i [class]="opcao.icone"></i>
+        </div>
+        
+        <div class="opcao-content">
+          <h3 class="opcao-titulo">{{ opcao.titulo }}</h3>
+          <p class="opcao-descricao">{{ opcao.descricao }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

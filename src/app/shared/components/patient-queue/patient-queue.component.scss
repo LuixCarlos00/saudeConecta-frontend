@@ -1,0 +1,354 @@
+@import 'design-system/variables';
+@import 'design-system/mixins';
+
+.hc-patient-queue {
+  background: $bg-card;
+  border-radius: $radius-lg;
+  border: 1px solid $border-light;
+  overflow: hidden;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: $spacing-4 $spacing-5;
+    border-bottom: 1px solid $border-light;
+    background: $bg-secondary;
+  }
+
+  &__title {
+    font-size: $text-lg;
+    font-weight: $font-semibold;
+    color: $text-primary;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: $spacing-2;
+
+    i {
+      color: $primary-blue;
+    }
+  }
+
+  &__stats {
+    display: flex;
+    gap: $spacing-2;
+  }
+
+  &__list {
+    max-height: 500px;
+    overflow-y: auto;
+    @include scrollbar;
+  }
+
+  &__empty {
+    padding: $spacing-10 $spacing-6;
+    text-align: center;
+    color: $text-muted;
+
+    i {
+      font-size: 48px;
+      margin-bottom: $spacing-4;
+      opacity: 0.5;
+    }
+
+    p {
+      margin: 0;
+      font-size: $text-base;
+    }
+  }
+
+  &__footer {
+    padding: $spacing-3 $spacing-5;
+    border-top: 1px solid $border-light;
+    text-align: center;
+  }
+}
+
+.hc-queue-item {
+  display: flex;
+  align-items: center;
+  gap: $spacing-4;
+  padding: $spacing-4 $spacing-5;
+  border-bottom: 1px solid $border-light;
+  cursor: pointer;
+  transition: all $transition-fast;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover {
+    background: $bg-hover;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $primary-blue;
+    outline-offset: -2px;
+  }
+
+  &--current {
+    background: rgba($appointment-in-progress, 0.08);
+    border-left: 4px solid $appointment-in-progress;
+
+    &:hover {
+      background: rgba($appointment-in-progress, 0.12);
+    }
+  }
+
+  &--waiting {
+    border-left: 4px solid $appointment-waiting;
+  }
+
+  &--delayed {
+    background: $status-critico-bg;
+    border-left: 4px solid $status-critico;
+
+    .hc-queue-item__time {
+      color: $status-critico;
+      font-weight: $font-semibold;
+    }
+  }
+
+  &--completed {
+    opacity: 0.6;
+    border-left: 4px solid $appointment-completed;
+  }
+
+  &--cancelled {
+    opacity: 0.5;
+    border-left: 4px solid $appointment-cancelled;
+    text-decoration: line-through;
+  }
+
+  &--selected {
+    background: $bg-selected;
+    box-shadow: inset 0 0 0 2px $primary-blue;
+  }
+
+  &__position {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: $bg-tertiary;
+    border-radius: $radius-full;
+    font-size: $text-sm;
+    font-weight: $font-semibold;
+    color: $text-secondary;
+    flex-shrink: 0;
+  }
+
+  &__avatar {
+    position: relative;
+    flex-shrink: 0;
+
+    img {
+      width: 48px;
+      height: 48px;
+      border-radius: $radius-full;
+      object-fit: cover;
+      border: 2px solid $border-light;
+    }
+  }
+
+  &__priority-indicator {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    width: 14px;
+    height: 14px;
+    border-radius: $radius-full;
+    border: 2px solid $bg-card;
+
+    &.priority-urgent {
+      background: $priority-urgent;
+      animation: pulse-priority 1.5s infinite;
+    }
+
+    &.priority-high {
+      background: $priority-high;
+    }
+
+    &.priority-medium {
+      background: $priority-medium;
+    }
+
+    &.priority-low {
+      background: $priority-low;
+    }
+  }
+
+  &__info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__name {
+    font-weight: $font-semibold;
+    color: $text-primary;
+    font-size: $text-base;
+    display: flex;
+    align-items: center;
+    gap: $spacing-2;
+  }
+
+  &__age {
+    font-weight: $font-normal;
+    font-size: $text-sm;
+    color: $text-muted;
+  }
+
+  &__details {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $spacing-3;
+    margin-top: $spacing-1;
+    font-size: $text-sm;
+    color: $text-secondary;
+  }
+
+  &__type {
+    background: $bg-tertiary;
+    padding: 2px $spacing-2;
+    border-radius: $radius-sm;
+  }
+
+  &__doctor {
+    display: flex;
+    align-items: center;
+    gap: $spacing-1;
+
+    i {
+      color: $text-muted;
+      font-size: $text-xs;
+    }
+  }
+
+  &__alerts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $spacing-1;
+    margin-top: $spacing-2;
+  }
+
+  &__time-status {
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  &__time {
+    font-size: $text-base;
+    font-weight: $font-medium;
+    color: $text-primary;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: $spacing-1;
+
+    i {
+      color: $text-muted;
+      font-size: $text-sm;
+    }
+  }
+
+  &__status {
+    font-size: $text-xs;
+    font-weight: $font-medium;
+    margin-top: $spacing-1;
+    padding: 2px $spacing-2;
+    border-radius: $radius-sm;
+    display: inline-block;
+
+    &.status-scheduled {
+      background: rgba($appointment-scheduled, 0.1);
+      color: $appointment-scheduled;
+    }
+
+    &.status-confirmed {
+      background: rgba($appointment-confirmed, 0.1);
+      color: $appointment-confirmed;
+    }
+
+    &.status-waiting {
+      background: rgba($appointment-waiting, 0.1);
+      color: darken($appointment-waiting, 10%);
+    }
+
+    &.status-in-progress {
+      background: rgba($appointment-in-progress, 0.1);
+      color: $appointment-in-progress;
+    }
+
+    &.status-completed {
+      background: rgba($appointment-completed, 0.1);
+      color: $appointment-completed;
+    }
+
+    &.status-cancelled {
+      background: rgba($appointment-cancelled, 0.1);
+      color: $appointment-cancelled;
+    }
+
+    &.status-no-show {
+      background: rgba($appointment-no-show, 0.1);
+      color: $appointment-no-show;
+    }
+
+    &.status-delayed {
+      background: $status-critico;
+      color: $text-inverse;
+    }
+  }
+
+  &__wait-time {
+    font-size: $text-xs;
+    color: $text-muted;
+    margin-top: $spacing-1;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: $spacing-1;
+
+    i {
+      font-size: 10px;
+    }
+  }
+
+  &__actions {
+    display: flex;
+    gap: $spacing-1;
+    flex-shrink: 0;
+
+    .hc-btn--sm {
+      width: 32px;
+      height: 32px;
+      padding: 0;
+    }
+  }
+}
+
+@keyframes pulse-priority {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba($priority-urgent, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 4px rgba($priority-urgent, 0);
+  }
+}
+
+@include mobile {
+  .hc-queue-item {
+    flex-wrap: wrap;
+    gap: $spacing-3;
+
+    &__actions {
+      width: 100%;
+      justify-content: flex-end;
+      padding-top: $spacing-2;
+      border-top: 1px solid $border-light;
+      margin-top: $spacing-2;
+    }
+  }
+}

@@ -1,0 +1,949 @@
+/* =============================================================================
+   SAUDECONECTA - ESTILOS GLOBAIS (CSS PURO)
+   Healthcare Design System - Estilos base da aplicação
+   ============================================================================= */
+
+/* Import do Design System */
+@import 'design-system/index';
+
+/* =============================================================================
+   1. CSS RESET / NORMALIZE
+   ============================================================================= */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5;
+  color: #111827;
+  background-color: #F9FAFB;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+
+/* =============================================================================
+   2. TIPOGRAFIA BASE
+   ============================================================================= */
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  line-height: 1.25;
+  color: #111827;
+  margin-bottom: 1rem;
+}
+
+h1 { font-size: 2.25rem; }
+h2 { font-size: 1.875rem; }
+h3 { font-size: 1.5rem; }
+h4 { font-size: 1.25rem; }
+h5 { font-size: 1.125rem; }
+h6 { font-size: 1rem; }
+
+@media (max-width: 640px) {
+  h1 { font-size: 1.875rem; }
+  h2 { font-size: 1.5rem; }
+  h3 { font-size: 1.25rem; }
+}
+
+p {
+  margin-bottom: 1rem;
+}
+
+p:last-child {
+  margin-bottom: 0;
+}
+
+a {
+  color: #0066CC;
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+a:hover {
+  color: #004C99;
+  text-decoration: underline;
+}
+
+a:focus-visible {
+  outline: 2px solid #0066CC;
+  outline-offset: 2px;
+}
+
+strong, b {
+  font-weight: 600;
+}
+
+small {
+  font-size: 0.875rem;
+}
+
+/* =============================================================================
+   3. LISTAS
+   ============================================================================= */
+
+/* Reset para listas de navegação */
+nav ul,
+.menu ul,
+.side_items {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* =============================================================================
+   4. FORMULÁRIOS GLOBAIS
+   ============================================================================= */
+
+input,
+textarea,
+select,
+button {
+  font-family: inherit;
+  font-size: inherit;
+}
+
+input:focus,
+textarea:focus,
+select:focus,
+button:focus {
+  outline: none;
+}
+
+/* Remove spinners de inputs numéricos */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+/* Placeholder styling */
+::placeholder {
+  color: #9CA3AF;
+  opacity: 1;
+}
+
+/* Selection styling */
+::selection {
+  background-color: rgba(0, 102, 204, 0.2);
+  color: #111827;
+}
+
+/* =============================================================================
+   5. TABELAS
+   ============================================================================= */
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+/* =============================================================================
+   6. IMAGENS E MÍDIA
+   ============================================================================= */
+
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+/* =============================================================================
+   7. SCROLLBAR CUSTOMIZADA
+   ============================================================================= */
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #F9FAFB;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #D1D5DB;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #9CA3AF;
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #D1D5DB #F9FAFB;
+}
+
+/* =============================================================================
+   8. ANGULAR MATERIAL OVERRIDES
+   ============================================================================= */
+
+.mat-mdc-form-field {
+  width: 100%;
+}
+
+.mat-mdc-button,
+.mat-mdc-raised-button,
+.mat-mdc-outlined-button {
+  border-radius: 8px !important;
+  font-weight: 500 !important;
+  min-height: 44px !important;
+}
+
+.mat-mdc-raised-button.mat-primary {
+  background-color: #0066CC !important;
+}
+
+.mat-mdc-raised-button.mat-primary:hover {
+  background-color: #004C99 !important;
+}
+
+.mat-mdc-table {
+  background: #FFFFFF !important;
+  border-radius: 12px !important;
+  overflow: hidden;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+}
+
+.mat-mdc-table .mat-mdc-header-row {
+  background: #F9FAFB !important;
+}
+
+.mat-mdc-table .mat-mdc-header-cell {
+  color: #4B5563 !important;
+  font-weight: 600 !important;
+  font-size: 0.875rem !important;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+  border-bottom: 2px solid #E5E7EB !important;
+}
+
+.mat-mdc-table .mat-mdc-row {
+  transition: background 0.15s ease;
+}
+
+.mat-mdc-table .mat-mdc-row:hover {
+  background: #F3F4F6 !important;
+}
+
+.mat-mdc-table .mat-mdc-cell {
+  color: #111827 !important;
+  font-size: 1rem !important;
+  border-bottom: 1px solid #E5E7EB !important;
+}
+
+.mat-mdc-dialog-container {
+  border-radius: 16px !important;
+}
+
+.mat-mdc-snack-bar-container {
+  border-radius: 8px !important;
+}
+
+.mat-mdc-select .mat-mdc-select-trigger {
+  min-height: 44px;
+}
+
+.mat-mdc-form-field-subscript-wrapper {
+  font-size: 0.875rem !important;
+}
+
+.mat-mdc-form-field-error {
+  color: #EF4444 !important;
+}
+
+/* =============================================================================
+   9. ANIMAÇÕES GLOBAIS
+   ============================================================================= */
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slideUp {
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-slideInRight {
+  animation: slideInRight 0.3s ease-out;
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-scaleIn {
+  animation: scaleIn 0.3s ease-out;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.animate-pulse {
+  animation: pulse 2s infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+/* =============================================================================
+   10. PRINT STYLES
+   ============================================================================= */
+
+@media print {
+  body {
+    background: white !important;
+    color: black !important;
+    font-size: 12pt !important;
+  }
+  
+  .no-print,
+  .hc-sidebar,
+  .hc-header__actions,
+  button:not(.print-btn) {
+    display: none !important;
+  }
+  
+  .hc-card {
+    box-shadow: none !important;
+    border: 1px solid #ddd !important;
+    break-inside: avoid;
+  }
+  
+  a {
+    text-decoration: underline;
+    color: black !important;
+  }
+  
+  a[href]::after {
+    content: " (" attr(href) ")";
+    font-size: 10pt;
+    color: #666;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    break-after: avoid;
+  }
+  
+  table {
+    break-inside: avoid;
+  }
+  
+  .hc-patient-header {
+    position: static !important;
+    border: 2px solid black !important;
+    margin-bottom: 20pt !important;
+  }
+  
+  .hc-critical-alerts {
+    border: 2px solid black !important;
+    background: #f0f0f0 !important;
+  }
+}
+
+/* =============================================================================
+   11. FOCUS MANAGEMENT (Acessibilidade)
+   ============================================================================= */
+
+:focus-visible {
+  outline: 2px solid #0066CC;
+  outline-offset: 2px;
+}
+
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: #0066CC;
+  color: #FFFFFF;
+  padding: 0.5rem 1rem;
+  z-index: 1090;
+  transition: top 0.15s ease;
+}
+
+.skip-link:focus {
+  top: 0;
+}
+
+/* =============================================================================
+   12. REDUCED MOTION (Acessibilidade)
+   ============================================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* =============================================================================
+   13. HIGH CONTRAST MODE (Acessibilidade)
+   ============================================================================= */
+
+@media (prefers-contrast: high) {
+  .hc-card {
+    border: 2px solid #111827;
+  }
+  
+  .hc-btn {
+    border: 2px solid currentColor;
+  }
+  
+  .hc-badge {
+    border: 1px solid currentColor;
+  }
+}
+
+/* =============================================================================
+   14. PRESERVAÇÃO DE COMPONENTES LEGADOS
+   ============================================================================= */
+
+/* Garante que o menu lateral existente funcione corretamente */
+.overlay {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  background-color: rgba(0, 0, 0, 0.5) !important;
+  z-index: 9998 !important;
+}
+
+.menu {
+  position: fixed !important;
+  z-index: 9999 !important;
+}
+
+/* Garante que botões do menu lateral mantenham seus estilos originais */
+.side_items .fetures,
+.side_items .logout_btn,
+.side_items .config-button {
+  border: none;
+  padding: 10px;
+  margin: 5px 0;
+  display: flex;
+  align-items: center;
+  border-radius: 8px;
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+  justify-content: center;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+  position: relative;
+  background-color: #3f37e7;
+}
+
+.side_items .fetures:hover,
+.side_items .logout_btn:hover,
+.side_items .config-button:hover {
+  background-color: #7572b9;
+  transform: scale(1.1);
+}
+
+.side_items .logout_btn {
+  background-color: #8d8ca5;
+}
+
+/* =============================================================================
+   15. TEMA ESCURO GLOBAL (Dark Theme)
+   Aplicado via classe .dark-theme no body
+   ============================================================================= */
+
+body.dark-theme {
+  /* Cores de fundo */
+  --dark-bg-primary: #0f172a;
+  --dark-bg-secondary: #1e293b;
+  --dark-bg-card: #1e293b;
+  --dark-bg-hover: #334155;
+  --dark-bg-input: #1e293b;
+  
+  /* Cores de texto */
+  --dark-text-primary: #f1f5f9;
+  --dark-text-secondary: #d8d9db;
+  --dark-text-muted: #64748b;
+  
+  /* Bordas */
+  --dark-border: #334155;
+  --dark-border-light: #475569;
+  
+  /* Aplicar cores base */
+  background-color: var(--dark-bg-primary);
+  color: var(--dark-text-primary);
+}
+
+/* Conteúdo principal */
+body.dark-theme .main-content,
+body.dark-theme .healthcare-content,
+body.dark-theme .usuarios-page {
+  background-color: var(--dark-bg-primary);
+}
+
+/* Títulos e textos */
+body.dark-theme h1,
+body.dark-theme h2,
+body.dark-theme h3,
+body.dark-theme h4,
+body.dark-theme h5,
+body.dark-theme h6 {
+  color: var(--dark-text-primary);
+}
+
+body.dark-theme p,
+body.dark-theme span,
+body.dark-theme label {
+  color: var(--dark-text-secondary);
+}
+
+/* Cards */
+body.dark-theme .hc-card,
+body.dark-theme .hc-stat-card,
+body.dark-theme .action-card,
+body.dark-theme .list-section {
+  background-color: var(--dark-bg-card);
+  border-color: var(--dark-border);
+}
+
+body.dark-theme .hc-card__header {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-color: var(--dark-border);
+}
+
+body.dark-theme .hc-card__title,
+body.dark-theme .hc-stat-card__value,
+body.dark-theme .action-card__title {
+  color: var(--dark-text-primary);
+}
+
+body.dark-theme .hc-stat-card__label,
+body.dark-theme .action-card__desc {
+  color: var(--dark-text-secondary);
+}
+
+/* Inputs e formulários */
+body.dark-theme input,
+body.dark-theme textarea,
+body.dark-theme select,
+body.dark-theme .search-box,
+body.dark-theme .search-box__input {
+  background-color: var(--dark-bg-input);
+  border-color: var(--dark-border);
+  color: var(--dark-text-primary);
+}
+
+body.dark-theme input::placeholder,
+body.dark-theme textarea::placeholder {
+  color: var(--dark-text-muted);
+}
+
+body.dark-theme .search-box {
+  background-color: var(--dark-bg-secondary);
+}
+
+/* Filtros e tabs */
+body.dark-theme .filter-tab {
+  background-color: var(--dark-bg-secondary);
+  border-color: var(--dark-border);
+  color: var(--dark-text-secondary);
+}
+
+body.dark-theme .filter-tab:hover {
+  background-color: var(--dark-bg-hover);
+  color: var(--dark-text-primary);
+}
+
+body.dark-theme .filter-tab.active {
+  background-color: #0066CC;
+  border-color: #0066CC;
+  color: #fff;
+}
+
+/* Botões de ação rápida */
+body.dark-theme .quick-action-btn {
+  background-color: var(--dark-bg-card);
+}
+
+body.dark-theme .quick-action-btn__label {
+  color: var(--dark-text-primary);
+}
+
+body.dark-theme .quick-action-btn:hover {
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+}
+
+/* Tabelas */
+body.dark-theme table,
+body.dark-theme .mat-mdc-table {
+  background-color: var(--dark-bg-card) !important;
+}
+
+body.dark-theme .mat-mdc-header-row,
+body.dark-theme thead {
+  background-color: var(--dark-bg-secondary) !important;
+}
+
+body.dark-theme .mat-mdc-header-cell,
+body.dark-theme th {
+  color: var(--dark-text-secondary) !important;
+  border-color: var(--dark-border) !important;
+}
+
+body.dark-theme .mat-mdc-row:hover,
+body.dark-theme tr:hover {
+  background-color: var(--dark-bg-hover) !important;
+}
+
+body.dark-theme .mat-mdc-cell,
+body.dark-theme td {
+  color: var(--dark-text-primary) !important;
+  border-color: var(--dark-border) !important;
+}
+
+/* Dashboard header */
+body.dark-theme .dashboard-header__title h1,
+body.dark-theme .page-header__title h1 {
+  color: var(--dark-text-primary);
+}
+
+body.dark-theme .dashboard-header__subtitle,
+body.dark-theme .page-header__subtitle {
+  color: var(--dark-text-secondary);
+}
+
+body.dark-theme .dashboard-header__date {
+  background-color: var(--dark-bg-card);
+  border-color: var(--dark-border);
+  color: var(--dark-text-secondary);
+}
+
+/* Toggle de tema */
+body.dark-theme .theme-toggle {
+  background-color: var(--dark-bg-card);
+  border-color: var(--dark-border);
+  color: #fbbf24;
+}
+
+body.dark-theme .theme-toggle:hover {
+  background-color: var(--dark-bg-hover);
+  border-color: #fbbf24;
+}
+
+/* Section titles */
+body.dark-theme .section-title {
+  color: var(--dark-text-primary);
+}
+
+/* Scrollbar no tema escuro */
+body.dark-theme ::-webkit-scrollbar-track {
+  background: var(--dark-bg-primary);
+}
+
+body.dark-theme ::-webkit-scrollbar-thumb {
+  background: var(--dark-border);
+}
+
+body.dark-theme ::-webkit-scrollbar-thumb:hover {
+  background: var(--dark-border-light);
+}
+
+body.dark-theme {
+  scrollbar-color: var(--dark-border) var(--dark-bg-primary);
+}
+
+/* Angular Material no tema escuro */
+body.dark-theme .mat-mdc-dialog-container {
+  background-color: var(--dark-bg-card) !important;
+}
+
+body.dark-theme .mat-mdc-form-field {
+  color: var(--dark-text-primary);
+}
+
+body.dark-theme .mat-mdc-select-value,
+body.dark-theme .mat-mdc-input-element {
+  color: var(--dark-text-primary) !important;
+}
+
+body.dark-theme .mdc-text-field--filled:not(.mdc-text-field--disabled) {
+  background-color: var(--dark-bg-input) !important;
+}
+
+body.dark-theme .mat-mdc-form-field-focus-overlay {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+/* Links no tema escuro */
+body.dark-theme a {
+  color: #60a5fa;
+}
+
+body.dark-theme a:hover {
+  color: #93c5fd;
+}
+
+/* Divisores */
+body.dark-theme hr,
+body.dark-theme .nav-divider {
+  border-color: var(--dark-border);
+  background-color: var(--dark-border);
+}
+
+/* Badges e status */
+body.dark-theme .hc-badge {
+  opacity: 0.9;
+}
+
+/* =============================================================================
+   16. TEMA ESCURO PRETO (Dark Black Theme)
+   Aplicado via classe .theme-dark-black no body
+   ============================================================================= */
+
+body.theme-dark-black {
+  /* Cores de fundo - PRETO VERDADEIRO */
+  --dark-bg-primary: #000000;
+  --dark-bg-secondary: #0a0a0a;
+  --dark-bg-card: #121212;
+  --dark-bg-hover: #1a1a1a;
+  --dark-bg-input: #1a1a1a;
+  
+  /* Cores de texto */
+  --dark-text-primary: #ffffff;
+  --dark-text-secondary: #e5e5e5;
+  --dark-text-muted: #a3a3a3;
+  
+  /* Bordas */
+  --dark-border: #262626;
+  --dark-border-light: #333333;
+  
+  /* Aplicar cores base */
+  background-color: #000000 !important;
+  color: #ffffff !important;
+}
+
+/* Cards no tema preto */
+body.theme-dark-black .hc-card,
+body.theme-dark-black .hc-stat-card,
+body.theme-dark-black .action-card,
+body.theme-dark-black .list-section {
+  background-color: #121212 !important;
+  border-color: #262626 !important;
+}
+
+body.theme-dark-black .hc-card__header {
+  background-color: #0a0a0a !important;
+  border-color: #262626 !important;
+}
+
+/* Conteúdo principal no tema preto */
+body.theme-dark-black .main-content,
+body.theme-dark-black .healthcare-content,
+body.theme-dark-black .usuarios-page {
+  background-color: #000000 !important;
+}
+
+/* Tabelas no tema preto */
+body.theme-dark-black table,
+body.theme-dark-black .mat-mdc-table {
+  background-color: #121212 !important;
+}
+
+body.theme-dark-black .mat-mdc-header-row,
+body.theme-dark-black thead {
+  background-color: #0a0a0a !important;
+}
+
+/* Inputs no tema preto */
+body.theme-dark-black input,
+body.theme-dark-black textarea,
+body.theme-dark-black select,
+body.theme-dark-black .search-box,
+body.theme-dark-black .search-box__input {
+  background-color: #1a1a1a !important;
+  border-color: #262626 !important;
+  color: #ffffff !important;
+}
+
+body.theme-dark-black .search-box {
+  background-color: #0a0a0a !important;
+}
+
+/* Filtros e tabs no tema preto */
+body.theme-dark-black .filter-tab {
+  background-color: #0a0a0a !important;
+  border-color: #262626 !important;
+  color: #e5e5e5 !important;
+}
+
+body.theme-dark-black .filter-tab:hover {
+  background-color: #1a1a1a !important;
+  color: #ffffff !important;
+}
+
+/* Dashboard header no tema preto */
+body.theme-dark-black .dashboard-header__date {
+  background-color: #121212 !important;
+  border-color: #262626 !important;
+  color: #e5e5e5 !important;
+}
+
+/* Toggle de tema no tema preto */
+body.theme-dark-black .theme-toggle {
+  background-color: #121212 !important;
+  border-color: #262626 !important;
+  color: #fbbf24 !important;
+}
+
+body.theme-dark-black .theme-toggle:hover {
+  background-color: #1a1a1a !important;
+  border-color: #fbbf24 !important;
+}
+
+/* Scrollbar no tema preto */
+body.theme-dark-black ::-webkit-scrollbar-track {
+  background: #000000;
+}
+
+body.theme-dark-black ::-webkit-scrollbar-thumb {
+  background: #262626;
+}
+
+body.theme-dark-black ::-webkit-scrollbar-thumb:hover {
+  background: #333333;
+}
+
+body.theme-dark-black {
+  scrollbar-color: #262626 #000000;
+}
+
+/* Angular Material no tema preto */
+body.theme-dark-black .mat-mdc-dialog-container {
+  background-color: #121212 !important;
+}
+
+body.theme-dark-black .mdc-text-field--filled:not(.mdc-text-field--disabled) {
+  background-color: #1a1a1a !important;
+}
+
+/* Quick action buttons no tema preto */
+body.theme-dark-black .quick-action-btn {
+  background-color: #121212 !important;
+}
+
+body.theme-dark-black .quick-action-btn:hover {
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+}
+
+/* Divisores no tema preto */
+body.theme-dark-black hr,
+body.theme-dark-black .nav-divider {
+  border-color: #262626 !important;
+  background-color: #262626 !important;
+}
+
+/* =============================================================================
+   ESTILOS GLOBAIS PARA DIALOGS DE CADASTRO
+   ============================================================================= */
+
+.cadastro-dialog-panel {
+  border-radius: 16px !important;
+  overflow: hidden;
+}
+
+.cadastro-dialog-panel .mat-mdc-dialog-container {
+  padding: 0 !important;
+  border-radius: 16px !important;
+  overflow: hidden;
+}
+
+.cadastro-dialog-panel .mat-mdc-dialog-surface {
+  border-radius: 16px !important;
+  overflow: hidden;
+}
+
+/* Tema escuro azul para dialog */
+body.dark-theme .cadastro-dialog-panel .mat-mdc-dialog-container,
+body.dark-theme .cadastro-dialog-panel .mat-mdc-dialog-surface {
+  background: #1e293b;
+}
+
+/* Tema escuro preto para dialog */
+body.theme-dark-black .cadastro-dialog-panel .mat-mdc-dialog-container,
+body.theme-dark-black .cadastro-dialog-panel .mat-mdc-dialog-surface {
+  background: #121212;
+}

@@ -1,0 +1,121 @@
+<div class="documento-container">
+  <!-- Header do Dialog -->
+  <header class="dialog-header">
+    <div class="header-info">
+      <div class="header-icon">
+        <i class="fa-solid fa-prescription"></i>
+      </div>
+      <div class="header-text">
+        <h2 class="header-title">Prescrição Odontológica</h2>
+        <p class="header-subtitle">Receituário de medicamentos</p>
+      </div>
+    </div>
+    <button class="close-btn" mat-dialog-close>
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+  </header>
+
+  <!-- Conteúdo do PDF -->
+  <div class="dialog-body">
+    <div id="pdfContent" class="pdf-content">
+      <!-- Cabeçalho do Documento -->
+      <div class="pdf-header">
+        <h1 class="pdf-title">PRESCRIÇÃO ODONTOLÓGICA</h1>
+      </div>
+
+      <!-- Seção: Dados do Paciente -->
+      <div class="pdf-section">
+        <div class="section-header section-header--executive">
+          <h2>DADOS DO PACIENTE</h2>
+        </div>
+        <div class="section-content section-content--horizontal">
+          <div class="pdf-field">
+            <span class="field-label">NOME</span>
+            <span class="field-value">{{ nomePaciente }}</span>
+          </div>
+          <div class="pdf-field">
+            <span class="field-label">CPF</span>
+            <span class="field-value">{{ cpfPaciente }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Seção: Dentista Prescritor -->
+      <div class="pdf-section">
+        <div class="section-header section-header--executive">
+          <h2>DENTISTA PRESCRITOR</h2>
+        </div>
+        <div class="section-content section-content--horizontal">
+          <div class="pdf-field">
+            <span class="field-label">NOME</span>
+            <span class="field-value">Dr. {{ nomeDentista }}</span>
+          </div>
+          <div class="pdf-field">
+            <span class="field-label">CRO</span>
+            <span class="field-value">{{ cro }}</span>
+          </div>
+          <div class="pdf-field">
+            <span class="field-label">EMAIL</span>
+            <span class="field-value">{{ emailDentista }}</span>
+          </div>
+          <div class="pdf-field">
+            <span class="field-label">TELEFONE</span>
+            <span class="field-value">{{ telefoneDentista }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Seção: Informações da Prescrição -->
+      <div class="pdf-section">
+        <div class="section-header section-header--executive">
+          <h2>INFORMAÇÕES DA PRESCRIÇÃO</h2>
+        </div>
+        <div class="section-content section-content--horizontal">
+          <div class="pdf-field">
+            <span class="field-label">TÍTULO</span>
+            <span class="field-value">{{ tituloPrescricao }}</span>
+          </div>
+          <div class="pdf-field">
+            <span class="field-label">DATA DA PRESCRIÇÃO</span>
+            <span class="field-value">{{ dataPrescricao }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Seção: Medicamentos Prescritos -->
+      <div class="pdf-section">
+        <div class="section-header section-header--executive">
+          <h2>MEDICAMENTOS PRESCRITOS</h2>
+        </div>
+        <div class="section-content section-content--vertical">
+          <div class="prescricao-content">{{ prescricao }}</div>
+        </div>
+      </div>
+
+      <!-- Aviso -->
+      <div class="aviso-section">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        <p>Uso conforme orientação odontológica. Não interrompa o tratamento sem consultar seu dentista.</p>
+      </div>
+
+      <!-- Rodapé -->
+      <div class="pdf-footer">
+        <div class="footer-line"></div>
+        <p class="footer-date">Emitido em: {{ dataAtual }}</p>
+        <p class="footer-info">Documento válido para apresentação em farmácias e estabelecimentos de saúde.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer com Ações -->
+  <footer class="dialog-footer">
+    <button class="btn btn--secondary" mat-dialog-close>
+      <i class="fa-solid fa-xmark"></i>
+      Cancelar
+    </button>
+    <button class="btn btn--primary" (click)="GerarPDF()">
+      <i class="fa-solid fa-file-pdf"></i>
+      Gerar PDF
+    </button>
+  </footer>
+</div>

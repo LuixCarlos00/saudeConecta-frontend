@@ -1,0 +1,457 @@
+<div class="landing-page">
+  <!-- ========================================
+       HEADER / NAVEGAÇÃO
+       ======================================== -->
+  <header class="header" [class.scrolled]="isScrolled">
+    <div class="container header-content">
+      <div class="logo" (click)="scrollToSection('hero')">
+        <i class="fa-solid fa-heart-pulse"></i>
+        <span>Saúde Conecta</span>
+      </div>
+
+      <!-- Menu Desktop -->
+      <nav class="nav-desktop">
+        <a (click)="scrollToSection('funcionalidades')">Funcionalidades</a>
+        <a (click)="scrollToSection('beneficios')">Benefícios</a>
+        <a (click)="scrollToSection('depoimentos')">Depoimentos</a>
+        <a (click)="scrollToSection('planos')">Planos</a>
+        <a (click)="scrollToSection('faq')">FAQ</a>
+      </nav>
+
+      <button class="btn-login-header" (click)="navegarParaLogin()">
+        <i class="fa-solid fa-right-to-bracket"></i>
+        Entrar
+      </button>
+
+      <!-- Menu Mobile Toggle -->
+      <button class="mobile-menu-toggle" (click)="toggleMobileMenu()">
+        <i class="fa-solid" [class.fa-bars]="!mobileMenuOpen" [class.fa-xmark]="mobileMenuOpen"></i>
+      </button>
+    </div>
+
+    <!-- Menu Mobile -->
+    <nav class="nav-mobile" [class.open]="mobileMenuOpen">
+      <a (click)="scrollToSection('funcionalidades')">Funcionalidades</a>
+      <a (click)="scrollToSection('beneficios')">Benefícios</a>
+      <a (click)="scrollToSection('depoimentos')">Depoimentos</a>
+      <a (click)="scrollToSection('planos')">Planos</a>
+      <a (click)="scrollToSection('faq')">FAQ</a>
+      <button class="btn-login-mobile" (click)="navegarParaLogin()">Entrar</button>
+    </nav>
+  </header>
+
+  <!-- ========================================
+       HERO / BEM VINDO
+       ======================================== -->
+  <section id="hero" class="hero">
+    <div class="hero-bg">
+      <div class="hero-shape shape-1"></div>
+      <div class="hero-shape shape-2"></div>
+      <div class="hero-shape shape-3"></div>
+    </div>
+    <div class="container hero-content">
+      <div class="hero-text">
+        <span class="hero-badge">
+          <i class="fa-solid fa-sparkles"></i>
+          Novo: Integração com Telemedicina
+        </span>
+        <h1>Transforme a gestão da sua <span class="highlight">clínica médica</span></h1>
+        <p>Sistema completo para agendamento, prontuário eletrônico e gestão de pacientes. Simplifique processos e ofereça uma experiência excepcional.</p>
+        <div class="hero-buttons">
+          <button class="btn-primary" (click)="scrollToSection('planos')">
+            Começar Gratuitamente
+            <i class="fa-solid fa-arrow-right"></i>
+          </button>
+          <button class="btn-secondary" (click)="scrollToSection('funcionalidades')">
+            <i class="fa-solid fa-play"></i>
+            Ver Demonstração
+          </button>
+        </div>
+        <div class="hero-stats">
+          <div class="stat">
+            <span class="stat-number">500+</span>
+            <span class="stat-label">Clínicas Ativas</span>
+          </div>
+          <div class="stat">
+            <span class="stat-number">50k+</span>
+            <span class="stat-label">Pacientes Atendidos</span>
+          </div>
+          <div class="stat">
+            <span class="stat-number">98%</span>
+            <span class="stat-label">Satisfação</span>
+          </div>
+        </div>
+      </div>
+      <div class="hero-image">
+        <div class="hero-card card-1">
+          <i class="fa-solid fa-calendar-check"></i>
+          <span>Consulta agendada!</span>
+        </div>
+        <div class="hero-card card-2">
+          <i class="fa-solid fa-user-check"></i>
+          <span>Paciente confirmado</span>
+        </div>
+        <div class="hero-card card-3">
+          <i class="fa-solid fa-chart-line"></i>
+          <span>+45% eficiência</span>
+        </div>
+        <div class="hero-illustration">
+          <i class="fa-solid fa-laptop-medical"></i>
+        </div>
+      </div>
+    </div>
+    <div class="hero-wave">
+      <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
+        <path d="M0,60 C360,120 720,0 1080,60 C1260,90 1380,60 1440,60 L1440,120 L0,120 Z"></path>
+      </svg>
+    </div>
+  </section>
+
+  <!-- ========================================
+       APRESENTAÇÃO
+       ======================================== -->
+  <section id="apresentacao" class="apresentacao">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-badge">Sobre Nós</span>
+        <h2>A solução que sua clínica precisa</h2>
+        <p>Desenvolvido por profissionais de saúde para profissionais de saúde</p>
+      </div>
+      <div class="apresentacao-content">
+        <div class="apresentacao-text">
+          <p>O <strong>Saúde Conecta</strong> nasceu da necessidade real de modernizar a gestão de clínicas e consultórios médicos. Nossa plataforma foi desenvolvida em parceria com médicos, enfermeiros e gestores de saúde para garantir que cada funcionalidade atenda às demandas do dia a dia.</p>
+          <p>Com mais de 5 anos no mercado, já ajudamos centenas de estabelecimentos a otimizar seus processos, reduzir custos operacionais e melhorar a experiência de seus pacientes.</p>
+          <div class="apresentacao-features">
+            <div class="feature-item">
+              <i class="fa-solid fa-check-circle"></i>
+              <span>Sistema 100% na nuvem</span>
+            </div>
+            <div class="feature-item">
+              <i class="fa-solid fa-check-circle"></i>
+              <span>Atualizações automáticas</span>
+            </div>
+            <div class="feature-item">
+              <i class="fa-solid fa-check-circle"></i>
+              <span>Backup diário garantido</span>
+            </div>
+            <div class="feature-item">
+              <i class="fa-solid fa-check-circle"></i>
+              <span>Suporte humanizado</span>
+            </div>
+          </div>
+        </div>
+        <div class="apresentacao-image">
+          <div class="image-card">
+            <i class="fa-solid fa-hospital-user"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================
+       FUNCIONALIDADES
+       ======================================== -->
+  <section id="funcionalidades" class="funcionalidades">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-badge">Funcionalidades</span>
+        <h2>Tudo o que você precisa em um só lugar</h2>
+        <p>Ferramentas poderosas para uma gestão eficiente</p>
+      </div>
+      <div class="funcionalidades-grid">
+        <div class="funcionalidade-card" *ngFor="let func of funcionalidades">
+          <div class="funcionalidade-icon">
+            <i class="fa-solid" [ngClass]="func.icon"></i>
+          </div>
+          <h3>{{ func.titulo }}</h3>
+          <p>{{ func.descricao }}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================
+       PARA QUEM É
+       ======================================== -->
+  <section id="publico" class="publico">
+    <div class="container">
+      <div class="section-header light">
+        <span class="section-badge">Para Quem</span>
+        <h2>Feito para quem cuida da saúde</h2>
+        <p>Adaptamos nossa solução para diferentes tipos de estabelecimentos</p>
+      </div>
+      <div class="publico-grid">
+        <div class="publico-card" *ngFor="let pub of publicoAlvo">
+          <div class="publico-icon">
+            <i class="fa-solid" [ngClass]="pub.icon"></i>
+          </div>
+          <h3>{{ pub.titulo }}</h3>
+          <p>{{ pub.descricao }}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================
+       BENEFÍCIOS
+       ======================================== -->
+  <section id="beneficios" class="beneficios">
+    <div class="container">
+      <div class="beneficios-content">
+        <div class="beneficios-text">
+          <span class="section-badge">Benefícios</span>
+          <h2>Por que escolher o Saúde Conecta?</h2>
+          <p>Mais do que um software, uma parceria para o sucesso da sua clínica</p>
+          <ul class="beneficios-list">
+            <li *ngFor="let beneficio of beneficios">
+              <i class="fa-solid fa-circle-check"></i>
+              <span>{{ beneficio.texto }}</span>
+            </li>
+          </ul>
+        </div>
+        <div class="beneficios-image">
+          <div class="beneficio-card card-1">
+            <div class="card-icon">
+              <i class="fa-solid fa-clock"></i>
+            </div>
+            <div class="card-info">
+              <span class="card-value">-70%</span>
+              <span class="card-label">Tempo de agendamento</span>
+            </div>
+          </div>
+          <div class="beneficio-card card-2">
+            <div class="card-icon">
+              <i class="fa-solid fa-user-minus"></i>
+            </div>
+            <div class="card-info">
+              <span class="card-value">-50%</span>
+              <span class="card-label">Faltas de pacientes</span>
+            </div>
+          </div>
+          <div class="beneficio-card card-3">
+            <div class="card-icon">
+              <i class="fa-solid fa-face-smile"></i>
+            </div>
+            <div class="card-info">
+              <span class="card-value">+90%</span>
+              <span class="card-label">Satisfação</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================
+       FACILIDADE DE USO
+       ======================================== -->
+  <section id="facilidade" class="facilidade">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-badge">Simplicidade</span>
+        <h2>Fácil de usar, rápido de aprender</h2>
+        <p>Interface intuitiva que sua equipe vai dominar em minutos</p>
+      </div>
+      <div class="facilidade-steps">
+        <div class="step">
+          <div class="step-number">1</div>
+          <div class="step-content">
+            <h3>Cadastre-se</h3>
+            <p>Crie sua conta em menos de 2 minutos</p>
+          </div>
+        </div>
+        <div class="step-connector"></div>
+        <div class="step">
+          <div class="step-number">2</div>
+          <div class="step-content">
+            <h3>Configure</h3>
+            <p>Personalize de acordo com sua clínica</p>
+          </div>
+        </div>
+        <div class="step-connector"></div>
+        <div class="step">
+          <div class="step-number">3</div>
+          <div class="step-content">
+            <h3>Comece a usar</h3>
+            <p>Pronto! Sua clínica está conectada</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================
+       DEPOIMENTOS
+       ======================================== -->
+  <section id="depoimentos" class="depoimentos">
+    <div class="container">
+      <div class="section-header light">
+        <span class="section-badge">Depoimentos</span>
+        <h2>O que nossos clientes dizem</h2>
+        <p>Histórias reais de quem já transformou sua gestão</p>
+      </div>
+      <div class="depoimentos-grid">
+        <div class="depoimento-card" *ngFor="let dep of depoimentos">
+          <div class="depoimento-content">
+            <i class="fa-solid fa-quote-left quote-icon"></i>
+            <p>{{ dep.texto }}</p>
+          </div>
+          <div class="depoimento-author">
+            <img [src]="dep.foto" [alt]="dep.nome">
+            <div class="author-info">
+              <strong>{{ dep.nome }}</strong>
+              <span>{{ dep.cargo }}</span>
+              <span class="clinica">{{ dep.clinica }}</span>
+            </div>
+          </div>
+          <div class="depoimento-rating">
+            <i class="fa-solid fa-star"></i>
+            <i class="fa-solid fa-star"></i>
+            <i class="fa-solid fa-star"></i>
+            <i class="fa-solid fa-star"></i>
+            <i class="fa-solid fa-star"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================
+       PLANOS E VALORES
+       ======================================== -->
+  <section id="planos" class="planos">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-badge">Planos</span>
+        <h2>Escolha o plano ideal para você</h2>
+        <p>Sem taxas ocultas. Cancele quando quiser.</p>
+      </div>
+      <div class="planos-grid">
+        <div class="plano-card" *ngFor="let plano of planos" [class.destaque]="plano.destaque">
+          <div class="plano-badge" *ngIf="plano.destaque">Mais Popular</div>
+          <h3>{{ plano.nome }}</h3>
+          <p class="plano-descricao">{{ plano.descricao }}</p>
+          <div class="plano-preco">
+            <span class="moeda">R$</span>
+            <span class="valor">{{ plano.preco }}</span>
+            <span class="periodo">/mês</span>
+          </div>
+          <ul class="plano-recursos">
+            <li *ngFor="let recurso of plano.recursos">
+              <i class="fa-solid fa-check"></i>
+              {{ recurso }}
+            </li>
+          </ul>
+          <button class="btn-plano" [class.btn-destaque]="plano.destaque">
+            Começar Agora
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================
+       FAQ
+       ======================================== -->
+  <section id="faq" class="faq">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-badge">FAQ</span>
+        <h2>Perguntas Frequentes</h2>
+        <p>Tire suas dúvidas sobre o Saúde Conecta</p>
+      </div>
+      <div class="faq-list">
+        <div class="faq-item" *ngFor="let item of faq; let i = index" [class.active]="activeAccordion === i">
+          <div class="faq-question" (click)="toggleAccordion(i)">
+            <span>{{ item.pergunta }}</span>
+            <i class="fa-solid" [class.fa-plus]="activeAccordion !== i" [class.fa-minus]="activeAccordion === i"></i>
+          </div>
+          <div class="faq-answer" [class.open]="activeAccordion === i">
+            <p>{{ item.resposta }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================
+       CTA FINAL
+       ======================================== -->
+  <section id="cta" class="cta">
+    <div class="cta-bg">
+      <div class="cta-shape shape-1"></div>
+      <div class="cta-shape shape-2"></div>
+    </div>
+    <div class="container cta-content">
+      <h2>Pronto para transformar sua clínica?</h2>
+      <p>Junte-se a mais de 500 clínicas que já confiam no Saúde Conecta</p>
+      <div class="cta-buttons">
+        <button class="btn-cta-primary" (click)="scrollToSection('planos')">
+          Começar Teste Grátis
+          <i class="fa-solid fa-arrow-right"></i>
+        </button>
+        <button class="btn-cta-secondary">
+          <i class="fa-solid fa-phone"></i>
+          Falar com Consultor
+        </button>
+      </div>
+      <p class="cta-note">
+        <i class="fa-solid fa-shield-check"></i>
+        14 dias grátis • Sem cartão de crédito • Cancele quando quiser
+      </p>
+    </div>
+  </section>
+
+  <!-- ========================================
+       FOOTER
+       ======================================== -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="logo">
+            <i class="fa-solid fa-heart-pulse"></i>
+            <span>Saúde Conecta</span>
+          </div>
+          <p>Simplificando a gestão de clínicas médicas desde 2020.</p>
+          <div class="social-links">
+            <a href="#"><i class="fa-brands fa-facebook"></i></a>
+            <a href="#"><i class="fa-brands fa-instagram"></i></a>
+            <a href="#"><i class="fa-brands fa-linkedin"></i></a>
+            <a href="#"><i class="fa-brands fa-youtube"></i></a>
+          </div>
+        </div>
+        <div class="footer-links">
+          <h4>Produto</h4>
+          <a href="#">Funcionalidades</a>
+          <a href="#">Integrações</a>
+          <a href="#">Preços</a>
+          <a href="#">Atualizações</a>
+        </div>
+        <div class="footer-links">
+          <h4>Empresa</h4>
+          <a href="#">Sobre nós</a>
+          <a href="#">Blog</a>
+          <a href="#">Carreiras</a>
+          <a href="#">Contato</a>
+        </div>
+        <div class="footer-links">
+          <h4>Suporte</h4>
+          <a href="#">Central de Ajuda</a>
+          <a href="#">Documentação</a>
+          <a href="#">Status do Sistema</a>
+          <a href="#">API</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2024 Saúde Conecta. Todos os direitos reservados.</p>
+        <div class="footer-legal">
+          <a href="#">Termos de Uso</a>
+          <a href="#">Política de Privacidade</a>
+          <a href="#">LGPD</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+</div>

@@ -1,0 +1,230 @@
+<div class="registro-container">
+  <!-- Header do Dialog -->
+  <header class="dialog-header">
+    <div class="header-info">
+      <div class="header-icon">
+        <i class="fa-solid fa-file-lines"></i>
+      </div>
+      <div class="header-text">
+        <h2 class="header-title">Registro de Consulta Odontológica</h2>
+        <p class="header-subtitle">Documento clínico completo</p>
+      </div>
+    </div>
+    <button class="close-btn" mat-dialog-close>
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+  </header>
+
+  <!-- Conteúdo do PDF -->
+  <div class="dialog-body">
+    <div id="pdfContent" class="pdf-content">
+      <!-- Cabeçalho do Documento -->
+      <div class="pdf-header">
+        <h1 class="pdf-title">REGISTRO DE CONSULTA ODONTOLÓGICA</h1>
+      </div>
+
+      <!-- Seção: Dados do Paciente -->
+      <div class="pdf-section">
+        <div class="section-header section-header--executive">
+          <h2>DADOS DO PACIENTE</h2>
+        </div>
+        <div class="section-content section-content--horizontal">
+          <div class="pdf-field">
+            <span class="field-label">NOME</span>
+            <span class="field-value">{{ nomePaciente }}</span>
+          </div>
+          <div class="pdf-field">
+            <span class="field-label">CPF</span>
+            <span class="field-value">{{ cpfPaciente }}</span>
+          </div>
+          <div class="pdf-field">
+            <span class="field-label">DATA NASC.</span>
+            <span class="field-value">{{ dataNascimento }}</span>
+          </div>
+          <div class="pdf-field">
+            <span class="field-label">EMAIL</span>
+            <span class="field-value">{{ emailPaciente }}</span>
+          </div>
+          <div class="pdf-field">
+            <span class="field-label">TELEFONE</span>
+            <span class="field-value">{{ telefonePaciente }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Seção: Dados da Consulta -->
+      <div class="pdf-section">
+        <div class="section-header section-header--executive">
+          <h2>DADOS DA CONSULTA</h2>
+        </div>
+        <div class="section-content section-content--horizontal">
+          <div class="pdf-field">
+            <span class="field-label">DATA</span>
+            <span class="field-value">{{ dataConsulta }}</span>
+          </div>
+          <div class="pdf-field">
+            <span class="field-label">HORÁRIO</span>
+            <span class="field-value">{{ horarioConsulta }}</span>
+          </div>
+          <div class="pdf-field">
+            <span class="field-label">DIA DA SEMANA</span>
+            <span class="field-value">{{ diaSemana }}</span>
+          </div>
+          <div class="pdf-field">
+            <span class="field-label">STATUS</span>
+            <span class="field-value">{{ statusConsulta }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Seção: Dentista Atendente -->
+      <div class="pdf-section">
+        <div class="section-header section-header--executive">
+          <h2>DENTISTA ATENDENTE</h2>
+        </div>
+        <div class="section-content section-content--horizontal">
+          <div class="pdf-field">
+            <span class="field-label">NOME</span>
+            <span class="field-value">Dr. {{ nomeDentista }}</span>
+          </div>
+          <div class="pdf-field">
+            <span class="field-label">CRO</span>
+            <span class="field-value">{{ cro }}</span>
+          </div>
+          <div class="pdf-field">
+            <span class="field-label">EMAIL</span>
+            <span class="field-value">{{ emailDentista }}</span>
+          </div>
+          <div class="pdf-field">
+            <span class="field-label">TELEFONE</span>
+            <span class="field-value">{{ telefoneDentista }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Seção: Exame Clínico -->
+      <div class="pdf-section">
+        <div class="section-header section-header--executive">
+          <h2>EXAME CLÍNICO</h2>
+        </div>
+        <div class="section-content section-content--horizontal">
+          <div class="pdf-field">
+            <span class="field-label">HIGIENE BUCAL</span>
+            <span class="field-value">{{ higieneBucal || '-' }}</span>
+          </div>
+          <div class="pdf-field">
+            <span class="field-label">COND. GENGIVAL</span>
+            <span class="field-value">{{ condicaoGengival || '-' }}</span>
+          </div>
+          <div class="pdf-field">
+            <span class="field-label">OCLUSAL</span>
+            <span class="field-value">{{ oclusal || '-' }}</span>
+          </div>
+          <div class="pdf-field">
+            <span class="field-label">ATM</span>
+            <span class="field-value">{{ atm || '-' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Seção: Queixa Principal -->
+      <div class="pdf-section" *ngIf="queixaPrincipal">
+        <div class="section-header section-header--executive">
+          <h2>QUEIXA PRINCIPAL</h2>
+        </div>
+        <div class="section-content section-content--vertical">
+          <div class="clinical-content">{{ queixaPrincipal }}</div>
+        </div>
+      </div>
+
+      <!-- Seção: Anamnese -->
+      <div class="pdf-section" *ngIf="anamnese">
+        <div class="section-header section-header--executive">
+          <h2>ANAMNESE</h2>
+        </div>
+        <div class="section-content section-content--vertical">
+          <div class="clinical-content">{{ anamnese }}</div>
+        </div>
+      </div>
+
+      <!-- Seção: Diagnóstico -->
+      <div class="pdf-section" *ngIf="diagnostico">
+        <div class="section-header section-header--executive">
+          <h2>DIAGNÓSTICO</h2>
+        </div>
+        <div class="section-content section-content--vertical">
+          <div class="clinical-content">{{ diagnostico }}</div>
+        </div>
+      </div>
+
+      <!-- Seção: Plano de Tratamento -->
+      <div class="pdf-section" *ngIf="planoTratamento">
+        <div class="section-header section-header--executive">
+          <h2>PLANO DE TRATAMENTO</h2>
+        </div>
+        <div class="section-content section-content--vertical">
+          <div class="clinical-content">{{ planoTratamento }}</div>
+        </div>
+      </div>
+
+      <!-- Seção: Procedimentos -->
+      <div class="pdf-section" *ngIf="procedimentos">
+        <div class="section-header section-header--executive">
+          <h2>PROCEDIMENTOS REALIZADOS</h2>
+        </div>
+        <div class="section-content section-content--vertical">
+          <div class="clinical-content">{{ procedimentos }}</div>
+        </div>
+      </div>
+
+      <!-- Seção: Prescrição -->
+      <div class="pdf-section" *ngIf="prescricao">
+        <div class="section-header section-header--executive">
+          <h2>PRESCRIÇÃO ODONTOLÓGICA</h2>
+        </div>
+        <div class="section-content section-content--vertical">
+          <div class="clinical-content">{{ prescricao }}</div>
+        </div>
+      </div>
+
+      <!-- Seção: Orientações -->
+      <div class="pdf-section" *ngIf="orientacoes">
+        <div class="section-header section-header--executive">
+          <h2>ORIENTAÇÕES</h2>
+        </div>
+        <div class="section-content section-content--vertical">
+          <div class="clinical-content">{{ orientacoes }}</div>
+        </div>
+      </div>
+
+      <!-- Seção: Observações -->
+      <div class="pdf-section" *ngIf="observacao">
+        <div class="section-header section-header--executive">
+          <h2>OBSERVAÇÕES</h2>
+        </div>
+        <div class="section-content section-content--vertical">
+          <div class="clinical-content">{{ observacao }}</div>
+        </div>
+      </div>
+
+      <!-- Rodapé -->
+      <div class="pdf-footer">
+        <div class="footer-line"></div>
+        <div class="footer-date">Emitido em: {{ getDataAtual() }} às {{ getHoraAtual() }}</div>
+        <div class="footer-info">Documento de registro clínico - Confidencial</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer com Ações -->
+  <footer class="dialog-footer">
+    <button class="btn btn--secondary" mat-dialog-close>
+      <i class="fa-solid fa-xmark"></i>
+      Cancelar
+    </button>
+    <button class="btn btn--primary" (click)="GerarPDF()">
+      <i class="fa-solid fa-file-pdf"></i>
+      Gerar PDF
+    </button>
+  </footer>
+</div>

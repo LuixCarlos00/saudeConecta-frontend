@@ -1,0 +1,25 @@
+/* =============================================================================
+   APP COMPONENT - Layout Principal
+   ============================================================================= */
+
+main {
+  min-height: 100vh;
+  background-color: #F9FAFB;
+}
+
+/* Conteúdo Principal - Ajusta margem para o sidebar */
+.main-content {
+  margin-left: 72px; /* Largura do sidebar colapsado */
+  min-height: 100vh;
+  padding: 24px;
+  transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background-color: #F9FAFB;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .main-content {
+    margin-left: 0;
+    padding: 80px 16px 16px 16px; /* Espaço para o botão mobile */
+  }
+}

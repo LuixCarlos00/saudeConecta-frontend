@@ -1,0 +1,90 @@
+body {
+  font-family: Arial, sans-serif;
+  padding: 0;
+  justify-content: center;
+  align-items: center;
+  /* margin: auto; */
+
+}
+
+.containeExterno {
+  display: flex;
+}
+
+.container {
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  width: 90%;
+  margin: auto;
+
+
+}
+
+.responsivo {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(18.25rem, 100%), 1fr));
+  grid-gap: 1rem;
+}
+
+.form-group {
+  margin-bottom: 15px;
+
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+input,
+select {
+  width: 100%;
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
+
+.buttonCadastrar {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+button[type="submit"]:hover {
+  background-color: #0056b3;
+}
+
+.custom-panel {
+  background-color: #f4f4f4;
+  color: #000000;
+}
+
+
+.blurred {
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+/* Validação de CPF */
+.cadastro-field__error {
+  margin-top: 4px;
+  font-size: 12px;
+  color: #dc3545;
+  font-weight: 500;
+}
+
+.cadastro-field__input.ng-invalid.ng-touched {
+  border-color: #dc3545;
+  box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}
+
+.cadastro-field__input.ng-valid.ng-touched {
+  border-color: #28a745;
+  box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+}

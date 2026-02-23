@@ -1,0 +1,50 @@
+<div class="error-page">
+  <!-- Formas decorativas -->
+  <div class="bg-shapes">
+    <div class="shape shape-1"></div>
+    <div class="shape shape-2"></div>
+    <div class="shape shape-3"></div>
+  </div>
+
+  <div class="error-content">
+    <!-- Ícone animado -->
+    <div class="error-icon">
+      <i class="fa-solid fa-triangle-exclamation"></i>
+    </div>
+
+    <!-- Número 404 -->
+    <h1 class="error-code">
+      <span>4</span>
+      <span class="zero">0</span>
+      <span>4</span>
+    </h1>
+
+    <!-- Mensagem -->
+    <h2 class="error-title">Página não encontrada</h2>
+    <p class="error-message">
+      Ops! A página que você está procurando não existe ou foi movida.
+    </p>
+
+    <!-- Botões de ação -->
+    <div class="error-actions">
+      <a   (click)="router.navigate(['/Dashboard'])" class="btn-primary">
+        <i class="fa-solid fa-home"></i>
+        Voltar ao Início
+      </a>
+      <button class="btn-secondary" onclick="history.back()">
+        <i class="fa-solid fa-arrow-left"></i>
+        Página Anterior
+      </button>
+    </div>
+
+    <!-- Sugestões -->
+    <div class="error-suggestions">
+      <p>Você pode tentar:</p>
+      <ul>
+        <li><i class="fa-solid fa-check"></i> Verificar se o endereço está correto</li>
+        <li><i class="fa-solid fa-check"></i> Usar o menu de navegação</li>
+        <li><i class="fa-solid fa-check"></i> Entrar em contato com o suporte</li>
+      </ul>
+    </div>
+  </div>
+</div>

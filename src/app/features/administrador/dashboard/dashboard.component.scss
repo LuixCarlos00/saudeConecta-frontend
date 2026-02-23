@@ -1,0 +1,639 @@
+// =============================================================================
+// DASHBOARD - ESTILOS HEALTHCARE
+// Painel de controle com Design System médico
+// =============================================================================
+
+@import 'design-system/variables';
+@import 'design-system/mixins';
+
+// =============================================================================
+// LAYOUT PRINCIPAL
+// =============================================================================
+
+.healthcare-content {
+  padding: $spacing-6;
+  max-width: 1400px;
+  margin: 0 auto;
+
+  @include mobile {
+    padding: $spacing-4;
+  }
+}
+
+// =============================================================================
+// HEADER DO DASHBOARD
+// =============================================================================
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: $spacing-8;
+  flex-wrap: wrap;
+  gap: $spacing-4;
+
+  &__title {
+    h1 {
+      display: flex;
+      align-items: center;
+      gap: $spacing-3;
+      font-size: $text-3xl;
+      font-weight: $font-bold;
+      color: $text-primary;
+      margin: 0 0 $spacing-2 0;
+
+      i {
+        color: $primary-blue;
+      }
+
+      @include mobile {
+        font-size: $text-2xl;
+      }
+    }
+  }
+
+  &__subtitle {
+    font-size: $text-base;
+    color: $text-secondary;
+    margin: 0;
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: $spacing-4;
+  }
+
+  &__date {
+    display: flex;
+    align-items: center;
+    gap: $spacing-2;
+    font-size: $text-sm;
+    color: $text-secondary;
+    background: $bg-card;
+    padding: $spacing-2 $spacing-4;
+    border-radius: $radius-md;
+    border: 1px solid $border-light;
+
+    i {
+      color: $primary-blue;
+    }
+  }
+}
+
+// =============================================================================
+// GRID DO DASHBOARD
+// =============================================================================
+
+.dashboard-grid {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-6;
+}
+
+// =============================================================================
+// CARDS DE ESTATÍSTICAS
+// =============================================================================
+
+.dashboard-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: $spacing-4;
+
+  @include max-width($breakpoint-lg) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @include mobile {
+    grid-template-columns: 1fr;
+  }
+}
+
+.hc-stat-card {
+  display: flex;
+  align-items: center;
+  gap: $spacing-4;
+  background: $bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-5;
+  border: 1px solid $border-light;
+  box-shadow: $shadow-sm;
+  transition: all $transition-normal;
+
+  &:hover {
+    box-shadow: $shadow-md;
+    transform: translateY(-2px);
+  }
+
+  &__icon {
+    width: 56px;
+    height: 56px;
+    border-radius: $radius-lg;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: $text-2xl;
+    flex-shrink: 0;
+
+    &--primary {
+      background: $primary-blue-light;
+      color: $primary-blue;
+    }
+
+    &--success {
+      background: $status-normal-bg;
+      color: $status-normal;
+    }
+
+    &--warning {
+      background: $status-atencao-bg;
+      color: $status-atencao;
+    }
+
+    &--danger {
+      background: $status-critico-bg;
+      color: $status-critico;
+    }
+
+    &--info {
+      background: $status-info-bg;
+      color: $status-info;
+    }
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  &__value {
+    font-size: $text-3xl;
+    font-weight: $font-bold;
+    color: $text-primary;
+    line-height: 1;
+  }
+
+  &__label {
+    font-size: $text-sm;
+    color: $text-secondary;
+    margin-top: $spacing-1;
+  }
+}
+
+// =============================================================================
+// GRÁFICOS
+// =============================================================================
+
+.dashboard-charts {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: $spacing-6;
+
+  @include max-width($breakpoint-lg) {
+    grid-template-columns: 1fr;
+  }
+
+  &--secondary {
+    .dashboard-chart {
+      min-height: 350px;
+    }
+  }
+}
+
+.dashboard-chart {
+  min-height: 480px;
+
+  .hc-card__body {
+    height: auto;
+    min-height: 380px;
+    display: block;
+   // padding: $spacing-4;
+
+    // Componentes de gráfico
+    app-grafico-qnt-consultas-dia-anterior,
+    app-grafico-agendamentos-dias-semanas-mes,
+    app-grafico-saldo,
+    app-grafico-categoria-medicos {
+      display: block;
+      width: 100%;
+    }
+  }
+}
+
+// =============================================================================
+// CARDS HEALTHCARE
+// =============================================================================
+
+.hc-card {
+  background: $bg-card;
+  border-radius: $radius-lg;
+  border: 1px solid $border-light;
+  box-shadow: $shadow-sm;
+  overflow: hidden;
+  transition: box-shadow $transition-normal;
+
+  &:hover {
+    box-shadow: $shadow-md;
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: $spacing-4 $spacing-5;
+    border-bottom: 1px solid $border-light;
+    background: $bg-secondary;
+  }
+
+  &__title {
+    display: flex;
+    align-items: center;
+    gap: $spacing-2;
+    font-size: $text-lg;
+    font-weight: $font-semibold;
+    color: $text-primary;
+    margin: 0;
+
+    i {
+      color: $primary-blue;
+      font-size: $text-base;
+    }
+  }
+
+  &__body {
+    padding: $spacing-5;
+  }
+
+  &__footer {
+    padding: $spacing-4 $spacing-5;
+    border-top: 1px solid $border-light;
+    background: $bg-secondary;
+  }
+}
+
+// =============================================================================
+// RESPONSIVIDADE ADICIONAL
+// =============================================================================
+
+@include mobile {
+  .dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+
+    &__actions {
+      width: 100%;
+      justify-content: flex-start;
+    }
+  }
+
+  .hc-stat-card {
+    padding: $spacing-4;
+
+    &__icon {
+      width: 48px;
+      height: 48px;
+      font-size: $text-xl;
+    }
+
+    &__value {
+      font-size: $text-2xl;
+    }
+  }
+
+  .dashboard-chart {
+    min-height: 300px;
+  }
+}
+
+// =============================================================================
+// ANIMAÇÕES
+// =============================================================================
+
+.dashboard-stats .hc-stat-card {
+  animation: fadeInUp 0.4s ease-out;
+  animation-fill-mode: both;
+
+  @for $i from 1 through 4 {
+    &:nth-child(#{$i}) {
+      animation-delay: #{$i * 0.1}s;
+    }
+  }
+}
+
+.dashboard-charts .hc-card {
+  animation: fadeInUp 0.4s ease-out;
+  animation-fill-mode: both;
+  animation-delay: 0.5s;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// =============================================================================
+// BOTÃO TOGGLE DE TEMA
+// =============================================================================
+
+.theme-toggle {
+  width: 44px;
+  height: 44px;
+  border-radius: $radius-full;
+  border: 1px solid $border-light;
+  background: $bg-card;
+  color: $text-secondary;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: $text-lg;
+  transition: all $transition-normal;
+
+  &:hover {
+    background: $bg-hover;
+    color: $primary-blue;
+    border-color: $primary-blue;
+    transform: rotate(15deg);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+// =============================================================================
+// PAINEL DE AÇÕES RÁPIDAS
+// =============================================================================
+
+.dashboard-quick-actions {
+  margin-top: $spacing-2;
+}
+
+.quick-actions-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: $spacing-4;
+
+  @include max-width($breakpoint-xl) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  @include max-width($breakpoint-md) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @include mobile {
+    grid-template-columns: 1fr;
+  }
+}
+
+.quick-action-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-3;
+  padding: $spacing-5;
+  border: 2px solid transparent;
+  border-radius: $radius-lg;
+  background: $bg-card;
+  cursor: pointer;
+  transition: all $transition-normal;
+  min-height: 120px;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: $shadow-lg;
+  }
+
+  &:active {
+    transform: translateY(-2px);
+  }
+
+  &__icon {
+    width: 52px;
+    height: 52px;
+    border-radius: $radius-lg;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: $text-2xl;
+    transition: all $transition-normal;
+  }
+
+  &__label {
+    font-size: $text-sm;
+    font-weight: $font-semibold;
+    color: $text-primary;
+    text-align: center;
+  }
+
+  // Variantes de cores
+  &--primary {
+    border-color: $primary-blue-light;
+
+    .quick-action-btn__icon {
+      background: $primary-blue-light;
+      color: $primary-blue;
+    }
+
+    &:hover {
+      border-color: $primary-blue;
+      background: $primary-blue-light;
+    }
+  }
+
+  &--success {
+    border-color: $status-normal-bg;
+
+    .quick-action-btn__icon {
+      background: $status-normal-bg;
+      color: $status-normal;
+    }
+
+    &:hover {
+      border-color: $status-normal;
+      background: $status-normal-bg;
+    }
+  }
+
+  &--warning {
+    border-color: $status-atencao-bg;
+
+    .quick-action-btn__icon {
+      background: $status-atencao-bg;
+      color: $status-atencao;
+    }
+
+    &:hover {
+      border-color: $status-atencao;
+      background: $status-atencao-bg;
+    }
+  }
+
+  &--info {
+    border-color: $status-info-bg;
+
+    .quick-action-btn__icon {
+      background: $status-info-bg;
+      color: $status-info;
+    }
+
+    &:hover {
+      border-color: $status-info;
+      background: $status-info-bg;
+    }
+  }
+
+  &--purple {
+    border-color: rgba(139, 92, 246, 0.15);
+
+    .quick-action-btn__icon {
+      background: rgba(139, 92, 246, 0.15);
+      color: #8B5CF6;
+    }
+
+    &:hover {
+      border-color: #8B5CF6;
+      background: rgba(139, 92, 246, 0.1);
+    }
+  }
+
+  &--teal {
+    border-color: $primary-teal-light;
+
+    .quick-action-btn__icon {
+      background: $primary-teal-light;
+      color: $primary-teal;
+    }
+
+    &:hover {
+      border-color: $primary-teal;
+      background: $primary-teal-light;
+    }
+  }
+}
+
+// =============================================================================
+// BANNER DE BOAS-VINDAS DO MÉDICO
+// =============================================================================
+
+.doctor-welcome-banner {
+  background: linear-gradient(135deg, $primary-blue 0%, darken($primary-blue, 15%) 100%);
+  border-radius: $radius-lg;
+  padding: $spacing-6;
+  margin-bottom: $spacing-2;
+  box-shadow: $shadow-md;
+  animation: fadeInUp 0.4s ease-out;
+
+  .welcome-content {
+    display: flex;
+    align-items: center;
+    gap: $spacing-5;
+  }
+
+  .welcome-icon {
+    width: 72px;
+    height: 72px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: $radius-full;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    i {
+      font-size: 2rem;
+      color: white;
+    }
+  }
+
+  .welcome-text {
+    h2 {
+      font-size: $text-2xl;
+      font-weight: $font-bold;
+      color: white;
+      margin: 0 0 $spacing-2 0;
+    }
+
+    p {
+      font-size: $text-base;
+      color: rgba(255, 255, 255, 0.9);
+      margin: 0;
+    }
+  }
+
+  @include mobile {
+    padding: $spacing-4;
+
+    .welcome-content {
+      flex-direction: column;
+      text-align: center;
+    }
+
+    .welcome-icon {
+      width: 56px;
+      height: 56px;
+
+      i {
+        font-size: 1.5rem;
+      }
+    }
+
+    .welcome-text {
+      h2 {
+        font-size: $text-xl;
+      }
+
+      p {
+        font-size: $text-sm;
+      }
+    }
+  }
+}
+
+// =============================================================================
+// GRID DE AÇÕES RÁPIDAS DO MÉDICO
+// =============================================================================
+
+.quick-actions-grid--doctor {
+  grid-template-columns: repeat(3, 1fr);
+
+  @include max-width($breakpoint-lg) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @include mobile {
+    grid-template-columns: 1fr;
+  }
+
+  .quick-action-btn {
+    min-height: 140px;
+    padding: $spacing-5;
+
+    &__description {
+      font-size: $text-xs;
+      color: $text-muted;
+      margin-top: $spacing-1;
+      opacity: 0.8;
+    }
+
+    &:hover {
+      .quick-action-btn__description {
+        opacity: 1;
+      }
+    }
+  }
+}
+
+// =============================================================================
+// NOTA: O tema escuro agora é controlado globalmente via body.dark-theme
+// Os estilos estão em src/styles/global.scss
+// =============================================================================

@@ -1,0 +1,492 @@
+/* ========================================
+   CONTAINER PRINCIPAL
+   ======================================== */
+.usuarios-table-container {
+  background: var(--bg-card, #ffffff);
+  border-radius: 12px;
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  margin: 16px;
+}
+
+/* ========================================
+   HEADER DA TABELA
+   ======================================== */
+.table-header {
+  background: linear-gradient(135deg, #667eea 0%, #99cbe2 100%);
+  padding: 20px 24px;
+  color: white;
+}
+
+.header-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-info h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.badge-count {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #000;
+}
+
+/* ========================================
+   LOADING STATE
+   ======================================== */
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 60px 20px;
+}
+
+.loading-spinner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  color: #667eea;
+}
+
+.loading-spinner span {
+  color: var(--text-secondary, #6c757d);
+  font-size: 0.95rem;
+}
+
+/* ========================================
+   EMPTY STATE
+   ======================================== */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  color: var(--text-secondary, #6c757d);
+}
+
+.empty-state i {
+  color: var(--text-muted, #dee2e6);
+  margin-bottom: 16px;
+}
+
+.empty-state h4 {
+  margin: 0 0 8px 0;
+  color: var(--text-primary, #495057);
+  font-weight: 600;
+}
+
+.empty-state p {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+/* ========================================
+   WRAPPER DA TABELA
+   ======================================== */
+.table-wrapper {
+  max-height: 500px;
+  overflow-y: auto;
+  overflow-x: auto;
+}
+
+.table-wrapper::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.table-wrapper::-webkit-scrollbar-track {
+  background: var(--bg-secondary, #f1f1f1);
+}
+
+.table-wrapper::-webkit-scrollbar-thumb {
+  background: var(--border-light, #c1c1c1);
+  border-radius: 4px;
+}
+
+.table-wrapper::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* ========================================
+   TABELA
+   ======================================== */
+.usuarios-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.usuarios-table th {
+  background: var(--table-header-bg, #f8f9fa) !important;
+  color: var(--text-primary, #495057) !important;
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 16px 12px !important;
+  border-bottom: 2px solid var(--border-color, #e9ecef);
+  white-space: nowrap;
+}
+
+.usuarios-table th i {
+  margin-right: 6px;
+  color: #667eea;
+}
+
+.usuarios-table td {
+  padding: 14px 12px !important;
+  border-bottom: 1px solid var(--border-color, #f1f3f4);
+  vertical-align: middle;
+  color: var(--text-primary) !important;
+}
+
+.usuarios-table tr:hover {
+  background-color: var(--table-row-hover, #f8f9ff) !important;
+}
+
+.usuarios-table tr.row-bloqueado {
+  background-color: #fff5f5 !important;
+}
+
+.usuarios-table tr.row-bloqueado:hover {
+  background-color: #ffecec !important;
+}
+
+.usuarios-table tr.row-clicavel {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.usuarios-table tr.row-clicavel:hover {
+  background-color: var(--table-row-hover, #f0f4ff) !important;
+  box-shadow: inset 0 0 0 1px rgba(102, 126, 234, 0.2);
+}
+
+/* ========================================
+   COLUNAS ESPECÍFICAS
+   ======================================== */
+.col-index {
+  width: 60px;
+  text-align: center;
+}
+
+.col-nome {
+  min-width: 220px;
+}
+
+.col-categoria {
+  width: 150px;
+}
+
+.col-email {
+  min-width: 200px;
+}
+
+.col-status {
+  width: 120px;
+}
+
+.col-acoes {
+  width: 180px;
+  text-align: center;
+}
+
+/* ========================================
+   INDEX BADGE
+   ======================================== */
+.index-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: var(--bg-secondary, #e9ecef);
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--text-primary, #495057);
+}
+
+/* ========================================
+   USER INFO (Avatar + Nome)
+   ======================================== */
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.avatar-paciente {
+  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+}
+
+.avatar-clinico {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.avatar-secretaria {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.avatar-administrador {
+  background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+}
+
+.user-details {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.user-name {
+  font-weight: 600;
+  color: var( #212529);
+  font-size: 0.95rem;
+}
+
+/* Tema escuro */
+body.dark-theme .user-name,
+body.theme-dark-black .user-name,
+body.theme-dark-blue .user-name {
+  color: #ffffff !important;
+}
+
+.user-code {
+  font-size: 0.75rem;
+  color: var(--text-muted, #6c757d);
+}
+
+/* ========================================
+   CATEGORIA BADGE
+   ======================================== */
+.categoria-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.categoria-paciente {
+  background: rgba(17, 153, 142, 0.1);
+  color: #11998e;
+}
+
+.categoria-médico {
+  background: rgba(102, 126, 234, 0.1);
+  color: #667eea;
+}
+
+.categoria-secretária {
+  background: rgba(240, 147, 251, 0.1);
+  color: #f093fb;
+}
+
+.categoria-administrador {
+  background: rgba(250, 112, 154, 0.1);
+  color: #fa709a;
+}
+
+/* ========================================
+   EMAIL
+   ======================================== */
+.email-text {
+  color: var( #495057);
+  font-size: 0.9rem;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: block;
+}
+
+/* Tema escuro */
+body.dark-theme .email-text,
+body.theme-dark-black .email-text,
+body.theme-dark-blue .email-text {
+  color: #e5e5e5 !important;
+}
+
+/* ========================================
+   STATUS BADGE
+   ======================================== */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.status-ativo {
+  background: rgba(40, 167, 69, 0.1);
+  color: #28a745;
+}
+
+.status-bloqueado {
+  background: rgba(220, 53, 69, 0.1);
+  color: #dc3545;
+}
+
+/* ========================================
+   ACTION BUTTONS
+   ======================================== */
+.action-buttons {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.btn-action {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  font-size: 0.9rem;
+}
+
+.btn-action:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn-visualizar {
+  background: rgba(102, 126, 234, 0.1);
+  color: #667eea;
+}
+
+.btn-visualizar:hover {
+  background: #667eea;
+  color: white;
+}
+
+.btn-senha {
+  background: rgba(255, 193, 7, 0.1);
+  color: #ffc107;
+}
+
+.btn-senha:hover {
+  background: #ffc107;
+  color: white;
+}
+
+.btn-bloquear {
+  background: rgba(255, 152, 0, 0.1);
+  color: #ff9800;
+}
+
+.btn-bloquear:hover {
+  background: #ff9800;
+  color: white;
+}
+
+.btn-desbloquear {
+  background: rgba(40, 167, 69, 0.1);
+  color: #28a745;
+}
+
+.btn-desbloquear:hover {
+  background: #28a745;
+  color: white;
+}
+
+.btn-deletar {
+  background: rgba(220, 53, 69, 0.1);
+  color: #dc3545;
+}
+
+.btn-deletar:hover {
+  background: #dc3545;
+  color: white;
+}
+
+/* ========================================
+   FOOTER
+   ======================================== */
+.table-footer {
+  padding: 14px 24px;
+  background: var(--bg-secondary, #f8f9fa);
+  border-top: 1px solid var(--border-color, #e9ecef);
+}
+
+.footer-info {
+  color: var(--text-secondary, #6c757d);
+  font-size: 0.85rem;
+}
+
+/* ========================================
+   RESPONSIVIDADE
+   ======================================== */
+@media (max-width: 768px) {
+  .usuarios-table-container {
+    margin: 8px;
+    border-radius: 8px;
+  }
+
+  .table-header {
+    padding: 16px;
+  }
+
+  .header-info {
+    flex-direction: column;
+    gap: 12px;
+    text-align: center;
+  }
+
+  .header-info h3 {
+    font-size: 1.1rem;
+  }
+
+  .col-email {
+    display: none;
+  }
+
+  .user-avatar {
+    width: 32px;
+    height: 32px;
+    font-size: 0.85rem;
+  }
+
+  .btn-action {
+    width: 32px;
+    height: 32px;
+    font-size: 0.8rem;
+  }
+
+  .action-buttons {
+    gap: 4px;
+  }
+}

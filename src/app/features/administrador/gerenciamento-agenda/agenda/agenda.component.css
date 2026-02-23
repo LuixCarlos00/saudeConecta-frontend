@@ -1,0 +1,320 @@
+:root {
+  --CorFundo: rgb(182, 104, 104);
+}
+
+form {
+  background-color: var(--CorFundo);
+}
+
+.form-header {
+  margin-top: 25px;
+  margin: 15px;
+}
+
+
+.label_search {
+  margin-top: 0;
+  margin-left: 10px;
+  padding: 10px;
+}
+
+.input_search {
+  display: flex;
+  border-radius: 5px;
+  margin-left: 15px;
+  padding: 10px;
+  width: 400px;
+  border-color: #000000;
+}
+
+
+.btnPesquisar {
+  display: flex;
+  margin-left: 450px;
+  margin-top: -40px;
+  padding: 10px;
+  width: 80px;
+  cursor: pointer;
+  background-color: rgb(49, 168, 59);
+  border-radius: 5px;
+  color: white;
+}
+
+.btnPesquisarCosultaConcluidas {
+  display: flex;
+  margin-left: 550px;
+  margin-top: -40px;
+  padding: 10px;
+  width: 100px;
+  cursor: pointer;
+  background-color: rgb(71, 87, 175);
+  border-radius: 5px;
+  color: white;
+}
+
+.btnPesquisarCosultaConcluidas:active {
+  background-color: rgb(97, 106, 158);
+}
+
+.grid {
+  margin-left: 25px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+
+
+.divOperacoes {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 5px;
+}
+
+
+.btnRecarregar {
+  border: none;
+  background-color: var(--CorFundo);
+  padding: 5px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.btnRecarregar:hover {
+  scale: 1.1;
+}
+
+.btn-label {
+  font-size: 10px;
+  font-weight: bold;
+  color: #000;
+  margin-top: 5px;
+}
+
+
+
+.tabela {
+  height: 50%;
+  margin: 25px;
+  margin-top: 15px;
+
+}
+
+.example-container {
+  height: 400px;
+  overflow: auto;
+  width: 100%;
+}
+
+.custom-table .NomeCod {
+  color: rgb(69, 118, 211);
+  font-weight: bold;
+  width: 1%;
+  align-items: center;
+  background-color: #f5f5f5;
+  border-right: 1px solid black;
+}
+
+.custom-table .colunascod {
+  background: var(--CorFundo);
+  border-right: 1px solid black;
+
+}
+
+.custom-table .NomeMedico,
+.custom-table .NomePaciente {
+  color: rgb(69, 118, 211);
+  border-color: black;
+  font: bold;
+  font-size: 12.5px;
+  background: var(--CorFundo);
+
+}
+
+.custom-table .colunasMedico,
+.custom-table .colunasPaciente {
+  width: 200px;
+  background: var(--CorFundo);
+  font-size: 10.5px;
+}
+
+.custom-table .NomeDiaSemana,
+.custom-table .NomeHorario,
+.custom-table .Nomedata {
+  color: rgb(69, 118, 211);
+  border-color: black;
+  font: bold;
+  padding: 0;
+  font-size: 12.5px;
+  text-align: left;
+  background: var(--CorFundo);
+}
+
+.custom-table .NomeObecervacao {
+  color: rgb(69, 118, 211);
+  border-color: black;
+  font: bold;
+  padding: 0;
+  font-size: 12.5px;
+  text-align: center;
+  background: var(--CorFundo);
+}
+
+.custom-table .colunasDiaSemana,
+.custom-table .colunasHorario {
+  width: 85px;
+  background: var(--CorFundo);
+  padding: 0.0;
+}
+
+.custom-table .colunasData {
+  width: 85px;
+  background: var(--CorFundo);
+  padding: 0.0;
+}
+
+
+.custom-table .colunasHorario {
+  width: 65px;
+  background: var(--CorFundo);
+}
+
+.custom-table .colunasObecervacao {
+  width: 200px;
+  text-align: center;
+  background: var(--CorFundo);
+}
+
+.icon-option {
+  display: flex;
+  align-items: center;
+}
+
+.icon-option i {
+  margin-right: 8px;
+}
+
+.icon-text {
+  font-size: 14px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@media screen and (max-width: 750px) {
+
+
+  .form-header {
+    margin-top: 25px;
+    margin: 5px;
+  }
+
+  .input_search {
+    display: flex;
+    border-radius: 5px;
+    margin-left: 15px;
+    padding: 10px;
+    width: 100%;
+    max-width: 250px;
+    border: 1px solid #000000;
+  }
+
+  .btnPesquisar {
+    padding: 10px;
+    margin-top: 10px;
+    width: 40%;
+    margin: 5px;
+    background-color: rgb(49, 168, 59);
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    margin-left: 15px;
+  }
+
+  .btnPesquisarCosultaConcluidas {
+    padding: 10px;
+    margin-top: 10px;
+    width: 40%;
+    margin: 5px;
+    background-color: rgb(71, 87, 175);
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    margin-left: 15px;
+  }
+
+
+
+  .grid {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+
+  .divOperacoes {
+    margin-top: 25px;
+    margin: 5px;
+  }
+
+
+
+  .btnRecarregar {
+    padding: 10px;
+    margin-top: 10px;
+    width: 40%;
+    margin: 5px;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    margin-left: 15px;
+  }
+
+  .btn-label {
+    padding: 10px;
+    margin-top: 10px;
+    width: 40%;
+    margin: 5px;
+    color: #000000;
+    border: none;
+    cursor: pointer;
+    margin-left: 15px;
+  }
+
+  .tabela {
+    margin-top: 25px;
+    margin: 0px;
+  }
+
+  .custom-table .NomeObecervacao {
+    color: rgb(69, 118, 211);
+    border-color: black;
+    font: bold;
+    padding: 0;
+    font-size: 12.5px;
+    text-align: center;
+    background: var(--CorFundo);
+  }
+
+  .custom-table .colunasObecervacao {
+    width: 200px;
+    text-align: center;
+    background: var(--CorFundo);
+  }
+
+}

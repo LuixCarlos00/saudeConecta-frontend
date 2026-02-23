@@ -1,0 +1,82 @@
+<div class="cronologia-container">
+  <!-- Header -->
+  <div class="cronologia-header">
+    <div class="header-icon">
+      <i class="fa-solid fa-filter"></i>
+    </div>
+    <div class="header-content">
+      <h3>Filtro de Consultas</h3>
+      <p class="tipo-badge" [class.tipo-badge--agendadas]="!tipoPesquisaConcluidas"
+        [class.tipo-badge--finalizadas]="tipoPesquisaConcluidas">
+        <i [class]="tipoPesquisaConcluidas ? 'fa-solid fa-check-circle' : 'fa-solid fa-calendar-check'"></i>
+        {{ tipoPesquisaConcluidas ? 'Finalizadas' : 'Agendadas' }}
+      </p>
+    </div>
+  </div>
+
+  <!-- Intervalo de Datas -->
+  <div class="filter-section" [formGroup]="IntervaloDeDatas">
+    <label class="section-label">
+      <i class="fa-solid fa-calendar-days"></i>
+      Período <span class="optional-label">(opcional)</span>
+    </label>
+    <mat-form-field class="date-field" appearance="outline">
+      <mat-label>Selecione o período</mat-label>
+      <mat-date-range-input [rangePicker]="picker">
+        <input matStartDate formControlName="start" placeholder="Data inicial">
+        <input matEndDate formControlName="end" placeholder="Data final">
+      </mat-date-range-input>
+      <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-date-range-picker #picker></mat-date-range-picker>
+      <mat-hint>DD/MM/AAAA – DD/MM/AAAA</mat-hint>
+    </mat-form-field>
+  </div>
+
+  <!-- Especialidade -->
+  <div *ngIf="podeVerFiltrosAvancados" class="filter-section" [formGroup]="OpcoesCategorias">
+    <label class="section-label">
+      <i class="fa-solid fa-stethoscope"></i>
+      Especialidade <span class="optional-label">(opcional)</span>
+    </label>
+    <mat-form-field class="select-field" appearance="outline">
+      <mat-label>
+        {{ carregandoEspecialidades ? 'Carregando especialidades...' : 'Selecione a especialidade' }}
+      </mat-label>
+      <mat-select formControlName="Especialidade" [disabled]="carregandoEspecialidades">
+        <mat-option [value]="null">Todas</mat-option>
+        <mat-option *ngFor="let especialidade of especialidades" [value]="especialidade.nome">
+          {{ especialidade.nome }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <!-- Médico -->
+  <div *ngIf="podeVerFiltrosAvancados" class="filter-section" [formGroup]="OpcoesMedicos">
+    <label class="section-label">
+      <i class="fa-solid fa-user-doctor"></i>
+      Clínico <span class="optional-label">(opcional)</span>
+    </label>
+    <mat-form-field class="select-field" appearance="outline">
+      <mat-label>Selecione o clínico</mat-label>
+      <mat-select formControlName="NomeMedico">
+        <mat-option [value]="null">Todos</mat-option>
+        <mat-option *ngFor="let medico of ListaMedicos" [value]="medico">
+          Dr(a). {{medico.nome}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <!-- Ações -->
+  <div class="actions-section">
+    <button class="btn btn--secondary" (click)="limparFiltros()">
+      <i class="fa-solid fa-eraser"></i>
+      Limpar
+    </button>
+    <button class="btn btn--primary" (click)="VerificaTipoDePesquisa()">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      Pesquisar
+    </button>
+  </div>
+</div>

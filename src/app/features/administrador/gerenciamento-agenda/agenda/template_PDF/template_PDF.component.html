@@ -1,0 +1,387 @@
+<div class="documento-container">
+  <!-- ============================================================================
+       ETAPA 1: CONFIGURAÇÃO DE CAMPOS
+       ============================================================================ -->
+  <ng-container *ngIf="etapaAtual === 'configuracao'">
+    <!-- Header da Configuração -->
+    <header class="dialog-header">
+      <div class="header-text">
+        <h2 class="header-title">Configurar PDF</h2>
+        <p class="header-subtitle">Consulta Nº {{ consulta.id }}</p>
+      </div>
+      <div class="header-actions">
+        <div class="step-indicator">
+          <span class="step active">1</span>
+          <span class="step-line"></span>
+          <span class="step">2</span>
+        </div>
+        <button class="close-btn" mat-dialog-close>×</button>
+      </div>
+    </header>
+
+    <!-- Loading inicial -->
+    <div *ngIf="!dadosCarregados" class="loading-container">
+      <div class="loading-content">
+        <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
+        <p>Carregando dados...</p>
+      </div>
+    </div>
+
+    <!-- Painel de Configuração de Campos -->
+    <div class="config-panel-fullscreen" *ngIf="dadosCarregados">
+      <div class="config-header">
+        <h3>Selecione os campos que deseja incluir no PDF</h3>
+        <p class="config-hint">
+          Campos marcados com <span class="obrigatorio-badge">Obrigatório</span> não podem ser removidos.
+          Campos sem dados disponíveis aparecem desabilitados.
+        </p>
+      </div>
+
+      <div class="config-grid">
+        <!-- Configuração: Dados do Profissional -->
+        <div class="config-section">
+          <div class="config-section-header">
+            <h4>Dados do Profissional</h4>
+            <span class="campo-counter">
+              {{ contarSelecionados('profissional') }}/{{ contarDisponiveis('profissional') }} disponíveis
+            </span>
+          </div>
+          <div class="config-actions">
+            <button class="action-link" (click)="selecionarTodos('profissional')">Selecionar todos</button>
+            <button class="action-link" (click)="desmarcarOpcionais('profissional')">Apenas obrigatórios</button>
+          </div>
+          <div class="campos-list">
+            <label *ngFor="let campo of configuracaoCampos.profissional" class="campo-item"
+              [class.obrigatorio]="campo.obrigatorio" [class.disabled]="campo.obrigatorio || !campo.disponivel"
+              [class.indisponivel]="!campo.disponivel" [title]="!campo.disponivel ? 'Campo sem dados disponíveis' : ''">
+              <input type="checkbox" [checked]="campo.selecionado" [disabled]="campo.obrigatorio || !campo.disponivel"
+                (change)="toggleCampo(campo)">
+              <span class="campo-label">{{ campo.label }}</span>
+              <span class="obrigatorio-badge" *ngIf="campo.obrigatorio">Obrigatório</span>
+              <span class="indisponivel-badge" *ngIf="!campo.disponivel && !campo.obrigatorio">Sem dados</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Configuração: Dados do Paciente -->
+        <div class="config-section">
+          <div class="config-section-header">
+            <h4>Dados do Paciente</h4>
+            <span class="campo-counter">
+              {{ contarSelecionados('paciente') }}/{{ contarDisponiveis('paciente') }} disponíveis
+            </span>
+          </div>
+          <div class="config-actions">
+            <button class="action-link" (click)="selecionarTodos('paciente')">Selecionar todos</button>
+            <button class="action-link" (click)="desmarcarOpcionais('paciente')">Apenas obrigatórios</button>
+          </div>
+          <div class="campos-list">
+            <label *ngFor="let campo of configuracaoCampos.paciente" class="campo-item"
+              [class.obrigatorio]="campo.obrigatorio" [class.disabled]="campo.obrigatorio || !campo.disponivel"
+              [class.indisponivel]="!campo.disponivel" [title]="!campo.disponivel ? 'Campo sem dados disponíveis' : ''">
+              <input type="checkbox" [checked]="campo.selecionado" [disabled]="campo.obrigatorio || !campo.disponivel"
+                (change)="toggleCampo(campo)">
+              <span class="campo-label">{{ campo.label }}</span>
+              <span class="obrigatorio-badge" *ngIf="campo.obrigatorio">Obrigatório</span>
+              <span class="indisponivel-badge" *ngIf="!campo.disponivel && !campo.obrigatorio">Sem dados</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Configuração: Dados da Consulta -->
+        <div class="config-section">
+          <div class="config-section-header">
+            <h4>Dados da Consulta</h4>
+            <span class="campo-counter">
+              {{ contarSelecionados('consulta') }}/{{ contarDisponiveis('consulta') }} disponíveis
+            </span>
+          </div>
+          <div class="config-actions">
+            <button class="action-link" (click)="selecionarTodos('consulta')">Selecionar todos</button>
+            <button class="action-link" (click)="desmarcarOpcionais('consulta')">Apenas obrigatórios</button>
+          </div>
+          <div class="campos-list">
+            <label *ngFor="let campo of configuracaoCampos.consulta" class="campo-item"
+              [class.obrigatorio]="campo.obrigatorio" [class.disabled]="campo.obrigatorio || !campo.disponivel"
+              [class.indisponivel]="!campo.disponivel" [title]="!campo.disponivel ? 'Campo sem dados disponíveis' : ''">
+              <input type="checkbox" [checked]="campo.selecionado" [disabled]="campo.obrigatorio || !campo.disponivel"
+                (change)="toggleCampo(campo)">
+              <span class="campo-label">{{ campo.label }}</span>
+              <span class="obrigatorio-badge" *ngIf="campo.obrigatorio">Obrigatório</span>
+              <span class="indisponivel-badge" *ngIf="!campo.disponivel && !campo.obrigatorio">Sem dados</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Configuração: Outros -->
+        <div class="config-section">
+          <div class="config-section-header">
+            <h4>Outros Elementos</h4>
+            <span class="campo-counter">{{ contarSelecionados('outros') }}/{{ totalCampos('outros') }}</span>
+          </div>
+          <div class="campos-list">
+            <label *ngFor="let campo of configuracaoCampos.outros" class="campo-item"
+              [class.obrigatorio]="campo.obrigatorio" [class.disabled]="campo.obrigatorio">
+              <input type="checkbox" [checked]="campo.selecionado" [disabled]="campo.obrigatorio"
+                (change)="toggleCampo(campo)">
+              <span class="campo-label">{{ campo.label }}</span>
+              <span class="obrigatorio-badge" *ngIf="campo.obrigatorio">Obrigatório</span>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer da Configuração -->
+    <footer class="dialog-footer" *ngIf="dadosCarregados">
+      <button class="btn btn--outline" (click)="resetarConfiguracao()">Restaurar Padrão</button>
+      <div class="footer-actions-right">
+        <button class="btn btn--secondary" mat-dialog-close>Cancelar</button>
+        <button class="btn btn--primary" (click)="avancarParaPrevisualizacao()">
+          Pré-visualizar
+          <span class="btn-arrow">→</span>
+        </button>
+      </div>
+    </footer>
+  </ng-container>
+
+  <!-- ============================================================================
+       ETAPA 2: PRÉ-VISUALIZAÇÃO DO PDF
+       ============================================================================ -->
+  <ng-container *ngIf="etapaAtual === 'previsualizacao'">
+    <!-- Header da Pré-visualização -->
+    <header class="dialog-header">
+      <div class="header-text">
+        <h2 class="header-title">Pré-visualização do PDF</h2>
+        <p class="header-subtitle">Consulta Nº {{ consulta.id }}</p>
+      </div>
+      <div class="header-actions">
+        <div class="step-indicator">
+          <span class="step completed">✓</span>
+          <span class="step-line completed"></span>
+          <span class="step active">2</span>
+        </div>
+        <button class="close-btn" mat-dialog-close>×</button>
+      </div>
+    </header>
+
+    <!-- Conteúdo do PDF -->
+    <div class="dialog-body">
+      <div id="pdfContent" class="pdf-content">
+        <!-- Cabeçalho Formal do Documento -->
+        <div class="document-header">
+          <h1 class="document-title">COMPROVANTE DE CONSULTA MÉDICA</h1>
+          <div class="document-line"></div>
+          <div class="document-info">
+            <span><strong>Nº Consulta:</strong> {{ consulta.id }}</span>
+            <span *ngIf="isCampoSelecionado('consulta', 'status')">
+              <strong>Status:</strong>
+              <span [style.color]="'rgb(' + getStatusColor(consulta.status).join(',') + ')'">
+                {{ consulta.status }}
+              </span>
+            </span>
+          </div>
+        </div>
+
+        <!-- Pré-visualização Vertical Ultra Compacta (igual ao PDF) -->
+        <div class="pdf-preview-vertical">
+          
+          <!-- Cabeçalho -->
+          <div class="pdf-header">
+            <div class="header-title">COMPROVANTE DE CONSULTA</div>
+            <div class="header-info">Consulta Nº {{ consulta.id }}</div>
+            <div class="header-status" [style.background-color]="'rgb(' + getStatusColor(consulta.status).join(',') + ')'">
+              {{ consulta.status }}
+            </div>
+          </div>
+
+          <!-- Seção Profissional -->
+          <div class="pdf-section" *ngIf="profissional && contarSelecionados('profissional') > 0">
+            <div class="section-header profissional">
+              <div class="section-bar"></div>
+              <div class="section-title">DADOS DO PROFISSIONAL</div>
+            </div>
+            <div class="section-content">
+              <div class="pdf-field" *ngIf="isCampoSelecionado('profissional', 'nome')">
+                <div class="field-label">NOME</div>
+                <div class="field-value">{{ getValorCampoProfissional('nome') }}</div>
+              </div>
+              <div class="pdf-field" *ngIf="isCampoSelecionado('profissional', 'registroConselho')">
+                <div class="field-label">CRM</div>
+                <div class="field-value">{{ getValorCampoProfissional('registroConselho') }}</div>
+              </div>
+              <div class="pdf-field" *ngIf="isCampoSelecionado('profissional', 'especialidades')">
+                <div class="field-label">ESPECIALIDADE</div>
+                <div class="field-value">{{ getValorCampoProfissional('especialidades') }}</div>
+              </div>
+              <div class="pdf-field" *ngIf="isCampoSelecionado('profissional', 'tipoProfissional')">
+                <div class="field-label">TIPO</div>
+                <div class="field-value">{{ getValorCampoProfissional('tipoProfissional') }}</div>
+              </div>
+              <div class="pdf-field" *ngIf="isCampoSelecionado('profissional', 'cpf')">
+                <div class="field-label">CPF</div>
+                <div class="field-value">{{ getValorCampoProfissional('cpf') }}</div>
+              </div>
+              <div class="pdf-field" 
+                   *ngIf="isCampoSelecionado('profissional', 'enderecoCompleto') && getValorCampoProfissional('enderecoCompleto')">
+                <div class="field-label">ENDEREÇO COMPLETO</div>
+                <div class="field-value">{{ getValorCampoProfissional('enderecoCompleto') }}</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Seção Paciente -->
+          <div class="pdf-section" *ngIf="paciente && contarSelecionados('paciente') > 0">
+            <div class="section-header paciente">
+              <div class="section-bar"></div>
+              <div class="section-title">DADOS DO PACIENTE</div>
+            </div>
+            <div class="section-content">
+              <div class="pdf-field" *ngIf="isCampoSelecionado('paciente', 'nome')">
+                <div class="field-label">NOME</div>
+                <div class="field-value">{{ getValorCampoPaciente('nome') }}</div>
+              </div>
+              <div class="pdf-field" *ngIf="isCampoSelecionado('paciente', 'cpf')">
+                <div class="field-label">CPF</div>
+                <div class="field-value">{{ getValorCampoPaciente('cpf') }}</div>
+              </div>
+              <div class="pdf-field" *ngIf="isCampoSelecionado('paciente', 'sexo')">
+                <div class="field-label">SEXO</div>
+                <div class="field-value">{{ getValorCampoPaciente('sexo') }}</div>
+              </div>
+              <div class="pdf-field" *ngIf="isCampoSelecionado('paciente', 'email')">
+                <div class="field-label">E-MAIL</div>
+                <div class="field-value">{{ getValorCampoPaciente('email') }}</div>
+              </div>
+              <div class="pdf-field" *ngIf="isCampoSelecionado('paciente', 'telefone')">
+                <div class="field-label">TELEFONE</div>
+                <div class="field-value">{{ getValorCampoPaciente('telefone') }}</div>
+              </div>
+              <div class="pdf-field" 
+                   *ngIf="isCampoSelecionado('paciente', 'enderecoCompleto') && getValorCampoPaciente('enderecoCompleto')">
+                <div class="field-label">ENDEREÇO COMPLETO</div>
+                <div class="field-value">{{ getValorCampoPaciente('enderecoCompleto') }}</div>
+              </div>
+              <div class="pdf-field" 
+                   *ngIf="isCampoSelecionado('paciente', 'status') && getValorCampoPaciente('status')">
+                <div class="field-label">STATUS</div>
+                <div class="field-value">{{ getValorCampoPaciente('status') }}</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Seção Consulta -->
+          <div class="pdf-section">
+            <div class="section-header consulta">
+              <div class="section-bar"></div>
+              <div class="section-title">INFORMAÇÕES DA CONSULTA</div>
+            </div>
+            <div class="section-content">
+              <div class="pdf-field" *ngIf="isCampoSelecionado('consulta', 'diaSemana')">
+                <div class="field-label">DIA DA SEMANA</div>
+                <div class="field-value">{{ getDiaSemana(consulta.dataHora) }}</div>
+              </div>
+              <div class="pdf-field" *ngIf="isCampoSelecionado('consulta', 'dataHora')">
+                <div class="field-label">DATA E HORA</div>
+                <div class="field-value">
+                  {{ consulta.dataHora?.split('T')[0] | date: 'dd/MM/yyyy' }} às 
+                  {{ consulta.dataHora?.split('T')[1]?.substring(0, 5) }}
+                </div>
+              </div>
+              <div class="pdf-field" *ngIf="isCampoSelecionado('consulta', 'status')">
+                <div class="field-label">STATUS</div>
+                <div class="field-value" [style.color]="'rgb(' + getStatusColor(consulta.status).join(',') + ')'">
+                  {{ consulta.status }}
+                </div>
+              </div>
+              <div class="pdf-field" *ngIf="isCampoSelecionado('consulta', 'valor') && consulta.valor">
+                <div class="field-label">VALOR</div>
+                <div class="field-value">R$ {{ consulta.valor | number:'1.2-2' }}</div>
+              </div>
+              <div class="pdf-field" *ngIf="isCampoSelecionado('consulta', 'formaPagamentoNome') && consulta.formaPagamentoNome">
+                <div class="field-label">FORMA DE PAGAMENTO</div>
+                <div class="field-value">{{ consulta.formaPagamentoNome }}</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Seção Observações -->
+          <div class="pdf-section" *ngIf="isCampoSelecionado('consulta', 'observacoes') && consulta.observacoes">
+            <div class="section-header observacoes">
+              <div class="section-bar"></div>
+              <div class="section-title">OBSERVAÇÕES</div>
+            </div>
+            <div class="section-content">
+              <div class="pdf-field">
+                <div class="field-value observacoes">{{ consulta.observacoes }}</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Calendário -->
+          <div class="pdf-section" *ngIf="isCampoSelecionado('outros', 'calendario')">
+            <div class="section-header calendario">
+              <div class="section-bar"></div>
+              <div class="section-title">CALENDÁRIO</div>
+            </div>
+            <div class="section-content">
+              <mat-card class="calendar-card">
+                <mat-calendar #calendar [(selected)]="selected"></mat-calendar>
+              </mat-card>
+            </div>
+          </div>
+
+          <!-- Rodapé -->
+          <div class="pdf-footer">
+            <div class="footer-line"></div>
+            <div class="footer-info">
+              <div class="emissao">Emitido em {{ today | date: 'dd/MM/yyyy HH:mm' }}</div>
+              <div class="validade">Documento válido como comprovante de consulta</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer da Pré-visualização -->
+    <footer class="dialog-footer">
+      <button class="btn btn--outline" (click)="voltarParaConfiguracao()" [disabled]="gerandoPDF">
+        <span class="btn-arrow">←</span>
+        Voltar
+      </button>
+      <div class="footer-actions-right">
+        <button class="btn btn--secondary" mat-dialog-close [disabled]="gerandoPDF">Cancelar</button>
+        <button class="btn btn--primary" (click)="GerarPDF()" [disabled]="gerandoPDF">
+          <span *ngIf="!gerandoPDF">
+            <i class="fa-solid fa-file-pdf"></i>
+            Gerar PDF
+          </span>
+          <span *ngIf="gerandoPDF">
+            <i class="fa-solid fa-spinner fa-spin"></i>
+            Gerando...
+          </span>
+        </button>
+      </div>
+    </footer>
+
+    <!-- Overlay de Loading -->
+    <div class="loading-overlay" *ngIf="gerandoPDF">
+      <div class="loading-content">
+        <div class="loading-icon">
+          <svg class="spinner" viewBox="0 0 50 50">
+            <circle class="path" cx="25" cy="25" r="20" fill="none" stroke-width="4"></circle>
+          </svg>
+        </div>
+        <h3 class="loading-title">Gerando PDF...</h3>
+        <p class="loading-subtitle">Por favor, aguarde</p>
+        <div class="progress-container">
+          <div class="progress-bar">
+            <div class="progress-fill" [style.width.%]="progressoPDF"></div>
+          </div>
+          <span class="progress-text">{{ progressoPDF | number:'1.0-0' }}%</span>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</div>
