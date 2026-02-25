@@ -1,25 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, map, throwError } from 'rxjs';
+import { EnderecoViaCep } from 'src/app/util/variados/interfaces/endereco/logradouro';
 import { environment } from 'src/environments/environment';
 
-export interface EnderecoViaCep {
-  cep: string;
-  logradouro: string;
-  complemento: string;
-  bairro: string;
-  localidade: string;
-  uf: string;
-  ibge: string;
-  gia: string;
-  ddd: string;
-  siafi: string;
-  // Campos adicionais retornados pela ViaCEP
-  unidade?: string;
-  estado?: string;
-  regiao?: string;
-  erro?: boolean; // Propriedade opcional para CEP não encontrado
-}
+
 
 @Injectable({
   providedIn: 'root'
@@ -28,7 +13,7 @@ export class CepApiService {
 
   private readonly apiUrl = `${environment.apiUrl}/cep`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   /**
    * Busca endereço pelo CEP usando o proxy do backend
@@ -37,7 +22,7 @@ export class CepApiService {
    */
   buscarEnderecoPorCep(cep: string): Observable<EnderecoViaCep> {
     const cepLimpo = cep.replace(/\D/g, '');
-    
+
     if (cepLimpo.length !== 8) {
       return throwError(() => new Error('CEP deve conter 8 dígitos'));
     }
@@ -48,12 +33,12 @@ export class CepApiService {
         if ('erro' in response && response.erro === true) {
           throw new Error('CEP não encontrado');
         }
-        
+
         // Verifica se os campos essenciais estão vazios (outro padrão de erro da ViaCEP)
         if (!response.logradouro && !response.localidade) {
           throw new Error('CEP não encontrado ou incompleto');
         }
-        
+
         return response;
       })
     );
@@ -66,11 +51,11 @@ export class CepApiService {
    */
   formatarCep(cep: string): string {
     const cepLimpo = cep.replace(/\D/g, '');
-    
+
     if (cepLimpo.length <= 5) {
       return cepLimpo;
     }
-    
+
     return `${cepLimpo.slice(0, 5)}-${cepLimpo.slice(5)}`;
   }
 

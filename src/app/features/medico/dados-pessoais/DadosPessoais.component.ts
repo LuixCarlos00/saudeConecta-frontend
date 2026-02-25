@@ -7,7 +7,7 @@ import { CepApiService } from 'src/app/services/api/cep-api.service';
 import { tokenService } from 'src/app/util/Token/Token.service';
 import { Subscription } from 'rxjs';
 import Swal from 'sweetalert2';
-import { EspecialidadeService } from "../../../services/api/especialidade.service";
+import { EspecialidadeApiService } from "../../../services/api/especialidade-api.service";
 
 @Component({
   selector: 'app-DadosPessoais',
@@ -52,7 +52,7 @@ export class DadosPessoaisComponent implements OnInit, OnDestroy {
     private profissionalApiService: ProfissionalApiService,
     private usuarioApiService: UsuarioApiService,
     private cepApiService: CepApiService,
-    private especialidadeService: EspecialidadeService,
+    private especialidadeService: EspecialidadeApiService,
     private AdministradorApiService: AdministradorApiService,
     private fb: FormBuilder
   ) {

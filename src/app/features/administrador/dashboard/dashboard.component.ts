@@ -70,10 +70,17 @@ export class DashboardComponent implements OnInit, OnDestroy {
     console.log('Carregando estatísticas para organização ID:', organizacaoId);
     if (organizacaoId) {// Se o usuario tiver um ID de organização, carrega as estatísticas específicas da organização
       forkJoin({
-        consultasHoje: this.consultaApiService.buscarEstatisticasConsultasHojePorOrganizacao(organizacaoId),
-        consultasAtendidas: this.consultaApiService.buscarEstatisticasRealizadasHojePorOrganizacao(organizacaoId),
-        consultasAguardando: this.consultaApiService.buscarEstatisticasAgendadasHojePorOrganizacao(organizacaoId),
-        medicosAtivos: this.consultaApiService.buscarEstatisticasMedicosAtivosPorOrganizacao(organizacaoId),
+        //AdminORG
+        //As busca deve ser feita filtrando por ID da organização,
+        // TODO : as busca deve ser feitas em paralelo para otimizar o tempo de carregamento,
+        // e devemser refente a semana de segunda a domingo, e não apenas o dia atual
+        // talvez realizar uma unica busca pegando todos os dados da semanda toda e depois 
+        // filtrar os dados para exibir apenas os do dia atual
+        //colocar o consultasSemana e modificar no template para caber na tela os 5 cards de estatísticas
+        consultasHoje: this.consultaApiService.buscarEstatisticasConsultasHojePorOrganizacao(organizacaoId), // refatorar no back
+        consultasAtendidas: this.consultaApiService.buscarEstatisticasRealizadasHojePorOrganizacao(organizacaoId), // refatorar no back
+        consultasAguardando: this.consultaApiService.buscarEstatisticasAgendadasHojePorOrganizacao(organizacaoId), // refatorar no back
+        medicosAtivos: this.consultaApiService.buscarEstatisticasMedicosAtivosPorOrganizacao(organizacaoId), // refatorar no back
       }).subscribe({
         next: (r) => {
           this.consultasHoje = r.consultasHoje;
@@ -89,10 +96,17 @@ export class DashboardComponent implements OnInit, OnDestroy {
       });
     } else {// Se não tiver um ID de organização, carrega as estatísticas globais (admin geral)
       forkJoin({
-        consultasHoje: this.consultaApiService.buscarEstatisticasConsultasHoje(),
-        consultasAtendidas: this.consultaApiService.buscarEstatisticasRealizadasHoje(),
-        consultasAguardando: this.consultaApiService.buscarEstatisticasAgendadasHoje(),
-        medicosAtivos: this.consultaApiService.buscarEstatisticasMedicosAtivos(),
+        //SuperAdmin
+        // As buscas deve ser feita sem filtro de ID de organização, 
+        // para pegar as estatísticas globais de todas as organizações
+        // TODO : as busca deve ser feitas em paralelo para otimizar o tempo de carregamento,
+        // e devemser refente a semana de segunda a domingo, e não apenas o dia atual
+        // talvez realizar uma unica busca pegando todos os dados da semanda toda e depois 
+        // filtrar os dados para exibir apenas os do dia atual
+        consultasHoje: this.consultaApiService.buscarEstatisticasConsultasHoje(), // refatorar no back
+        consultasAtendidas: this.consultaApiService.buscarEstatisticasRealizadasHoje(),  // refatorar no back
+        consultasAguardando: this.consultaApiService.buscarEstatisticasAgendadasHoje(),  // refatorar no back
+        medicosAtivos: this.consultaApiService.buscarEstatisticasMedicosAtivos(), // refatorar no back
       }).subscribe({
         next: (r) => {
           this.consultasHoje = r.consultasHoje;
@@ -124,6 +138,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   private carregarDadosPorUsuario(usuarioId: number): void {
     forkJoin({
+      //Profissional
+      //As busca deve ser feita filtrando por ID do profissional, e por Id da organização, 
+      // para garantir que o profissional só veja as estatísticas referentes a ele mesmo
+      // TODO : as busca deve ser feitas em paralelo para otimizar o tempo de carregamento,
+      // e devemser refente a semana de segunda a domingo, e não apenas o dia atual
+      // talvez realizar uma unica busca pegando todos os dados da semanda toda e depois 
+      // filtrar os dados para exibir apenas os do dia atual
       consultasHoje: this.consultaApiService.buscarEstatisticasConsultasHojePorProfissional(usuarioId),
       consultasAtendidas: this.consultaApiService.buscarEstatisticasRealizadasHojePorProfissional(usuarioId),
       consultasAguardando: this.consultaApiService.buscarEstatisticasAgendadasHojePorProfissional(usuarioId),

@@ -18,23 +18,8 @@ export class ProntuarioDentistaApiService {
     return this.http.post(`${this.apiUrl}/cadastrarProntuarioByOrg`, payload);
   }
 
-
-  /**
-   * Busca o prontuário odontológico mais recente pelo ID da consulta.
-   * Usado em AbrirOpcoesImpressao junto com buscarProntuarioById do serviço médico.
-   */
   buscarProntuarioDentistaById(consultaId: number): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/consulta/${consultaId}/recente`);
   }
-
-  listarPorConsulta(consultaId: number): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/consulta/${consultaId}`);
-  }
-
-  listarPorProfissional(profissionalId: number): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/profissional/${profissionalId}`);
-  }
-
-
 
 }

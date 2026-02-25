@@ -19,3 +19,16 @@ export interface Adiministrador {
   admDataCriacao?: string;
   admUsuario?: Usuario;
 }
+
+
+export interface Administrador {
+  admCodigo?: number;
+  admNome?: string;
+  admCpf?: string;
+  admRg?: string;
+  admTelefone?: string;
+  admEmail?: string;
+  admDataNascimento?: string;
+  admEndereco?: number;
+  admUsuario?: number;
+}

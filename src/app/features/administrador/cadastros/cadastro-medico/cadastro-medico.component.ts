@@ -1,4 +1,3 @@
-import { log } from 'node:console';
 import { Component, OnInit, OnDestroy, Optional } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
@@ -7,15 +6,13 @@ import { MatDialogRef } from '@angular/material/dialog';
 import Swal from 'sweetalert2';
 
 import { ProfissionalApiService } from 'src/app/services/api/profissional-api.service';
-import { Endereco } from 'src/app/util/variados/interfaces/endereco/endereco';
-import { Medico } from 'src/app/util/variados/interfaces/medico/medico';
 import { ufOptions } from 'src/app/util/variados/options/options';
 import { FiltroStateService } from 'src/app/services/state/filtro-state.service';
 import { CepApiService } from 'src/app/services/api/cep-api.service';
 import { cpfValidator } from 'src/app/util/validators/cpf-form.validator';
 import { CpfValidator } from 'src/app/util/validators/cpf.validator';
 import { logradouro } from 'src/app/util/variados/interfaces/endereco/logradouro';
-import { EspecialidadeService, EspecialidadeResponse } from 'src/app/services/api/especialidade.service';
+import { EspecialidadeApiService, EspecialidadeResponse } from 'src/app/services/api/especialidade-api.service';
 
 @Component({
   selector: 'app-cadastro-medico',
@@ -55,7 +52,7 @@ export class CadastroMedicoComponent implements OnInit, OnDestroy {
     @Optional() private dialogRef: MatDialogRef<CadastroMedicoComponent>,
     private filtroStateService: FiltroStateService,
     private cepApiService: CepApiService,
-    private especialidadeService: EspecialidadeService
+    private especialidadeService: EspecialidadeApiService
   ) { }
 
   ngOnInit(): void {

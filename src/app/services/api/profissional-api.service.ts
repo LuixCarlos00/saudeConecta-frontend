@@ -30,11 +30,12 @@ export class ProfissionalApiService {
     this.emitProfissionaisChange(profissionais);
   }
 
+
+
+
   // ==========================================
   // CRUD - NOVOS ENDPOINTS
   // ==========================================
-
-
 
   cadastraClinicoByOrg(profissional: any): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/cadastraClinicoByOrg`, profissional);
@@ -57,91 +58,9 @@ export class ProfissionalApiService {
     return this.http.get<Profissional[]>(`${this.apiUrl}`);
   }
 
-  buscarPorCRM(crm: string, filtro: string = 'ALL'): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/buscar-por-crm`, { params: { crm, filtro } });
+  buscarPorOrganizacao(organizcaoId: number): Observable<Profissional[]> {
+    return this.http.get<Profissional[]>(`${environment.apiUrl}/profissionais/organizacao/${organizcaoId}`);
   }
-
-  buscarPorCidade(cidade: string, filtro: string = 'ALL'): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/buscar-por-cidade`, { params: { cidade, filtro } });
-  }
-
-  buscarPorEspecialidade(especialidade: string, filtro: string = 'ALL'): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/buscar-por-especialidade`, { params: { especialidade, filtro } });
-  }
-
-  buscarPorNome(nome: string, filtro: string = 'ALL'): Observable<Profissional[]> {
-    return this.http.get<Profissional[]>(`${this.apiUrl}/buscar-por-nome`, { params: { nome, filtro } });
-  }
-
-  buscarTodos(filtro: string = 'ALL'): Observable<Profissional[]> {
-    return this.http.get<Profissional[]>(`${this.apiUrl}`, { params: { filtro } });
-  }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  buscarPorOrganizacao(organizacaoId: number): Observable<Profissional[]> {
-    return this.http.get<Profissional[]>(`${this.apiUrl}/organizacao/${organizacaoId}`);
-  }
-
-
-
-  buscarPorUsuarioId(usuarioId: number): Observable<Profissional> {
-    return this.http.get<Profissional>(`${this.apiUrl}/usuario/${usuarioId}`);
-  }
-
-
-
-
-
-  buscarMedicos(): Observable<Profissional[]> {
-    return this.http.get<Profissional[]>(`${this.apiUrl}/medicos`);
-  }
-
-  buscarDentistas(): Observable<Profissional[]> {
-    return this.http.get<Profissional[]>(`${this.apiUrl}/dentistas`);
-  }
-
-  buscarPorTipo(tipoCodigo: string): Observable<Profissional[]> {
-    return this.http.get<Profissional[]>(`${this.apiUrl}/tipo/${tipoCodigo}`);
-  }
-
-  contarAtivos(): Observable<number> {
-    return this.http.get<number>(`${this.apiUrl}/count`);
-  }
-
-  contarAtivosPorOrganizacao(organizacaoId: number): Observable<number> {
-    return this.http.get<number>(`${this.apiUrl}/estatisticas/organizacao/${organizacaoId}/medicos-ativos`);
-  }
-
-  // ==========================================
-  // CRUD - ENDPOINTS LEGADOS
-  // ==========================================
-
-
-
-
-  atualizarEndereco(enderecoId: number, endereco: any): Observable<any> {
-    return this.http.put<any>(`${environment.apiUrl}/endereco/atualizar/${enderecoId}`, endereco);
-  }
-
-  // ==========================================
-  // BUSCAS LEGADAS
-  // ==========================================
-
-
 
   // ==========================================
   // PESQUISA COM FILTRO DINÂMICO
@@ -162,4 +81,31 @@ export class ProfissionalApiService {
     }
     return metodo();
   }
+
+  buscarPorCRM(crm: string, filtro: string = 'ALL'): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/buscar-por-crm`, { params: { crm, filtro } });
+  }
+
+  buscarPorCidade(cidade: string, filtro: string = 'ALL'): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/buscar-por-cidade`, { params: { cidade, filtro } });
+  }
+
+  buscarPorEspecialidade(especialidade: string, filtro: string = 'ALL'): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/buscar-por-especialidade`, { params: { especialidade, filtro } });
+  }
+
+  buscarPorNome(nome: string, filtro: string = 'ALL'): Observable<Profissional[]> {
+    return this.http.get<Profissional[]>(`${this.apiUrl}/buscar-por-nome`, { params: { nome, filtro } });
+  }
+
+  buscarTodos(filtro: string = 'ALL'): Observable<Profissional[]> {
+    return this.http.get<Profissional[]>(`${this.apiUrl}`, { params: { filtro } });
+  }
+
+  // ==========================================
+  // ==========================================
+  // ==========================================
+
+
+
 }

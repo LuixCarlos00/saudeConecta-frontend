@@ -1,6 +1,6 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Chart } from 'chart.js';
-import { MedicoApiService } from 'src/app/services/api/medico-api.service';
+import { ProfissionalApiService } from 'src/app/services/api/profissional-api.service';
 import { tokenService } from 'src/app/util/Token/Token.service';
 
 @Component({
@@ -20,7 +20,7 @@ export class GraficoCategoriaMedicosComponent implements OnInit {
   @ViewChild("menuCanvas", { static: true }) elemento: ElementRef | undefined;
 
   constructor(
-    private medicoApiService: MedicoApiService,
+    private ProfissionalApiService: ProfissionalApiService,
     private tokenService: tokenService
   ) { }
 
@@ -32,12 +32,16 @@ export class GraficoCategoriaMedicosComponent implements OnInit {
       this.organizacaoId = usuario.organizacaoId || null;
     }
 
-    // Define a requisição baseada no tipo de usuário
-    const request$ = this.organizacaoId
-      ? this.medicoApiService.buscarPorOrganizacao(this.organizacaoId)
-      : this.medicoApiService.buscarTodos();
+    if (!this.organizacaoId) {
+      return;
+    }
+    const request$ = this.ProfissionalApiService.buscarPorOrganizacao(this.organizacaoId);
 
-    request$.subscribe((dados) => {
+    // this.organizacaoId
+    //   ? this.ProfissionalApiService.buscarPorOrganizacao(this.organizacaoId)
+    //   : [];// TODO : Buscar todos os medicos para o grafico   this.medicoApiService.buscarTodos();
+
+    request$.subscribe((dados: any[]) => {
       this.TodosMedicos = dados;
       this.totalMedicos = this.TodosMedicos.length;
       this.apurandoDados();
@@ -109,7 +113,7 @@ export class GraficoCategoriaMedicosComponent implements OnInit {
             },
             tooltip: {
               callbacks: {
-                label: function(tooltipItem: any) {
+                label: function (tooltipItem: any) {
                   return tooltipItem.label + ': ' + tooltipItem.raw.toFixed(0);
                 }
               }
