@@ -18,4 +18,16 @@ export interface Secretaria {
   secreCodigoAtorizacao?: string;
   secreDataCriacao?: string;
   secreUsuario?: Usuario;
+
+
+
+  secCodigo?: number;
+  secNome?: string;
+  secCpf?: string;
+  secRg?: string;
+  secTelefone?: string;
+  secEmail?: string;
+  secDataNascimento?: string;
+  secEndereco?: number;
+  secUsuario?: number;
 }

@@ -1,43 +1,11 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { MensageriaResponse, PageResponse, StatusMensagem, TipoMensagem } from 'src/app/util/variados/interfaces/mensageria/Mensageria';
+
+export { MensageriaResponse, PageResponse, StatusMensagem, TipoMensagem };
 import { environment } from 'src/environments/environment';
 
-export type StatusMensagem = 'PENDENTE' | 'ENVIADO' | 'FALHOU' | 'RENOTIFICADO';
-export type TipoMensagem =
-  | 'EMAIL_CREDENCIAIS_CLINICO'
-  | 'EMAIL_CREDENCIAIS_SECRETARIA'
-  | 'EMAIL_CREDENCIAIS_ADMINISTRADOR'
-  | 'EMAIL_RECUPERACAO_SENHA'
-  | 'EMAIL_GENERICO';
-
-export interface MensageriaResponse {
-  id: number;
-  organizacaoId: number;
-  destinatarioProfissionalId: number | null;
-  destinatarioProfissionalNome: string | null;
-  destinatarioEmail: string;
-  destinatarioNome: string;
-  assunto: string;
-  corpoMensagem: string;
-  tipoMensagem: TipoMensagem;
-  status: StatusMensagem;
-  erroDetalhe: string | null;
-  tentativas: number;
-  adminNotificado: boolean;
-  dataCriacao: string;
-  dataAtualizacao: string;
-}
-
-export interface PageResponse<T> {
-  content: T[];
-  totalElements: number;
-  totalPages: number;
-  size: number;
-  number: number;
-  first: boolean;
-  last: boolean;
-}
 
 @Injectable({
   providedIn: 'root'
@@ -46,7 +14,8 @@ export class MensageriaApiService {
 
   private readonly apiUrl = `${environment.apiUrl}/mensageria`;
 
-  constructor(private http: HttpClient) {}
+
+  constructor(private http: HttpClient) { }
 
   /**
    * Lista mensagens com paginação e filtros opcionais.
@@ -56,15 +25,8 @@ export class MensageriaApiService {
    * @param page   Número da página
    * @param size   Tamanho da página
    */
-  listarMensagens(
-    status?: StatusMensagem,
-    tipo?: TipoMensagem,
-    page = 0,
-    size = 20
-  ): Observable<PageResponse<MensageriaResponse>> {
-    let params = new HttpParams()
-      .set('page', page.toString())
-      .set('size', size.toString());
+  listarMensagens(status?: StatusMensagem, tipo?: TipoMensagem, page = 0, size = 20): Observable<PageResponse<MensageriaResponse>> {
+    let params = new HttpParams().set('page', page.toString()).set('size', size.toString());
 
     if (status) params = params.set('status', status);
     if (tipo) params = params.set('tipo', tipo);
@@ -74,8 +36,6 @@ export class MensageriaApiService {
 
   /**
    * Busca uma mensagem específica por ID.
-   *
-   * @param id ID da mensagem
    */
   buscarPorId(id: number): Observable<MensageriaResponse> {
     return this.http.get<MensageriaResponse>(`${this.apiUrl}/${id}`);
@@ -97,8 +57,6 @@ export class MensageriaApiService {
 
   /**
    * Marca uma mensagem como notificada ao administrador.
-   *
-   * @param id ID da mensagem
    */
   marcarComoNotificado(id: number): Observable<void> {
     return this.http.patch<void>(`${this.apiUrl}/${id}/notificar`, {});

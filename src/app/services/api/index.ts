@@ -1,5 +1,4 @@
 export * from './consulta-api.service';
-export * from './medico-api.service';
 export * from './paciente-api.service';
 export * from './prontuario-api.service';
 export * from './auth-api.service';

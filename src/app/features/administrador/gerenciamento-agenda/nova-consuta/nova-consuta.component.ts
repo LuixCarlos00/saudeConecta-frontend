@@ -1,12 +1,8 @@
-import { Especialidade } from '../../../../util/variados/interfaces/especialidade/especialidade';
 import { ProfissionalApiService } from '../../../../services/api/profissional-api.service';
 import { Paciente } from 'src/app/util/variados/interfaces/paciente/paciente';
-import { Medico } from 'src/app/util/variados/interfaces/medico/medico';
-import { log } from 'node:console';
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { MedicoApiService } from 'src/app/services/api/medico-api.service';
 import { MatDialog } from '@angular/material/dialog';
 import { TabelasPesquisasMedicosComponent } from './tabelas-Pesquisas-Medicos/tabelas-Pesquisas-Medicos.component';
 import { PacienteApiService } from 'src/app/services/api/paciente-api.service';

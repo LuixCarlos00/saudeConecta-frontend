@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 import { ConsultaApiService } from 'src/app/services/api/consulta-api.service';
 import { ConsultaStateService } from 'src/app/services/state/consulta-state.service';
 import { MatDialog } from '@angular/material/dialog';
-import { CalendarDialogComponent } from 'src/app/util/variados/Cronologia/cronologia.component';
+import { CronologiaComponent } from 'src/app/util/variados/Cronologia/cronologia.component';
 import Swal from 'sweetalert2';
 import { EditarConsultasComponent } from './Editar-Consultas/Editar-Consultas.component';
 import { Template_PDFComponent } from './template_PDF/template_PDF.component';
@@ -182,7 +182,7 @@ export class AgendaComponent implements OnInit, OnDestroy {
 
   async Deletar(consulta: Tabela) {
     try {
-      await this.consultaApi.deletar(consulta.consulta).toPromise();
+      await this.consultaApi.deletarConsulta(consulta.consulta).toPromise();
       Swal.fire('Deletado', 'Consulta deletada com sucesso', 'success');
       this.buscarDadosParaTabela();
     } catch (error) {
@@ -330,7 +330,7 @@ export class AgendaComponent implements OnInit, OnDestroy {
   }
 
   CronogramaDoDia() {
-    this.dialog.open(CalendarDialogComponent, {
+    this.dialog.open(CronologiaComponent, {
       width: 'auto',
       panelClass: 'cronologia-dialog',
       data: { Pesquisa: this.Finalizadas },

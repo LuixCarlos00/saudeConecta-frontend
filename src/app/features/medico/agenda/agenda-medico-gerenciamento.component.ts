@@ -12,7 +12,7 @@ import { ProntuarioApiService } from 'src/app/services/api/prontuario-api.servic
 import { tokenService } from 'src/app/util/Token/Token.service';
 import { Usuario } from 'src/app/util/variados/interfaces/usuario/usuario';
 import { Tabela } from 'src/app/util/variados/interfaces/tabela/Tabela';
-import { CalendarDialogComponent } from 'src/app/util/variados/Cronologia/cronologia.component';
+import { CronologiaComponent } from 'src/app/util/variados/Cronologia/cronologia.component';
 import { ObservacoesComponent } from 'src/app/features/administrador/gerenciamento-agenda/agenda/Observacoes/Observacoes.component';
 import { ImprimirPrescricaoComponent } from '../impressoes/ImprimirPrescricao/ImprimirPrescricao.component';
 import { ImprimirSoliciatacaoDeExamesComponent } from '../impressoes/ImprimirSoliciatacaoDeExames/ImprimirSoliciatacaoDeExames.component';
@@ -162,7 +162,7 @@ export class AgendaMedicoGerenciamentoComponent implements OnInit, OnDestroy {
   }
 
   CronogramaDoDia() {
-    this.dialog.open(CalendarDialogComponent, {
+    this.dialog.open(CronologiaComponent, {
       width: 'auto',
       maxWidth: 'auto',
       panelClass: 'cronologia-dialog',

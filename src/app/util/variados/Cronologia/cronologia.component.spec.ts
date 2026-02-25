@@ -3,21 +3,21 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { DebugElement } from '@angular/core';
 
-import { CalendarDialogComponent } from './cronologia.component';
+import { CronologiaComponent } from './cronologia.component';
 
 describe('CalendarDialogComponent', () => {
-  let component: CalendarDialogComponent;
-  let fixture: ComponentFixture<CalendarDialogComponent>;
+  let component: CronologiaComponent;
+  let fixture: ComponentFixture<CronologiaComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ CalendarDialogComponent ]
+      declarations: [CronologiaComponent]
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(CalendarDialogComponent);
+    fixture = TestBed.createComponent(CronologiaComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

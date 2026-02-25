@@ -71,7 +71,6 @@ import { TabelaAgendaMedicoComponent } from '../features/medico/tabela-agenda/ta
 import { ProntuarioComponent } from '../features/medico/prontuario/prontuario.component';
 import { ImprimirPrescricaoComponent } from '../features/medico/impressoes/ImprimirPrescricao/ImprimirPrescricao.component';
 import { ImprimirSoliciatacaoDeExamesComponent } from '../features/medico/impressoes/ImprimirSoliciatacaoDeExames/ImprimirSoliciatacaoDeExames.component';
-import { HistoricosComponent } from '../features/medico/historico/historicos.component';
 import { DadosPessoaisComponent } from '../features/medico/dados-pessoais/DadosPessoais.component';
 import { AtestadoPacienteComponent } from '../features/medico/impressoes/AtestadoPaciente/AtestadoPaciente.component';
 import { HistoricoCompletoComponent } from '../features/medico/impressoes/historicoCompleto/historicoCompleto.component';
@@ -123,7 +122,6 @@ import { RegistroConsultaDentistaComponent } from '../features/medico/impressoes
     TabelaEditarPacienteConsultasComponent,
     ImprimirPrescricaoComponent,
     ImprimirSoliciatacaoDeExamesComponent,
-    HistoricosComponent,
     DadosPessoaisComponent,
     AtestadoPacienteComponent,
     TrocaSenhaUsuariosComponent,

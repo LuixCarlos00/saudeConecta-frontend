@@ -10,7 +10,7 @@ import { AdministradorApiService } from 'src/app/services/api/administrador-api.
 import { UsuarioUnificado } from '../tabela-todos-usuarios.component';
 import { SecretariaApiService } from 'src/app/services/api/secretaria-api.service';
 import { ufOptions } from 'src/app/util/variados/options/options';
-import { EspecialidadeService, EspecialidadeResponse } from 'src/app/services/api/especialidade.service';
+import { EspecialidadeApiService, EspecialidadeResponse } from 'src/app/services/api/especialidade-api.service';
 
 export interface DialogData {
   usuario: UsuarioUnificado;
@@ -46,7 +46,7 @@ export class VisualizarEditarUsuarioComponent implements OnInit {
     private profissionalApiService: ProfissionalApiService,
     private administradorApiService: AdministradorApiService,
     private secretariaApiService: SecretariaApiService,
-    private especialidadeService: EspecialidadeService
+    private especialidadeService: EspecialidadeApiService
   ) {
     this.categoria = data.usuario.categoria;
   }

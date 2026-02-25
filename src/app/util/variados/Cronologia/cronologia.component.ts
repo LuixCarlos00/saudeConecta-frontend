@@ -5,7 +5,7 @@ import Swal from 'sweetalert2';
 
 import { ConsultaApiService } from 'src/app/services/api/consulta-api.service';
 import { ProfissionalApiService } from 'src/app/services/api/profissional-api.service';
-import { EspecialidadeService, EspecialidadeResponse } from 'src/app/services/api/especialidade.service';
+import { EspecialidadeApiService, EspecialidadeResponse } from 'src/app/services/api/especialidade-api.service';
 import { ConsultaStateService } from 'src/app/services/state/consulta-state.service';
 import { Profissional } from '../interfaces/medico/Profissional';
 import { ControleAcessoApiService } from 'src/app/services/api/controle-acesso-api.service';
@@ -28,7 +28,7 @@ interface TipoPesquisa {
   templateUrl: 'cronologia.component.html',
   styleUrls: ['./cronologia.component.css'],
 })
-export class CalendarDialogComponent implements OnInit {
+export class CronologiaComponent implements OnInit {
   // Formulários
   IntervaloDeDatas!: FormGroup;
   OpcoesCategorias!: FormGroup;
@@ -42,10 +42,10 @@ export class CalendarDialogComponent implements OnInit {
   carregandoEspecialidades = false;
 
   constructor(
-    public dialogRef: MatDialogRef<CalendarDialogComponent>,
+    public dialogRef: MatDialogRef<CronologiaComponent>,
     @Inject(MAT_DIALOG_DATA) public data: { Pesquisa: boolean },
     private profissionalApiService: ProfissionalApiService,
-    private especialidadeService: EspecialidadeService,
+    private especialidadeService: EspecialidadeApiService,
     private formBuilder: FormBuilder,
     private consultaApiService: ConsultaApiService,
     private consultaState: ConsultaStateService,
@@ -54,8 +54,8 @@ export class CalendarDialogComponent implements OnInit {
 
   get podeVerFiltrosAvancados(): boolean {
     return this.controleAcesso.isAdmin() ||
-           this.controleAcesso.isSuperAdmin() ||
-           this.controleAcesso.isRecepcionista();
+      this.controleAcesso.isSuperAdmin() ||
+      this.controleAcesso.isRecepcionista();
   }
 
   ngOnInit(): void {
