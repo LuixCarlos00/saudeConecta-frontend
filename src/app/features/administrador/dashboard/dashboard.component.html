@@ -23,47 +23,61 @@
        ================================================================ -->
   <div class="dashboard-grid" *ngIf="ControleAcessoService.isDashboardAdministrativo()">
 
-    <!-- Cards de Estatísticas Rápidas -->
-    <section class="dashboard-stats">
-      <div class="hc-stat-card">
-        <div class="hc-stat-card__icon hc-stat-card__icon--primary">
-          <i class="fa-solid fa-calendar-check"></i>
-        </div>
-        <div class="hc-stat-card__content">
-          <span class="hc-stat-card__value">{{ carregandoEstatisticas ? '--' : consultasHoje }}</span>
-          <span class="hc-stat-card__label">Total de Consultas</span>
+    <!-- Carrossel de Cards de Estatísticas -->
+    <section class="stats-carousel" *ngIf="cardsVisiveis.length > 0">
+
+      <div class="stats-carousel__header">
+        <span class="stats-carousel__title">
+          <i class="fa-solid fa-chart-simple"></i>
+          Estatísticas
+        </span>
+        <div class="stats-carousel__controls">
+          <span class="stats-carousel__counter">
+            {{ carrosselOffset + 1 }}–{{ minVal(carrosselOffset + CARDS_POR_PAGINA, cardsVisiveis.length) }}
+            de {{ cardsVisiveis.length }}
+          </span>
+          <button class="stats-carousel__btn"
+                  (click)="carrosselAnterior()"
+                  [disabled]="!podePrev"
+                  aria-label="Anterior">
+            <i class="fa-solid fa-chevron-left"></i>
+          </button>
+          <button class="stats-carousel__btn"
+                  (click)="carrosselProximo()"
+                  [disabled]="!podeNext"
+                  aria-label="Próximo">
+            <i class="fa-solid fa-chevron-right"></i>
+          </button>
         </div>
       </div>
 
-      <div class="hc-stat-card">
-        <div class="hc-stat-card__icon hc-stat-card__icon--success">
-          <i class="fa-solid fa-user-check"></i>
-        </div>
-        <div class="hc-stat-card__content">
-          <span class="hc-stat-card__value">{{ carregandoEstatisticas ? '--' : consultasAtendidas }}</span>
-          <span class="hc-stat-card__label">Atendidos</span>
+      <!-- Grade de até 5 cards visíveis -->
+      <div class="stats-carousel__grid">
+        <div class="sc-card sc-card--{{ card.cor }}"
+             *ngFor="let card of cardsNaPagina"
+             [@cardSlide]>
+
+          <div class="sc-card__accent"></div>
+
+          <div class="sc-card__icon">
+            <i class="fa-solid {{ card.icon }}"></i>
+          </div>
+
+          <div class="sc-card__content">
+            <span class="sc-card__value">
+              <ng-container *ngIf="carregandoEstatisticas">
+                <span class="sc-card__skeleton"></span>
+              </ng-container>
+              <ng-container *ngIf="!carregandoEstatisticas">
+                {{ getValorCard(card.tipo) }}
+              </ng-container>
+            </span>
+            <span class="sc-card__label">{{ card.label }}</span>
+          </div>
+
         </div>
       </div>
 
-      <div class="hc-stat-card">
-        <div class="hc-stat-card__icon hc-stat-card__icon--warning">
-          <i class="fa-solid fa-clock"></i>
-        </div>
-        <div class="hc-stat-card__content">
-          <span class="hc-stat-card__value">{{ carregandoEstatisticas ? '--' : consultasAguardando }}</span>
-          <span class="hc-stat-card__label">Aguardando</span>
-        </div>
-      </div>
-
-      <div class="hc-stat-card">
-        <div class="hc-stat-card__icon hc-stat-card__icon--info">
-          <i class="fa-solid fa-user-doctor"></i>
-        </div>
-        <div class="hc-stat-card__content">
-          <span class="hc-stat-card__value">{{ carregandoEstatisticas ? '--' : medicosAtivos }}</span>
-          <span class="hc-stat-card__label">Clínico Ativos</span>
-        </div>
-      </div>
     </section>
 
     <!-- Gráficos Principais -->

@@ -92,21 +92,204 @@
 }
 
 // =============================================================================
-// CARDS DE ESTATÍSTICAS
+// CARROSSEL DE CARDS DE ESTATÍSTICAS
 // =============================================================================
 
-.dashboard-stats {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
+// ── Paleta de cores individuais por card ─────────────────────────────────────
+$card-colors: (
+  'blue':   (#0066CC, #EBF3FF),
+  'green':  (#16a34a, #DCFCE7),
+  'orange': (#d97706, #FEF3C7),
+  'cyan':   (#0891b2, #CFFAFE),
+  'purple': (#7c3aed, #EDE9FE),
+  'red':    (#dc2626, #FEE2E2),
+  'teal':   (#0d9488, #CCFBF1),
+);
+
+.stats-carousel {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-3;
+
+  // ── Header da seção ────────────────────────────────────────────────────
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &__title {
+    font-size: $text-base;
+    font-weight: $font-semibold;
+    color: $text-secondary;
+    display: flex;
+    align-items: center;
+    gap: $spacing-2;
+
+    i { color: $primary-blue; }
+  }
+
+  &__controls {
+    display: flex;
+    align-items: center;
+    gap: $spacing-2;
+  }
+
+  &__counter {
+    font-size: $text-sm;
+    color: $text-secondary;
+    min-width: 60px;
+    text-align: right;
+  }
+
+  &__btn {
+    width: 32px;
+    height: 32px;
+    border-radius: $radius-md;
+    border: 1px solid $border-light;
+    background: $bg-card;
+    color: $text-secondary;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: $text-sm;
+
+    &:hover:not(:disabled) {
+      background: $primary-blue;
+      color: #fff;
+      border-color: $primary-blue;
+    }
+
+    &:disabled {
+      opacity: 0.3;
+      cursor: default;
+    }
+  }
+
+  // ── Grade de cards ─────────────────────────────────────────────────────
+  &__grid {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: $spacing-4;
+
+    .sc-card {
+      flex: 1 1 0;
+      min-width: 0;
+    }
+
+    @include mobile {
+      flex-wrap: wrap;
+
+      .sc-card {
+        flex: 1 1 calc(50% - #{$spacing-4});
+      }
+    }
+
+    @include max-width(480px) {
+      flex-direction: column;
+
+      .sc-card {
+        flex: unset;
+        width: 100%;
+      }
+    }
+  }
+}
+
+// ── Card de estatística ────────────────────────────────────────────────────────
+.sc-card {
+  position: relative;
+  background: $bg-card;
+  border-radius: $radius-xl;
+  border: 1px solid $border-light;
+  box-shadow: $shadow-sm;
+  padding: $spacing-5;
+  display: flex;
+  align-items: center;
   gap: $spacing-4;
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s;
 
-  @include max-width($breakpoint-lg) {
-    grid-template-columns: repeat(2, 1fr);
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: $shadow-md;
   }
 
-  @include mobile {
-    grid-template-columns: 1fr;
+  // ── Barra de acento lateral ──────────────────────────────────────────────
+  &__accent {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    border-radius: $radius-xl 0 0 $radius-xl;
   }
+
+  // ── Ícone ────────────────────────────────────────────────────────────────
+  &__icon {
+    width: 52px;
+    height: 52px;
+    border-radius: $radius-lg;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: $text-2xl;
+    flex-shrink: 0;
+  }
+
+  // ── Conteúdo ─────────────────────────────────────────────────────────────
+  &__content {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    flex: 1;
+  }
+
+  &__value {
+    font-size: $text-3xl;
+    font-weight: $font-bold;
+    color: $text-primary;
+    line-height: 1;
+    display: block;
+  }
+
+  &__label {
+    font-size: $text-sm;
+    color: $text-secondary;
+    margin-top: $spacing-1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  // ── Skeleton de carregamento ────────────────────────────────────────────
+  &__skeleton {
+    display: inline-block;
+    width: 48px;
+    height: 28px;
+    border-radius: $radius-md;
+    background: linear-gradient(90deg, $border-light 25%, $bg-secondary 50%, $border-light 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.4s infinite;
+  }
+
+  // ── Variantes de cor ─────────────────────────────────────────────────────
+  @each $nome, $valores in $card-colors {
+    $cor:  nth($valores, 1);
+    $bg:   nth($valores, 2);
+
+    &--#{$nome} {
+      .sc-card__accent { background: $cor; }
+      .sc-card__icon   { background: $bg; color: $cor; }
+    }
+  }
+}
+
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }
 
 .hc-stat-card {
@@ -158,6 +341,16 @@
     &--info {
       background: $status-info-bg;
       color: $status-info;
+    }
+
+    &--purple {
+      background: rgba(142, 68, 173, 0.12);
+      color: #8e44ad;
+    }
+
+    &--teal {
+      background: rgba(26, 188, 156, 0.12);
+      color: #1abc9c;
     }
   }
 
@@ -309,6 +502,34 @@
 // =============================================================================
 // ANIMAÇÕES
 // =============================================================================
+
+.dashboard-stats {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: $spacing-4;
+
+  .hc-stat-card {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+
+  @include mobile {
+    flex-wrap: wrap;
+
+    .hc-stat-card {
+      flex: 1 1 calc(50% - #{$spacing-4});
+    }
+  }
+
+  @include max-width(480px) {
+    flex-direction: column;
+
+    .hc-stat-card {
+      flex: unset;
+      width: 100%;
+    }
+  }
+}
 
 .dashboard-stats .hc-stat-card {
   animation: fadeInUp 0.4s ease-out;
