@@ -39,6 +39,13 @@
       </li>
 
       <!-- ========== MENU SUPER ADMIN / ADMIN ========== -->
+        <li class="nav-item" *ngIf="ControleAcessoService.podeVerMenuAgenda()"
+            [class.active]="activeRoute === 'gerenciamento'">
+            <button class="nav-link" (click)="navigateTo('gerenciamento')" title="Gerenciamento de Agenda">
+                <i class="fa-solid fa-calendar-check nav-icon"></i>
+                <span class="nav-text">Agenda</span>
+            </button>
+        </li>
 
       <!-- Gerenciamento de Usuários - Super Admin, Admin -->
       <li class="nav-item" *ngIf="ControleAcessoService.podeVerMenuUsuarios()"
@@ -50,13 +57,7 @@
       </li>
 
       <!-- Gerenciamento de Agenda - Admin apenas -->
-      <li class="nav-item" *ngIf="ControleAcessoService.podeVerMenuAgenda()"
-        [class.active]="activeRoute === 'gerenciamento'">
-        <button class="nav-link" (click)="navigateTo('gerenciamento')" title="Gerenciamento de Agenda">
-          <i class="fa-solid fa-calendar-check nav-icon"></i>
-          <span class="nav-text">Agenda</span>
-        </button>
-      </li>
+
 
       <!-- Mensageria - Admin apenas -->
       <li class="nav-item" *ngIf="ControleAcessoService.podeVerMenuMensageria()"

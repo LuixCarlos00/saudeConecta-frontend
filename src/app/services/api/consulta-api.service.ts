@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Consultav2 } from 'src/app/util/variados/interfaces/consulta/consultav2';
 import { environment } from 'src/environments/environment';
+import { EstatisticasDashboardAdminOrg } from './dashboard-api.service';
 
 
 
@@ -200,6 +201,11 @@ export class ConsultaApiService {
     return this.http.get<number>(`${this.apiUrl}/estatisticas/consultas-semana?medicoId=${usuarioId}`);
   }
 
+ 
+  buscarEstatisticasSemanaGlobal(): Observable<number> {
+    return this.http.get<number>(`${this.apiUrl}/estatisticas/consultas-semana-global`);
+  }
+
   buscarEstatisticasMedicosAtivos(): Observable<number> {
     return this.http.get<number>(`${environment.apiUrl}/profissionais/estatisticas/medicos-ativos`);
   }
@@ -217,23 +223,11 @@ export class ConsultaApiService {
   }
 
 
-  buscarEstatisticasConsultasHojePorOrganizacao(organizacaoId: number): Observable<number> {
-    return this.http.get<number>(`${this.apiUrl}/estatisticas/organizacao/${organizacaoId}/consultas-hoje`);
-  }
-
-  buscarEstatisticasRealizadasHojePorOrganizacao(organizacaoId: number): Observable<number> {
-    return this.http.get<number>(`${this.apiUrl}/estatisticas/organizacao/${organizacaoId}/consultas-realizadas-hoje`);
-  }
-
-  buscarEstatisticasAgendadasHojePorOrganizacao(organizacaoId: number): Observable<number> {
-    return this.http.get<number>(`${this.apiUrl}/estatisticas/organizacao/${organizacaoId}/consultas-agendadas-hoje`);
-  }
 
 
-  buscarEstatisticasMedicosAtivosPorOrganizacao(organizacaoId: number): Observable<number> {
-    return this.http.get<number>(`${environment.apiUrl}/profissionais/estatisticas/organizacao/${organizacaoId}/medicos-ativos`);
-  }
 
+
+ 
   buscarConsultasPorOrganizacaoEIntervalo(organizacaoId: number, dataInicio: string, dataFim: string): Observable<Consultav2[]> {
     return this.http.get<Consultav2[]>(
       `${this.apiUrl}/organizacao/${organizacaoId}/intervalo?dataInicial=${dataInicio}&dataFinal=${dataFim}`
@@ -243,4 +237,16 @@ export class ConsultaApiService {
   BuscandoConsultasPorMedicoEmIntervaloDeDatas(dataInicio: string, dataFim: string, medicoId: number): Observable<any[]> {
     return this.buscarEstatisticasPorMedicoEIntervalo(medicoId, dataInicio, dataFim);
   }
+
+
+  //=============================================================
+  // BUSCAS DE ESTATISTICAS - Dashboard - Admin_ORGANIZACAO
+  //=============================================================
+  getEstatisticasDashboardAdminOrg(organizacaoId: number): Observable<EstatisticasDashboardAdminOrg> {
+    return this.http.get<EstatisticasDashboardAdminOrg>(
+      `${this.apiUrl}/estatisticas/organizacao/${organizacaoId}/dashboard`
+    );
+  }
+
+
 }

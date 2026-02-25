@@ -10,6 +10,7 @@ import { environment } from 'src/environments/environment';
   providedIn: 'root'
 })
 export class ProfissionalApiService {
+ 
 
   private readonly apiUrl = `${environment.apiUrl}/profissionais`;
 
@@ -102,10 +103,21 @@ export class ProfissionalApiService {
     return this.http.get<Profissional[]>(`${this.apiUrl}`, { params: { filtro } });
   }
 
-  // ==========================================
-  // ==========================================
-  // ==========================================
 
+  //=============================================================
+  // BUSCAS DE ESTATISTICAS - Dashboard - Admin_ORGANIZACAO
+  //=============================================================
 
+  getEstatisticasMedicosAtivosByOrg(organizacaoId: number): Observable<number> {
+    return this.http.get<number>(`${this.apiUrl}/estatisticas/organizacao/${organizacaoId}/medicos-ativos`);
+  }
+
+  //=============================================================
+  // BUSCAS DE ESTATISTICAS - Dashboard - SUPER_ADMIN (global)
+  //=============================================================
+
+  getEstatisticasMedicosAtivosGlobal(): Observable<number> {
+    return this.http.get<number>(`${this.apiUrl}/estatisticas/medicos-ativos`);
+  }
 
 }

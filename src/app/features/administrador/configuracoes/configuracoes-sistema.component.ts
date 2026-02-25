@@ -5,6 +5,11 @@ import {
   ConfiguracaoGraficoResponse,
   AtualizarConfiguracaoGraficoRequest
 } from 'src/app/services/api/configuracao-grafico.service';
+import {
+  ConfiguracaoCardService,
+  ConfiguracaoCardResponse,
+  AtualizarConfiguracaoCardRequest
+} from 'src/app/services/api/configuracao-card.service';
 import { Subscription } from 'rxjs';
 import Swal from 'sweetalert2';
 
@@ -19,13 +24,16 @@ export class ConfiguracoesSistemaComponent implements OnInit, OnDestroy {
   currentTheme: ThemeType = 'light';
   activeTab = 'graficos';
   configuracoes: ConfiguracaoGraficoResponse[] = [];
+  configuracoesCards: ConfiguracaoCardResponse[] = [];
   loading = false;
+  loadingCards = false;
 
   private themeSubscription?: Subscription;
 
   constructor(
     public themeService: ThemeService,
-    private configuracaoGraficoService: ConfiguracaoGraficoService
+    private configuracaoGraficoService: ConfiguracaoGraficoService,
+    private configuracaoCardService: ConfiguracaoCardService
   ) {
     this.availableThemes = this.themeService.availableThemes;
   }
@@ -35,6 +43,7 @@ export class ConfiguracoesSistemaComponent implements OnInit, OnDestroy {
       (theme: Theme) => this.currentTheme = theme.isDark ? 'dark-blue' : 'light'
     );
     this.carregarConfiguracoes();
+    this.carregarConfiguracoesCards();
   }
 
   ngOnDestroy(): void {
@@ -43,13 +52,14 @@ export class ConfiguracoesSistemaComponent implements OnInit, OnDestroy {
 
   selectTheme(themeId: ThemeType): void { this.themeService.setTheme(themeId); }
   isThemeSelected(themeId: ThemeType): boolean { return this.currentTheme === themeId; }
-  setActiveTab(tab: 'temas' | 'graficos'): void { this.activeTab = tab; }
+  setActiveTab(tab: 'temas' | 'graficos' | 'cards'): void { this.activeTab = tab; }
 
   carregarConfiguracoes(): void {
     this.loading = true;
     // O backend extrai o usuário do JWT — nenhum parâmetro extra no frontend
     this.configuracaoGraficoService.listarConfiguracoes().subscribe({
       next: (configs) => {
+        console.log('Configurações carregadas:', configs);
         if (!configs || configs.length === 0) {
           this.inicializarConfiguracoesAutomaticamente();
         } else {
@@ -148,6 +158,123 @@ export class ConfiguracoesSistemaComponent implements OnInit, OnDestroy {
       'AGENDAMENTOS_MEDICO_PERIODO': 'fa-calendar-week',
     };
     return icons[tipo] ?? 'fa-chart-bar';
+  }
+
+  // ── Configurações de Cards ────────────────────────────────────────────────
+
+  carregarConfiguracoesCards(): void {
+    this.loadingCards = true;
+    this.configuracaoCardService.listarConfiguracoes().subscribe({
+      next: (configs) => {
+        console.log('Configurações carregadas:', configs);
+        if (!configs || configs.length === 0) {
+          this.inicializarConfiguracoesCardsAutomaticamente();
+        } else {
+          this.configuracoesCards = configs;
+          this.loadingCards = false;
+        }
+      },
+      error: () => {
+        this.loadingCards = false;
+        this.mostrarErro('Não foi possível carregar as configurações dos cards');
+      }
+    });
+  }
+
+  private inicializarConfiguracoesCardsAutomaticamente(): void {
+    this.configuracaoCardService.inicializarConfiguracoes().subscribe({
+      next: (configs) => {
+        this.configuracoesCards = configs;
+        this.loadingCards = false;
+        Swal.fire({
+          icon: 'info',
+          title: 'Configurações Inicializadas',
+          text: 'Selecione quais cards deseja visualizar no dashboard.',
+          confirmButtonColor: '#0066CC',
+          timer: 4000
+        });
+      },
+      error: () => {
+        this.loadingCards = false;
+        this.mostrarErro('Não foi possível inicializar as configurações de cards');
+      }
+    });
+  }
+
+  toggleCard(config: ConfiguracaoCardResponse): void {
+    const request: AtualizarConfiguracaoCardRequest = {
+      tipoCard: config.tipoCard,
+      ativo: !config.ativo,
+      ordemExibicao: config.ordemExibicao
+    };
+    this.configuracaoCardService.atualizarConfiguracao(config.id, request).subscribe({
+      next: (updated) => {
+        const i = this.configuracoesCards.findIndex(c => c.id === updated.id);
+        if (i !== -1) { this.configuracoesCards[i] = updated; }
+        Swal.fire({ icon: 'success', title: `Card ${updated.ativo ? 'ativado' : 'desativado'}`, timer: 2000, showConfirmButton: false });
+      },
+      error: () => this.mostrarErro('Não foi possível atualizar a configuração do card')
+    });
+  }
+
+  salvarConfiguracoesCards(): void {
+    this.loadingCards = true;
+    const requests: AtualizarConfiguracaoCardRequest[] = this.configuracoesCards.map(c => ({
+      tipoCard: c.tipoCard, ativo: c.ativo, ordemExibicao: c.ordemExibicao
+    }));
+    this.configuracaoCardService.atualizarMultiplasConfiguracoes(requests).subscribe({
+      next: (updated) => {
+        this.configuracoesCards = updated;
+        this.loadingCards = false;
+        Swal.fire({ icon: 'success', title: 'Configurações salvas', timer: 2000, showConfirmButton: false });
+      },
+      error: () => { this.loadingCards = false; this.mostrarErro('Não foi possível salvar'); }
+    });
+  }
+
+  resetarConfiguracoesCards(): void {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Confirmar Reset',
+      text: 'Deseja realmente exibir todos os cards no dashboard?',
+      showCancelButton: true,
+      confirmButtonColor: '#0066CC',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Sim, resetar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (!result.isConfirmed) { return; }
+      this.loadingCards = true;
+      this.configuracaoCardService.resetarConfiguracoesParaPadrao().subscribe({
+        next: () => {
+          this.carregarConfiguracoesCards();
+          Swal.fire({ icon: 'success', title: 'Configurações resetadas', timer: 2000, showConfirmButton: false });
+        },
+        error: () => { this.loadingCards = false; this.mostrarErro('Não foi possível resetar'); }
+      });
+    });
+  }
+
+  getCardIcon(tipo: string): string {
+    const icons: Record<string, string> = {
+      'CONSULTAS_HOJE':        'fa-calendar-check',
+      'CONSULTAS_ATENDIDAS':   'fa-user-check',
+      'CONSULTAS_AGUARDANDO':  'fa-clock',
+      'MEDICOS_ATIVOS':        'fa-user-doctor',
+      'CONSULTAS_SEMANA':      'fa-calendar-week',
+      'CANCELADOS_SEMANA':     'fa-calendar-xmark',
+      'CONFIRMADOS_SEMANA':    'fa-calendar-check',
+      // SuperAdmin
+      'CONSULTAS_HOJE_GLOBAL':  'fa-globe',
+      'CONSULTAS_SEMANA_GLOBAL':'fa-earth-americas',
+      'MEDICOS_ATIVOS_GLOBAL':  'fa-users',
+      // Profissional
+      'MINHAS_CONSULTAS_HOJE':      'fa-calendar-day',
+      'MINHAS_CONSULTAS_ATENDIDAS': 'fa-circle-check',
+      'MINHAS_CONSULTAS_AGUARDANDO':'fa-hourglass-half',
+      'MINHAS_CONSULTAS_SEMANA':    'fa-calendar-week',
+    };
+    return icons[tipo] ?? 'fa-grid-2';
   }
 
   private mostrarErro(texto: string): void {
