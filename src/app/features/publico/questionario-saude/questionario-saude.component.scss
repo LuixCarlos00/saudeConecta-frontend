@@ -1,0 +1,523 @@
+// =============================================================================
+// QUESTIONÁRIO DE SAÚDE — Componente Público
+// =============================================================================
+
+$primary: #0891b2;
+$primary-light: #cffafe;
+$primary-dark: #0e7490;
+$success: #16a34a;
+$success-light: #dcfce7;
+$warning: #f59e0b;
+$warning-light: #fef3c7;
+$danger: #ef4444;
+$danger-light: #fee2e2;
+$bg: #f8fafc;
+$surf: #ffffff;
+$brd: #e5e7eb;
+$tx: #1a1a2e;
+$txs: #6b7280;
+$font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+$r: 8px;
+$sh: 0 2px 8px rgba(0, 0, 0, 0.06);
+
+.questionario-container {
+  min-height: 100vh;
+  background: $bg;
+  font-family: $font;
+  color: $tx;
+  padding: 24px 16px;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+// =============================================================================
+// LOADING / ERRO / SUCESSO
+// =============================================================================
+
+.questionario-loading,
+.questionario-erro,
+.questionario-sucesso {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  text-align: center;
+  gap: 16px;
+
+  h2 { font-size: 1.5rem; margin: 0; }
+  p { color: $txs; font-size: 1rem; margin: 0; max-width: 400px; }
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid $brd;
+  border-top-color: $primary;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.spinner-sm {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  display: inline-block;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.erro-icon i {
+  font-size: 3rem;
+  color: $danger;
+}
+
+.sucesso-icon i {
+  font-size: 3rem;
+  color: $success;
+}
+
+.sucesso-sub {
+  font-size: 0.88rem !important;
+  color: $txs !important;
+  margin-top: 8px !important;
+}
+
+// =============================================================================
+// HEADER
+// =============================================================================
+
+.questionario-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 24px;
+  background: linear-gradient(135deg, #06b6d4 0%, $primary 100%);
+  border-radius: $r;
+  color: #fff;
+  margin-bottom: 20px;
+
+  h1 { font-size: 1.4rem; font-weight: 700; margin: 0; }
+  p { font-size: 0.9rem; opacity: 0.85; margin: 4px 0 0; }
+}
+
+.header-logo {
+  width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: $r;
+  flex-shrink: 0;
+
+  i { font-size: 1.6rem; }
+}
+
+// =============================================================================
+// PACIENTE INFO
+// =============================================================================
+
+.questionario-paciente {
+  background: $surf;
+  border: 1px solid $brd;
+  border-radius: $r;
+  padding: 16px 20px;
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.paciente-row {
+  display: flex;
+  gap: 8px;
+  font-size: 0.9rem;
+}
+
+.paciente-label {
+  font-weight: 600;
+  color: $txs;
+  min-width: 100px;
+}
+
+.paciente-value {
+  color: $tx;
+}
+
+// =============================================================================
+// INSTRUÇÕES
+// =============================================================================
+
+.questionario-instrucoes {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: $primary-light;
+  border: 1px solid #a5f3fc;
+  border-radius: $r;
+  padding: 14px 18px;
+  margin-bottom: 24px;
+
+  i { color: $primary; font-size: 1.1rem; margin-top: 2px; flex-shrink: 0; }
+  p { font-size: 0.88rem; color: $primary-dark; margin: 0; line-height: 1.5; }
+}
+
+// =============================================================================
+// PERGUNTAS
+// =============================================================================
+
+.questionario-perguntas {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.pergunta-card {
+  background: $surf;
+  border: 1px solid $brd;
+  border-radius: $r;
+  padding: 16px 20px;
+  transition: 0.2s ease;
+
+  &--respondida {
+    border-color: #a7f3d0;
+    background: #fafffe;
+  }
+
+  &--sim {
+    border-color: #fde68a;
+    background: #fffdf5;
+  }
+}
+
+.pergunta-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.pergunta-num {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: $primary-light;
+  color: $primary;
+  font-weight: 700;
+  font-size: 0.82rem;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.pergunta-texto {
+  font-size: 0.92rem;
+  font-weight: 500;
+  line-height: 1.4;
+  padding-top: 3px;
+}
+
+.pergunta-body {
+  padding-left: 40px;
+}
+
+.pergunta-opcoes {
+  display: flex;
+  gap: 8px;
+}
+
+.opcao-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 20px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  border: 1px solid $brd;
+  border-radius: 6px;
+  background: $surf;
+  color: $txs;
+  cursor: pointer;
+  transition: 0.15s ease;
+
+  &:hover { border-color: #d1d5db; background: #f9fafb; }
+
+  &--sim-active {
+    background: $warning-light;
+    border-color: $warning;
+    color: #92400e;
+    font-weight: 600;
+  }
+
+  &--nao-active {
+    background: $success-light;
+    border-color: $success;
+    color: #166534;
+    font-weight: 600;
+  }
+}
+
+.pergunta-obs {
+  margin-top: 10px;
+}
+
+.obs-input {
+  width: 100%;
+  padding: 8px 12px;
+  font-size: 0.85rem;
+  font-family: $font;
+  border: 1px solid $brd;
+  border-radius: 6px;
+  outline: none;
+  transition: 0.15s ease;
+
+  &:focus {
+    border-color: $primary;
+    box-shadow: 0 0 0 3px rgba($primary, 0.1);
+  }
+
+  &::placeholder { color: #9ca3af; }
+}
+
+// =============================================================================
+// PROGRESSO
+// =============================================================================
+
+.questionario-progresso {
+  margin-bottom: 24px;
+}
+
+.progresso-bar {
+  width: 100%;
+  height: 6px;
+  background: #e5e7eb;
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+
+.progresso-fill {
+  height: 100%;
+  background: linear-gradient(90deg, $primary 0%, $success 100%);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.progresso-texto {
+  font-size: 0.8rem;
+  color: $txs;
+}
+
+// =============================================================================
+// ASSINATURA
+// =============================================================================
+
+.questionario-assinatura {
+  background: $surf;
+  border: 1px solid $brd;
+  border-radius: $r;
+  padding: 20px;
+  margin-bottom: 24px;
+
+  h3 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0 0 8px;
+
+    i { color: $primary; }
+  }
+}
+
+.assinatura-instrucao {
+  font-size: 0.85rem;
+  color: $txs;
+  margin: 0 0 12px;
+}
+
+.assinatura-input-group {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.assinatura-input {
+  flex: 1;
+  padding: 12px 16px;
+  font-size: 1rem;
+  font-family: $font;
+  border: 2px solid $brd;
+  border-radius: $r;
+  outline: none;
+  transition: 0.2s ease;
+
+  &:focus {
+    border-color: $primary;
+    box-shadow: 0 0 0 3px rgba($primary, 0.1);
+  }
+
+  &::placeholder { color: #9ca3af; }
+}
+
+.assinatura-limpar-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 14px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: $danger;
+  background: $danger-light;
+  border: 1px solid $danger;
+  border-radius: $r;
+  cursor: pointer;
+  transition: 0.15s ease;
+  white-space: nowrap;
+
+  &:hover { background: #fca5a5; }
+}
+
+.assinatura-fontes {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.fonte-option {
+  flex: 1;
+  padding: 12px 8px;
+  font-size: 1.2rem;
+  color: #000;
+  text-align: center;
+  border: 2px solid $brd;
+  border-radius: $r;
+  background: $surf;
+  cursor: pointer;
+  transition: 0.2s ease;
+
+  &:hover {
+    border-color: $primary;
+    background: #f0fdfa;
+  }
+
+  &--active {
+    border-color: $primary;
+    background: $primary;
+    color: #fff;
+  }
+}
+
+.assinatura-preview {
+  border: 3px dashed #d1d5db;
+  border-radius: $r;
+  background: #fafafa;
+  padding: 24px;
+  min-height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+
+  &--vazio span {
+    color: #ccc;
+    font-size: 0.95rem;
+    font-style: italic;
+  }
+}
+
+.assinatura-preview-text {
+  font-size: 48px;
+  color: #000;
+  text-align: center;
+  transition: 0.2s ease;
+}
+
+.assinatura-aviso {
+  font-size: 0.82rem;
+  color: $warning;
+  margin: 8px 0 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  i { font-size: 0.85rem; }
+}
+
+// =============================================================================
+// FOOTER — BOTÃO ENVIAR
+// =============================================================================
+
+.questionario-footer {
+  text-align: center;
+  padding-bottom: 40px;
+}
+
+.btn-enviar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 40px;
+  font-size: 1rem;
+  font-weight: 600;
+  font-family: $font;
+  color: #fff;
+  background: linear-gradient(135deg, $primary 0%, $primary-dark 100%);
+  border: none;
+  border-radius: $r;
+  cursor: pointer;
+  transition: 0.2s ease;
+  box-shadow: 0 4px 14px rgba($primary, 0.3);
+
+  &:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba($primary, 0.4);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+}
+
+.footer-aviso {
+  font-size: 0.82rem;
+  color: $txs;
+  margin: 12px 0 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+
+  i { color: $primary; }
+}
+
+// =============================================================================
+// RESPONSIVO
+// =============================================================================
+
+@media (max-width: 600px) {
+  .questionario-container { padding: 16px 12px; }
+  .questionario-header { padding: 16px; }
+  .header-logo { width: 42px; height: 42px; i { font-size: 1.3rem; } }
+  .questionario-header h1 { font-size: 1.15rem; }
+  .pergunta-body { padding-left: 0; }
+  .pergunta-opcoes { flex-direction: column; }
+  .opcao-btn { justify-content: center; }
+  .assinatura-fontes { flex-direction: column; }
+  .assinatura-preview-text { font-size: 36px; }
+  .btn-enviar { width: 100%; padding: 14px 20px; }
+}

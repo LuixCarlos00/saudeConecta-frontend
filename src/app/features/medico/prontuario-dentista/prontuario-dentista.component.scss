@@ -335,7 +335,7 @@ $t: 0.15s ease;
   display: flex;
   flex-direction: column;
   gap: 20px;
-  max-width: 1400px;
+
   margin: 0 auto;
   width: 100%;
   box-sizing: border-box;
@@ -1186,6 +1186,220 @@ $t: 0.15s ease;
       box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35);
     }
   }
+}
+
+// =============================================================================
+// SUB-ABAS (Exame Objetivo)
+// =============================================================================
+
+.pep-subtabs {
+  display: flex;
+  gap: 4px;
+  padding: 0 0 16px;
+  border-bottom: 1px solid $brd;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.pep-subtab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: $txs;
+  background: transparent;
+  border: 1px solid $brd;
+  border-radius: $r2;
+  cursor: pointer;
+  transition: $t;
+  white-space: nowrap;
+
+  i { font-size: 0.78rem; }
+
+  &:hover {
+    background: $dlt;
+    color: $dp;
+    border-color: $dl;
+  }
+
+  &--active {
+    background: $dp;
+    color: $wh;
+    border-color: $dp;
+
+    &:hover { background: $ddk; }
+  }
+}
+
+// =============================================================================
+// FORM INPUT
+// =============================================================================
+
+.form-input {
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 0.88rem;
+  font-family: $font;
+  color: $tx;
+  background: $surf;
+  border: 1px solid $brd;
+  border-radius: $r2;
+  transition: $t;
+  outline: none;
+
+  &:focus {
+    border-color: $dl;
+    box-shadow: 0 0 0 3px rgba($dl, 0.12);
+  }
+
+  &:disabled {
+    background: #f3f4f6;
+    color: $txs;
+    cursor: not-allowed;
+  }
+
+  &::placeholder { color: $txm; }
+}
+
+// =============================================================================
+// FORM GRID — variações 3 e 4 colunas
+// =============================================================================
+
+.form-grid--3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.form-grid--4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+
+  @media (max-width: 900px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+// =============================================================================
+// SECTION ACTIONS (header com botões)
+// =============================================================================
+
+.pep-section__actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+// =============================================================================
+// DATA TABLE
+// =============================================================================
+
+.table-responsive {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+
+  th, td {
+    padding: 10px 14px;
+    text-align: left;
+    border-bottom: 1px solid $brd;
+  }
+
+  th {
+    font-weight: 600;
+    color: $txs;
+    background: #f8fafc;
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  tbody tr {
+    transition: $t;
+    &:hover { background: #f0fdfa; }
+  }
+
+  tfoot {
+    td {
+      font-weight: 600;
+      background: #f0fdfa;
+      border-top: 2px solid $dp;
+    }
+  }
+}
+
+// =============================================================================
+// BADGES
+// =============================================================================
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  border-radius: 20px;
+  letter-spacing: 0.02em;
+
+  &--success {
+    background: #dcfce7;
+    color: #166534;
+  }
+
+  &--warning {
+    background: #fef3c7;
+    color: #92400e;
+  }
+
+  &--danger {
+    background: #fee2e2;
+    color: #991b1b;
+  }
+}
+
+// =============================================================================
+// BOTÕES — variações extras
+// =============================================================================
+
+.btn--sm {
+  padding: 6px 12px;
+  font-size: 0.82rem;
+}
+
+.btn--danger {
+  background: #ef4444;
+  color: $wh;
+  border: none;
+  cursor: pointer;
+  border-radius: $r2;
+  transition: $t;
+
+  &:hover { background: #dc2626; }
+}
+
+// =============================================================================
+// IDENTIFICAÇÃO CONTAINER
+// =============================================================================
+
+.identificacao-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
 // =============================================================================

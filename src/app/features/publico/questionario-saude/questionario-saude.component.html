@@ -1,0 +1,158 @@
+<div class="questionario-container">
+
+  <!-- LOADING -->
+  <div class="questionario-loading" *ngIf="loading">
+    <div class="spinner"></div>
+    <p>Carregando questionário...</p>
+  </div>
+
+  <!-- ERRO -->
+  <div class="questionario-erro" *ngIf="erro && !loading">
+    <div class="erro-icon">
+      <i class="fa-solid fa-circle-xmark"></i>
+    </div>
+    <h2>Ops!</h2>
+    <p>{{ erro }}</p>
+  </div>
+
+  <!-- ENVIADO COM SUCESSO -->
+  <div class="questionario-sucesso" *ngIf="enviado && !loading && !erro">
+    <div class="sucesso-icon">
+      <i class="fa-solid fa-circle-check"></i>
+    </div>
+    <h2>Questionário Enviado!</h2>
+    <p>Suas respostas foram registradas com sucesso. Obrigado por preencher o questionário de saúde.</p>
+    <p class="sucesso-sub">Você já pode fechar esta página.</p>
+  </div>
+
+  <!-- FORMULÁRIO -->
+  <div *ngIf="!loading && !erro && !enviado">
+
+    <!-- HEADER -->
+    <header class="questionario-header">
+      <div class="header-logo">
+        <i class="fa-solid fa-tooth"></i>
+      </div>
+      <div class="header-info">
+        <h1>Questionário de Saúde</h1>
+        <p *ngIf="clinicaNome">{{ clinicaNome }}</p>
+      </div>
+    </header>
+
+    <!-- INFO PACIENTE -->
+    <div class="questionario-paciente" *ngIf="pacienteNome">
+      <div class="paciente-row">
+        <span class="paciente-label">Paciente:</span>
+        <span class="paciente-value">{{ pacienteNome }}</span>
+      </div>
+      <div class="paciente-row" *ngIf="profissionalNome">
+        <span class="paciente-label">Profissional:</span>
+        <span class="paciente-value">{{ profissionalNome }}</span>
+      </div>
+    </div>
+
+    <!-- INSTRUÇÕES -->
+    <div class="questionario-instrucoes">
+      <i class="fa-solid fa-info-circle"></i>
+      <p>Responda todas as perguntas com <strong>Sim</strong> ou <strong>Não</strong>. Se necessário, adicione observações. Ao final, assine digitalmente para confirmar suas respostas.</p>
+    </div>
+
+    <!-- PERGUNTAS -->
+    <div class="questionario-perguntas">
+      <div class="pergunta-card" *ngFor="let p of perguntas; let i = index"
+        [class.pergunta-card--respondida]="p.resposta !== ''"
+        [class.pergunta-card--sim]="p.resposta === 'Sim'">
+
+        <div class="pergunta-header">
+          <span class="pergunta-num">{{ i + 1 }}</span>
+          <span class="pergunta-texto">{{ p.texto }}</span>
+        </div>
+
+        <div class="pergunta-body">
+          <div class="pergunta-opcoes">
+            <button class="opcao-btn" [class.opcao-btn--sim-active]="p.resposta === 'Sim'"
+              (click)="p.resposta = 'Sim'">
+              <i class="fa-solid fa-check"></i> Sim
+            </button>
+            <button class="opcao-btn" [class.opcao-btn--nao-active]="p.resposta === 'Não'"
+              (click)="p.resposta = 'Não'">
+              <i class="fa-solid fa-xmark"></i> Não
+            </button>
+          </div>
+
+          <div class="pergunta-obs" *ngIf="p.resposta === 'Sim'">
+            <input type="text" class="obs-input" [(ngModel)]="p.observacao"
+              placeholder="Especifique (medicamento, tipo, etc.)..." />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROGRESSO -->
+    <div class="questionario-progresso">
+      <div class="progresso-bar">
+        <div class="progresso-fill"
+          [style.width.%]="((perguntas.length - perguntasPendentes) / perguntas.length) * 100">
+        </div>
+      </div>
+      <span class="progresso-texto">
+        {{ perguntas.length - perguntasPendentes }} de {{ perguntas.length }} respondidas
+      </span>
+    </div>
+
+    <!-- ASSINATURA DIGITAL — DIGITADA -->
+    <div class="questionario-assinatura">
+      <h3>
+        <i class="fa-solid fa-signature"></i> Assinatura Digital
+      </h3>
+      <p class="assinatura-instrucao">Digite seu nome completo e escolha o estilo da assinatura.</p>
+
+      <div class="assinatura-input-group">
+        <input type="text" class="assinatura-input" [(ngModel)]="assinaturaNome"
+          (input)="onAssinaturaInput()" placeholder="Digite seu nome completo..." autocomplete="off" />
+        <button class="assinatura-limpar-btn" (click)="limparAssinatura()" *ngIf="assinaturaPreenchida">
+          <i class="fa-solid fa-eraser"></i> Limpar
+        </button>
+      </div>
+
+      <div class="assinatura-fontes">
+        <button *ngFor="let fonte of FONTES" class="fonte-option"
+          [class.fonte-option--active]="fonteSelecionada === fonte.id"
+          [style.font-family]="fonte.css"
+          (click)="selecionarFonte(fonte.id)">
+          {{ assinaturaNome || fonte.label }}
+        </button>
+      </div>
+
+      <div class="assinatura-preview" *ngIf="assinaturaPreenchida">
+        <div class="assinatura-preview-text" [style.font-family]="getFonteCss()">
+          {{ assinaturaNome }}
+        </div>
+      </div>
+      <div class="assinatura-preview assinatura-preview--vazio" *ngIf="!assinaturaPreenchida">
+        <span>Sua assinatura aparecerá aqui</span>
+      </div>
+
+      <canvas #canvasOculto style="display: none;"></canvas>
+
+      <p class="assinatura-aviso" *ngIf="!assinaturaPreenchida">
+        <i class="fa-solid fa-exclamation-triangle"></i>
+        A assinatura é obrigatória para enviar o questionário.
+      </p>
+    </div>
+
+    <!-- BOTÃO ENVIAR -->
+    <div class="questionario-footer">
+      <button class="btn-enviar" [disabled]="!formularioValido || enviando" (click)="enviarQuestionario()">
+        <i class="fa-solid fa-paper-plane" *ngIf="!enviando"></i>
+        <div class="spinner-sm" *ngIf="enviando"></div>
+        {{ enviando ? 'Enviando...' : 'Enviar Questionário' }}
+      </button>
+      <p class="footer-aviso" *ngIf="!formularioValido">
+        <i class="fa-solid fa-info-circle"></i>
+        Responda todas as perguntas e assine para enviar.
+      </p>
+    </div>
+
+  </div>
+</div>

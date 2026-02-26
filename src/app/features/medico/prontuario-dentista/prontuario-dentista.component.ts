@@ -19,6 +19,10 @@ import {
   getStatusOption,
 } from '../../../util/variados/interfaces/Prontuario/ProntuarioDentista';
 import { ProntuarioDentistaApiService } from 'src/app/services/api/prontuario-dentista-api.service';
+import { ProcedimentoPadraoApiService } from 'src/app/services/api/procedimento-padrao-api.service';
+import { PlanejamentoTerapeuticoApiService } from 'src/app/services/api/planejamento-terapeutico-api.service';
+import { PacienteApiService } from 'src/app/services/api/paciente-api.service';
+import { environment } from 'src/environments/environment';
 
 export interface QuadranteConfig {
   id: number;
@@ -54,28 +58,89 @@ export class ProntuarioDentistaComponent implements OnInit, OnDestroy {
   FinalizarConsulta = false;
 
   // =========================================================================
-  // ANAMNESE
+  // ABA 1 — IDENTIFICAÇÃO DO PACIENTE
   // =========================================================================
+  responsavel = '';
+  inicioTratamento = '';
+  terminoTratamento = '';
+  interrupcao = '';
+
+  // =========================================================================
+  // ABA 2 — EXAME OBJETIVO (Sinais Vitais + Exame Intrabucal + Odontograma)
+  // =========================================================================
+  // Anamnese
   QueixaPrincipal = '';
   HistoricoOdontologico = '';
   observacao = '';
-
-  // =========================================================================
-  // EXAME CLÍNICO — campos individuais (não mais concatenados em conduta)
-  // =========================================================================
+  // Exame Clínico
   HigieneBucal = '';
   CondicaoGengival = '';
   Oclusal = '';
   ATM = '';
+  // Sinais Vitais
+  pressaoArterial = '';
+  pulso = '';
+  altura = '';
+  temperatura = '';
+  peso = '';
+  // Exame Extrabucal
+  edema = '';
+  facies = '';
+  linfonodos = '';
+  // Exame Intrabucal
+  labios = '';
+  mucosas = '';
+  soalhoBucal = '';
+  palato = '';
+  orofaringe = '';
+  lingua = '';
+  gengiva = '';
+  habitosNocivos = '';
+  portadorAparelho = '';
+  oclusao = '';
+  exameOutros = '';
+  // Sub-aba do exame objetivo
+  exameSubTab = 0;
 
   // =========================================================================
-  // DIAGNÓSTICO E TRATAMENTO — campos individuais
+  // ABA 2 — DIAGNÓSTICO E TRATAMENTO (mantidos na mesma aba)
   // =========================================================================
   Diagnostico = '';
   PlanoTratamento = '';
   ProcedimentosRealizados = '';
   Prescricao = '';
   Orientacoes = '';
+
+  // =========================================================================
+  // ABA 3 — PLANEJAMENTO TERAPÊUTICO
+  // =========================================================================
+  procedimentosPadrao: any[] = [];
+  planejamentos: any[] = [];
+  novoPlanejamento = { procedimentoRealizado: '', valor: 0, dataProcedimento: '' };
+  mostrarFormProcedimento = false;
+  novoProcedimentoPadrao = { nomeProcedimento: '', valorPadrao: 0 };
+
+  // =========================================================================
+  // ABA 4 — QUESTIONÁRIO DE SAÚDE
+  // =========================================================================
+  questionarioRespondido = false;
+  questionarioStatus = '';
+  questionarioRespostas: any = null;
+  questionarioAssinatura = '';
+  questionarioDataAssinatura = '';
+
+  // =========================================================================
+  // ABA 5 — HISTÓRICO DO PACIENTE
+  // =========================================================================
+  historicoProntuarios: any[] = [];
+  historicoCarregado = false;
+  historicoLoading = false;
+
+  // =========================================================================
+  // DADOS DO PACIENTE (para aba Identificação)
+  // =========================================================================
+  dadosPaciente: any = null;
+  pacienteLoading = false;
 
   // =========================================================================
   // ODONTOGRAMA
@@ -99,7 +164,10 @@ export class ProntuarioDentistaComponent implements OnInit, OnDestroy {
     private router: Router,
     private prontuarioDentistaApi: ProntuarioDentistaApiService,
     private prontuarioState: ProntuarioStateService,
-    private errorHandler: ErrorHandlerService
+    private errorHandler: ErrorHandlerService,
+    private procedimentoPadraoApi: ProcedimentoPadraoApiService,
+    private planejamentoApi: PlanejamentoTerapeuticoApiService,
+    private pacienteApi: PacienteApiService
   ) { }
 
   // =========================================================================
@@ -110,7 +178,19 @@ export class ProntuarioDentistaComponent implements OnInit, OnDestroy {
     this.inicializarOdontograma();
     this.prontuarioState.consulta$
       .pipe(takeUntil(this.destroy$))
-      .subscribe(consulta => { this.Consulta = consulta; });
+      .subscribe(consulta => {
+        this.Consulta = consulta;
+        if (consulta?.id) {
+          this.carregarQuestionarioSaude(consulta.id);
+        }
+        if (consulta?.profissionalId) {
+          this.carregarProcedimentosPadrao(consulta.profissionalId);
+        }
+        if (consulta?.pacienteId) {
+          this.carregarDadosPaciente(consulta.pacienteId);
+          this.carregarHistoricoPaciente(consulta.pacienteId);
+        }
+      });
   }
 
   ngOnDestroy(): void {
@@ -183,6 +263,167 @@ export class ProntuarioDentistaComponent implements OnInit, OnDestroy {
   }
 
   // =========================================================================
+  // PLANEJAMENTO TERAPÊUTICO
+  // =========================================================================
+  carregarProcedimentosPadrao(profissionalId: number): void {
+    this.procedimentoPadraoApi.listarPorProfissional(profissionalId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (lista) => this.procedimentosPadrao = lista,
+        error: () => this.procedimentosPadrao = []
+      });
+  }
+
+  selecionarProcedimentoPadrao(event: any): void {
+    const id = Number(event.target.value);
+    const proc = this.procedimentosPadrao.find(p => p.id === id);
+    if (proc) {
+      this.novoPlanejamento.procedimentoRealizado = proc.nomeProcedimento;
+      this.novoPlanejamento.valor = proc.valorPadrao || 0;
+    }
+  }
+
+  adicionarPlanejamento(): void {
+    if (!this.novoPlanejamento.procedimentoRealizado.trim()) {
+      this.errorHandler.showError('Informe o procedimento realizado');
+      return;
+    }
+    const payload = {
+      prontuarioDentistaId: null as any,
+      consultaId: this.Consulta.id,
+      pacienteId: (this.Consulta as any).pacienteId,
+      dataProcedimento: this.novoPlanejamento.dataProcedimento || new Date().toISOString().split('T')[0],
+      procedimentoRealizado: this.novoPlanejamento.procedimentoRealizado,
+      valor: this.novoPlanejamento.valor
+    };
+    this.planejamentos.push({
+      ...payload,
+      statusAssinatura: 'PENDENTE',
+      _local: true
+    });
+    this.novoPlanejamento = { procedimentoRealizado: '', valor: 0, dataProcedimento: '' };
+  }
+
+  removerPlanejamento(index: number): void {
+    const item = this.planejamentos[index];
+    if (item.id && !item._local) {
+      this.planejamentoApi.remover(item.id)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: () => {
+            this.planejamentos.splice(index, 1);
+            this.errorHandler.showSuccessToast('Item removido');
+          },
+          error: () => this.errorHandler.showError('Erro ao remover item')
+        });
+    } else {
+      this.planejamentos.splice(index, 1);
+    }
+  }
+
+  criarProcedimentoPadrao(): void {
+    if (!this.novoProcedimentoPadrao.nomeProcedimento.trim()) return;
+    this.procedimentoPadraoApi.criar(this.Consulta.profissionalId, this.novoProcedimentoPadrao)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (criado) => {
+          this.procedimentosPadrao.push(criado);
+          this.novoProcedimentoPadrao = { nomeProcedimento: '', valorPadrao: 0 };
+          this.mostrarFormProcedimento = false;
+          this.errorHandler.showSuccessToast('Procedimento cadastrado');
+        },
+        error: () => this.errorHandler.showError('Erro ao cadastrar procedimento')
+      });
+  }
+
+  get totalPlanejamento(): number {
+    return this.planejamentos.reduce((sum, item) => sum + (item.valor || 0), 0);
+  }
+
+
+  // =========================================================================
+  // DADOS DO PACIENTE
+  // =========================================================================
+  carregarDadosPaciente(pacienteId: number): void {
+    this.pacienteLoading = true;
+    this.pacienteApi.buscarrPacientebyOrg(pacienteId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (paciente) => {
+          this.dadosPaciente = paciente;
+          this.pacienteLoading = false;
+          // dados do paciente carregados para exibição na aba Identificação
+        },
+        error: () => { this.pacienteLoading = false; }
+      });
+  }
+
+  // =========================================================================
+  // HISTÓRICO DO PACIENTE
+  // =========================================================================
+  carregarHistoricoPaciente(pacienteId: number): void {
+    this.historicoLoading = true;
+    this.prontuarioDentistaApi.listarHistoricoPorPaciente(pacienteId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (lista) => {
+          this.historicoProntuarios = lista || [];
+          this.historicoCarregado = true;
+          this.historicoLoading = false;
+        },
+        error: () => {
+          this.historicoProntuarios = [];
+          this.historicoCarregado = true;
+          this.historicoLoading = false;
+        }
+      });
+  }
+
+  formatarOdontograma(dentes: any[]): string {
+    if (!dentes || dentes.length === 0) return '';
+    return dentes.map(d => {
+      let texto = `Dente ${d.numeroFdi}: ${d.status}`;
+      if (d.observacao) texto += ` — ${d.observacao}`;
+      return texto;
+    }).join('; ');
+  }
+
+  // =========================================================================
+  // QUESTIONÁRIO DE SAÚDE
+  // =========================================================================
+  carregarQuestionarioSaude(consultaId: number): void {
+    this.prontuarioDentistaApi.buscarQuestionarioSaude(consultaId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (resp) => {
+          this.questionarioRespondido = resp?.respondido || false;
+          this.questionarioStatus = resp?.status || '';
+          if (resp?.respostasQuestionario) {
+            try {
+              this.questionarioRespostas = JSON.parse(resp.respostasQuestionario);
+            } catch {
+              this.questionarioRespostas = resp.respostasQuestionario;
+            }
+          }
+          this.questionarioAssinatura = resp?.assinaturaBase64 || '';
+          this.questionarioDataAssinatura = resp?.dataAssinatura || '';
+        },
+        error: () => { }
+      });
+  }
+
+
+
+  get questionarioPerguntas(): { pergunta: string; resposta: string }[] {
+    if (!this.questionarioRespostas) return [];
+    if (Array.isArray(this.questionarioRespostas)) return this.questionarioRespostas;
+    return Object.entries(this.questionarioRespostas).map(([key, value]) => ({
+      pergunta: key,
+      resposta: value as string
+    }));
+  }
+
+  // =========================================================================
   // FINALIZAÇÃO
   // =========================================================================
   finalizar(): void {
@@ -207,13 +448,13 @@ export class ProntuarioDentistaComponent implements OnInit, OnDestroy {
   private concluido(): void {
     const today = new Date().toISOString().split('T')[0];
 
-    const payload: ProntuarioDentistaRequest = {
+    const payload: any = {
       // anamnese
       queixaPrincipal: this.QueixaPrincipal,
       anamnese: this.HistoricoOdontologico,
       observacao: this.observacao,
 
-      // exame clínico — campos separados (não mais concatenados)
+      // exame clínico — campos separados
       higieneBucal: this.HigieneBucal,
       condicaoGengival: this.CondicaoGengival,
       oclusal: this.Oclusal,
@@ -241,9 +482,48 @@ export class ProntuarioDentistaComponent implements OnInit, OnDestroy {
       dataFinalizado: today,
       tempoDuracao: `${this.minutes}:${String(this.seconds).padStart(2, '0')}`,
 
+      // identificação do paciente
+      responsavel: this.responsavel,
+      inicioTratamento: this.inicioTratamento || null,
+      terminoTratamento: this.terminoTratamento || null,
+      interrupcao: this.interrupcao,
+
+      // exame objetivo — sinais vitais
+      pressaoArterial: this.pressaoArterial,
+      pulso: this.pulso,
+      altura: this.altura,
+      temperatura: this.temperatura,
+      peso: this.peso,
+      edema: this.edema,
+      facies: this.facies,
+      linfonodos: this.linfonodos,
+      labios: this.labios,
+      mucosas: this.mucosas,
+      soalhoBucal: this.soalhoBucal,
+      palato: this.palato,
+      orofaringe: this.orofaringe,
+
+      // exame intrabucal
+      lingua: this.lingua,
+      gengiva: this.gengiva,
+      habitosNocivos: this.habitosNocivos,
+      portadorAparelho: this.portadorAparelho,
+      oclusao: this.oclusao,
+      exameOutros: this.exameOutros,
+
       // relacionamentos
       codigoMedico: this.Consulta.profissionalId,
       consulta: this.Consulta.id,
+
+      // planejamento terapêutico — itens locais adicionados na aba 3
+      planejamentos: this.planejamentos
+        .filter(p => p._local)
+        .map(p => ({
+          dataProcedimento: p.dataProcedimento || today,
+          procedimentoRealizado: p.procedimentoRealizado,
+          valor: p.valor,
+          pacienteId: (this.Consulta as any).pacienteId,
+        })),
     };
 
     this.finalizarProntuario(payload);

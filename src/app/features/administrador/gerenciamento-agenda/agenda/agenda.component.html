@@ -195,6 +195,18 @@
                   <i class="fa-solid fa-paper-plane"></i>
                 </button> -->
 
+                <!-- Gerar Link Questionário (somente antes da finalização) -->
+                <button *ngIf="element.status !== 'REALIZADA'" class="hc-action-btn hc-action-btn--teal" title="Gerar Link do Questionário de Saúde"
+                  (click)="gerarLinkQuestionario(element)">
+                  <i class="fa-solid fa-link"></i>
+                </button>
+
+                <!-- Gerar Link Planejamento Terapêutico (somente após finalização) -->
+                <button *ngIf="element.status === 'REALIZADA'" class="hc-action-btn hc-action-btn--teal" title="Gerar Link do Planejamento Terapêutico"
+                  (click)="gerarLinkPlanejamento(element)">
+                  <i class="fa-solid fa-file-signature"></i>
+                </button>
+
                 <!-- Editar -->
                 <button class="hc-action-btn hc-action-btn--warning" title="Editar Consulta" [disabled]="Finalizadas"
                   (click)="Editar(element)">

@@ -35,6 +35,8 @@ import { ProntuarioMedicoComponent } from './features/medico/prontuario-medico/p
 import { ProntuarioComponent } from './features/medico/prontuario/prontuario.component';
 import { AgendaMedicoGerenciamentoComponent } from './features/medico/agenda/agenda-medico-gerenciamento.component';
 import { ProntuarioDentistaComponent } from './features/medico/prontuario-dentista/prontuario-dentista.component';
+import { QuestionarioSaudeComponent } from './features/publico/questionario-saude/questionario-saude.component';
+import { AssinaturaPlanejamentoComponent } from './features/publico/assinatura-planejamento/assinatura-planejamento.component';
 
 
 const routes: Routes = [
@@ -45,6 +47,8 @@ const routes: Routes = [
   { path: 'login', component: LoginComponent, canActivate: [GuardaRotasLogin] },
   { path: 'cadastroUsuario', component: CadastroUsuarioComponent },
   { path: 'recuperaCadastro', component: RecuperaCadastroComponent },
+  { path: 'questionario-saude/:token', component: QuestionarioSaudeComponent },
+  { path: 'assinatura-planejamento/:token', component: AssinaturaPlanejamentoComponent },
 
   // ========== ROTAS ADMIN E MÉDICO ==========
   { path: 'Dashboard', component: DashboardComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: [Role.ADMIN, Role.DOCTOR] } },
