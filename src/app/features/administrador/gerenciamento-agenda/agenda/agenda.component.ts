@@ -27,6 +27,7 @@ import { RegistroConsultaDentistaComponent } from 'src/app/features/medico/impre
 import { Usuario } from 'src/app/util/variados/interfaces/usuario/usuario';
 import { tokenService } from 'src/app/util/Token/Token.service';
 import { ProntuarioDentistaApiService } from 'src/app/services/api/prontuario-dentista-api.service';
+import { PlanejamentoTerapeuticoApiService } from 'src/app/services/api/planejamento-terapeutico-api.service';
 
 type TipoVisualizacao = 'AGENDADA' | 'REALIZADA';
 type TipoPeriodo = 'diario' | 'semanal' | 'mensal' | 'anual';
@@ -58,7 +59,8 @@ export class AgendaComponent implements OnInit, OnDestroy {
     private consultaState: ConsultaStateService,
     private prontuarioApiService: ProntuarioApiService,
     private tokenService: tokenService,
-    private prontuarioDentistaApiService: ProntuarioDentistaApiService
+    private prontuarioDentistaApiService: ProntuarioDentistaApiService,
+    private planejamentoApi: PlanejamentoTerapeuticoApiService
   ) { }
 
   async ngOnInit() {
@@ -100,6 +102,7 @@ export class AgendaComponent implements OnInit, OnDestroy {
       if (Array.isArray(dados)) {
         const tipo: TipoVisualizacao = this.Finalizadas ? 'REALIZADA' : 'AGENDADA';
         this.dataSource = this.filtrarConsultasPorTipo(dados, tipo);
+        console.log(this.dataSource)
       }
     } catch (error) {
       console.error(error);
@@ -476,6 +479,94 @@ export class AgendaComponent implements OnInit, OnDestroy {
     } else {
       this.dataSource = dados;
     }
+  }
+
+  // ─────────────────────────────────────────────────────────────────────────────
+  // Gerar Link do Planejamento Terapêutico
+  // ─────────────────────────────────────────────────────────────────────────────
+  gerarLinkPlanejamento(element: Consultav2): void {
+    if (!element?.id) return;
+    this.prontuarioDentistaApiService.buscarProntuarioDentistaById(element.id)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (prontuario: any) => {
+          if (!prontuario?.codigo) {
+            Swal.fire('Aviso', 'Nenhum prontuário encontrado para esta consulta.', 'warning');
+            return;
+          }
+          this.planejamentoApi.gerarLinkAssinatura(prontuario.codigo)
+            .pipe(takeUntil(this.destroy$))
+            .subscribe({
+              next: (resp) => {
+                const baseUrl = window.location.origin;
+                const link = `${baseUrl}/#/assinatura-planejamento/${resp.token}`;
+                navigator.clipboard.writeText(link).then(() => {
+                  Swal.fire({
+                    icon: 'success',
+                    title: 'Link Gerado!',
+                    html: `<p style="font-size:0.9rem;">Link do planejamento copiado para a área de transferência.</p>
+                           <input type="text" value="${link}" readonly
+                             style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px;margin-top:8px;font-size:0.82rem;" />`,
+                    confirmButtonText: 'OK'
+                  });
+                }).catch(() => {
+                  Swal.fire({
+                    icon: 'info',
+                    title: 'Link Gerado',
+                    html: `<p style="font-size:0.9rem;">Copie o link abaixo e envie ao paciente:</p>
+                           <input type="text" value="${link}" readonly
+                             style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px;margin-top:8px;font-size:0.82rem;" />`,
+                    confirmButtonText: 'OK'
+                  });
+                });
+              },
+              error: () => {
+                Swal.fire('Erro', 'Não foi possível gerar o link do planejamento.', 'error');
+              }
+            });
+        },
+        error: () => {
+          Swal.fire('Erro', 'Não foi possível buscar o prontuário desta consulta.', 'error');
+        }
+      });
+  }
+
+  // ─────────────────────────────────────────────────────────────────────────────
+  // Gerar Link do Questionário de Saúde
+  // ─────────────────────────────────────────────────────────────────────────────
+  gerarLinkQuestionario(element: Consultav2): void {
+    console.log(element);
+    if (!element?.id) return;
+    this.prontuarioDentistaApiService.gerarLinkQuestionario(element.id)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (resp) => {
+          const baseUrl = window.location.origin;
+          const link = `${baseUrl}/#/questionario-saude/${resp.token}`;
+          navigator.clipboard.writeText(link).then(() => {
+            Swal.fire({
+              icon: 'success',
+              title: 'Link Gerado!',
+              html: `<p style="font-size:0.9rem;">Link copiado para a área de transferência.</p>
+                     <input type="text" value="${link}" readonly
+                       style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px;margin-top:8px;font-size:0.82rem;" />`,
+              confirmButtonText: 'OK'
+            });
+          }).catch(() => {
+            Swal.fire({
+              icon: 'info',
+              title: 'Link Gerado',
+              html: `<p style="font-size:0.9rem;">Copie o link abaixo e envie ao paciente:</p>
+                     <input type="text" value="${link}" readonly
+                       style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px;margin-top:8px;font-size:0.82rem;" />`,
+              confirmButtonText: 'OK'
+            });
+          });
+        },
+        error: () => {
+          Swal.fire('Erro', 'Não foi possível gerar o link do questionário.', 'error');
+        }
+      });
   }
 
   tratarDadosParaTabela(dados: any[]): Tabela[] {

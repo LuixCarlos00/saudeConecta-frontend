@@ -27,11 +27,13 @@ import { SobreComponent } from './features/administrador/sobre/sobre.component';
 import { SuporteComponent } from './features/administrador/suporte/suporte.component';
 import { FilterPipe } from './shared/pipes/filter.pipe';
 import { MensageriaComponent } from './features/administrador/mensageria/mensageria.component';
+import { QuestionarioSaudeComponent } from './features/publico/questionario-saude/questionario-saude.component';
+import { AssinaturaPlanejamentoComponent } from './features/publico/assinatura-planejamento/assinatura-planejamento.component';
 
 registerLocaleData(localePt);
 
 @NgModule({
-  declarations: [AppComponent, LoginComponent, LandingPageComponent, BarraLateraComponent, ConfiguracoesSistemaComponent, SobreComponent, SuporteComponent, FilterPipe, MensageriaComponent],
+  declarations: [AppComponent, LoginComponent, LandingPageComponent, BarraLateraComponent, ConfiguracoesSistemaComponent, SobreComponent, SuporteComponent, FilterPipe, MensageriaComponent, QuestionarioSaudeComponent, AssinaturaPlanejamentoComponent],
   imports: [
     BrowserModule,
     CoreModule, // DEVE ser importado primeiro para registrar os interceptors

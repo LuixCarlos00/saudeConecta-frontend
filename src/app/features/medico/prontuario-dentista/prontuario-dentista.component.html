@@ -83,16 +83,19 @@
   <!-- ===== ABAS ===== -->
   <nav class="pep-tabs">
     <button class="pep-tab" [class.pep-tab--active]="selectedTabIndex === 0" (click)="selectedTabIndex = 0">
-      <i class="fa-solid fa-tooth"></i><span>Odontograma</span>
+      <i class="fa-solid fa-id-card"></i><span>Identificação</span>
     </button>
     <button class="pep-tab" [class.pep-tab--active]="selectedTabIndex === 1" (click)="selectedTabIndex = 1">
-      <i class="fa-solid fa-clipboard-list"></i><span>Anamnese</span>
+      <i class="fa-solid fa-stethoscope"></i><span>Exame Objetivo</span>
     </button>
     <button class="pep-tab" [class.pep-tab--active]="selectedTabIndex === 2" (click)="selectedTabIndex = 2">
-      <i class="fa-solid fa-stethoscope"></i><span>Exame Clínico</span>
+      <i class="fa-solid fa-list-check"></i><span>Planejamento Terapêutico</span>
     </button>
     <button class="pep-tab" [class.pep-tab--active]="selectedTabIndex === 3" (click)="selectedTabIndex = 3">
-      <i class="fa-solid fa-prescription"></i><span>Tratamento</span>
+      <i class="fa-solid fa-clipboard-question"></i><span>Questionário de Saúde</span>
+    </button>
+    <button class="pep-tab" [class.pep-tab--active]="selectedTabIndex === 4" (click)="selectedTabIndex = 4">
+      <i class="fa-solid fa-clock-rotate-left"></i><span>Histórico</span>
     </button>
   </nav>
 
@@ -100,28 +103,354 @@
   <main class="pep-content">
 
     <!-- ══════════════════════════════════════════════════
-         ABA 1 — ODONTOGRAMA ANATÔMICO (SVG REAL)
+         ABA 1 — IDENTIFICAÇÃO DO PACIENTE
     ══════════════════════════════════════════════════ -->
     <section class="pep-section" *ngIf="selectedTabIndex === 0">
       <div class="pep-section__header">
         <h2 class="pep-section__title">
-          <i class="fa-solid fa-tooth"></i>
-          Odontograma — Notação FDI
+          <i class="fa-solid fa-id-card"></i>
+          Identificação do Paciente
         </h2>
-        <div class="pep-section__badges">
-          <div class="pep-section__badge pep-section__badge--count" *ngIf="dentesAlterados > 0">
-            <i class="fa-solid fa-circle-exclamation"></i>
-            {{ dentesAlterados }} dente(s) com alteração
+      </div>
+      <div class="pep-section__body">
+        <div class="identificacao-container">
+
+          <!-- Dados do paciente carregados do backend -->
+          <div class="form-section" *ngIf="dadosPaciente">
+            <h3 class="form-section__title">
+              <i class="fa-solid fa-user-circle"></i> Dados Cadastrais do Paciente
+            </h3>
+            <div class="form-grid form-grid--3">
+              <div class="form-group" *ngIf="dadosPaciente.nome">
+                <label class="form-label">Nome</label>
+                <input class="form-input" type="text" [value]="dadosPaciente.nome" disabled />
+              </div>
+              <div class="form-group" *ngIf="dadosPaciente.cpf">
+                <label class="form-label">CPF</label>
+                <input class="form-input" type="text" [value]="dadosPaciente.cpf" disabled />
+              </div>
+              <div class="form-group" *ngIf="dadosPaciente.rg">
+                <label class="form-label">RG</label>
+                <input class="form-input" type="text" [value]="dadosPaciente.rg" disabled />
+              </div>
+              <div class="form-group" *ngIf="dadosPaciente.sexo">
+                <label class="form-label">Sexo</label>
+                <input class="form-input" type="text" [value]="dadosPaciente.sexo" disabled />
+              </div>
+              <div class="form-group" *ngIf="dadosPaciente.dataNascimento">
+                <label class="form-label">Data de Nascimento</label>
+                <input class="form-input" type="text" [value]="dadosPaciente.dataNascimento" disabled />
+              </div>
+              <div class="form-group" *ngIf="dadosPaciente.telefone">
+                <label class="form-label">Telefone</label>
+                <input class="form-input" type="text" [value]="dadosPaciente.telefone" disabled />
+              </div>
+              <div class="form-group" *ngIf="dadosPaciente.email">
+                <label class="form-label">E-mail</label>
+                <input class="form-input" type="text" [value]="dadosPaciente.email" disabled />
+              </div>
+              <div class="form-group" *ngIf="dadosPaciente.status">
+                <label class="form-label">Status</label>
+                <input class="form-input" type="text" [value]="dadosPaciente.status" disabled />
+              </div>
+            </div>
           </div>
-          <div class="pep-section__badge" *ngIf="selectedDente">
-            <i class="fa-solid fa-location-dot"></i>
-            Dente {{ selectedDente.numero }} — {{ getLabelStatus(selectedDente.status) }}
+
+          <!-- Endereço do paciente carregado do backend -->
+          <div class="form-section" *ngIf="dadosPaciente?.endereco">
+            <h3 class="form-section__title">
+              <i class="fa-solid fa-location-dot"></i> Endereço
+            </h3>
+            <div class="form-grid form-grid--3">
+              <div class="form-group" *ngIf="dadosPaciente.endereco.rua">
+                <label class="form-label">Rua</label>
+                <input class="form-input" type="text" [value]="dadosPaciente.endereco.rua" disabled />
+              </div>
+              <div class="form-group" *ngIf="dadosPaciente.endereco.numero">
+                <label class="form-label">Número</label>
+                <input class="form-input" type="text" [value]="dadosPaciente.endereco.numero" disabled />
+              </div>
+              <div class="form-group" *ngIf="dadosPaciente.endereco.complemento">
+                <label class="form-label">Complemento</label>
+                <input class="form-input" type="text" [value]="dadosPaciente.endereco.complemento" disabled />
+              </div>
+              <div class="form-group" *ngIf="dadosPaciente.endereco.bairro">
+                <label class="form-label">Bairro</label>
+                <input class="form-input" type="text" [value]="dadosPaciente.endereco.bairro" disabled />
+              </div>
+              <div class="form-group" *ngIf="dadosPaciente.endereco.municipio">
+                <label class="form-label">Município</label>
+                <input class="form-input" type="text" [value]="dadosPaciente.endereco.municipio" disabled />
+              </div>
+              <div class="form-group" *ngIf="dadosPaciente.endereco.uf">
+                <label class="form-label">UF</label>
+                <input class="form-input" type="text" [value]="dadosPaciente.endereco.uf" disabled />
+              </div>
+              <div class="form-group" *ngIf="dadosPaciente.endereco.cep">
+                <label class="form-label">CEP</label>
+                <input class="form-input" type="text" [value]="dadosPaciente.endereco.cep" disabled />
+              </div>
+              <div class="form-group" *ngIf="dadosPaciente.endereco.nacionalidade">
+                <label class="form-label">Nacionalidade</label>
+                <input class="form-input" type="text" [value]="dadosPaciente.endereco.nacionalidade" disabled />
+              </div>
+            </div>
           </div>
+
+          <div *ngIf="pacienteLoading" style="padding: 16px; text-align: center; color: #64748b;">
+            <i class="fa-solid fa-spinner fa-spin"></i> Carregando dados do paciente...
+          </div>
+
+          <div class="form-section">
+            <h3 class="form-section__title">
+              <i class="fa-solid fa-user-shield"></i> Responsável (se menor)
+            </h3>
+            <div class="form-grid form-grid--2">
+              <div class="form-group">
+                <label class="form-label">Nome do Responsável</label>
+                <input class="form-input" type="text" [(ngModel)]="responsavel" placeholder="Nome completo do responsável" />
+              </div>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h3 class="form-section__title">
+              <i class="fa-solid fa-calendar-days"></i> Controle do Tratamento
+            </h3>
+            <div class="form-grid form-grid--3">
+              <div class="form-group">
+                <label class="form-label">Início do Tratamento</label>
+                <input class="form-input" type="date" [(ngModel)]="inicioTratamento" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Término do Tratamento</label>
+                <input class="form-input" type="date" [(ngModel)]="terminoTratamento" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Interrupção</label>
+                <input class="form-input" type="text" [(ngModel)]="interrupcao" placeholder="Motivo da interrupção, se houver" />
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
+    </section>
 
+    <!-- ══════════════════════════════════════════════════
+         ABA 2 — EXAME OBJETIVO
+    ══════════════════════════════════════════════════ -->
+    <section class="pep-section" *ngIf="selectedTabIndex === 1">
+      <div class="pep-section__header">
+        <h2 class="pep-section__title">
+          <i class="fa-solid fa-stethoscope"></i>
+          Exame Objetivo
+        </h2>
+      </div>
       <div class="pep-section__body">
-        <div class="odontograma-wrapper">
+
+        <!-- Sub-abas do Exame Objetivo -->
+        <nav class="pep-subtabs">
+          <button class="pep-subtab" [class.pep-subtab--active]="exameSubTab === 0" (click)="exameSubTab = 0">
+            <i class="fa-solid fa-heart-pulse"></i> Sinais Vitais
+          </button>
+          <button class="pep-subtab" [class.pep-subtab--active]="exameSubTab === 1" (click)="exameSubTab = 1">
+            <i class="fa-solid fa-clipboard-list"></i> Anamnese
+          </button>
+          <button class="pep-subtab" [class.pep-subtab--active]="exameSubTab === 2" (click)="exameSubTab = 2">
+            <i class="fa-solid fa-teeth"></i> Exame Intrabucal
+          </button>
+          <button class="pep-subtab" [class.pep-subtab--active]="exameSubTab === 3" (click)="exameSubTab = 3">
+            <i class="fa-solid fa-tooth"></i> Odontograma
+          </button>
+          <button class="pep-subtab" [class.pep-subtab--active]="exameSubTab === 4" (click)="exameSubTab = 4">
+            <i class="fa-solid fa-prescription"></i> Diagnóstico e Tratamento
+          </button>
+        </nav>
+
+        <!-- Sub-aba: Sinais Vitais -->
+        <div *ngIf="exameSubTab === 0">
+          <div class="form-section">
+            <h3 class="form-section__title">
+              <i class="fa-solid fa-heart-pulse"></i> Sinais Vitais
+            </h3>
+            <div class="form-grid form-grid--3">
+              <div class="form-group">
+                <label class="form-label">Pressão Arterial</label>
+                <input class="form-input" type="text" [(ngModel)]="pressaoArterial" placeholder="120/80 mmHg" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Pulso</label>
+                <input class="form-input" type="text" [(ngModel)]="pulso" placeholder="bpm" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Temperatura</label>
+                <input class="form-input" type="text" [(ngModel)]="temperatura" placeholder="°C" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Peso</label>
+                <input class="form-input" type="text" [(ngModel)]="peso" placeholder="kg" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Altura</label>
+                <input class="form-input" type="text" [(ngModel)]="altura" placeholder="m" />
+              </div>
+            </div>
+          </div>
+          <div class="form-section">
+            <h3 class="form-section__title">
+              <i class="fa-solid fa-eye"></i> Exame Extrabucal
+            </h3>
+            <div class="form-grid form-grid--3">
+              <div class="form-group">
+                <label class="form-label">Edema</label>
+                <input class="form-input" type="text" [(ngModel)]="edema" placeholder="Descrever edema" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Fácies</label>
+                <input class="form-input" type="text" [(ngModel)]="facies" placeholder="Descrever fácies" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Linfonodos</label>
+                <input class="form-input" type="text" [(ngModel)]="linfonodos" placeholder="Descrever linfonodos" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sub-aba: Anamnese -->
+        <div *ngIf="exameSubTab === 1">
+          <div class="anamnese-container">
+            <div class="form-section form-section--highlight">
+              <h3 class="form-section__title">
+                <i class="fa-solid fa-comment-medical"></i> Queixa Principal
+              </h3>
+              <textarea class="form-textarea form-textarea--lg" [(ngModel)]="QueixaPrincipal"
+                placeholder="Descreva a queixa principal do paciente..."></textarea>
+            </div>
+            <div class="form-section">
+              <h3 class="form-section__title">
+                <i class="fa-solid fa-clock-rotate-left"></i> Histórico Odontológico
+              </h3>
+              <textarea class="form-textarea form-textarea--lg" [(ngModel)]="HistoricoOdontologico"
+                placeholder="Histórico de tratamentos anteriores, alergias, medicações em uso..."></textarea>
+            </div>
+            <div class="form-section">
+              <h3 class="form-section__title">
+                <i class="fa-solid fa-note-sticky"></i> Observações Gerais
+              </h3>
+              <textarea class="form-textarea" [(ngModel)]="observacao" placeholder="Observações adicionais..."></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sub-aba: Exame Intrabucal -->
+        <div *ngIf="exameSubTab === 2">
+          <div class="form-section">
+            <h3 class="form-section__title">
+              <i class="fa-solid fa-teeth"></i> Avaliação Intrabucal
+            </h3>
+            <div class="form-grid form-grid--2">
+              <div class="form-group">
+                <label class="form-label"><i class="fa-solid fa-toothbrush"></i> Higiene Bucal</label>
+                <select class="form-select" [(ngModel)]="HigieneBucal">
+                  <option value="">Selecione...</option>
+                  <option value="Excelente">Excelente</option>
+                  <option value="Boa">Boa</option>
+                  <option value="Regular">Regular</option>
+                  <option value="Deficiente">Deficiente</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label"><i class="fa-solid fa-heart-pulse"></i> Condição Gengival</label>
+                <select class="form-select" [(ngModel)]="CondicaoGengival">
+                  <option value="">Selecione...</option>
+                  <option value="Saudável">Saudável</option>
+                  <option value="Gengivite Leve">Gengivite Leve</option>
+                  <option value="Gengivite Moderada">Gengivite Moderada</option>
+                  <option value="Gengivite Severa">Gengivite Severa</option>
+                  <option value="Periodontite">Periodontite</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-grid form-grid--2">
+              <div class="form-group">
+                <label class="form-label">Lábios</label>
+                <input class="form-input" type="text" [(ngModel)]="labios" placeholder="Descrever" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Mucosas</label>
+                <input class="form-input" type="text" [(ngModel)]="mucosas" placeholder="Descrever" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Soalho Bucal</label>
+                <input class="form-input" type="text" [(ngModel)]="soalhoBucal" placeholder="Descrever" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Palato</label>
+                <input class="form-input" type="text" [(ngModel)]="palato" placeholder="Descrever" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Orofaringe</label>
+                <input class="form-input" type="text" [(ngModel)]="orofaringe" placeholder="Descrever" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Língua</label>
+                <input class="form-input" type="text" [(ngModel)]="lingua" placeholder="Descrever" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Gengiva</label>
+                <input class="form-input" type="text" [(ngModel)]="gengiva" placeholder="Descrever" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Portador de Aparelho</label>
+                <select class="form-select" [(ngModel)]="portadorAparelho">
+                  <option value="">Selecione...</option>
+                  <option value="Sim">Sim</option>
+                  <option value="Não">Não</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-grid form-grid--2">
+              <div class="form-group">
+                <label class="form-label"><i class="fa-solid fa-teeth-open"></i> Oclusão</label>
+                <textarea class="form-textarea" [(ngModel)]="oclusao" placeholder="Avaliação da oclusão dentária..."></textarea>
+              </div>
+              <div class="form-group">
+                <label class="form-label"><i class="fa-solid fa-head-side-mask"></i> ATM</label>
+                <textarea class="form-textarea" [(ngModel)]="ATM" placeholder="Avaliação da ATM, dores, estalos..."></textarea>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Hábitos Nocivos</label>
+              <textarea class="form-textarea" [(ngModel)]="habitosNocivos" placeholder="Bruxismo, onicofagia, tabagismo..."></textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Outros</label>
+              <textarea class="form-textarea" [(ngModel)]="exameOutros" placeholder="Outras observações do exame..."></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sub-aba: Odontograma -->
+        <div *ngIf="exameSubTab === 3">
+          <div class="pep-section__header">
+            <h2 class="pep-section__title">
+              <i class="fa-solid fa-tooth"></i>
+              Odontograma — Notação FDI
+            </h2>
+            <div class="pep-section__badges">
+              <div class="pep-section__badge pep-section__badge--count" *ngIf="dentesAlterados > 0">
+                <i class="fa-solid fa-circle-exclamation"></i>
+                {{ dentesAlterados }} dente(s) com alteração
+              </div>
+              <div class="pep-section__badge" *ngIf="selectedDente">
+                <i class="fa-solid fa-location-dot"></i>
+                Dente {{ selectedDente.numero }} — {{ getLabelStatus(selectedDente.status) }}
+              </div>
+            </div>
+          </div>
+          <div class="odontograma-wrapper">
 
           <!-- LEGENDA -->
           <!-- <div class="odontograma-legenda">
@@ -617,157 +946,365 @@
           </div><!-- fim odontograma-layout -->
 
         </div><!-- fim odontograma-wrapper -->
-      </div>
-    </section>
+        </div><!-- fim sub-aba odontograma -->
 
-    <!-- ══ ABA 2 — ANAMNESE ══ -->
-    <section class="pep-section" *ngIf="selectedTabIndex === 1">
+        <!-- Sub-aba: Diagnóstico e Tratamento -->
+        <div *ngIf="exameSubTab === 4">
+          <div class="tratamento-container">
+            <div class="form-section">
+              <h3 class="form-section__title">
+                <i class="fa-solid fa-clipboard-check"></i> Diagnóstico e Plano de Tratamento
+              </h3>
+              <div class="form-grid form-grid--2">
+                <div class="form-group">
+                  <label class="form-label form-label--lg"><i class="fa-solid fa-diagnoses"></i> Diagnóstico</label>
+                  <textarea class="form-textarea form-textarea--lg" [(ngModel)]="Diagnostico"
+                    placeholder="Diagnóstico odontológico..."></textarea>
+                </div>
+                <div class="form-group">
+                  <label class="form-label form-label--lg"><i class="fa-solid fa-list-check"></i> Plano de Tratamento</label>
+                  <textarea class="form-textarea form-textarea--lg" [(ngModel)]="PlanoTratamento"
+                    placeholder="Plano de tratamento proposto..."></textarea>
+                </div>
+              </div>
+            </div>
+            <div class="forms-grid">
+              <div class="form-card">
+                <div class="form-card__header form-card__header--blue">
+                  <i class="fa-solid fa-hand-holding-medical"></i>
+                  <h4>Procedimentos Realizados</h4>
+                </div>
+                <div class="form-card__body">
+                  <textarea class="form-textarea form-textarea--lg" [(ngModel)]="ProcedimentosRealizados"
+                    placeholder="Descreva os procedimentos realizados..."></textarea>
+                </div>
+              </div>
+              <div class="form-card">
+                <div class="form-card__header form-card__header--green">
+                  <i class="fa-solid fa-prescription-bottle-medical"></i>
+                  <h4>Prescrição Odontológica</h4>
+                </div>
+                <div class="form-card__body">
+                  <textarea class="form-textarea form-textarea--lg" [(ngModel)]="Prescricao"
+                    placeholder="Prescrição de medicamentos..."></textarea>
+                </div>
+              </div>
+            </div>
+            <div class="form-section">
+              <h3 class="form-section__title">
+                <i class="fa-solid fa-lightbulb"></i> Orientações ao Paciente
+              </h3>
+              <textarea class="form-textarea" [(ngModel)]="Orientacoes"
+                placeholder="Orientações sobre cuidados pós-tratamento..."></textarea>
+            </div>
+          </div>
+        </div><!-- fim sub-aba diagnóstico -->
+
+      </div><!-- fim pep-section__body -->
+    </section><!-- fim ABA 2 -->
+
+    <!-- ══════════════════════════════════════════════════
+         ABA 3 — PLANEJAMENTO TERAPÊUTICO
+    ══════════════════════════════════════════════════ -->
+    <section class="pep-section" *ngIf="selectedTabIndex === 2" style="max-width: 1400px;">
       <div class="pep-section__header">
         <h2 class="pep-section__title">
-          <i class="fa-solid fa-clipboard-list"></i> Anamnese Odontológica
+          <i class="fa-solid fa-list-check"></i>
+          Planejamento Terapêutico
         </h2>
       </div>
       <div class="pep-section__body">
-        <div class="anamnese-container">
-          <div class="form-section form-section--highlight">
-            <h3 class="form-section__title">
-              <i class="fa-solid fa-comment-medical"></i> Queixa Principal
-            </h3>
-            <textarea class="form-textarea form-textarea--lg" [(ngModel)]="QueixaPrincipal"
-              placeholder="Descreva a queixa principal do paciente..."></textarea>
+
+        <!-- Cadastro de Procedimento Padrão -->
+        <div class="form-section">
+          <h3 class="form-section__title">
+            <i class="fa-solid fa-plus-circle"></i> Adicionar Procedimento
+          </h3>
+          <div class="form-grid form-grid--3">
+            <div class="form-group">
+              <label class="form-label">Procedimento Padrão</label>
+              <select class="form-select" (change)="selecionarProcedimentoPadrao($event)">
+                <option value="">Selecionar pré-cadastrado...</option>
+                <option *ngFor="let proc of procedimentosPadrao" [value]="proc.id">
+                  {{ proc.nomeProcedimento }} — R$ {{ proc.valorPadrao | number:'1.2-2' }}
+                </option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Procedimento</label>
+              <input class="form-input" type="text" [(ngModel)]="novoPlanejamento.procedimentoRealizado"
+                placeholder="Nome do procedimento" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Valor (R$)</label>
+              <input class="form-input" type="number" [(ngModel)]="novoPlanejamento.valor" placeholder="0.00" />
+            </div>
           </div>
-          <div class="form-section">
-            <h3 class="form-section__title">
-              <i class="fa-solid fa-clock-rotate-left"></i> Histórico Odontológico
-            </h3>
-            <textarea class="form-textarea form-textarea--lg" [(ngModel)]="HistoricoOdontologico"
-              placeholder="Histórico de tratamentos anteriores, alergias, medicações em uso..."></textarea>
-          </div>
-          <div class="form-section">
-            <h3 class="form-section__title">
-              <i class="fa-solid fa-note-sticky"></i> Observações Gerais
-            </h3>
-            <textarea class="form-textarea" [(ngModel)]="observacao" placeholder="Observações adicionais..."></textarea>
+          <div class="form-actions" style="margin-top: 12px; display: flex; gap: 8px;">
+            <button class="btn btn--primary btn--sm" (click)="adicionarPlanejamento()">
+              <i class="fa-solid fa-plus"></i> Adicionar ao Planejamento
+            </button>
+            <button class="btn btn--outline btn--sm" (click)="mostrarFormProcedimento = !mostrarFormProcedimento">
+              <i class="fa-solid fa-cog"></i> {{ mostrarFormProcedimento ? 'Fechar' : 'Cadastrar Procedimento Padrão' }}
+            </button>
           </div>
         </div>
+
+        <!-- Form de Cadastro de Procedimento Padrão (toggle) -->
+        <div class="form-section" *ngIf="mostrarFormProcedimento" style="background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 8px; padding: 16px;">
+          <h3 class="form-section__title">
+            <i class="fa-solid fa-folder-plus"></i> Novo Procedimento Padrão
+          </h3>
+          <div class="form-grid form-grid--2">
+            <div class="form-group">
+              <label class="form-label">Nome do Procedimento</label>
+              <input class="form-input" type="text" [(ngModel)]="novoProcedimentoPadrao.nomeProcedimento"
+                placeholder="Ex: Limpeza, Restauração, Canal..." />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Valor Padrão (R$)</label>
+              <input class="form-input" type="number" [(ngModel)]="novoProcedimentoPadrao.valorPadrao" placeholder="0.00" />
+            </div>
+          </div>
+          <button class="btn btn--primary btn--sm" (click)="criarProcedimentoPadrao()" style="margin-top: 8px;">
+            <i class="fa-solid fa-check"></i> Salvar Procedimento Padrão
+          </button>
+        </div>
+
+        <!-- Tabela de Planejamento -->
+        <div class="form-section" style="margin-top: 16px;">
+          <h3 class="form-section__title">
+            <i class="fa-solid fa-table-list"></i> Itens do Planejamento
+          </h3>
+          <div class="table-responsive" *ngIf="planejamentos.length > 0">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Data</th>
+                  <th>Procedimento</th>
+                  <th>Valor</th>
+                  <th>Assinatura</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of planejamentos; let i = index">
+                  <td>{{ item.dataProcedimento }}</td>
+                  <td>{{ item.procedimentoRealizado }}</td>
+                  <td>R$ {{ item.valor | number:'1.2-2' }}</td>
+                  <td>
+                    <span class="badge" [class.badge--success]="item.statusAssinatura === 'ASSINADO'"
+                      [class.badge--warning]="item.statusAssinatura === 'PENDENTE'">
+                      {{ item.statusAssinatura }}
+                    </span>
+                  </td>
+                  <td>
+                    <button class="btn btn--danger btn--sm" (click)="removerPlanejamento(i)"
+                      *ngIf="item.statusAssinatura === 'PENDENTE'">
+                      <i class="fa-solid fa-trash"></i>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td colspan="2"><strong>Total</strong></td>
+                  <td colspan="3"><strong>R$ {{ totalPlanejamento | number:'1.2-2' }}</strong></td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+          <div class="dente-placeholder" *ngIf="planejamentos.length === 0">
+            <div class="dente-placeholder__icon">
+              <i class="fa-solid fa-clipboard-list"></i>
+            </div>
+            <p class="dente-placeholder__text">
+              Nenhum procedimento adicionado ao planejamento terapêutico.
+            </p>
+          </div>
+        </div>
+
+
       </div>
     </section>
 
-    <!-- ══ ABA 3 — EXAME CLÍNICO ══ -->
-    <section class="pep-section" *ngIf="selectedTabIndex === 2">
-      <div class="pep-section__header">
-        <h2 class="pep-section__title">
-          <i class="fa-solid fa-stethoscope"></i> Exame Clínico Odontológico
-        </h2>
-      </div>
-      <div class="pep-section__body">
-        <div class="exame-clinico-container">
-          <div class="form-section">
-            <h3 class="form-section__title">
-              <i class="fa-solid fa-teeth"></i> Avaliação Bucal
-            </h3>
-            <div class="form-grid form-grid--2">
-              <div class="form-group">
-                <label class="form-label"><i class="fa-solid fa-toothbrush"></i> Higiene Bucal</label>
-                <select class="form-select" [(ngModel)]="HigieneBucal">
-                  <option value="">Selecione...</option>
-                  <option value="Excelente">Excelente</option>
-                  <option value="Boa">Boa</option>
-                  <option value="Regular">Regular</option>
-                  <option value="Deficiente">Deficiente</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label class="form-label"><i class="fa-solid fa-heart-pulse"></i> Condição Gengival</label>
-                <select class="form-select" [(ngModel)]="CondicaoGengival">
-                  <option value="">Selecione...</option>
-                  <option value="Saudável">Saudável</option>
-                  <option value="Gengivite Leve">Gengivite Leve</option>
-                  <option value="Gengivite Moderada">Gengivite Moderada</option>
-                  <option value="Gengivite Severa">Gengivite Severa</option>
-                  <option value="Periodontite">Periodontite</option>
-                </select>
-              </div>
-            </div>
-          </div>
-          <div class="form-section">
-            <h3 class="form-section__title">
-              <i class="fa-solid fa-gears"></i> Avaliação Funcional
-            </h3>
-            <div class="form-grid form-grid--2">
-              <div class="form-group">
-                <label class="form-label form-label--lg"><i class="fa-solid fa-teeth-open"></i> Oclusal</label>
-                <textarea class="form-textarea" [(ngModel)]="Oclusal"
-                  placeholder="Avaliação da oclusão dentária..."></textarea>
-              </div>
-              <div class="form-group">
-                <label class="form-label form-label--lg"><i class="fa-solid fa-head-side-mask"></i> ATM</label>
-                <textarea class="form-textarea" [(ngModel)]="ATM"
-                  placeholder="Avaliação da ATM, dores, estalos..."></textarea>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ══ ABA 4 — TRATAMENTO ══ -->
+    <!-- ══════════════════════════════════════════════════
+         ABA 4 — QUESTIONÁRIO DE SAÚDE
+    ══════════════════════════════════════════════════ -->
     <section class="pep-section" *ngIf="selectedTabIndex === 3">
       <div class="pep-section__header">
         <h2 class="pep-section__title">
-          <i class="fa-solid fa-prescription"></i> Diagnóstico e Tratamento
+          <i class="fa-solid fa-clipboard-question"></i>
+          Questionário de Saúde
         </h2>
       </div>
       <div class="pep-section__body">
-        <div class="tratamento-container">
-          <div class="form-section">
+
+
+        <!-- Questionário Respondido -->
+        <div *ngIf="questionarioRespondido">
+          <div class="form-section" style="background: #f0fdf4; border: 1px solid #86efac; border-radius: 8px; padding: 16px;">
             <h3 class="form-section__title">
-              <i class="fa-solid fa-clipboard-check"></i> Diagnóstico e Plano de Tratamento
+              <i class="fa-solid fa-check-double" style="color: #16a34a;"></i> Questionário Respondido e Assinado
             </h3>
-            <div class="form-grid form-grid--2">
-              <div class="form-group">
-                <label class="form-label form-label--lg"><i class="fa-solid fa-diagnoses"></i> Diagnóstico</label>
-                <textarea class="form-textarea form-textarea--lg" [(ngModel)]="Diagnostico"
-                  placeholder="Diagnóstico odontológico..."></textarea>
-              </div>
-              <div class="form-group">
-                <label class="form-label form-label--lg"><i class="fa-solid fa-list-check"></i> Plano de
-                  Tratamento</label>
-                <textarea class="form-textarea form-textarea--lg" [(ngModel)]="PlanoTratamento"
-                  placeholder="Plano de tratamento proposto..."></textarea>
-              </div>
+            <p style="font-size: 0.9rem; color: #374151;">
+              <i class="fa-solid fa-calendar"></i> Data da assinatura: <strong>{{ questionarioDataAssinatura | date:'dd/MM/yyyy HH:mm' }}</strong>
+            </p>
+          </div>
+
+          <!-- Exibir Respostas -->
+          <div class="form-section" *ngIf="questionarioPerguntas.length > 0" style="margin-top: 16px;">
+            <h3 class="form-section__title">
+              <i class="fa-solid fa-list-ol"></i> Respostas do Paciente
+            </h3>
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th style="width: 60%;">Pergunta</th>
+                    <th>Resposta</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let item of questionarioPerguntas">
+                    <td>{{ item.pergunta }}</td>
+                    <td>
+                      <span class="badge" [class.badge--success]="item.resposta === 'Não'"
+                        [class.badge--warning]="item.resposta === 'Sim'">
+                        {{ item.resposta }}
+                      </span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
-          <div class="forms-grid">
-            <div class="form-card">
-              <div class="form-card__header form-card__header--blue">
-                <i class="fa-solid fa-hand-holding-medical"></i>
-                <h4>Procedimentos Realizados</h4>
-              </div>
-              <div class="form-card__body">
-                <textarea class="form-textarea form-textarea--lg" [(ngModel)]="ProcedimentosRealizados"
-                  placeholder="Descreva os procedimentos realizados..."></textarea>
-              </div>
-            </div>
-            <div class="form-card">
-              <div class="form-card__header form-card__header--green">
-                <i class="fa-solid fa-prescription-bottle-medical"></i>
-                <h4>Prescrição Odontológica</h4>
-              </div>
-              <div class="form-card__body">
-                <textarea class="form-textarea form-textarea--lg" [(ngModel)]="Prescricao"
-                  placeholder="Prescrição de medicamentos..."></textarea>
-              </div>
-            </div>
-          </div>
-          <div class="form-section">
+
+          <!-- Exibir Assinatura -->
+          <div class="form-section" *ngIf="questionarioAssinatura" style="margin-top: 16px;">
             <h3 class="form-section__title">
-              <i class="fa-solid fa-lightbulb"></i> Orientações ao Paciente
+              <i class="fa-solid fa-signature"></i> Assinatura Digital do Paciente
             </h3>
-            <textarea class="form-textarea" [(ngModel)]="Orientacoes"
-              placeholder="Orientações sobre cuidados pós-tratamento..."></textarea>
+            <div style="text-align: center; padding: 16px; background: #fff; border: 1px solid #e5e7eb; border-radius: 8px;">
+              <img [src]="questionarioAssinatura" alt="Assinatura do paciente"
+                style="max-width: 400px; max-height: 200px;" />
+            </div>
           </div>
         </div>
+
+        <!-- Questionário não respondido -->
+        <div class="dente-placeholder" *ngIf="!questionarioRespondido">
+          <div class="dente-placeholder__icon">
+            <i class="fa-solid fa-clipboard-question"></i>
+          </div>
+          <p class="dente-placeholder__text">
+            O questionário de saúde ainda não foi respondido pelo paciente.
+          </p>
+          <span class="dente-placeholder__hint">
+            <i class="fa-solid fa-info-circle"></i>
+            O link do questionário pode ser gerado pela agenda, antes ou depois da consulta.
+          </span>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════
+         ABA 5 — HISTÓRICO DO PACIENTE
+    ══════════════════════════════════════════════════ -->
+    <section class="pep-section" *ngIf="selectedTabIndex === 4">
+      <div class="pep-section__header">
+        <h2 class="pep-section__title">
+          <i class="fa-solid fa-clock-rotate-left"></i>
+          Histórico do Paciente
+        </h2>
+      </div>
+      <div class="pep-section__body">
+
+        <!-- Loading -->
+        <div *ngIf="historicoLoading" style="padding: 32px; text-align: center; color: #64748b;">
+          <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
+          <p style="margin-top: 12px;">Carregando histórico do paciente...</p>
+        </div>
+
+        <!-- Sem histórico -->
+        <div class="dente-placeholder" *ngIf="historicoCarregado && historicoProntuarios.length === 0 && !historicoLoading">
+          <div class="dente-placeholder__icon">
+            <i class="fa-solid fa-folder-open"></i>
+          </div>
+          <p class="dente-placeholder__text">
+            Nenhum registro anterior encontrado para este paciente.
+          </p>
+        </div>
+
+        <!-- Lista de prontuários anteriores -->
+        <div *ngIf="historicoCarregado && historicoProntuarios.length > 0 && !historicoLoading">
+          <div *ngFor="let pront of historicoProntuarios; let i = index"
+            class="historico-registro" style="background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 20px; margin-bottom: 16px;">
+
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid #f1f5f9;">
+              <h3 style="margin: 0; font-size: 1rem; color: #1e293b;">
+                <i class="fa-solid fa-file-medical" style="color: #3b82f6; margin-right: 6px;"></i>
+                Consulta #{{ pront.consulta?.id || pront.codigo }} — {{ pront.dataFinalizado }}
+              </h3>
+              <span class="badge badge--info" style="font-size: 0.78rem;">
+                {{ pront.tempoDuracao || '—' }}
+              </span>
+            </div>
+
+            <div class="historico-texto" style="font-size: 0.92rem; line-height: 1.7; color: #334155;">
+
+              <div *ngIf="pront.queixaPrincipal" style="margin-bottom: 10px;">
+                <strong style="color: #0f172a;"><i class="fa-solid fa-comment-medical" style="color: #ef4444; margin-right: 4px;"></i> Queixa Principal:</strong>
+                <span style="margin-left: 4px;">{{ pront.queixaPrincipal }}</span>
+              </div>
+
+              <div *ngIf="pront.anamnese" style="margin-bottom: 10px;">
+                <strong style="color: #0f172a;"><i class="fa-solid fa-clock-rotate-left" style="color: #8b5cf6; margin-right: 4px;"></i> Histórico Odontológico:</strong>
+                <span style="margin-left: 4px;">{{ pront.anamnese }}</span>
+              </div>
+
+              <div *ngIf="pront.observacao" style="margin-bottom: 10px;">
+                <strong style="color: #0f172a;"><i class="fa-solid fa-note-sticky" style="color: #f59e0b; margin-right: 4px;"></i> Observações Gerais:</strong>
+                <span style="margin-left: 4px;">{{ pront.observacao }}</span>
+              </div>
+
+              <div *ngIf="pront.labios || pront.mucosas || pront.soalhoBucal || pront.palato || pront.orofaringe || pront.lingua || pront.gengiva || pront.higieneBucal || pront.condicaoGengival || pront.oclusao || pront.atm" style="margin-bottom: 10px;">
+                <strong style="color: #0f172a;"><i class="fa-solid fa-teeth" style="color: #06b6d4; margin-right: 4px;"></i> Exame Intrabucal:</strong>
+                <span style="margin-left: 4px;">
+                  <span *ngIf="pront.higieneBucal">Higiene Bucal: {{ pront.higieneBucal }}. </span>
+                  <span *ngIf="pront.condicaoGengival">Condição Gengival: {{ pront.condicaoGengival }}. </span>
+                  <span *ngIf="pront.labios">Lábios: {{ pront.labios }}. </span>
+                  <span *ngIf="pront.mucosas">Mucosas: {{ pront.mucosas }}. </span>
+                  <span *ngIf="pront.soalhoBucal">Soalho Bucal: {{ pront.soalhoBucal }}. </span>
+                  <span *ngIf="pront.palato">Palato: {{ pront.palato }}. </span>
+                  <span *ngIf="pront.orofaringe">Orofaringe: {{ pront.orofaringe }}. </span>
+                  <span *ngIf="pront.lingua">Língua: {{ pront.lingua }}. </span>
+                  <span *ngIf="pront.gengiva">Gengiva: {{ pront.gengiva }}. </span>
+                  <span *ngIf="pront.oclusao">Oclusão: {{ pront.oclusao }}. </span>
+                  <span *ngIf="pront.atm">ATM: {{ pront.atm }}. </span>
+                </span>
+              </div>
+
+              <div *ngIf="pront.dentes && pront.dentes.length > 0" style="margin-bottom: 10px;">
+                <strong style="color: #0f172a;"><i class="fa-solid fa-tooth" style="color: #10b981; margin-right: 4px;"></i> Odontograma:</strong>
+                <span style="margin-left: 4px;">{{ formatarOdontograma(pront.dentes) }}</span>
+              </div>
+
+              <div *ngIf="pront.diagnostico" style="margin-bottom: 10px;">
+                <strong style="color: #0f172a;"><i class="fa-solid fa-stethoscope" style="color: #6366f1; margin-right: 4px;"></i> Diagnóstico:</strong>
+                <span style="margin-left: 4px;">{{ pront.diagnostico }}</span>
+              </div>
+
+              <div *ngIf="pront.planoTratamento" style="margin-bottom: 10px;">
+                <strong style="color: #0f172a;"><i class="fa-solid fa-list-check" style="color: #0ea5e9; margin-right: 4px;"></i> Plano de Tratamento:</strong>
+                <span style="margin-left: 4px;">{{ pront.planoTratamento }}</span>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
       </div>
     </section>
 
@@ -794,6 +1331,10 @@
         </div>
         <div class="progress-line" [class.progress-line--active]="selectedTabIndex >= 3"></div>
         <div class="progress-step" [class.progress-step--completed]="selectedTabIndex >= 3">
+          <i class="fa-solid fa-check"></i>
+        </div>
+        <div class="progress-line" [class.progress-line--active]="selectedTabIndex >= 4"></div>
+        <div class="progress-step" [class.progress-step--completed]="selectedTabIndex >= 4">
           <i class="fa-solid fa-check"></i>
         </div>
       </div>

@@ -541,6 +541,14 @@
     }
   }
 
+  &--teal {
+    color: #0891b2;
+    &:hover:not(:disabled) {
+      background: #cffafe;
+      border-color: #0891b2;
+    }
+  }
+
   &--confirm {
     color: #2563eb;
     &:hover:not(:disabled) {
