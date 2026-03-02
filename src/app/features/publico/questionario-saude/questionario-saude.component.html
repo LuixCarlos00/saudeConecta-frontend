@@ -49,19 +49,28 @@
         <span class="paciente-label">Profissional:</span>
         <span class="paciente-value">{{ profissionalNome }}</span>
       </div>
+      <div class="paciente-row" *ngIf="clinicaNome">
+        <span class="paciente-label">Clínica:</span>
+        <span class="paciente-value">{{ clinicaNome }}</span>
+      </div>
+      <div class="paciente-row" *ngIf="dataConsulta">
+        <span class="paciente-label">Data da Consulta:</span>
+        <span class="paciente-value">{{ dataConsulta | date: 'dd/MM/yyyy' }}</span>
+      </div>
+
     </div>
 
     <!-- INSTRUÇÕES -->
     <div class="questionario-instrucoes">
       <i class="fa-solid fa-info-circle"></i>
-      <p>Responda todas as perguntas com <strong>Sim</strong> ou <strong>Não</strong>. Se necessário, adicione observações. Ao final, assine digitalmente para confirmar suas respostas.</p>
+      <p>Responda todas as perguntas com <strong>Sim</strong> ou <strong>Não</strong>. Se necessário, adicione
+        observações. Ao final, assine digitalmente para confirmar suas respostas.</p>
     </div>
 
     <!-- PERGUNTAS -->
     <div class="questionario-perguntas">
       <div class="pergunta-card" *ngFor="let p of perguntas; let i = index"
-        [class.pergunta-card--respondida]="p.resposta !== ''"
-        [class.pergunta-card--sim]="p.resposta === 'Sim'">
+        [class.pergunta-card--respondida]="p.resposta !== ''" [class.pergunta-card--sim]="p.resposta === 'Sim'">
 
         <div class="pergunta-header">
           <span class="pergunta-num">{{ i + 1 }}</span>
@@ -70,12 +79,10 @@
 
         <div class="pergunta-body">
           <div class="pergunta-opcoes">
-            <button class="opcao-btn" [class.opcao-btn--sim-active]="p.resposta === 'Sim'"
-              (click)="p.resposta = 'Sim'">
+            <button class="opcao-btn" [class.opcao-btn--sim-active]="p.resposta === 'Sim'" (click)="p.resposta = 'Sim'">
               <i class="fa-solid fa-check"></i> Sim
             </button>
-            <button class="opcao-btn" [class.opcao-btn--nao-active]="p.resposta === 'Não'"
-              (click)="p.resposta = 'Não'">
+            <button class="opcao-btn" [class.opcao-btn--nao-active]="p.resposta === 'Não'" (click)="p.resposta = 'Não'">
               <i class="fa-solid fa-xmark"></i> Não
             </button>
           </div>
@@ -108,8 +115,8 @@
       <p class="assinatura-instrucao">Digite seu nome completo e escolha o estilo da assinatura.</p>
 
       <div class="assinatura-input-group">
-        <input type="text" class="assinatura-input" [(ngModel)]="assinaturaNome"
-          (input)="onAssinaturaInput()" placeholder="Digite seu nome completo..." autocomplete="off" />
+        <input type="text" class="assinatura-input" [(ngModel)]="assinaturaNome" (input)="onAssinaturaInput()"
+          placeholder="Digite seu nome completo..." autocomplete="off" />
         <button class="assinatura-limpar-btn" (click)="limparAssinatura()" *ngIf="assinaturaPreenchida">
           <i class="fa-solid fa-eraser"></i> Limpar
         </button>
@@ -117,8 +124,7 @@
 
       <div class="assinatura-fontes">
         <button *ngFor="let fonte of FONTES" class="fonte-option"
-          [class.fonte-option--active]="fonteSelecionada === fonte.id"
-          [style.font-family]="fonte.css"
+          [class.fonte-option--active]="fonteSelecionada === fonte.id" [style.font-family]="fonte.css"
           (click)="selecionarFonte(fonte.id)">
           {{ assinaturaNome || fonte.label }}
         </button>

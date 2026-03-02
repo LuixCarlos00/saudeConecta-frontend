@@ -396,6 +396,7 @@ export class ProntuarioDentistaComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (resp) => {
+          console.log('Resposta do questionário:', resp);
           this.questionarioRespondido = resp?.respondido || false;
           this.questionarioStatus = resp?.status || '';
           if (resp?.respostasQuestionario) {
@@ -414,13 +415,31 @@ export class ProntuarioDentistaComponent implements OnInit, OnDestroy {
 
 
 
-  get questionarioPerguntas(): { pergunta: string; resposta: string }[] {
+  get questionarioPerguntas(): { pergunta: string; resposta: string; observacao?: string }[] {
     if (!this.questionarioRespostas) return [];
     if (Array.isArray(this.questionarioRespostas)) return this.questionarioRespostas;
-    return Object.entries(this.questionarioRespostas).map(([key, value]) => ({
-      pergunta: key,
-      resposta: value as string
-    }));
+    return Object.entries(this.questionarioRespostas).map(([key, value]) => {
+      // Se o value é um objeto com pergunta, resposta e observacao
+      if (
+        typeof value === 'object' &&
+        value !== null &&
+        'pergunta' in value &&
+        'resposta' in value
+      ) {
+        const v = value as { pergunta?: string; resposta?: string; observacao?: string };
+        return {
+          pergunta: v.pergunta || key,
+          resposta: v.resposta || '',
+          observacao: v.observacao || ''
+        };
+      }
+      // Se for string ou outro formato
+      return {
+        pergunta: key,
+        resposta: typeof value === 'string' ? value : '',
+        observacao: ''
+      };
+    });
   }
 
   // =========================================================================
@@ -530,6 +549,7 @@ export class ProntuarioDentistaComponent implements OnInit, OnDestroy {
   }
 
   private finalizarProntuario(payload: ProntuarioDentistaRequest): void {
+    console.log('Payload para finalização do prontuário:', payload);
     this.prontuarioDentistaApi
       .cadastrarProntuarioByOrg(payload)
       .pipe(takeUntil(this.destroy$))
