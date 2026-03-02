@@ -91,6 +91,23 @@
         </div>
       </div>
 
+      <!-- Seção: Códigos CID / TUSS -->
+      <div class="pdf-section" *ngIf="cidTexto || tussTexto">
+        <div class="section-header section-header--executive">
+          <h2>CÓDIGOS CID / TUSS</h2>
+        </div>
+        <div class="section-content section-content--vertical">
+          <div class="pdf-field" *ngIf="cidTexto">
+            <span class="field-label">CID</span>
+            <span class="field-value">{{ cidTexto }}</span>
+          </div>
+          <div class="pdf-field" *ngIf="tussTexto">
+            <span class="field-label">TUSS</span>
+            <span class="field-value">{{ tussTexto }}</span>
+          </div>
+        </div>
+      </div>
+
       <!-- Seção: Declaração -->
       <div class="pdf-section">
         <div class="section-header section-header--executive">

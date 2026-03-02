@@ -86,7 +86,8 @@
     <!-- Tabela de Consultas -->
     <div class="agenda-table-container">
       <div class="hc-table-wrapper">
-        <table mat-table [dataSource]="dataSource" class="hc-table">
+        <table mat-table [dataSource]="dataSource" class="hc-table"
+               [class.hc-table--finalizadas]="Finalizadas">
 
           <!-- Coluna: Código -->
           <ng-container matColumnDef="consulta">
@@ -168,13 +169,30 @@
                 [class.hc-status-select--confirmada]="element.status === 'CONFIRMADA'"
                 [class.hc-status-select--realizada]="element.status === 'REALIZADA'"
                 [class.hc-status-select--cancelada]="element.status === 'CANCELADA'"
-                [attr.disabled]="(element.status === 'REALIZADA' || element.status === 'CANCELADA') ? true : null"
+                [class.hc-status-select--pago]="element.status === 'PAGO'"
+                [attr.disabled]="(element.status === 'REALIZADA' || element.status === 'CANCELADA' || element.status === 'PAGO') ? true : null"
                 (change)="AlterarStatus(element, $any($event.target).value)">
                 <option value="AGENDADA" [selected]="element.status === 'AGENDADA'">Agendada</option>
                 <option value="CONFIRMADA" [selected]="element.status === 'CONFIRMADA'">Confirmada</option>
                 <option *ngIf="Finalizadas" value="REALIZADA" [selected]="element.status === 'REALIZADA'">Realizada</option>
+                <option *ngIf="Finalizadas" value="PAGO" [selected]="element.status === 'PAGO'">Pago</option>
                 <option value="CANCELADA" [selected]="element.status === 'CANCELADA'">Cancelada</option>
               </select>
+            </td>
+          </ng-container>
+
+          <!-- Coluna: Status Pagamento (somente Finalizadas) -->
+          <ng-container matColumnDef="statusPagamento">
+            <th mat-header-cell *matHeaderCellDef>
+              <i class="fa-solid fa-money-check-dollar"></i>
+              Pagamento
+            </th>
+            <td mat-cell *matCellDef="let element">
+              <span class="hc-badge"
+                [class.hc-badge--pago]="element.status === 'PAGO'"
+                [class.hc-badge--pendente]="element.status !== 'PAGO'">
+                {{ getLabelStatusPagamento(element.status) }}
+              </span>
             </td>
           </ng-container>
 
@@ -219,6 +237,18 @@
 <!--                  <i class="fa-solid fa-check"></i>-->
 <!--                </button>-->
 
+                <!-- Comprovante de Pagamento (somente Finalizadas com status REALIZADA) -->
+                <button *ngIf="Finalizadas && element.status === 'REALIZADA'" class="hc-action-btn hc-action-btn--success" title="Gerar Comprovante e Marcar como Pago"
+                  (click)="MarcarComoPago(element)">
+                  <i class="fa-solid fa-money-check-dollar"></i>
+                </button>
+
+                <!-- Gerar Comprovante PDF (Finalizadas) -->
+                <button *ngIf="Finalizadas && (element.status === 'REALIZADA' || element.status === 'PAGO')" class="hc-action-btn hc-action-btn--teal" title="Gerar Comprovante de Pagamento PDF"
+                  (click)="GerarComprovantePagamento(element)">
+                  <i class="fa-solid fa-file-invoice-dollar"></i>
+                </button>
+
                 <!-- Imprimir -->
                 <button class="hc-action-btn hc-action-btn--primary" title="Opções de Impressão"
                   (click)="AbrirOpcoesImpressao(element)">
@@ -234,8 +264,8 @@
             </td>
           </ng-container>
 
-          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-          <tr mat-row *matRowDef="let row; columns: displayedColumns;" [class.hc-table__row--completed]="Finalizadas">
+          <tr mat-header-row *matHeaderRowDef="Finalizadas ? displayedColumnsFinalizadas : displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: Finalizadas ? displayedColumnsFinalizadas : displayedColumns;" [class.hc-table__row--completed]="Finalizadas">
           </tr>
         </table>
 

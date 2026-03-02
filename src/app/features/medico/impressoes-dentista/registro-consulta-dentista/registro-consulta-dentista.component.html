@@ -102,6 +102,67 @@
         </div>
       </div>
 
+      <!-- Seção: Sinais Vitais -->
+      <div class="pdf-section" *ngIf="pressaoArterial || pulso || peso || altura || temperatura || edema">
+        <div class="section-header section-header--executive">
+          <h2>SINAIS VITAIS</h2>
+        </div>
+        <div class="section-content section-content--horizontal">
+          <div class="pdf-field">
+            <span class="field-label">PRESSÃO ARTERIAL</span>
+            <span class="field-value">{{ pressaoArterial || '-' }}</span>
+          </div>
+          <div class="pdf-field">
+            <span class="field-label">PULSO</span>
+            <span class="field-value">{{ pulso || '-' }}</span>
+          </div>
+          <div class="pdf-field">
+            <span class="field-label">PESO</span>
+            <span class="field-value">{{ peso || '-' }}</span>
+          </div>
+          <div class="pdf-field">
+            <span class="field-label">ALTURA</span>
+            <span class="field-value">{{ altura || '-' }}</span>
+          </div>
+          <div class="pdf-field">
+            <span class="field-label">TEMPERATURA</span>
+            <span class="field-value">{{ temperatura || '-' }}</span>
+          </div>
+          <div class="pdf-field">
+            <span class="field-label">EDEMA</span>
+            <span class="field-value">{{ edema || '-' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Seção: Anamnese -->
+      <div class="pdf-section" *ngIf="queixaPrincipal">
+        <div class="section-header section-header--executive">
+          <h2>QUEIXA PRINCIPAL</h2>
+        </div>
+        <div class="section-content section-content--vertical">
+          <div class="clinical-content">{{ queixaPrincipal }}</div>
+        </div>
+      </div>
+
+      <div class="pdf-section" *ngIf="anamnese">
+        <div class="section-header section-header--executive">
+          <h2>ANAMNESE</h2>
+        </div>
+        <div class="section-content section-content--vertical">
+          <div class="clinical-content">{{ anamnese }}</div>
+        </div>
+      </div>
+
+      <div class="pdf-section" *ngIf="observacao">
+        <div class="section-header section-header--executive">
+          <h2>OBSERVAÇÕES</h2>
+        </div>
+        <div class="section-content section-content--vertical">
+          <div class="clinical-content">{{ observacao }}</div>
+        </div>
+      </div>
+
       <!-- Seção: Exame Clínico -->
       <div class="pdf-section">
         <div class="section-header section-header--executive">
@@ -127,23 +188,95 @@
         </div>
       </div>
 
-      <!-- Seção: Queixa Principal -->
-      <div class="pdf-section" *ngIf="queixaPrincipal">
+      <!-- Seção: Exame Intrabucal -->
+      <div class="pdf-section" *ngIf="facies || linfonodos || labios || mucosas || soalhoBucal || palato || orofaringe || lingua || gengiva || habitosNocivos || portadorAparelho || oclusao || exameOutros">
         <div class="section-header section-header--executive">
-          <h2>QUEIXA PRINCIPAL</h2>
+          <h2>EXAME INTRABUCAL</h2>
         </div>
-        <div class="section-content section-content--vertical">
-          <div class="clinical-content">{{ queixaPrincipal }}</div>
+        <div class="section-content section-content--horizontal">
+          <div class="pdf-field">
+            <span class="field-label">FÁCIES</span>
+            <span class="field-value">{{ facies || '-' }}</span>
+          </div>
+          <div class="pdf-field">
+            <span class="field-label">LINFONODOS</span>
+            <span class="field-value">{{ linfonodos || '-' }}</span>
+          </div>
+          <div class="pdf-field">
+            <span class="field-label">LÁBIOS</span>
+            <span class="field-value">{{ labios || '-' }}</span>
+          </div>
+          <div class="pdf-field">
+            <span class="field-label">MUCOSAS</span>
+            <span class="field-value">{{ mucosas || '-' }}</span>
+          </div>
+        </div>
+        <div class="section-content section-content--horizontal">
+          <div class="pdf-field">
+            <span class="field-label">SOALHO BUCAL</span>
+            <span class="field-value">{{ soalhoBucal || '-' }}</span>
+          </div>
+          <div class="pdf-field">
+            <span class="field-label">PALATO</span>
+            <span class="field-value">{{ palato || '-' }}</span>
+          </div>
+          <div class="pdf-field">
+            <span class="field-label">OROFARINGE</span>
+            <span class="field-value">{{ orofaringe || '-' }}</span>
+          </div>
+          <div class="pdf-field">
+            <span class="field-label">LÍNGUA</span>
+            <span class="field-value">{{ lingua || '-' }}</span>
+          </div>
+        </div>
+        <div class="section-content section-content--horizontal">
+          <div class="pdf-field">
+            <span class="field-label">GENGIVA</span>
+            <span class="field-value">{{ gengiva || '-' }}</span>
+          </div>
+          <div class="pdf-field">
+            <span class="field-label">HÁB. NOCIVOS</span>
+            <span class="field-value">{{ habitosNocivos || '-' }}</span>
+          </div>
+          <div class="pdf-field">
+            <span class="field-label">AP. ORTODÔNTICO</span>
+            <span class="field-value">{{ portadorAparelho || '-' }}</span>
+          </div>
+          <div class="pdf-field">
+            <span class="field-label">OCLUSÃO</span>
+            <span class="field-value">{{ oclusao || '-' }}</span>
+          </div>
+        </div>
+        <div class="section-content section-content--vertical" *ngIf="exameOutros">
+          <div class="pdf-field">
+            <span class="field-label">OUTROS</span>
+            <span class="field-value">{{ exameOutros }}</span>
+          </div>
         </div>
       </div>
 
-      <!-- Seção: Anamnese -->
-      <div class="pdf-section" *ngIf="anamnese">
+      <!-- Seção: Odontograma -->
+      <div class="pdf-section" *ngIf="dentes.length > 0">
         <div class="section-header section-header--executive">
-          <h2>ANAMNESE</h2>
+          <h2>ODONTOGRAMA (DENTES ALTERADOS)</h2>
         </div>
         <div class="section-content section-content--vertical">
-          <div class="clinical-content">{{ anamnese }}</div>
+          <table class="odontograma-table">
+            <thead>
+              <tr>
+                <th>DENTE (FDI)</th>
+                <th>STATUS</th>
+                <th>OBSERVAÇÃO</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let dente of dentes">
+                <td>{{ dente.numeroFdi }}</td>
+                <td>{{ dente.status }}</td>
+                <td>{{ dente.observacao || '-' }}</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
 
@@ -197,13 +330,59 @@
         </div>
       </div>
 
-      <!-- Seção: Observações -->
-      <div class="pdf-section" *ngIf="observacao">
+      <!-- Seção: Códigos CID / TUSS -->
+      <div class="pdf-section" *ngIf="cidTexto || tussTexto || solicitacaoExameTexto">
         <div class="section-header section-header--executive">
-          <h2>OBSERVAÇÕES</h2>
+          <h2>CÓDIGOS CID / TUSS</h2>
         </div>
         <div class="section-content section-content--vertical">
-          <div class="clinical-content">{{ observacao }}</div>
+          <div class="pdf-field" *ngIf="cidTexto">
+            <span class="field-label">CID</span>
+            <span class="field-value">{{ cidTexto }}</span>
+          </div>
+          <div class="pdf-field" *ngIf="tussTexto">
+            <span class="field-label">TUSS</span>
+            <span class="field-value">{{ tussTexto }}</span>
+          </div>
+          <div class="pdf-field" *ngIf="solicitacaoExameTexto">
+            <span class="field-label">SOLICITAÇÃO DE EXAME</span>
+            <span class="field-value">{{ solicitacaoExameTexto }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Seção: Planejamento Terapêutico -->
+      <div class="pdf-section" *ngIf="planejamentos.length > 0">
+        <div class="section-header section-header--executive">
+          <h2>PLANEJAMENTO TERAPÊUTICO</h2>
+        </div>
+        <div class="section-content section-content--vertical">
+          <table class="odontograma-table">
+            <thead>
+              <tr>
+                <th>DATA</th>
+                <th>PROCEDIMENTO</th>
+                <th>VALOR</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let plan of planejamentos">
+                <td>{{ plan.dataProcedimento }}</td>
+                <td>{{ plan.procedimentoRealizado }}</td>
+                <td>R$ {{ plan.valor?.toFixed(2) || '0.00' }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Seção: Tempo de Consulta -->
+      <div class="pdf-section" *ngIf="tempoDuracao">
+        <div class="section-header section-header--executive">
+          <h2>TEMPO DE CONSULTA</h2>
+        </div>
+        <div class="section-content section-content--vertical">
+          <div class="clinical-content">{{ tempoDuracao }}</div>
         </div>
       </div>
 

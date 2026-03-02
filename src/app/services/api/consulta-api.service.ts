@@ -113,6 +113,10 @@ export class ConsultaApiService {
     );
   }
 
+  marcarComoPago(id: number): Observable<Consultav2> {
+    return this.http.patch<Consultav2>(`${this.apiUrl}/${id}/pagar`, {});
+  }
+
 
   verificarDisponibilidadeByOrg(data: string, horario: string, medicoId: number): Observable<boolean> {
     return this.http.get<boolean>(

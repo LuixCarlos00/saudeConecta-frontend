@@ -26,9 +26,9 @@ export enum StatusConsulta {
   AGENDADA = 'AGENDADA',
   REALIZADA = 'REALIZADA',
   CANCELADA = 'CANCELADA',
+  PAGO = 'PAGO',
   FALTOU = 'FALTOU',
   REMARCADA = 'REMARCADA'
-
 }
 export enum FormaPagamento {
   PARTICULAR = 1,

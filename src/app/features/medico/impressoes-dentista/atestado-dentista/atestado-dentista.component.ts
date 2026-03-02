@@ -27,6 +27,10 @@ export class AtestadoDentistaComponent implements OnInit {
   horarioConsulta = '';
   diaSemana = '';
 
+  // Códigos TUSS e CID
+  tussTexto = '';
+  cidTexto = '';
+
   // ID para o PDF
   codigoProntuario = '';
 
@@ -71,6 +75,10 @@ export class AtestadoDentistaComponent implements OnInit {
       this.diaSemana = dt.toLocaleDateString('pt-BR', { weekday: 'long' });
     }
 
+    // ── Códigos TUSS e CID ─────────────────────────────────────────────────────
+    this.tussTexto = p.tussTexto?.trim() || '';
+    this.cidTexto = p.cidTexto?.trim() || '';
+
     // ── Identificação ─────────────────────────────────────────────────────────
     this.codigoProntuario = String(p.codigo ?? p.codigoProntuario ?? '000000');
 
@@ -84,6 +92,8 @@ export class AtestadoDentistaComponent implements OnInit {
       horarioConsulta: this.horarioConsulta,
       diaSemana: this.diaSemana,
       codigoProntuario: this.codigoProntuario,
+      tussTexto: this.tussTexto,
+      cidTexto: this.cidTexto,
     });
   }
 
@@ -143,6 +153,47 @@ export class AtestadoDentistaComponent implements OnInit {
       { label: 'Telefone', value: this.telefoneDentista },
     ], y, margin, pageWidth);
     y += 3;
+
+    // Seção: Códigos TUSS e CID (somente se houver dados)
+    if (this.cidTexto || this.tussTexto) {
+      const resultadoCodigos = this.verificarEspacoAdicionarPagina(doc, y, 40, pageHeight, margin, pageWidth);
+      y = resultadoCodigos.y;
+      paginaAtual += resultadoCodigos.pagina;
+
+      y = this.adicionarSecaoVertical(doc, 'CÓDIGOS CID / TUSS', null, y, margin, pageWidth);
+
+      if (this.cidTexto) {
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(7);
+        doc.setTextColor(102, 102, 102);
+        doc.text('CID:', margin, y);
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(8);
+        doc.setTextColor(0, 0, 0);
+        const linhasCid = doc.splitTextToSize(this.cidTexto, pageWidth - (margin * 2) - 15);
+        doc.text(linhasCid, margin + 15, y);
+        y += linhasCid.length * 4 + 3;
+      }
+
+      if (this.tussTexto) {
+        const resultadoTuss = this.verificarEspacoAdicionarPagina(doc, y, 15, pageHeight, margin, pageWidth);
+        y = resultadoTuss.y;
+        paginaAtual += resultadoTuss.pagina;
+
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(7);
+        doc.setTextColor(102, 102, 102);
+        doc.text('TUSS:', margin, y);
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(8);
+        doc.setTextColor(0, 0, 0);
+        const linhasTuss = doc.splitTextToSize(this.tussTexto, pageWidth - (margin * 2) - 15);
+        doc.text(linhasTuss, margin + 15, y);
+        y += linhasTuss.length * 4 + 3;
+      }
+
+      y += 3;
+    }
 
     // Seção: Declaração
     const alturaCaixaDeclaracao = 40;
