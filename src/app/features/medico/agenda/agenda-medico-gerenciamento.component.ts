@@ -26,6 +26,7 @@ import { Consultav2 } from 'src/app/util/variados/interfaces/consulta/consultav2
 import { Prontuario } from 'src/app/util/variados/interfaces/Prontuario/Prontuario';
 import { PrescricaoDentistaComponent } from '../impressoes-dentista/prescricao-dentista/prescricao-dentista.component';
 import { AtestadoDentistaComponent } from '../impressoes-dentista/atestado-dentista/atestado-dentista.component';
+import { EditarProntuarioDentistaComponent } from '../prontuario-dentista/editar-prontuario-dentista/editar-prontuario-dentista.component';
 
 type TipoVisualizacao = 'CONFIRMADA' | 'REALIZADA';
 type TipoPeriodo = 'diario' | 'semanal' | 'mensal' | 'anual';
@@ -295,6 +296,26 @@ export class AgendaMedicoGerenciamentoComponent implements OnInit, OnDestroy {
       icon: 'warning',
       confirmButtonColor: '#0066CC',
       confirmButtonText: 'Entendi',
+    });
+  }
+
+  /**
+   * Abre o dialog de edição do prontuário odontológico.
+   * @param element Consulta selecionada (finalizada)
+   */
+  EditarProntuario(element: Consultav2): void {
+    const dialogRef = this.dialog.open(EditarProntuarioDentistaComponent, {
+      width: '90%',
+      maxWidth: '1200px',
+      height: '90%',
+      panelClass: 'editar-prontuario-dialog',
+      data: { consulta: element },
+    });
+
+    dialogRef.afterClosed().subscribe((atualizado: boolean) => {
+      if (atualizado) {
+        this.buscarDadosParaTabela();
+      }
     });
   }
 

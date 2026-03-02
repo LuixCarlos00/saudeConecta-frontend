@@ -21,6 +21,15 @@ export class ProntuarioDentistaApiService {
     return this.http.get<any>(`${this.apiUrl}/consulta/${consultaId}/recente`);
   }
 
+  /**
+   * Atualiza um prontuário odontológico existente.
+   * @param prontuarioId ID do prontuário
+   * @param payload Dados atualizados
+   */
+  atualizarProntuario(prontuarioId: number, payload: any): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/${prontuarioId}`, payload);
+  }
+
   gerarLinkQuestionario(consultaId: number): Observable<{ token: string }> {
     return this.http.post<{ token: string }>(`${this.apiUrl}/gerar-link-questionario/${consultaId}`, {});
   }

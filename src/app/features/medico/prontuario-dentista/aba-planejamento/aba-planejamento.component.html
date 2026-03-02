@@ -1,0 +1,122 @@
+<section class="pep-section">
+  <div class="pep-section__header">
+    <h2 class="pep-section__title">
+      <i class="fa-solid fa-list-check"></i>
+      Planejamento Terapêutico
+    </h2>
+  </div>
+  <div class="pep-section__body">
+
+    <!-- Cadastro de Procedimento Padrão -->
+    <div class="form-section">
+      <h3 class="form-section__title">
+        <i class="fa-solid fa-plus-circle"></i> Adicionar Procedimento
+      </h3>
+      <div class="form-grid form-grid--3">
+        <div class="form-group">
+          <label class="form-label">Procedimento Padrão</label>
+          <select class="form-select" (change)="selecionarProcedimentoPadrao($event)">
+            <option value="">Selecionar pré-cadastrado...</option>
+            <option *ngFor="let proc of procedimentosPadrao" [value]="proc.id">
+              {{ proc.nomeProcedimento }} — R$ {{ proc.valorPadrao | number:'1.2-2' }}
+            </option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Procedimento</label>
+          <input class="form-input" type="text" [(ngModel)]="novoPlanejamento.procedimentoRealizado"
+            placeholder="Nome do procedimento" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Valor (R$)</label>
+          <input class="form-input" type="number" [(ngModel)]="novoPlanejamento.valor" placeholder="0.00" />
+        </div>
+      </div>
+      <div class="form-actions" style="margin-top: 12px; display: flex; gap: 8px;">
+        <button class="btn btn--primary btn--sm" (click)="adicionarPlanejamento()">
+          <i class="fa-solid fa-plus"></i> Adicionar ao Planejamento
+        </button>
+        <button class="btn btn--outline btn--sm" (click)="mostrarFormProcedimento = !mostrarFormProcedimento">
+          <i class="fa-solid fa-cog"></i> {{ mostrarFormProcedimento ? 'Fechar' : 'Cadastrar Procedimento Padrão' }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Form de Cadastro de Procedimento Padrão (toggle) -->
+    <div class="form-section" *ngIf="mostrarFormProcedimento"
+      style="background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 8px; padding: 16px;">
+      <h3 class="form-section__title">
+        <i class="fa-solid fa-folder-plus"></i> Novo Procedimento Padrão
+      </h3>
+      <div class="form-grid form-grid--2">
+        <div class="form-group">
+          <label class="form-label">Nome do Procedimento</label>
+          <input class="form-input" type="text" [(ngModel)]="novoProcedimentoPadrao.nomeProcedimento"
+            placeholder="Ex: Limpeza, Restauração, Canal..." />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Valor Padrão (R$)</label>
+          <input class="form-input" type="number" [(ngModel)]="novoProcedimentoPadrao.valorPadrao"
+            placeholder="0.00" />
+        </div>
+      </div>
+      <button class="btn btn--primary btn--sm" (click)="criarProcedimentoPadrao()" style="margin-top: 8px;">
+        <i class="fa-solid fa-check"></i> Salvar Procedimento Padrão
+      </button>
+    </div>
+
+    <!-- Tabela de Planejamento -->
+    <div class="form-section" style="margin-top: 16px;">
+      <h3 class="form-section__title">
+        <i class="fa-solid fa-table-list"></i> Itens do Planejamento
+      </h3>
+      <div class="table-responsive" *ngIf="planejamentos.length > 0">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Data</th>
+              <th>Procedimento</th>
+              <th>Valor</th>
+              <th>Assinatura</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of planejamentos; let i = index">
+              <td>{{ item.dataProcedimento }}</td>
+              <td>{{ item.procedimentoRealizado }}</td>
+              <td>R$ {{ item.valor | number:'1.2-2' }}</td>
+              <td>
+                <span class="badge" [class.badge--success]="item.statusAssinatura === 'ASSINADO'"
+                  [class.badge--warning]="item.statusAssinatura === 'PENDENTE'">
+                  {{ item.statusAssinatura }}
+                </span>
+              </td>
+              <td>
+                <button class="btn btn--danger btn--sm" (click)="removerPlanejamento(i)"
+                  *ngIf="item.statusAssinatura === 'PENDENTE'">
+                  <i class="fa-solid fa-trash"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="2"><strong>Total</strong></td>
+              <td colspan="3"><strong>R$ {{ totalPlanejamento | number:'1.2-2' }}</strong></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+      <div class="dente-placeholder" *ngIf="planejamentos.length === 0">
+        <div class="dente-placeholder__icon">
+          <i class="fa-solid fa-clipboard-list"></i>
+        </div>
+        <p class="dente-placeholder__text">
+          Nenhum procedimento adicionado ao planejamento terapêutico.
+        </p>
+      </div>
+    </div>
+
+  </div>
+</section>
