@@ -28,12 +28,13 @@ import { Usuario } from 'src/app/util/variados/interfaces/usuario/usuario';
 import { tokenService } from 'src/app/util/Token/Token.service';
 import { ProntuarioDentistaApiService } from 'src/app/services/api/prontuario-dentista-api.service';
 import { PlanejamentoTerapeuticoApiService } from 'src/app/services/api/planejamento-terapeutico-api.service';
+import { ComprovantePagamentoDentistaComponent } from 'src/app/features/medico/impressoes-dentista/comprovante-pagamento-dentista/comprovante-pagamento-dentista.component';
 
 type TipoVisualizacao = 'AGENDADA' | 'REALIZADA';
 type TipoPeriodo = 'diario' | 'semanal' | 'mensal' | 'anual';
 
 const STATUS_AGENDADAS = ['AGENDADA', 'CONFIRMADA'];
-const STATUS_FINALIZADAS = ['REALIZADA', 'CANCELADA'];
+const STATUS_FINALIZADAS = ['REALIZADA', 'CANCELADA', 'PAGO'];
 
 @Component({
   selector: 'app-agenda',
@@ -44,6 +45,7 @@ export class AgendaComponent implements OnInit, OnDestroy {
   FormularioAgenda!: FormGroup;
   dataSource: Consultav2[] = [];
   displayedColumns: string[] = ['consulta', 'medico', 'paciente', 'diaSemana', 'data', 'horario', 'status', 'Seleciona'];
+  displayedColumnsFinalizadas: string[] = ['consulta', 'medico', 'paciente', 'diaSemana', 'data', 'horario', 'status', 'statusPagamento', 'Seleciona'];
   Finalizadas = false;
   clickedRows = new Set<Tabela>();
   ValorOpcao: any;
@@ -304,8 +306,59 @@ export class AgendaComponent implements OnInit, OnDestroy {
       CONFIRMADA: 'Confirmada',
       REALIZADA: 'Realizada',
       CANCELADA: 'Cancelada',
+      PAGO: 'Pago',
     };
     return labels[status] ?? status;
+  }
+
+  /**
+   * Abre o comprovante de pagamento para uma consulta finalizada.
+   * Tenta buscar prontuário médico, se falhar tenta dentista.
+   */
+  GerarComprovantePagamento(element: Consultav2): void {
+    this.prontuarioApiService.buscarProntuarioById(element.id).subscribe(
+      (dados) => this.dialog.open(ComprovantePagamentoDentistaComponent, { width: '60%', height: '90%', data: dados }),
+      () => this.prontuarioDentistaApiService.buscarProntuarioDentistaById(element.id).subscribe(
+        (dados) => this.dialog.open(ComprovantePagamentoDentistaComponent, { width: '60%', height: '90%', data: dados }),
+        () => this.mostrarErroProntuarioNaoEncontrado()
+      )
+    );
+  }
+
+  /**
+   * Altera o status de uma consulta REALIZADA para PAGO.
+   */
+  MarcarComoPago(element: Consultav2): void {
+    Swal.fire({
+      title: 'Confirmar pagamento?',
+      text: `A consulta de ${element.pacienteNome} será marcada como PAGO.`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#27ae60',
+      cancelButtonColor: '#6b7280',
+      confirmButtonText: 'Sim, marcar como pago!',
+      cancelButtonText: 'Cancelar',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.consultaApi.marcarComoPago(element.id).subscribe({
+          next: () => {
+            Swal.fire('Pago!', 'Consulta marcada como paga com sucesso.', 'success');
+            this.buscarDadosParaTabela();
+          },
+          error: (err) => {
+            console.error(err);
+            Swal.fire('Erro', 'Não foi possível marcar a consulta como paga.', 'error');
+          },
+        });
+      }
+    });
+  }
+
+  /**
+   * Retorna o label do status de pagamento para exibição na coluna.
+   */
+  getLabelStatusPagamento(status: string): string {
+    return status === 'PAGO' ? 'Pago' : 'Pendente';
   }
 
   Observacoes(observacoes: string): void {
@@ -398,6 +451,7 @@ export class AgendaComponent implements OnInit, OnDestroy {
       '2': () => this.prescricaoDentista(dados),
       '4': () => this.atestadoDentista(dados),
       '5': () => this.registroConsultaDentista(dados),
+      '6': () => this.comprovantePagamentoDentista(dados),
     };
     acoes[opcao]?.();
   }
@@ -455,6 +509,10 @@ export class AgendaComponent implements OnInit, OnDestroy {
 
   registroConsultaDentista(dados: Prontuario) {
     this.dialog.open(RegistroConsultaDentistaComponent, { width: '60%', height: '90%', data: dados });
+  }
+
+  comprovantePagamentoDentista(dados: Prontuario) {
+    this.dialog.open(ComprovantePagamentoDentistaComponent, { width: '60%', height: '90%', data: dados });
   }
 
   // ─────────────────────────────────────────────────────────────────────────────

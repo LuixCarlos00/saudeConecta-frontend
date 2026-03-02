@@ -27,6 +27,7 @@ import { Prontuario } from 'src/app/util/variados/interfaces/Prontuario/Prontuar
 import { PrescricaoDentistaComponent } from '../impressoes-dentista/prescricao-dentista/prescricao-dentista.component';
 import { AtestadoDentistaComponent } from '../impressoes-dentista/atestado-dentista/atestado-dentista.component';
 import { EditarProntuarioDentistaComponent } from '../prontuario-dentista/editar-prontuario-dentista/editar-prontuario-dentista.component';
+import { ComprovantePagamentoDentistaComponent } from '../impressoes-dentista/comprovante-pagamento-dentista/comprovante-pagamento-dentista.component';
 
 type TipoVisualizacao = 'CONFIRMADA' | 'REALIZADA';
 type TipoPeriodo = 'diario' | 'semanal' | 'mensal' | 'anual';
@@ -281,6 +282,7 @@ export class AgendaMedicoGerenciamentoComponent implements OnInit, OnDestroy {
       case '2': this.dialog.open(PrescricaoDentistaComponent, { width: dialogWidth, height: dialogHeight, data: dados }); break;
       case '4': this.dialog.open(AtestadoDentistaComponent, { width: dialogWidth, height: dialogHeight, data: dados }); break;
       case '5': this.dialog.open(RegistroConsultaDentistaComponent, { width: dialogWidth, height: dialogHeight, data: dados }); break;
+      case '6': this.dialog.open(ComprovantePagamentoDentistaComponent, { width: dialogWidth, height: dialogHeight, data: dados }); break;
     }
   }
 
