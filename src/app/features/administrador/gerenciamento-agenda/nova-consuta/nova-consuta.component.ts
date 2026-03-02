@@ -284,15 +284,26 @@ export class NovaConsultaComponent implements OnInit {
   //======================================================================
 
   async marcarConsulta() {
+    console.log('Iniciando processo de marcação de consulta...', this.FormularioConsulta);
     const input_Forma_Pagamento = this.transformaFormaPagamento();
     const input_HORA = this.FormularioConsulta.get('Hora')?.value;
     const input_OBSERVACAO = this.FormularioConsulta.get('observacao')?.value;
     const input_VALOR = this.FormularioConsulta.get('valor')?.value; // NOVO
     const dataAtual = new Date().toISOString().split('T')[0];
 
+    console.log('Dados para cadastro da consulta:', {
+      input_Forma_Pagamento,
+      input_HORA,
+      input_OBSERVACAO,
+      input_VALOR,
+      DataSelecionada: this.DataSelecionada,
+      Medico: this.Medico,
+      Paciente: this.Paciente
+    });
+
+
     if (this.Medico && this.Paciente && this.DataSelecionada &&
       input_Forma_Pagamento && input_HORA && input_VALOR !== null) {
-
 
       const Especialidade = this.Medico.especialidades as any;
       const consult: any = {
@@ -380,15 +391,22 @@ export class NovaConsultaComponent implements OnInit {
     let FornaPAgamento: number;
 
     switch (pagamentoValue) {
-      case 'Cartao':
+      case 'Particular':
         return (FornaPAgamento = 1);
         break;
-      case 'Dinheiro':
+      case 'Convênio':
         return (FornaPAgamento = 2);
         break;
-      case 'Pix':
+      case 'Cartão de Crédito':
         return (FornaPAgamento = 3);
         break;
+      case 'Cartão de Débito':
+        return (FornaPAgamento = 4);
+        break;
+      case 'PIX':
+        return (FornaPAgamento = 5);
+      case 'Dinheiro':
+        return (FornaPAgamento = 6);
       default:
         return (FornaPAgamento = 0); // Valor padrão, caso nenhuma das opções seja selecionada
     }

@@ -27,10 +27,10 @@ import { Prontuario } from 'src/app/util/variados/interfaces/Prontuario/Prontuar
 import { PrescricaoDentistaComponent } from '../impressoes-dentista/prescricao-dentista/prescricao-dentista.component';
 import { AtestadoDentistaComponent } from '../impressoes-dentista/atestado-dentista/atestado-dentista.component';
 
-type TipoVisualizacao = 'AGENDADA' | 'REALIZADA';
+type TipoVisualizacao = 'CONFIRMADA' | 'REALIZADA';
 type TipoPeriodo = 'diario' | 'semanal' | 'mensal' | 'anual';
 
-const STATUS_AGENDADAS = ['AGENDADA'];
+const STATUS_AGENDADAS = ['CONFIRMADA'];
 const STATUS_FINALIZADAS = ['REALIZADA'];
 
 @Component({
@@ -95,7 +95,8 @@ export class AgendaMedicoGerenciamentoComponent implements OnInit, OnDestroy {
     try {
       const dados = await this.buscarConsultasPorPeriodo();
       if (Array.isArray(dados)) {
-        const tipoVisualizacao: TipoVisualizacao = this.Finalizadas ? 'REALIZADA' : 'AGENDADA';
+        console.log('Dados brutos recebidos do backend:', dados);
+        const tipoVisualizacao: TipoVisualizacao = this.Finalizadas ? 'REALIZADA' : 'CONFIRMADA';
         const consultasFiltradas = this.filtrarConsultasPorTipo(dados, tipoVisualizacao);
         this.dataSource = [...consultasFiltradas];
         console.log('this.dataSource', this.dataSource);
@@ -307,7 +308,7 @@ export class AgendaMedicoGerenciamentoComponent implements OnInit, OnDestroy {
   }
 
   private filtrarConsultasPorTipo(dados: any[], tipo: TipoVisualizacao): any[] {
-    const statusPermitidos = tipo === 'AGENDADA' ? STATUS_AGENDADAS : STATUS_FINALIZADAS;
+    const statusPermitidos = tipo === 'CONFIRMADA' ? STATUS_AGENDADAS : STATUS_FINALIZADAS;
     return dados.filter((consulta) => statusPermitidos.includes(consulta.status));
   }
 

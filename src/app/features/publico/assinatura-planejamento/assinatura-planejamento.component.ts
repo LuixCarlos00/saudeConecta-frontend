@@ -33,8 +33,8 @@ export class AssinaturaPlanejamentoComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private publicoApi: QuestionarioPublicoApiService
-  ) {}
+    private questionarioApiService: QuestionarioPublicoApiService
+  ) { }
 
   ngOnInit(): void {
     this.token = this.route.snapshot.paramMap.get('token') || '';
@@ -48,12 +48,15 @@ export class AssinaturaPlanejamentoComponent implements OnInit {
 
 
   carregarPlanejamento(): void {
-    this.publicoApi.buscarPlanejamento(this.token).subscribe({
+    this.questionarioApiService.buscarPlanejamento(this.token).subscribe({
       next: (resp) => {
+        console.log('Dados do planejamento:', resp);
         this.pacienteNome = resp?.pacienteNome || '';
         this.profissionalNome = resp?.profissionalNome || '';
         this.clinicaNome = resp?.clinicaNome || '';
         this.itens = resp?.itens || [];
+
+
         this.totalValor = this.itens.reduce((sum: number, item: any) => sum + (item.valor || 0), 0);
         if (resp?.assinado) {
           this.enviado = true;
@@ -121,7 +124,7 @@ export class AssinaturaPlanejamentoComponent implements OnInit {
       assinaturaBase64: this.obterAssinaturaBase64()
     };
 
-    this.publicoApi.assinarPlanejamento(payload).subscribe({
+    this.questionarioApiService.assinarPlanejamento(payload).subscribe({
       next: () => {
         this.enviado = true;
         this.enviando = false;
