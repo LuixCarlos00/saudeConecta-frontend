@@ -28,10 +28,13 @@
               <div class="cadastro-field">
                 <label class="cadastro-field__label"><span class="cadastro-field__required">*</span> Nome Completo</label>
                 <input type="text" class="cadastro-field__input" formControlName="nome" placeholder="Nome completo">
+                <div *ngIf="formulario.get('nome')?.invalid && formulario.get('nome')?.touched" class="cadastro-field__error">
+                  <span>Nome é obrigatório</span>
+                </div>
               </div>
 
               <div class="cadastro-field">
-                <label class="cadastro-field__label"><span class="cadastro-field__required">*</span> CPF (login e senha inicial)</label>
+                <label class="cadastro-field__label"><span class="cadastro-field__required">*</span> CPF</label>
                 <input type="text" class="cadastro-field__input" formControlName="cpf"
                   placeholder="000.000.000-00" maxlength="14" (blur)="validateCpfOnBlur()">
                 <div *ngIf="formulario.get('cpf')?.invalid && formulario.get('cpf')?.touched" class="cadastro-field__error">
@@ -46,11 +49,18 @@
                   <option value="">Selecione o cargo</option>
                   <option *ngFor="let c of cargos" [value]="c.value">{{ c.label }}</option>
                 </select>
+                <div *ngIf="formulario.get('cargo')?.invalid && formulario.get('cargo')?.touched" class="cadastro-field__error">
+                  <span>Cargo é obrigatório</span>
+                </div>
               </div>
 
               <div class="cadastro-field">
                 <label class="cadastro-field__label"><span class="cadastro-field__required">*</span> Email</label>
                 <input type="email" class="cadastro-field__input" formControlName="email" placeholder="email@exemplo.com">
+                <div *ngIf="formulario.get('email')?.invalid && formulario.get('email')?.touched" class="cadastro-field__error">
+                  <span *ngIf="formulario.get('email')?.errors?.['required']">Email é obrigatório</span>
+                  <span *ngIf="formulario.get('email')?.errors?.['email']">Email inválido</span>
+                </div>
               </div>
 
             </div>
@@ -69,16 +79,26 @@
               <div class="cadastro-field">
                 <label class="cadastro-field__label"><span class="cadastro-field__required">*</span> Nome da Clínica</label>
                 <input type="text" class="cadastro-field__input" formControlName="nomeClinica" placeholder="Nome da clínica">
+                <div *ngIf="formulario.get('nomeClinica')?.invalid && formulario.get('nomeClinica')?.touched" class="cadastro-field__error">
+                  <span>Nome da clínica é obrigatório</span>
+                </div>
               </div>
 
               <div class="cadastro-field">
                 <label class="cadastro-field__label"><span class="cadastro-field__required">*</span> Razão Social</label>
                 <input type="text" class="cadastro-field__input" formControlName="razaoSocial" placeholder="Razão social">
+                <div *ngIf="formulario.get('razaoSocial')?.invalid && formulario.get('razaoSocial')?.touched" class="cadastro-field__error">
+                  <span>Razão social é obrigatória</span>
+                </div>
               </div>
 
               <div class="cadastro-field">
                 <label class="cadastro-field__label"><span class="cadastro-field__required">*</span> CNPJ</label>
                 <input type="text" class="cadastro-field__input" formControlName="cnpj" placeholder="00.000.000/0001-00" maxlength="18">
+                <div *ngIf="formulario.get('cnpj')?.invalid && formulario.get('cnpj')?.touched" class="cadastro-field__error">
+                  <span *ngIf="formulario.get('cnpj')?.errors?.['required']">CNPJ é obrigatório</span>
+                  <span *ngIf="formulario.get('cnpj')?.errors?.['minlength']">CNPJ inválido</span>
+                </div>
               </div>
 
               <div class="cadastro-field">
@@ -87,16 +107,24 @@
                   <option value="">Selecione o tipo</option>
                   <option *ngFor="let t of tiposClinica" [value]="t.value">{{ t.label }}</option>
                 </select>
+                <div *ngIf="formulario.get('tipoClinica')?.invalid && formulario.get('tipoClinica')?.touched" class="cadastro-field__error">
+                  <span>Tipo é obrigatório</span>
+                </div>
               </div>
 
               <div class="cadastro-field">
-                <label class="cadastro-field__label">Email da Clínica</label>
+                <label class="cadastro-field__label"><span class="cadastro-field__required">*</span> Email da Clínica</label>
                 <input type="email" class="cadastro-field__input" formControlName="emailClinica" placeholder="contato@clinica.com">
+                <div *ngIf="formulario.get('emailClinica')?.invalid && formulario.get('emailClinica')?.touched" class="cadastro-field__error">
+                  <span *ngIf="formulario.get('emailClinica')?.errors?.['required']">Email da clínica é obrigatório</span>
+                  <span *ngIf="formulario.get('emailClinica')?.errors?.['email']">Email inválido</span>
+                </div>
               </div>
 
               <div class="cadastro-field">
                 <label class="cadastro-field__label">Telefone</label>
-                <input type="text" class="cadastro-field__input" formControlName="telefone" placeholder="(00) 00000-0000">
+                <input type="text" class="cadastro-field__input" formControlName="telefone"
+                  placeholder="(00) 00000-0000" maxlength="15">
               </div>
 
             </div>
@@ -114,7 +142,16 @@
 
               <div class="cadastro-field">
                 <label class="cadastro-field__label"><span class="cadastro-field__required">*</span> CEP</label>
-                <input type="text" class="cadastro-field__input" formControlName="cep" placeholder="00000-000" maxlength="9">
+                <div class="cadastro-field__cep-wrapper">
+                  <input type="text" class="cadastro-field__input" formControlName="cep"
+                    placeholder="00000-000" maxlength="9" (blur)="buscarCep()">
+                  <button type="button" class="cadastro-btn-cep" (click)="buscarCep()" [disabled]="isBuscandoCep">
+                    <i class="fa-solid" [ngClass]="isBuscandoCep ? 'fa-spinner fa-spin' : 'fa-magnifying-glass'"></i>
+                  </button>
+                </div>
+                <div *ngIf="formulario.get('cep')?.invalid && formulario.get('cep')?.touched" class="cadastro-field__error">
+                  <span>CEP é obrigatório</span>
+                </div>
               </div>
 
               <div class="cadastro-field">
@@ -123,11 +160,17 @@
                   <option value="">UF</option>
                   <option *ngFor="let uf of ufs" [value]="uf">{{ uf }}</option>
                 </select>
+                <div *ngIf="formulario.get('uf')?.invalid && formulario.get('uf')?.touched" class="cadastro-field__error">
+                  <span>UF é obrigatória</span>
+                </div>
               </div>
 
               <div class="cadastro-field">
                 <label class="cadastro-field__label"><span class="cadastro-field__required">*</span> Município</label>
                 <input type="text" class="cadastro-field__input" formControlName="municipio" placeholder="Cidade">
+                <div *ngIf="formulario.get('municipio')?.invalid && formulario.get('municipio')?.touched" class="cadastro-field__error">
+                  <span>Município é obrigatório</span>
+                </div>
               </div>
 
               <div class="cadastro-field">
@@ -138,11 +181,17 @@
               <div class="cadastro-field">
                 <label class="cadastro-field__label"><span class="cadastro-field__required">*</span> Rua</label>
                 <input type="text" class="cadastro-field__input" formControlName="rua" placeholder="Rua / Avenida">
+                <div *ngIf="formulario.get('rua')?.invalid && formulario.get('rua')?.touched" class="cadastro-field__error">
+                  <span>Rua é obrigatória</span>
+                </div>
               </div>
 
               <div class="cadastro-field">
                 <label class="cadastro-field__label"><span class="cadastro-field__required">*</span> Número</label>
                 <input type="number" class="cadastro-field__input" formControlName="numero" placeholder="Nº">
+                <div *ngIf="formulario.get('numero')?.invalid && formulario.get('numero')?.touched" class="cadastro-field__error">
+                  <span>Número é obrigatório</span>
+                </div>
               </div>
 
               <div class="cadastro-field cadastro-field--full">
@@ -161,9 +210,13 @@
     <footer class="cadastro-footer">
       <div class="cadastro-footer__hint">
         <i class="fa-solid fa-asterisk"></i>
-        <span>Campos obrigatórios | O CPF será o login e a senha inicial do administrador</span>
+        <span>Campos obrigatórios | O CNPJ será o login e a senha inicial do administrador</span>
       </div>
       <div class="cadastro-footer__actions">
+        <button class="cadastro-btn cadastro-btn--secondary" (click)="cancelar()" [disabled]="isLoading">
+          <i class="fa-solid fa-xmark"></i>
+          Cancelar
+        </button>
         <button
           class="cadastro-btn cadastro-btn--primary"
           [disabled]="!formulario.valid || isLoading"

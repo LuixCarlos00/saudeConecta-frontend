@@ -5,6 +5,7 @@ export interface Consultav2 {
   profissionalConselho: string;
   pacienteId: number;
   pacienteNome: string;
+  pacienteTelefone: string | null;
   especialidadeId: number;
   especialidadeNome: string;
   dataHora: string;

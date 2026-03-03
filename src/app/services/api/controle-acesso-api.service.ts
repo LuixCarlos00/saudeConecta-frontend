@@ -97,9 +97,9 @@ export class ControleAcessoApiService {
     return this.isProfissional() && !this.isDashboardAdministrativo();
   }
 
-  // Menu Mensageria: Admin apenas
+  // Menu Mensageria: Super Admin e Admin
   podeVerMenuMensageria(): boolean {
-    return this.isAdmin();
+    return this.isSuperAdmin() || this.isAdmin();
   }
 
   // ========== DASHBOARDS ==========
