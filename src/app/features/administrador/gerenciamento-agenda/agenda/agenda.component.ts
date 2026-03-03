@@ -54,6 +54,7 @@ export class AgendaComponent implements OnInit, OnDestroy {
 
   UsuarioLogado: Usuario = { id: 0, aud: '', exp: '', iss: '', sub: '' };
 
+
   constructor(
     private formBuilder: FormBuilder,
     private consultaApi: ConsultaApiService,
@@ -104,7 +105,6 @@ export class AgendaComponent implements OnInit, OnDestroy {
       if (Array.isArray(dados)) {
         const tipo: TipoVisualizacao = this.Finalizadas ? 'REALIZADA' : 'AGENDADA';
         this.dataSource = this.filtrarConsultasPorTipo(dados, tipo);
-        console.log(this.dataSource)
       }
     } catch (error) {
       console.error(error);
@@ -625,6 +625,49 @@ export class AgendaComponent implements OnInit, OnDestroy {
           Swal.fire('Erro', 'Não foi possível gerar o link do questionário.', 'error');
         }
       });
+  }
+
+  // ─────────────────────────────────────────────────────────────────────────────
+  // WhatsApp Individual
+  // ─────────────────────────────────────────────────────────────────────────────
+
+  /**
+   * Gera o link do WhatsApp Web com mensagem personalizada para o paciente.
+   * @param consulta - Dados da consulta com telefone do paciente
+   * @returns URL completa para wa.me com mensagem codificada
+   */
+  gerarLinkWhatsApp(consulta: Consultav2): string {
+    if (!consulta.pacienteTelefone) { return ''; }
+
+    const telefone = this.formatarTelefoneWhatsApp(consulta.pacienteTelefone);
+    const mensagem = this.gerarMensagemWhatsApp(consulta);
+    return `https://wa.me/${telefone}?text=${encodeURIComponent(mensagem)}`;
+  }
+
+  /**
+   * Gera a mensagem de confirmação de consulta com dados dinâmicos.
+   * @param consulta - Dados da consulta
+   * @returns Mensagem personalizada com nome, médico, data e horário
+   */
+  private gerarMensagemWhatsApp(consulta: Consultav2): string {
+    const dataHora = new Date(consulta.dataHora);
+    const data = dataHora.toLocaleDateString('pt-BR');
+    const horario = dataHora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    const paciente = consulta.pacienteNome || 'Paciente';
+    const medico = consulta.profissionalNome || 'Profissional';
+
+    return `Olá ${paciente}, tudo bem?\n\nGostaríamos de confirmar sua consulta com ${medico} no dia ${data} às ${horario}.\n\nPor favor, confirme sua presença respondendo esta mensagem.\n\nAtenciosamente,\nEquipe da Clínica.`;
+  }
+
+  /**
+   * Formata o número de telefone para o padrão internacional brasileiro.
+   * Remove caracteres não numéricos e adiciona o código do país.
+   * @param telefone - Número de telefone em qualquer formato
+   * @returns Número formatado com código 55 do Brasil
+   */
+  private formatarTelefoneWhatsApp(telefone: string): string {
+    const numeros = telefone.replace(/\D/g, '');
+    return numeros.startsWith('55') ? numeros : '55' + numeros;
   }
 
   tratarDadosParaTabela(dados: any[]): Tabela[] {

@@ -80,6 +80,7 @@
           <i class="fa-solid fa-clock"></i>
           <span>Cronograma</span>
         </button>
+
       </div>
     </div>
 
@@ -224,6 +225,15 @@
                   (click)="gerarLinkPlanejamento(element)">
                   <i class="fa-solid fa-file-signature"></i>
                 </button>
+
+                <!-- WhatsApp Individual -->
+                <a class="hc-action-btn hc-action-btn--whatsapp"
+                  [class.hc-action-btn--disabled]="!element.pacienteTelefone"
+                  [href]="element.pacienteTelefone ? gerarLinkWhatsApp(element) : null"
+                  [attr.target]="element.pacienteTelefone ? '_blank' : null"
+                  [title]="element.pacienteTelefone ? 'Enviar WhatsApp para ' + element.pacienteNome : 'Paciente sem telefone cadastrado'">
+                  <i class="fa-brands fa-whatsapp"></i>
+                </a>
 
                 <!-- Editar -->
                 <button class="hc-action-btn hc-action-btn--warning" title="Editar Consulta" [disabled]="Finalizadas"
