@@ -31,6 +31,14 @@ export class AdministradorApiService {
     return this.http.put<Administrador>(`${this.apiUrl}/atualizarAdmByOrg/${id}`, administrador);
   }
 
+  buscarAdminOrgCompleto(id: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/buscarAdminOrgCompleto/${id}`);
+  }
+
+  atualizarAdminOrgCompleto(id: number, dados: any): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/atualizarAdminOrgCompleto/${id}`, dados);
+  }
+
   deletarAdmByOrg(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/deletarAdmByOrg/${id}`);
   }

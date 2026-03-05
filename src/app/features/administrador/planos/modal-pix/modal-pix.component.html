@@ -1,0 +1,50 @@
+<div class="modal-pix-container">
+  <h2 mat-dialog-title>Pagamento via Pix</h2>
+
+  <mat-dialog-content>
+    <div class="pix-info">
+      <div class="valor-destaque">
+        <span class="label">Valor:</span>
+        <span class="valor">{{ formatarValor(cobranca.valorTotal) }}</span>
+      </div>
+
+      <div class="vencimento">
+        <mat-icon>event</mat-icon>
+        <span>Vencimento: {{ cobranca.dataVencimentoPix | date:'dd/MM/yyyy' }}</span>
+      </div>
+    </div>
+
+    <mat-divider></mat-divider>
+
+    <!-- QR Code -->
+    <div class="qrcode-container" *ngIf="cobranca.pixQrcodeBase64">
+      <h4>Escaneie o QR Code</h4>
+      <img [src]="'data:image/png;base64,' + cobranca.pixQrcodeBase64"
+           alt="QR Code Pix"
+           class="qrcode-img" />
+    </div>
+
+    <mat-divider></mat-divider>
+
+    <!-- Copia e Cola -->
+    <div class="copia-cola-container">
+      <h4>Ou copie o código Pix</h4>
+      <div class="copia-cola-field">
+        <textarea readonly rows="3" class="pix-textarea">{{ cobranca.pixCopiaECola }}</textarea>
+        <button mat-raised-button color="primary" (click)="copiarPixCopiaECola()">
+          <mat-icon>content_copy</mat-icon>
+          Copiar
+        </button>
+      </div>
+    </div>
+
+    <div class="txid-info">
+      <span class="label">TXID:</span>
+      <span class="txid">{{ cobranca.txid }}</span>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button (click)="fechar()">Fechar</button>
+  </mat-dialog-actions>
+</div>

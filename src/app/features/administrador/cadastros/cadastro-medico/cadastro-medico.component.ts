@@ -307,15 +307,21 @@ export class CadastroMedicoComponent implements OnInit, OnDestroy {
   private handleHttpError(error: any) {
     console.error('Erro HTTP:', error);
     let errorMessage = 'Erro desconhecido ao realizar o cadastro.';
+    let titulo = 'Erro';
+    let icone: 'error' | 'warning' = 'error';
 
-    if (error.status === 409 && error.error.includes && error.error.includes('CPF já cadastrado no sistema')) {
+    if (error.status === 422 && error.error?.message) {
+      icone = 'warning';
+      titulo = 'Limite do plano atingido';
+      errorMessage = error.error.message;
+    } else if (error.status === 409 && error.error?.includes && error.error.includes('CPF já cadastrado no sistema')) {
       errorMessage = 'CPF já cadastrado no sistema. Por favor, verifique os dados.';
-    } else if (error.status === 409 && error.error.includes && error.error.includes('Email já cadastrado no sistema como')) {
-      if (error.error.includes && error.error.includes('Email já cadastrado no sistema')) {
+    } else if (error.status === 409 && error.error?.includes && error.error.includes('Email já cadastrado no sistema como')) {
+      if (error.error.includes('Email já cadastrado no sistema')) {
         errorMessage = 'Email já cadastrado no sistema. Por favor, utilize outro email.';
-      } else if (error.error.includes && error.error.includes('Duplicate entry') && error.error.includes('medico.MedEmail_UNIQUE')) {
+      } else if (error.error.includes('Duplicate entry') && error.error.includes('medico.MedEmail_UNIQUE')) {
         errorMessage = 'Já existe um Médico registrado com esse email.';
-      } else if (error.error.includes && error.error.includes('Duplicate entry') && error.error.includes('medico.MedCrm_UNIQUE')) {
+      } else if (error.error.includes('Duplicate entry') && error.error.includes('medico.MedCrm_UNIQUE')) {
         errorMessage = 'Já existe um Médico registrado com esse CRM.';
       } else {
         errorMessage = typeof error.error === 'string' ? error.error : 'Erro ao processar cadastro.';
@@ -323,8 +329,8 @@ export class CadastroMedicoComponent implements OnInit, OnDestroy {
     }
 
     Swal.fire({
-      icon: 'error',
-      title: 'Erro',
+      icon: icone,
+      title: titulo,
       text: errorMessage,
     });
   }

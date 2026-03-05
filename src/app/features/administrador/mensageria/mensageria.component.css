@@ -639,6 +639,15 @@
   font-family: monospace;
 }
 
+.message-body-box--html {
+  white-space: normal;
+  font-family: Arial, sans-serif;
+  max-height: 400px;
+  overflow-y: auto;
+  background: #ffffff;
+  padding: 0;
+}
+
 .modal-footer {
   display: flex;
   justify-content: flex-end;

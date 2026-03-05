@@ -1,0 +1,166 @@
+.gerenciar-planos-container {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.page-header h1 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--text-primary, #111827);
+  margin: 0;
+}
+
+.page-header h1 i {
+  color: #0066CC;
+}
+
+.header-subtitle {
+  margin: 8px 0 0 0;
+  font-size: 14px;
+  color: var(--text-secondary, #6b7280);
+  font-weight: 400;
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 48px 0;
+}
+
+.planos-table-container {
+  background: var(--bg-card, #ffffff);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.planos-table {
+  width: 100%;
+}
+
+.planos-table th {
+  background: var(--bg-secondary, #f3f4f6);
+  font-weight: 600;
+  color: var(--text-secondary, #6b7280);
+  text-transform: uppercase;
+  font-size: 12px;
+  letter-spacing: 0.5px;
+}
+
+.planos-table td {
+  padding: 16px;
+}
+
+.tipo-badge {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.tipo-starter {
+  background: #e3f2fd;
+  color: #1565c0;
+}
+
+.tipo-profissional {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.tipo-business {
+  background: #fff3e0;
+  color: #e65100;
+}
+
+.valor-cell {
+  font-weight: 600;
+  color: #0066CC;
+  font-size: 15px;
+}
+
+.limites-resumo {
+  display: flex;
+  gap: 12px;
+  font-size: 13px;
+}
+
+.limites-resumo span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.limites-resumo i {
+  color: #0066CC;
+  font-size: 14px;
+}
+
+.sem-planos {
+  text-align: center;
+  padding: 48px;
+  color: var(--text-secondary, #6b7280);
+}
+
+.formulario-container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.plano-form {
+  padding: 16px 0;
+}
+
+.form-row {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.half-width {
+  flex: 1;
+}
+
+.third-width {
+  flex: 1;
+}
+
+.plano-form h3 {
+  margin: 24px 0 8px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary, #111827);
+}
+
+.hint-text {
+  font-size: 13px;
+  color: var(--text-secondary, #6b7280);
+  margin-bottom: 16px;
+}
+
+mat-card {
+  border-radius: 12px;
+}
+
+mat-card-actions {
+  padding: 16px 24px;
+}

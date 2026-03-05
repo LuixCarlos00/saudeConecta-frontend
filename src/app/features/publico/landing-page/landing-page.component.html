@@ -325,7 +325,7 @@
       <div class="section-header">
         <span class="section-badge">Planos</span>
         <h2>Escolha o plano ideal para você</h2>
-        <p>Sem taxas ocultas. Cancele quando quiser.</p>
+        <p>Todas as funcionalidades em todos os planos. Sem taxas ocultas. Cancele quando quiser.</p>
       </div>
       <div class="planos-grid">
         <div class="plano-card" *ngFor="let plano of planos" [class.destaque]="plano.destaque">
@@ -337,6 +337,25 @@
             <span class="valor">{{ plano.preco }}</span>
             <span class="periodo">/mês</span>
           </div>
+
+          <div class="plano-limites">
+            <div class="limite-item">
+              <i class="fa-solid fa-user-tie"></i>
+              <span class="limite-valor">{{ plano.limites.adminOrg }}</span>
+              <span class="limite-label">{{ plano.limites.adminOrg === 1 ? 'Administrador' : 'Administradores' }}</span>
+            </div>
+            <div class="limite-item">
+              <i class="fa-solid fa-user-doctor"></i>
+              <span class="limite-valor">{{ plano.limites.profissionais === 0 ? 'Ilimitados' : plano.limites.profissionais }}</span>
+              <span class="limite-label">Profissionais</span>
+            </div>
+            <div class="limite-item">
+              <i class="fa-solid fa-headset"></i>
+              <span class="limite-valor">{{ plano.limites.secretarias === 0 ? 'Ilimitadas' : plano.limites.secretarias }}</span>
+              <span class="limite-label">{{ plano.limites.secretarias === 1 ? 'Secretária' : 'Secretárias' }}</span>
+            </div>
+          </div>
+
           <ul class="plano-recursos">
             <li *ngFor="let recurso of plano.recursos">
               <i class="fa-solid fa-check"></i>
@@ -347,6 +366,11 @@
             Começar Agora
           </button>
         </div>
+      </div>
+
+      <div class="planos-nota">
+        <i class="fa-solid fa-infinity"></i>
+        <span>Pacientes ilimitados em todos os planos • 14 dias grátis para testar</span>
       </div>
     </div>
   </section>

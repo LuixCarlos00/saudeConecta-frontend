@@ -514,6 +514,7 @@
 
       <!-- ========== FORMULÁRIO ADMINISTRADOR ========== -->
       <ng-container *ngIf="categoria === 'Administrador'">
+        <!-- Código + Nome -->
         <div class="form-row">
           <div class="form-group">
             <label class="form-label">
@@ -533,7 +534,29 @@
           </div>
         </div>
 
-        <div class="form-row">
+        <!-- Cargo + Email (SUPER_ADMIN mostra cargo) -->
+        <div class="form-row" *ngIf="isSuperAdmin">
+          <div class="form-group">
+            <label class="form-label">
+              <i class="fa-solid fa-briefcase"></i> Cargo
+            </label>
+            <input type="text" class="form-input" formControlName="cargo" [readonly]="!isEditMode"
+              [class.input-edit]="isEditMode">
+          </div>
+          <div class="form-group">
+            <label class="form-label">
+              <i class="fa-solid fa-envelope"></i> E-mail <span class="required">*</span>
+            </label>
+            <input type="email" class="form-input" formControlName="email" [readonly]="!isEditMode"
+              [class.input-edit]="isEditMode">
+            <span class="error-message" *ngIf="formulario.get('email')?.touched && formulario.get('email')?.invalid">
+              {{ getCampoErro('email') }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Email (não SUPER_ADMIN - formulário simples) -->
+        <div class="form-row" *ngIf="!isSuperAdmin">
           <div class="form-group full-width">
             <label class="form-label">
               <i class="fa-solid fa-envelope"></i> E-mail <span class="required">*</span>
@@ -545,6 +568,168 @@
             </span>
           </div>
         </div>
+
+        <!-- ===== DADOS DA ORGANIZAÇÃO (SUPER_ADMIN) ===== -->
+        <ng-container *ngIf="isSuperAdmin">
+          <div class="section-divider">
+            <span class="section-title"><i class="fa-solid fa-building"></i> Dados da Organização</span>
+          </div>
+
+          <!-- Nome Clínica + Razão Social -->
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">
+                <i class="fa-solid fa-hospital"></i> Nome da Clínica <span class="required">*</span>
+              </label>
+              <input type="text" class="form-input" formControlName="nomeClinica" [readonly]="!isEditMode"
+                [class.input-edit]="isEditMode">
+              <span class="error-message" *ngIf="formulario.get('nomeClinica')?.touched && formulario.get('nomeClinica')?.invalid">
+                {{ getCampoErro('nomeClinica') }}
+              </span>
+            </div>
+            <div class="form-group">
+              <label class="form-label">
+                <i class="fa-solid fa-file-contract"></i> Razão Social
+              </label>
+              <input type="text" class="form-input" formControlName="razaoSocial" [readonly]="!isEditMode"
+                [class.input-edit]="isEditMode">
+            </div>
+          </div>
+
+          <!-- CNPJ + Tipo -->
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">
+                <i class="fa-solid fa-id-card"></i> CNPJ
+              </label>
+              <input type="text" class="form-input" formControlName="cnpj" readonly>
+            </div>
+            <div class="form-group">
+              <label class="form-label">
+                <i class="fa-solid fa-tags"></i> Tipo <span class="required">*</span>
+              </label>
+              <select class="form-input" formControlName="tipoClinica" [disabled]="!isEditMode" [class.input-edit]="isEditMode">
+                <option value="">Selecione</option>
+                <option value="CLINICA_MEDICA">Clínica Médica</option>
+                <option value="CLINICA_ODONTOLOGICA">Clínica Odontológica</option>
+                <option value="MISTA">Mista</option>
+                <option value="CLINICA">Clínica</option>
+                <option value="CONSULTORIO">Consultório</option>
+                <option value="HOSPITAL">Hospital</option>
+                <option value="LABORATORIO">Laboratório</option>
+                <option value="UPA">UPA</option>
+              </select>
+              <span class="error-message" *ngIf="formulario.get('tipoClinica')?.touched && formulario.get('tipoClinica')?.invalid">
+                {{ getCampoErro('tipoClinica') }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Email Clínica + Telefone -->
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">
+                <i class="fa-solid fa-envelope"></i> E-mail da Clínica
+              </label>
+              <input type="email" class="form-input" formControlName="emailClinica" [readonly]="!isEditMode"
+                [class.input-edit]="isEditMode">
+            </div>
+            <div class="form-group">
+              <label class="form-label">
+                <i class="fa-solid fa-phone"></i> Telefone
+              </label>
+              <input type="text" class="form-input" formControlName="telefoneClinica" [readonly]="!isEditMode"
+                [class.input-edit]="isEditMode" placeholder="(00) 00000-0000">
+            </div>
+          </div>
+
+          <!-- ===== ENDEREÇO ===== -->
+          <div class="section-divider">
+            <span class="section-title"><i class="fa-solid fa-location-dot"></i> Endereço</span>
+          </div>
+
+          <!-- UF + Município -->
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">
+                <i class="fa-solid fa-map"></i> UF <span class="required">*</span>
+              </label>
+              <select class="form-input" formControlName="uf" [disabled]="!isEditMode" [class.input-edit]="isEditMode">
+                <option value="">Selecione</option>
+                <option *ngFor="let estado of ufOptionsLista" [value]="estado.value">{{ estado.label }}</option>
+              </select>
+              <span class="error-message" *ngIf="formulario.get('uf')?.touched && formulario.get('uf')?.invalid">
+                {{ getCampoErro('uf') }}
+              </span>
+            </div>
+            <div class="form-group">
+              <label class="form-label">
+                <i class="fa-solid fa-city"></i> Município <span class="required">*</span>
+              </label>
+              <input type="text" class="form-input" formControlName="municipio" [readonly]="!isEditMode"
+                [class.input-edit]="isEditMode">
+              <span class="error-message" *ngIf="formulario.get('municipio')?.touched && formulario.get('municipio')?.invalid">
+                {{ getCampoErro('municipio') }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Bairro + CEP -->
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">
+                <i class="fa-solid fa-signs-post"></i> Bairro
+              </label>
+              <input type="text" class="form-input" formControlName="bairro" [readonly]="!isEditMode"
+                [class.input-edit]="isEditMode">
+            </div>
+            <div class="form-group">
+              <label class="form-label">
+                <i class="fa-solid fa-location-crosshairs"></i> CEP <span class="required">*</span>
+              </label>
+              <input type="text" class="form-input" formControlName="cep" [readonly]="!isEditMode"
+                [class.input-edit]="isEditMode" placeholder="00000-000">
+              <span class="error-message" *ngIf="formulario.get('cep')?.touched && formulario.get('cep')?.invalid">
+                {{ getCampoErro('cep') }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Rua + Número -->
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">
+                <i class="fa-solid fa-road"></i> Rua <span class="required">*</span>
+              </label>
+              <input type="text" class="form-input" formControlName="rua" [readonly]="!isEditMode"
+                [class.input-edit]="isEditMode">
+              <span class="error-message" *ngIf="formulario.get('rua')?.touched && formulario.get('rua')?.invalid">
+                {{ getCampoErro('rua') }}
+              </span>
+            </div>
+            <div class="form-group">
+              <label class="form-label">
+                <i class="fa-solid fa-hashtag"></i> Número <span class="required">*</span>
+              </label>
+              <input type="number" class="form-input" formControlName="numero" [readonly]="!isEditMode"
+                [class.input-edit]="isEditMode">
+              <span class="error-message" *ngIf="formulario.get('numero')?.touched && formulario.get('numero')?.invalid">
+                {{ getCampoErro('numero') }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Complemento -->
+          <div class="form-row">
+            <div class="form-group form-group-full">
+              <label class="form-label">
+                <i class="fa-solid fa-building"></i> Complemento
+              </label>
+              <input type="text" class="form-input" formControlName="complemento" [readonly]="!isEditMode"
+                [class.input-edit]="isEditMode" placeholder="Apto, Bloco...">
+            </div>
+          </div>
+        </ng-container>
       </ng-container>
 
     </form>

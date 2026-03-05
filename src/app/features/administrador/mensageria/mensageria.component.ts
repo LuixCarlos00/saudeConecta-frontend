@@ -1,4 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { Subject } from 'rxjs';
 import { takeUntil, finalize } from 'rxjs/operators';
 import {
@@ -24,6 +25,7 @@ export class MensageriaComponent implements OnInit, OnDestroy {
 
   isLoading = false;
   isNotificando = false;
+  isReenviando = false;
   erro: string | null = null;
 
   totalFalhasPendentes = 0;
@@ -53,7 +55,10 @@ export class MensageriaComponent implements OnInit, OnDestroy {
     { value: 'EMAIL_GENERICO', label: 'Genérico' }
   ];
 
-  constructor(private mensageriaService: MensageriaApiService) {}
+  constructor(
+    private mensageriaService: MensageriaApiService,
+    private sanitizer: DomSanitizer
+  ) {}
 
   ngOnInit(): void {
     this.carregarMensagens();
@@ -80,6 +85,7 @@ export class MensageriaComponent implements OnInit, OnDestroy {
       )
       .subscribe({
         next: (page: PageResponse<MensageriaResponse>) => {
+            console.log(page);
           this.mensagens = page.content;
           this.totalElementos = page.totalElements;
           this.totalPaginas = page.totalPages;
@@ -142,6 +148,26 @@ export class MensageriaComponent implements OnInit, OnDestroy {
       });
   }
 
+  reenviarMensagem(mensagem: MensageriaResponse): void {
+    this.isReenviando = true;
+    this.mensageriaService
+      .reenviarMensagem(mensagem.id)
+      .pipe(
+        takeUntil(this.destroy$),
+        finalize(() => (this.isReenviando = false))
+      )
+      .subscribe({
+        next: () => {
+          this.fecharDetalhe();
+          this.carregarMensagens();
+          this.carregarContagemFalhas();
+        },
+        error: () => {
+          this.erro = 'Erro ao reenviar mensagem. Tente novamente.';
+        }
+      });
+  }
+
   irParaPagina(pagina: number): void {
     if (pagina >= 0 && pagina < this.totalPaginas) {
       this.paginaAtual = pagina;
@@ -187,5 +213,13 @@ export class MensageriaComponent implements OnInit, OnDestroy {
 
   get paginasArray(): number[] {
     return Array.from({ length: this.totalPaginas }, (_, i) => i);
+  }
+
+  isHtml(conteudo: string): boolean {
+    return conteudo?.trim().startsWith('<!DOCTYPE') || conteudo?.trim().startsWith('<html');
+  }
+
+  sanitizarHtml(conteudo: string): SafeHtml {
+    return this.sanitizer.bypassSecurityTrustHtml(conteudo);
   }
 }

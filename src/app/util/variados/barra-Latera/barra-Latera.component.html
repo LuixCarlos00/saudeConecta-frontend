@@ -68,6 +68,24 @@
         </button>
       </li>
 
+      <!-- Gerenciar Planos - Super Admin apenas -->
+      <li class="nav-item" *ngIf="ControleAcessoService.isSuperAdmin()"
+        [class.active]="activeRoute === 'GerenciarPlanos'">
+        <button class="nav-link" (click)="navigateTo('GerenciarPlanos')" title="Gerenciar Planos">
+          <i class="fa-solid fa-layer-group nav-icon"></i>
+          <span class="nav-text">Gerenciar Planos</span>
+        </button>
+      </li>
+
+      <!-- Minha Assinatura - Admin Org apenas -->
+      <li class="nav-item" *ngIf="ControleAcessoService.isAdmin() && !ControleAcessoService.isSuperAdmin()"
+        [class.active]="activeRoute === 'MinhaAssinatura'">
+        <button class="nav-link" (click)="navigateTo('MinhaAssinatura')" title="Minha Assinatura">
+          <i class="fa-solid fa-file-contract nav-icon"></i>
+          <span class="nav-text">Minha Assinatura</span>
+        </button>
+      </li>
+
       <!-- ========== MENU PROFISSIONAL DE SAÚDE ========== -->
 
       <!-- Minha Agenda - Profissional -->

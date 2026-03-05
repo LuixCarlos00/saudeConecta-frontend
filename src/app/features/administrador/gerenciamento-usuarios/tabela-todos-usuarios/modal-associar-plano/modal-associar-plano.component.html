@@ -1,0 +1,57 @@
+<div class="modal-associar-plano">
+  <h2 mat-dialog-title>
+    <i class="fa-solid" [ngClass]="modoEdicao ? 'fa-edit' : 'fa-link'"></i>
+    {{ modoEdicao ? 'Alterar Plano da Organização' : 'Associar Plano à Organização' }}
+  </h2>
+
+  <mat-dialog-content>
+    <p class="organizacao-info">
+      <strong>Organização:</strong> {{ data.nomeOrganizacao }}
+    </p>
+
+    <div *ngIf="modoEdicao && assinaturaAtual" class="plano-atual-info">
+      <strong>Plano Atual:</strong> {{ planoAtualNome }}
+      <span class="status-badge" [class]="'status-' + assinaturaAtual.status.toLowerCase()">
+        {{ assinaturaAtual.status }}
+      </span>
+    </div>
+
+    <div *ngIf="isLoading" class="loading-container">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>Carregando planos...</p>
+    </div>
+
+    <div *ngIf="!isLoading" class="planos-container">
+      <mat-radio-group [(ngModel)]="planoSelecionado" class="planos-radio-group">
+        <div *ngFor="let plano of planos" class="plano-card" [class.selected]="planoSelecionado === plano.id">
+          <mat-radio-button [value]="plano.id" class="plano-radio">
+            <div class="plano-info">
+              <div class="plano-header">
+                <h3>{{ plano.nome }}</h3>
+                <span class="plano-tipo" [class]="'tipo-' + plano.tipo.toLowerCase()">{{ plano.tipo }}</span>
+              </div>
+              <p class="plano-descricao">{{ plano.descricao }}</p>
+              <div class="plano-valor">{{ formatarValor(plano.valorMensal) }}/mês</div>
+              <div class="plano-limites">
+                <span><i class="fa-solid fa-user-shield"></i> Admins: {{ formatarLimite(plano.limiteAdminOrg) }}</span>
+                <span><i class="fa-solid fa-user-doctor"></i> Profissionais: {{ formatarLimite(plano.limiteProfissional) }}</span>
+                <span><i class="fa-solid fa-user-pen"></i> Secretárias: {{ formatarLimite(plano.limiteSecretaria) }}</span>
+              </div>
+            </div>
+          </mat-radio-button>
+        </div>
+      </mat-radio-group>
+
+      <p *ngIf="planos.length === 0" class="sem-planos">Nenhum plano disponível.</p>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button (click)="fechar()" [disabled]="isSaving">Cancelar</button>
+    <button mat-raised-button color="primary" (click)="associarPlano()" [disabled]="!planoSelecionado || isSaving">
+      <mat-spinner *ngIf="isSaving" diameter="20" style="display: inline-block; margin-right: 8px;"></mat-spinner>
+      <span *ngIf="!isSaving">{{ modoEdicao ? 'Alterar Plano' : 'Associar Plano' }}</span>
+      <span *ngIf="isSaving">{{ modoEdicao ? 'Alterando...' : 'Associando...' }}</span>
+    </button>
+  </mat-dialog-actions>
+</div>

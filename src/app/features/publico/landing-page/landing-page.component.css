@@ -1129,6 +1129,82 @@
   box-shadow: 0 15px 45px rgba(0, 217, 255, 0.4);
 }
 
+/* ========== LIMITES DOS PLANOS ========== */
+.plano-limites {
+  display: flex;
+  justify-content: space-around;
+  gap: 8px;
+  padding: 20px 0;
+  margin-bottom: 24px;
+  border-top: 1px solid var(--gray-200);
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.plano-card.destaque .plano-limites {
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.limite-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  text-align: center;
+}
+
+.limite-item i {
+  font-size: 18px;
+  color: var(--primary);
+  margin-bottom: 4px;
+}
+
+.plano-card.destaque .limite-item i {
+  color: var(--primary);
+}
+
+.limite-valor {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--text-dark);
+  line-height: 1;
+}
+
+.plano-card.destaque .limite-valor {
+  color: var(--white);
+}
+
+.limite-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+}
+
+.plano-card.destaque .limite-label {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* ========== NOTA DOS PLANOS ========== */
+.planos-nota {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 40px;
+  padding: 16px 24px;
+  background: var(--gray-100);
+  border-radius: var(--radius-md);
+  color: var(--text-light);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.planos-nota i {
+  color: var(--primary);
+  font-size: 18px;
+}
+
 /* ========== FAQ ========== */
 .faq {
   padding: 100px 0;
