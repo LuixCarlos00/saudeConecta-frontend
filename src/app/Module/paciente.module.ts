@@ -25,6 +25,9 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatInputModule } from '@angular/material/input';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatButtonModule } from '@angular/material/button';
 
 
 
@@ -64,7 +67,14 @@ import { GerenciamentoUsuarioComponent } from '../features/administrador/gerenci
 import { TabelaTodosUsuariosComponent } from '../features/administrador/gerenciamento-usuarios/tabela-todos-usuarios/tabela-todos-usuarios.component';
 import { TrocaSenhaUsuariosComponent } from '../features/administrador/gerenciamento-usuarios/tabela-todos-usuarios/TrocaSenhaUsuarios/TrocaSenhaUsuarios.component';
 import { VisualizarEditarUsuarioComponent } from '../features/administrador/gerenciamento-usuarios/tabela-todos-usuarios/VisualizarEditarUsuario/visualizar-editar-usuario.component';
+import { ModalAssociarPlanoComponent } from '../features/administrador/gerenciamento-usuarios/tabela-todos-usuarios/modal-associar-plano/modal-associar-plano.component';
 import { MatBadgeModule } from '@angular/material/badge';
+
+// ========== FEATURES ADMINISTRADOR - PLANOS ==========
+import { GerenciarPlanosComponent } from '../features/administrador/planos/gerenciar-planos/gerenciar-planos.component';
+import { ListaPlanosComponent } from '../features/administrador/planos/lista-planos/lista-planos.component';
+import { DetalheAssinaturaComponent } from '../features/administrador/planos/detalhe-assinatura/detalhe-assinatura.component';
+import { ModalPixComponent } from '../features/administrador/planos/modal-pix/modal-pix.component';
 
 // ========== FEATURES MÉDICO ==========
 import { TabelaAgendaMedicoComponent } from '../features/medico/tabela-agenda/tabela-agenda-medico.component';
@@ -117,6 +127,11 @@ import { ComprovantePagamentoDentistaComponent } from '../features/medico/impres
     GraficoCategoriaMedicosComponent,
     GraficoConsultasPorStatusComponent,
     GerenciamentoUsuarioComponent,
+    GerenciarPlanosComponent,
+    ListaPlanosComponent,
+    DetalheAssinaturaComponent,
+    ModalPixComponent,
+    ModalAssociarPlanoComponent,
     TabelaTodosUsuariosComponent,
     TabelaAgendaMedicoComponent,
     ProntuarioComponent,
@@ -167,6 +182,9 @@ import { ComprovantePagamentoDentistaComponent } from '../features/medico/impres
     MatAutocompleteModule,
     MatRadioModule,
     MatBadgeModule,
+    MatProgressBarModule,
+    MatDividerModule,
+    MatButtonModule,
     SharedModule,
     GraficoMediaTempoConsultaComponent
   ],

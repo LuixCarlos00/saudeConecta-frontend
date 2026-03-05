@@ -2,6 +2,8 @@ import { ProfissionalApiService } from './../../../services/api/profissional-api
 import { DashboardApiService } from 'src/app/services/api/dashboard-api.service';
 import { ConfiguracaoCardService } from 'src/app/services/api/configuracao-card.service';
 import { ControleAcessoApiService } from 'src/app/services/api/controle-acesso-api.service';
+import { AssinaturaApiService } from 'src/app/services/api/assinatura-api.service';
+import { AssinaturaTenant } from 'src/app/util/variados/interfaces/planos/PlanoAssinatura';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { Router } from '@angular/router';
@@ -53,6 +55,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
   carrosselOffset: number = 0;
   readonly CARDS_POR_PAGINA = 5;
 
+  // Status da assinatura (banner de inadimplência)
+  assinaturaInadimplente = false;
+  dataLimiteAcesso: Date | null = null;
+  diasRestantes: number = 0;
+
   // Expor enums para o template
   TipoGraficoDashboard = TipoGraficoDashboard;
   TipoCardDashboard = TipoCardDashboard;
@@ -76,7 +83,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
     private configuracaoGraficoService: ConfiguracaoGraficoDashboardService,
     private profissionalApiService: ProfissionalApiService,
     private configuracaoCardService: ConfiguracaoCardService,
-    private dashboardApiService: DashboardApiService
+    private dashboardApiService: DashboardApiService,
+    private assinaturaApiService: AssinaturaApiService
   ) { }
 
   ngOnInit(): void {
@@ -86,6 +94,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.carregarConfiguracoesGraficos();
     this.carregarConfiguracoesCards();
     this.carregarEstatisticas();
+    this.verificarStatusAssinatura();
   }
 
   ngOnDestroy(): void {
@@ -180,6 +189,31 @@ export class DashboardComponent implements OnInit, OnDestroy {
         console.error('Erro ao carregar estatísticas do profissional:', erro);
         this.carregandoEstatisticas = false;
       },
+    });
+  }
+
+  /**
+   * Verifica o status da assinatura e ativa o banner de inadimplência se necessário.
+   * Calcula a data limite de acesso: dataVencimento + 15 dias (antes da suspensão automática).
+   */
+  private verificarStatusAssinatura(): void {
+    if (this.ControleAcessoService.isSuperAdmin()) return;
+
+    this.assinaturaApiService.minhaAssinatura().subscribe({
+      next: (assinatura: AssinaturaTenant) => {
+          console.log(assinatura)
+        if (assinatura.status === 'INADIMPLENTE') {
+          this.assinaturaInadimplente = true;
+          const dataVencimento = new Date(assinatura.dataVencimento);
+          this.dataLimiteAcesso = new Date(dataVencimento);
+          this.dataLimiteAcesso.setDate(this.dataLimiteAcesso.getDate() + 10);
+
+          const hoje = new Date();
+          const diffMs = this.dataLimiteAcesso.getTime() - hoje.getTime();
+          this.diasRestantes = Math.max(0, Math.ceil(diffMs / (1000 * 60 * 60 * 24)));
+        }
+      },
+      error: (err) => console.warn('Não foi possível verificar status da assinatura:', err)
     });
   }
 

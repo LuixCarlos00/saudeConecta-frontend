@@ -1,0 +1,122 @@
+.assinatura-container {
+  padding: 24px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.assinatura-container h2 {
+  margin-bottom: 24px;
+  font-size: 1.6rem;
+  color: #333;
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  padding: 48px 0;
+}
+
+.sem-assinatura {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 24px;
+  color: #666;
+}
+
+.conteudo {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.assinatura-card,
+.limites-card,
+.cobrancas-card {
+  border-radius: 12px;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.info-item .label {
+  font-size: 0.8rem;
+  color: #888;
+  text-transform: uppercase;
+}
+
+.info-item .value {
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #333;
+}
+
+.limite-row {
+  padding: 12px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.limite-row:last-child {
+  border-bottom: none;
+}
+
+.limite-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.limite-info mat-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  color: #1976d2;
+}
+
+.contagem {
+  margin-left: auto;
+  font-weight: 600;
+}
+
+.cobrancas-table {
+  width: 100%;
+}
+
+.sem-cobrancas {
+  text-align: center;
+  padding: 24px;
+  color: #888;
+}
+
+.status-badge {
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.status-trial { background-color: #e3f2fd; color: #1565c0; }
+.status-ativa { background-color: #e8f5e9; color: #2e7d32; }
+.status-inadimplente { background-color: #fff3e0; color: #e65100; }
+.status-suspensa { background-color: #fce4ec; color: #c62828; }
+.status-cancelada { background-color: #efebe9; color: #4e342e; }
+.status-pendente { background-color: #fff8e1; color: #f57f17; }
+.status-pago { background-color: #e8f5e9; color: #2e7d32; }
+.status-expirado { background-color: #efebe9; color: #6d4c41; }
+
+mat-card-actions {
+  display: flex;
+  justify-content: center;
+  padding: 16px;
+}

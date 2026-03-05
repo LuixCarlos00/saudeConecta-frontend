@@ -124,9 +124,14 @@ export class CadastroSecretariaComponent implements OnInit, OnDestroy {
   private handleHttpError(error: any) {
     let errorMessage = 'Erro desconhecido ao realizar o cadastro.';
     let titulo = 'Erro';
+    let icone: 'error' | 'warning' = 'error';
 
-    if (error.status === 409) {
-      titulo = 'Error';
+    if (error.status === 422 && error.error?.message) {
+      icone = 'warning';
+      titulo = 'Limite do plano atingido';
+      errorMessage = error.error.message;
+    } else if (error.status === 409) {
+      titulo = 'Erro';
       errorMessage = typeof error.error === 'string' ? error.error : 'CPF já cadastrado no sistema. Por favor, verifique os dados.';
     } else if (error.status === 400) {
       titulo = 'Dados inválidos';
@@ -144,7 +149,7 @@ export class CadastroSecretariaComponent implements OnInit, OnDestroy {
     }
 
     Swal.fire({
-      icon: 'error',
+      icon: icone,
       title: titulo,
       text: errorMessage,
     });

@@ -1,0 +1,143 @@
+<div class="gerenciar-planos-container">
+  <header class="page-header">
+    <h1>
+      <i class="fa-solid fa-layer-group"></i>
+      Gerenciar Planos de Assinatura
+    </h1>
+    <p class="header-subtitle">Edite os valores e limites dos planos existentes</p>
+  </header>
+
+  <!-- Loading -->
+  <div *ngIf="isLoading" class="loading-container">
+    <mat-spinner diameter="40"></mat-spinner>
+    <p>Carregando planos...</p>
+  </div>
+
+  <!-- Tabela de Planos -->
+  <div *ngIf="!isLoading && !mostrarFormulario" class="planos-table-container">
+    <table mat-table [dataSource]="planos" class="planos-table">
+
+      <ng-container matColumnDef="nome">
+        <th mat-header-cell *matHeaderCellDef>Nome</th>
+        <td mat-cell *matCellDef="let plano">
+          <strong>{{ plano.nome }}</strong>
+          <span class="tipo-badge" [class]="'tipo-' + plano.tipo.toLowerCase()">{{ plano.tipo }}</span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="descricao">
+        <th mat-header-cell *matHeaderCellDef>Descrição</th>
+        <td mat-cell *matCellDef="let plano">{{ plano.descricao }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="valorMensal">
+        <th mat-header-cell *matHeaderCellDef>Valor Mensal</th>
+        <td mat-cell *matCellDef="let plano" class="valor-cell">{{ formatarValor(plano.valorMensal) }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="limites">
+        <th mat-header-cell *matHeaderCellDef>Limites</th>
+        <td mat-cell *matCellDef="let plano">
+          <div class="limites-resumo">
+            <span><i class="fa-solid fa-user-shield"></i> {{ formatarLimite(plano.limiteAdminOrg) }}</span>
+            <span><i class="fa-solid fa-user-doctor"></i> {{ formatarLimite(plano.limiteProfissional) }}</span>
+            <span><i class="fa-solid fa-user-pen"></i> {{ formatarLimite(plano.limiteSecretaria) }}</span>
+          </div>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="acoes">
+        <th mat-header-cell *matHeaderCellDef>Ações</th>
+        <td mat-cell *matCellDef="let plano">
+          <button mat-icon-button color="primary" (click)="abrirFormularioEdicao(plano)" matTooltip="Editar">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button color="warn" (click)="desativarPlano(plano)" matTooltip="Desativar">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="['nome', 'descricao', 'valorMensal', 'limites', 'acoes']"></tr>
+      <tr mat-row *matRowDef="let row; columns: ['nome', 'descricao', 'valorMensal', 'limites', 'acoes'];"></tr>
+    </table>
+
+    <p *ngIf="planos.length === 0" class="sem-planos">Nenhum plano cadastrado.</p>
+  </div>
+
+  <!-- Formulário de Criação/Edição -->
+  <div *ngIf="mostrarFormulario" class="formulario-container">
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>{{ modoEdicao ? 'Editar Plano' : 'Novo Plano' }}</mat-card-title>
+      </mat-card-header>
+
+      <mat-card-content>
+        <form [formGroup]="planoForm" class="plano-form">
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Nome do Plano</mat-label>
+              <input matInput formControlName="nome" placeholder="Ex: Plano Premium">
+              <mat-error *ngIf="planoForm.get('nome')?.hasError('required')">Campo obrigatório</mat-error>
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Descrição</mat-label>
+              <textarea matInput formControlName="descricao" rows="3" placeholder="Descreva os benefícios do plano"></textarea>
+              <mat-error *ngIf="planoForm.get('descricao')?.hasError('required')">Campo obrigatório</mat-error>
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="half-width">
+              <mat-label>Tipo</mat-label>
+              <mat-select formControlName="tipo">
+                <mat-option *ngFor="let tipo of tiposPlano" [value]="tipo.value">{{ tipo.label }}</mat-option>
+              </mat-select>
+              <mat-error *ngIf="planoForm.get('tipo')?.hasError('required')">Campo obrigatório</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="half-width">
+              <mat-label>Valor Mensal (R$)</mat-label>
+              <input matInput type="number" formControlName="valorMensal" min="0" step="0.01">
+              <mat-error *ngIf="planoForm.get('valorMensal')?.hasError('required')">Campo obrigatório</mat-error>
+              <mat-error *ngIf="planoForm.get('valorMensal')?.hasError('min')">Valor deve ser maior que zero</mat-error>
+            </mat-form-field>
+          </div>
+
+          <h3>Limites de Usuários</h3>
+          <p class="hint-text">Deixe em branco ou 0 para ilimitado</p>
+
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="third-width">
+              <mat-label>Admins</mat-label>
+              <input matInput type="number" formControlName="limiteAdminOrg" min="0">
+              <mat-hint>{{ formatarLimite(planoForm.get('limiteAdminOrg')?.value) }}</mat-hint>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="third-width">
+              <mat-label>Profissionais</mat-label>
+              <input matInput type="number" formControlName="limiteProfissional" min="0">
+              <mat-hint>{{ formatarLimite(planoForm.get('limiteProfissional')?.value) }}</mat-hint>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="third-width">
+              <mat-label>Secretárias</mat-label>
+              <input matInput type="number" formControlName="limiteSecretaria" min="0">
+              <mat-hint>{{ formatarLimite(planoForm.get('limiteSecretaria')?.value) }}</mat-hint>
+            </mat-form-field>
+          </div>
+        </form>
+      </mat-card-content>
+
+      <mat-card-actions align="end">
+        <button mat-button (click)="fecharFormulario()">Cancelar</button>
+        <button mat-raised-button color="primary" (click)="salvarPlano()" [disabled]="planoForm.invalid">
+          {{ modoEdicao ? 'Atualizar' : 'Criar' }} Plano
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+</div>

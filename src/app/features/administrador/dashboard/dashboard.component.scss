@@ -855,6 +855,162 @@ $card-colors: (
 }
 
 // =============================================================================
+// BANNER DE INADIMPLÊNCIA
+// =============================================================================
+
+.banner-inadimplencia {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 24px;
+  margin-bottom: 24px;
+  background: linear-gradient(135deg, #fff3cd 0%, #ffeeba 100%);
+  border: 1px solid #ffc107;
+  border-left: 5px solid #e65100;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(230, 81, 0, 0.12);
+  animation: bannerSlideIn 0.4s ease-out;
+
+  @include mobile {
+    flex-direction: column;
+    text-align: center;
+    padding: 16px;
+  }
+
+  &__icon {
+    flex-shrink: 0;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(230, 81, 0, 0.12);
+    border-radius: 50%;
+    color: #e65100;
+    font-size: 22px;
+  }
+
+  &__content {
+    flex: 1;
+    color: #5d4037;
+
+    strong {
+      font-size: 15px;
+      color: #bf360c;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    p {
+      margin: 0;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+  }
+
+  &__prazo {
+    margin-top: 6px !important;
+    font-weight: 500;
+    color: #e65100;
+
+    i {
+      margin-right: 4px;
+    }
+
+    strong {
+      display: inline;
+      font-size: inherit;
+      color: inherit;
+    }
+  }
+
+  &__urgente {
+    color: #d32f2f;
+    font-weight: 700;
+  }
+
+  &__action {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: #e65100;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s;
+    white-space: nowrap;
+
+    &:hover {
+      background: #bf360c;
+      transform: translateY(-1px);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+
+    i {
+      font-size: 16px;
+    }
+  }
+}
+
+@keyframes bannerSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Tema escuro
+:host-context(body.dark-theme) {
+  .banner-inadimplencia {
+    background: linear-gradient(135deg, #3e2723 0%, #4e342e 100%);
+    border-color: #ff8f00;
+    border-left-color: #ff6d00;
+    box-shadow: 0 2px 12px rgba(255, 109, 0, 0.15);
+
+    &__icon {
+      background: rgba(255, 109, 0, 0.2);
+      color: #ffab40;
+    }
+
+    &__content {
+      color: #ffcc80;
+
+      strong {
+        color: #ffab40;
+      }
+    }
+
+    &__prazo {
+      color: #ffab40;
+    }
+
+    &__urgente {
+      color: #ff5252;
+    }
+
+    &__action {
+      background: #ff6d00;
+
+      &:hover {
+        background: #ff8f00;
+      }
+    }
+  }
+}
+
+// =============================================================================
 // NOTA: O tema escuro agora é controlado globalmente via body.dark-theme
 // Os estilos estão em src/styles/global.scss
 // =============================================================================

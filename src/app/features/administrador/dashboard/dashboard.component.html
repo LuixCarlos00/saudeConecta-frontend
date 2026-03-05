@@ -18,6 +18,30 @@
     </div>
   </header>
 
+  <!-- Banner de Inadimplência -->
+  <div class="banner-inadimplencia" *ngIf="assinaturaInadimplente">
+    <div class="banner-inadimplencia__icon">
+      <i class="fa-solid fa-triangle-exclamation"></i>
+    </div>
+    <div class="banner-inadimplencia__content">
+      <strong>Sua organização está inadimplente</strong>
+      <p>
+        O pagamento do seu plano não foi identificado.
+        Regularize sua situação para evitar a suspensão do acesso ao sistema.
+      </p>
+      <p class="banner-inadimplencia__prazo" *ngIf="dataLimiteAcesso">
+        <i class="fa-solid fa-clock"></i>
+        Você tem acesso até <strong>{{ dataLimiteAcesso | date:'dd/MM/yyyy' }}</strong>
+        <span *ngIf="diasRestantes > 0">({{ diasRestantes }} {{ diasRestantes === 1 ? 'dia restante' : 'dias restantes' }})</span>
+        <span *ngIf="diasRestantes === 0" class="banner-inadimplencia__urgente">— acesso pode ser suspenso a qualquer momento</span>
+      </p>
+    </div>
+    <button class="banner-inadimplencia__action" (click)="navegarPara('/minha-assinatura')">
+      <i class="fa-solid fa-credit-card"></i>
+      Regularizar
+    </button>
+  </div>
+
   <!-- ================================================================
        Dashboard Administrativo (Super Admin, Admin)
        ================================================================ -->

@@ -61,4 +61,13 @@ export class MensageriaApiService {
   marcarComoNotificado(id: number): Observable<void> {
     return this.http.patch<void>(`${this.apiUrl}/${id}/notificar`, {});
   }
+
+  /**
+   * Reenvia uma mensagem para o destinatário original.
+   *
+   * @param id ID da mensagem
+   */
+  reenviarMensagem(id: number): Observable<void> {
+    return this.http.post<void>(`${this.apiUrl}/${id}/reenviar`, {});
+  }
 }

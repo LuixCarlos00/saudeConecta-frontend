@@ -84,7 +84,9 @@ export class BarraLateraComponent implements OnInit, OnDestroy {
       '/Gerenciamento-Usuarios': 'Usuarios',
       '/trocaSenha': 'trocar_senha',
       '/Agenda-Medico': 'AgendaMedico',
-      '/mensageria': 'Mensageria'
+      '/mensageria': 'Mensageria',
+      '/gerenciar-planos': 'GerenciarPlanos',
+      '/minha-assinatura': 'MinhaAssinatura'
     };
 
     this.activeRoute = routeMap[url] || '';
@@ -165,7 +167,9 @@ export class BarraLateraComponent implements OnInit, OnDestroy {
       'sobre': 'sobre',
       'AgendaMedico': 'Agenda-Medico',
       'startconsulta': 'startconsulta',
-      'Mensageria': 'mensageria'
+      'Mensageria': 'mensageria',
+      'GerenciarPlanos': 'gerenciar-planos',
+      'MinhaAssinatura': 'minha-assinatura'
     };
 
     const route = routes[rota];

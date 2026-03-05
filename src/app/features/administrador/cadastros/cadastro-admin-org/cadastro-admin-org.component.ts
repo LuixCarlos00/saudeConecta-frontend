@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
+import { CepApiService } from 'src/app/services/api/cep-api.service';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import Swal from 'sweetalert2';
@@ -45,7 +45,7 @@ export class CadastroAdminOrgComponent implements OnInit, OnDestroy {
     private fb: FormBuilder,
     private administradorApi: AdministradorApiService,
     private filtroStateService: FiltroStateService,
-    private http: HttpClient,
+    private cepApiService: CepApiService,
     private router: Router
   ) {}
 
@@ -61,12 +61,12 @@ export class CadastroAdminOrgComponent implements OnInit, OnDestroy {
       cnpj:         ['', [Validators.required, Validators.minLength(14)]],
       tipoClinica:  ['', Validators.required],
       emailClinica: ['', [Validators.required, Validators.email]],
-      telefone:     [''],
+      telefone:     ['',Validators.required],
 
       cep:          ['', Validators.required],
       uf:           ['', Validators.required],
       municipio:    ['', Validators.required],
-      bairro:       [''],
+      bairro:       ['',Validators.required],
       rua:          ['', Validators.required],
       numero:       ['', Validators.required],
       complemento:  [''],
@@ -122,13 +122,9 @@ export class CadastroAdminOrgComponent implements OnInit, OnDestroy {
     if (!cep || cep.length !== 8) return;
 
     this.isBuscandoCep = true;
-    this.http.get<any>(`https://viacep.com.br/ws/${cep}/json/`).subscribe({
+    this.cepApiService.buscarEnderecoPorCep(cep).subscribe({
       next: (data) => {
         this.isBuscandoCep = false;
-        if (data.erro) {
-          Swal.fire({ icon: 'warning', title: 'CEP não encontrado', text: 'Verifique o CEP informado.' });
-          return;
-        }
         this.formulario.patchValue({
           rua:       data.logradouro || '',
           bairro:    data.bairro    || '',
@@ -138,7 +134,7 @@ export class CadastroAdminOrgComponent implements OnInit, OnDestroy {
       },
       error: () => {
         this.isBuscandoCep = false;
-        Swal.fire({ icon: 'error', title: 'Erro', text: 'Não foi possível buscar o CEP.' });
+        Swal.fire({ icon: 'warning', title: 'CEP não encontrado', text: 'Verifique o CEP informado.' });
       }
     });
   }
@@ -166,11 +162,11 @@ export class CadastroAdminOrgComponent implements OnInit, OnDestroy {
         Swal.fire({
           icon: 'success',
           title: 'Sucesso!',
-          text: 'Organização e administrador cadastrados. O login é o CNPJ e a senha inicial também é o CNPJ.',
+          text: 'Organização e administrador cadastrados. O login é o CNPJ e a senha foi enviada por email.',
         }).then(() => {
           this.formulario.reset();
           this.filtroStateService.setRecarregar(true);
-          this.router.navigate(['/gerenciamento']);
+          this.router.navigate(['/Gerenciamento-Usuarios']);
         });
       },
       error: (error) => {

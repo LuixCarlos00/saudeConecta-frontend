@@ -400,3 +400,117 @@
   border-color: #6366f1;
   background: rgba(99, 102, 241, 0.05);
 }
+
+.action-card--disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  position: relative;
+}
+
+.action-card--disabled:hover {
+  transform: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.action-card--disabled .action-card__desc::after {
+  content: ' (limite atingido)';
+  color: #ef4444;
+  font-weight: 600;
+}
+
+/* =============================================================================
+   PAINEL DE LIMITES DO PLANO
+   ============================================================================= */
+
+.limites-plano-section {
+  margin-bottom: 32px;
+}
+
+.limites-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.limite-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  background: var(--bg-card, #ffffff);
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 12px;
+  transition: all 0.2s ease;
+}
+
+.limite-card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.limite-card.limite-esgotado {
+  border-color: #ef4444;
+  background: rgba(239, 68, 68, 0.04);
+}
+
+.limite-card__icon {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background: rgba(0, 102, 204, 0.1);
+  color: #0066CC;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.limite-esgotado .limite-card__icon {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+.limite-card__info {
+  flex: 1;
+  min-width: 0;
+}
+
+.limite-card__title {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary, #6b7280);
+  margin-bottom: 2px;
+}
+
+.limite-card__contagem {
+  display: block;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary, #111827);
+  margin-bottom: 8px;
+}
+
+.limite-esgotado .limite-card__contagem {
+  color: #ef4444;
+}
+
+.limite-card__barra {
+  width: 100%;
+  height: 6px;
+  background: var(--bg-secondary, #f3f4f6);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.limite-card__progresso {
+  height: 100%;
+  background: linear-gradient(90deg, #0066CC, #3b82f6);
+  border-radius: 3px;
+  transition: width 0.5s ease;
+}
+
+.limite-card__progresso.progresso-critico {
+  background: linear-gradient(90deg, #ef4444, #f87171);
+}
