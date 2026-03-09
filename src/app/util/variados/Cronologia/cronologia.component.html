@@ -43,8 +43,7 @@
         {{ carregandoEspecialidades ? 'Carregando especialidades...' : 'Selecione a especialidade' }}
       </mat-label>
       <mat-select formControlName="Especialidade" [disabled]="carregandoEspecialidades">
-        <mat-option [value]="null">Todas</mat-option>
-        <mat-option *ngFor="let especialidade of especialidades" [value]="especialidade.nome">
+         <mat-option *ngFor="let especialidade of especialidades" [value]="especialidade.nome">
           {{ especialidade.nome }}
         </mat-option>
       </mat-select>
@@ -60,9 +59,42 @@
     <mat-form-field class="select-field" appearance="outline">
       <mat-label>Selecione o clínico</mat-label>
       <mat-select formControlName="NomeMedico">
-        <mat-option [value]="null">Todos</mat-option>
+
         <mat-option *ngFor="let medico of ListaMedicos" [value]="medico">
           Dr(a). {{medico.nome}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <!-- Status de Consulta -->
+  <div class="filter-section" [formGroup]="OpcoesStatusConsulta">
+    <label class="section-label">
+      <i class="fa-solid fa-circle-info"></i>
+      Status da Consulta <span class="optional-label">(opcional)</span>
+    </label>
+    <div class="checkbox-group">
+      <mat-checkbox 
+        *ngFor="let status of statusDisponiveis"
+        [value]="status.value"
+        (change)="toggleStatusConsulta(status.value, $event.checked)"
+        class="status-checkbox">
+        {{ status.label }}
+      </mat-checkbox>
+    </div>
+  </div>
+
+  <!-- Status de Pagamento (apenas para Finalizadas) -->
+  <div *ngIf="tipoPesquisaConcluidas" class="filter-section" [formGroup]="OpcoesStatusPagamento">
+    <label class="section-label">
+      <i class="fa-solid fa-money-bill"></i>
+      Status de Pagamento <span class="optional-label">(opcional)</span>
+    </label>
+    <mat-form-field class="select-field" appearance="outline">
+      <mat-label>Selecione o status de pagamento</mat-label>
+      <mat-select formControlName="statusPagamento">
+         <mat-option *ngFor="let statusPag of statusPagamentoOptions" [value]="statusPag.value">
+          {{ statusPag.label }}
         </mat-option>
       </mat-select>
     </mat-form-field>

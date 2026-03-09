@@ -19,6 +19,34 @@
   </header>
 
   <!-- Banner de Inadimplência -->
+  <!-- Banner de cobrança pendente (gerada automaticamente dia 1º do mês) -->
+  <div class="banner-cobranca-pendente" *ngIf="cobrancaPendente && !assinaturaInadimplente">
+    <div class="banner-cobranca-pendente__icon">
+      <i class="fa-solid fa-receipt"></i>
+    </div>
+    <div class="banner-cobranca-pendente__content">
+      <strong>Cobrança mensal gerada</strong>
+      <p>
+        Sua cobrança de <strong>{{ cobrancaPendente.valorTotal | currency:'BRL' }}</strong> foi gerada automaticamente.
+        Você tem até <strong>{{ cobrancaPendente.dataVencimentoPix | date:'dd/MM/yyyy' }}</strong> para realizar o pagamento.
+      </p>
+      <p class="banner-cobranca-pendente__prazo">
+        <i class="fa-solid fa-clock"></i>
+        <span *ngIf="diasRestantesPagamento > 0">
+          <strong>{{ diasRestantesPagamento }}</strong> {{ diasRestantesPagamento === 1 ? 'dia restante' : 'dias restantes' }} para pagamento
+        </span>
+        <span *ngIf="diasRestantesPagamento === 0" class="banner-cobranca-pendente__urgente">
+          Vence hoje! Pague para evitar inadimplência
+        </span>
+      </p>
+    </div>
+    <button class="banner-cobranca-pendente__action" (click)="navegarPara('/minha-assinatura')">
+      <i class="fa-solid fa-qrcode"></i>
+      Ver QR Code Pix
+    </button>
+  </div>
+
+  <!-- Banner de inadimplência (prioridade sobre cobrança pendente) -->
   <div class="banner-inadimplencia" *ngIf="assinaturaInadimplente">
     <div class="banner-inadimplencia__icon">
       <i class="fa-solid fa-triangle-exclamation"></i>

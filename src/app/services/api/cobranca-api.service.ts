@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { CobrancaTenant } from 'src/app/util/variados/interfaces/planos/PlanoAssinatura';
 import { environment } from 'src/environments/environment';
 
@@ -26,8 +27,18 @@ export class CobrancaApiService {
    * Lista cobranças da organização do usuário logado.
    * @returns Observable com lista de cobranças
    */
-  minhasCobrancas(): Observable<CobrancaTenant[]> {
+  listarMinhasCobrancas(): Observable<CobrancaTenant[]> {
     return this.http.get<CobrancaTenant[]>(`${this.apiUrl}/minhas-cobrancas`);
+  }
+
+  /**
+   * Busca cobrança pendente atual da organização (para dashboard).
+   * @returns Observable com cobrança pendente ou null
+   */
+  buscarCobrancaPendenteAtual(): Observable<CobrancaTenant | null> {
+    return this.http.get<CobrancaTenant>(`${this.apiUrl}/pendente-atual`).pipe(
+      catchError(() => of(null))
+    );
   }
 
   /**
@@ -37,6 +48,23 @@ export class CobrancaApiService {
    */
   listarPorOrganizacao(organizacaoId: number): Observable<CobrancaTenant[]> {
     return this.http.get<CobrancaTenant[]>(`${this.apiUrl}/organizacao/${organizacaoId}`);
+  }
+
+  /**
+   * Lista todas as cobranças pendentes (SUPER_ADMIN).
+   * @returns Observable com lista de cobranças pendentes
+   */
+  listarPendentes(): Observable<CobrancaTenant[]> {
+    return this.http.get<CobrancaTenant[]>(`${this.apiUrl}/pendentes`);
+  }
+
+  /**
+   * Confirma pagamento manualmente (SUPER_ADMIN).
+   * @param cobrancaId ID da cobrança
+   * @returns Observable com a cobrança atualizada
+   */
+  confirmarPagamento(cobrancaId: number): Observable<CobrancaTenant> {
+    return this.http.patch<CobrancaTenant>(`${this.apiUrl}/${cobrancaId}/confirmar-pagamento`, {});
   }
 
   /**

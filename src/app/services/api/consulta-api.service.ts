@@ -42,6 +42,39 @@ export class ConsultaApiService {
     return this.http.put<any>(`${this.apiUrl}/atualizarConsultabyOrg/${id}`, consulta);
   }
 
+  /**
+   * Busca dinâmica de consultas com filtros opcionais
+   * Todos os parâmetros são opcionais
+   * 
+   * @param profissionalId ID do profissional/médico (opcional)
+   * @param especialidade Nome da especialidade (opcional)
+   * @param dataInicial Data inicial no formato YYYY-MM-DD (opcional)
+   * @param dataFinal Data final no formato YYYY-MM-DD (opcional)
+   * @param status Array de status ou string separada por vírgula (opcional)
+   * @returns Observable com lista de consultas
+   */
+  buscarComFiltrosDinamicos(
+    profissionalId?: number,
+    especialidade?: string,
+    dataInicial?: string,
+    dataFinal?: string,
+    status?: string[] | string
+  ): Observable<Consultav2[]> {
+    let params: any = {};
+    
+    if (profissionalId) params.profissionalId = profissionalId;
+    if (especialidade) params.especialidade = especialidade;
+    if (dataInicial) params.dataInicial = dataInicial;
+    if (dataFinal) params.dataFinal = dataFinal;
+    
+    // Converter array de status para string separada por vírgula
+    if (status) {
+      params.status = Array.isArray(status) ? status.join(',') : status;
+    }
+    
+    return this.http.get<Consultav2[]>(`${this.apiUrl}/buscar`, { params });
+  }
+
   pesquisarClinicasEmIntervaloDeDatas(medicoId: number, inicio: string, fim: string, status: string): Observable<Consultav2[]> {
     return this.http.get<Consultav2[]>(
       `${this.apiUrl}/profissional/${medicoId}/intervalo?dataInicial=${inicio}&dataFinal=${fim}&status=${status}`
@@ -103,18 +136,12 @@ export class ConsultaApiService {
     return this.http.put<Consultav2>(`${this.apiUrl}/concluirConsultabyOrg/${id}`, {});
   }
 
-  confirmarConsulta(id: number): Observable<Consultav2> {
-    return this.http.patch<Consultav2>(`${this.apiUrl}/${id}/status?status=CONFIRMADA`, {});
-  }
-
-  cancelarConsulta(id: number, motivo: string): Observable<Consultav2> {
-    return this.http.patch<Consultav2>(
-      `${this.apiUrl}/${id}/status?status=CANCELADA&motivo=${encodeURIComponent(motivo)}`, {}
-    );
-  }
-
-  marcarComoPago(id: number): Observable<Consultav2> {
-    return this.http.patch<Consultav2>(`${this.apiUrl}/${id}/pagar`, {});
+  alterarStatusConsulta(id: number, status: string, motivo?: string): Observable<Consultav2> {
+    let url = `${this.apiUrl}/${id}/status?status=${status.toUpperCase()}`;
+    if (motivo) {
+      url += `&motivo=${encodeURIComponent(motivo)}`;
+    }
+    return this.http.patch<Consultav2>(url, {});
   }
 
 
