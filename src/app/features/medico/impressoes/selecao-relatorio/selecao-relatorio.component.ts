@@ -52,6 +52,13 @@ export class SelecaoRelatorioComponent implements OnInit {
       cor: '#64748b'
     },
     {
+      id: '7',
+      titulo: 'Comprovante de Pagamento',
+      descricao: 'Gerar comprovante de pagamento da consulta',
+      icone: 'fa-solid fa-file-invoice-dollar',
+      cor: '#14b8a6'
+    },
+    {
       id: '6',
       titulo: 'Relatório Dinâmico',
       descricao: 'Gerar relatório personalizado da consulta',
@@ -76,9 +83,23 @@ export class SelecaoRelatorioComponent implements OnInit {
   }
 
   private filtrarOpcoes(): void {
-    if (this.consultaNaoRealizada) {
+    const statusConsulta = this.data?.consulta?.status;
+    
+    // Se estiver AGENDADA, CONFIRMADA ou CANCELADA - apenas histórico completo
+    if (statusConsulta === 'AGENDADA' || statusConsulta === 'CONFIRMADA' || statusConsulta === 'CANCELADA') {
       this.opcoes = this.todasOpcoes.filter(opcao => opcao.id === '3');
-    } else {
+    } 
+    // Se estiver REALIZADA ou PAGO - todas as opções + comprovante de pagamento
+    else if (statusConsulta === 'REALIZADA' || statusConsulta === 'PAGO') {
+      this.opcoes = this.todasOpcoes.filter(opcao => {
+        if (opcao.id === '6') {
+          return this.isAdmin; // Relatório dinâmico apenas para admin
+        }
+        return true; // Inclui comprovante de pagamento (id: 7)
+      });
+    }
+    // Para qualquer outro status - mantém a lógica anterior
+    else {
       this.opcoes = this.todasOpcoes.filter(opcao => {
         if (opcao.id === '6') {
           return this.isAdmin;

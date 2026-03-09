@@ -163,14 +163,14 @@
 
 
 <!-- Modal de Detalhe -->
-<div class="modal-overlay" *ngIf="mostrarDetalhe" (click)="fecharDetalhe()">
+<div class="modal-overlay" *ngIf="mostrarDetalhe && mensagemSelecionada" (click)="fecharDetalhe()">
   <div class="modal-dialog" (click)="$event.stopPropagation()">
     <div class="modal-header">
       <div class="modal-header-info">
         <i class="fa-solid fa-envelope-open-text"></i>
         <h2>Detalhes da Mensagem #{{ mensagemSelecionada?.id }}</h2>
       </div>
-      <button class="modal-close" (click)="fecharDetalhe()">
+      <button class="modal-close" (click)="fecharDetalhe()" aria-label="Fechar modal">
         <i class="fa-solid fa-xmark"></i>
       </button>
     </div>
@@ -247,15 +247,22 @@
       <!-- Corpo da mensagem -->
       <div class="detail-section">
         <h3 class="section-title">
-          <i class="fa-solid fa-file-lines"></i> Conteúdo Registrado
+          <i class="fa-solid fa-file-lines"></i> Conteúdo da Mensagem
         </h3>
-        <div class="message-body-box message-body-box--html"
-             *ngIf="isHtml(mensagemSelecionada.corpoMensagem)"
-             [innerHTML]="sanitizarHtml(mensagemSelecionada.corpoMensagem)">
+        
+        <!-- Visualização do HTML -->
+        <div *ngIf="isHtml(mensagemSelecionada.corpoMensagem) && mensagemSelecionada.corpoMensagem" 
+             class="preview-container">
+          <iframe [src]="getSafeHtmlUrl(mensagemSelecionada.corpoMensagem)" 
+                  class="html-preview-frame"
+                  sandbox="allow-same-origin allow-forms"></iframe>
         </div>
-        <div class="message-body-box"
-             *ngIf="!isHtml(mensagemSelecionada.corpoMensagem)">
-          {{ mensagemSelecionada.corpoMensagem }}
+        <div *ngIf="!isHtml(mensagemSelecionada.corpoMensagem) && mensagemSelecionada.corpoMensagem" 
+             class="message-body-box">
+          {{ truncateText(mensagemSelecionada.corpoMensagem) }}
+        </div>
+        <div *ngIf="!mensagemSelecionada.corpoMensagem" class="message-body-box">
+          <em>Sem conteúdo registrado</em>
         </div>
       </div>
 

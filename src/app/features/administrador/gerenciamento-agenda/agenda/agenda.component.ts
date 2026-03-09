@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Subject, takeUntil } from 'rxjs';
+import { Subject, takeUntil, Observable } from 'rxjs';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ConsultaApiService } from 'src/app/services/api/consulta-api.service';
@@ -233,70 +233,108 @@ export class AgendaComponent implements OnInit, OnDestroy {
 
   AlterarStatus(elemento: Consultav2, novoStatus: string) {
     if (novoStatus === elemento.status) { return; }
-    if (novoStatus === 'CONFIRMADA') {
-      this.Confirmar(elemento);
-    } else if (novoStatus === 'CANCELADA') {
-      this.Cancelar(elemento);
+
+    // Configurações específicas por status
+    const statusConfig: Record<string, any> = {
+      'CONFIRMADA': {
+        title: 'Confirmar consulta?',
+        text: `Consulta de ${elemento.pacienteNome} será marcada como CONFIRMADA.`,
+        confirmText: 'Sim, confirmar!',
+        confirmColor: '#2563eb'
+      },
+      'CANCELADA': {
+        title: 'Cancelar consulta?',
+        text: `Consulta de ${elemento.pacienteNome} será CANCELADA.`,
+        confirmText: 'Sim, cancelar!',
+        confirmColor: '#dc2626',
+        requiresMotivo: true
+      },
+      'AGENDADA': {
+        title: 'Voltar consulta para Agendada?',
+        text: `Consulta de ${elemento.pacienteNome} voltará para status AGENDADA.`,
+        confirmText: 'Sim, voltar para Agendada!',
+        confirmColor: '#f59e0b'
+      },
+      'PAGO': {
+        title: 'Marcar consulta como Paga?',
+        text: `Consulta de ${elemento.pacienteNome} será marcada como PAGO.`,
+        confirmText: 'Sim, marcar como pago!',
+        confirmColor: '#27ae60'
+      }
+    };
+
+    const config = statusConfig[novoStatus];
+    if (!config) {
+      console.error('Status não reconhecido:', novoStatus);
+      return;
+    }
+
+    // Se precisa de motivo (CANCELADA), mostra input
+    if (config.requiresMotivo) {
+      Swal.fire({
+        title: config.title,
+        text: config.text,
+        icon: 'question',
+        input: 'textarea',
+        inputLabel: 'Motivo do cancelamento',
+        inputPlaceholder: 'Informe o motivo...',
+        inputValidator: (value) => {
+          if (!value || value.trim().length < 3) {
+            return 'Informe o motivo (mínimo 3 caracteres).';
+          }
+          return null;
+        },
+        showCancelButton: true,
+        confirmButtonColor: config.confirmColor,
+        cancelButtonColor: '#6b7280',
+        confirmButtonText: config.confirmText,
+        cancelButtonText: 'Cancelar',
+      }).then((result) => {
+        if (result.isConfirmed && result.value) {
+          this.executarAlteracaoStatus(elemento.id, novoStatus, result.value);
+        }
+      });
+    } else {
+      // Status que não precisam de motivo
+      Swal.fire({
+        title: config.title,
+        text: config.text,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: config.confirmColor,
+        cancelButtonColor: '#6b7280',
+        confirmButtonText: config.confirmText,
+        cancelButtonText: 'Cancelar',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.executarAlteracaoStatus(elemento.id, novoStatus);
+        }
+      });
     }
   }
 
-  Confirmar(elemento: Consultav2) {
-    Swal.fire({
-      title: 'Confirmar consulta?',
-      text: `Consulta de ${elemento.pacienteNome} será marcada como CONFIRMADA.`,
-      icon: 'question',
-      showCancelButton: true,
-      confirmButtonColor: '#2563eb',
-      cancelButtonColor: '#6b7280',
-      confirmButtonText: 'Sim, confirmar!',
-      cancelButtonText: 'Cancelar',
-    }).then((result) => {
-      if (result.isConfirmed) {
-        this.consultaApi.confirmarConsulta(elemento.id).subscribe({
-          next: () => {
-            Swal.fire('Confirmada!', 'Consulta confirmada com sucesso.', 'success');
-            this.buscarDadosParaTabela();
-          },
-          error: (err) => {
-            console.error(err);
-            Swal.fire('Erro', 'Não foi possível confirmar a consulta.', 'error');
-          },
-        });
-      }
-    });
-  }
+  private executarAlteracaoStatus(id: number, status: string, motivo?: string) {
+    const statusLabels: Record<string, string> = {
+      'CONFIRMADA': 'Confirmada',
+      'CANCELADA': 'Cancelada',
+      'AGENDADA': 'Agendada',
+      'PAGO': 'Paga'
+    };
 
-  Cancelar(elemento: Consultav2) {
-    Swal.fire({
-      title: 'Cancelar consulta?',
-      input: 'textarea',
-      inputLabel: 'Motivo do cancelamento',
-      inputPlaceholder: 'Informe o motivo...',
-      inputAttributes: { 'aria-label': 'Motivo' },
-      showCancelButton: true,
-      confirmButtonColor: '#dc2626',
-      cancelButtonColor: '#6b7280',
-      confirmButtonText: 'Cancelar consulta',
-      cancelButtonText: 'Voltar',
-      inputValidator: (value) => {
-        if (!value || value.trim().length < 3) {
-          return 'Informe o motivo do cancelamento (mínimo 3 caracteres).';
-        }
-        return null;
+    let apiCall: Observable<Consultav2>;
+
+    // Usa o endpoint único do backend
+    apiCall = this.consultaApi.alterarStatusConsulta(id, status, motivo);
+
+    apiCall.subscribe({
+      next: () => {
+        Swal.fire(`${statusLabels[status]}!`, `Consulta marcada como ${statusLabels[status].toLowerCase()} com sucesso.`, 'success');
+        this.buscarDadosParaTabela();
       },
-    }).then((result) => {
-      if (result.isConfirmed && result.value) {
-        this.consultaApi.cancelarConsulta(elemento.id, result.value).subscribe({
-          next: () => {
-            Swal.fire('Cancelada!', 'Consulta cancelada com sucesso.', 'success');
-            this.buscarDadosParaTabela();
-          },
-          error: (err) => {
-            console.error(err);
-            Swal.fire('Erro', 'Não foi possível cancelar a consulta.', 'error');
-          },
-        });
-      }
+      error: (err: any) => {
+        console.error(err);
+        Swal.fire('Erro', `Não foi possível alterar a consulta para ${statusLabels[status].toLowerCase()}.`, 'error');
+      },
     });
   }
 
@@ -323,35 +361,6 @@ export class AgendaComponent implements OnInit, OnDestroy {
         () => this.mostrarErroProntuarioNaoEncontrado()
       )
     );
-  }
-
-  /**
-   * Altera o status de uma consulta REALIZADA para PAGO.
-   */
-  MarcarComoPago(element: Consultav2): void {
-    Swal.fire({
-      title: 'Confirmar pagamento?',
-      text: `A consulta de ${element.pacienteNome} será marcada como PAGO.`,
-      icon: 'question',
-      showCancelButton: true,
-      confirmButtonColor: '#27ae60',
-      cancelButtonColor: '#6b7280',
-      confirmButtonText: 'Sim, marcar como pago!',
-      cancelButtonText: 'Cancelar',
-    }).then((result) => {
-      if (result.isConfirmed) {
-        this.consultaApi.marcarComoPago(element.id).subscribe({
-          next: () => {
-            Swal.fire('Pago!', 'Consulta marcada como paga com sucesso.', 'success');
-            this.buscarDadosParaTabela();
-          },
-          error: (err) => {
-            console.error(err);
-            Swal.fire('Erro', 'Não foi possível marcar a consulta como paga.', 'error');
-          },
-        });
-      }
-    });
   }
 
   /**
@@ -411,7 +420,6 @@ export class AgendaComponent implements OnInit, OnDestroy {
       panelClass: 'selecao-relatorio-dialog',
       data: {
         consulta: element,
-        consultaNaoRealizada: (element.status as any) === 'AGENDADA',
         isAdmin: false,
       },
     });
@@ -421,6 +429,11 @@ export class AgendaComponent implements OnInit, OnDestroy {
 
       if (opcao === '3') {
         this.ImprimirHistoricoCompleto(element);
+        return;
+      }
+
+      if (opcao === '7') {
+        this.GerarComprovantePagamento(element);
         return;
       }
 
