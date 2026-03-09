@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { Subject } from 'rxjs';
 import { takeUntil, finalize } from 'rxjs/operators';
@@ -70,6 +70,13 @@ export class MensageriaComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
+  @HostListener('document:keydown', ['$event'])
+  handleKeyDown(event: KeyboardEvent): void {
+    if (event.key === 'Escape' && this.mostrarDetalhe) {
+      this.fecharDetalhe();
+    }
+  }
+
   carregarMensagens(): void {
     this.isLoading = true;
     this.erro = null;
@@ -119,13 +126,31 @@ export class MensageriaComponent implements OnInit, OnDestroy {
   }
 
   abrirDetalhe(mensagem: MensageriaResponse): void {
-    this.mensagemSelecionada = mensagem;
-    this.mostrarDetalhe = true;
+    try {
+      console.log('Abrindo detalhe da mensagem:', mensagem.id);
+      
+      // Validação básica dos dados
+      if (!mensagem || !mensagem.id) {
+        console.error('Mensagem inválida:', mensagem);
+        this.erro = 'Dados da mensagem inválidos.';
+        return;
+      }
+      
+      this.mensagemSelecionada = mensagem;
+      this.mostrarDetalhe = true;
+      
+      console.log('Modal aberto com sucesso');
+    } catch (error) {
+      console.error('Erro ao abrir detalhe:', error);
+      this.erro = 'Erro ao abrir detalhes da mensagem.';
+      this.fecharDetalhe();
+    }
   }
 
   fecharDetalhe(): void {
     this.mensagemSelecionada = null;
     this.mostrarDetalhe = false;
+    console.log('Modal fechado');
   }
 
   marcarComoNotificado(mensagem: MensageriaResponse): void {
@@ -216,10 +241,42 @@ export class MensageriaComponent implements OnInit, OnDestroy {
   }
 
   isHtml(conteudo: string): boolean {
-    return conteudo?.trim().startsWith('<!DOCTYPE') || conteudo?.trim().startsWith('<html');
+    if (!conteudo) return false;
+    const trimmed = conteudo.trim();
+    return trimmed.startsWith('<!DOCTYPE') || trimmed.startsWith('<html');
   }
 
   sanitizarHtml(conteudo: string): SafeHtml {
+    if (!conteudo) return this.sanitizer.bypassSecurityTrustHtml('');
     return this.sanitizer.bypassSecurityTrustHtml(conteudo);
+  }
+
+  truncateHtml(conteudo: string): string {
+    if (!conteudo) return '';
+    // Limita a 5000 caracteres para evitar problemas de performance
+    if (conteudo.length > 5000) {
+      return conteudo.substring(0, 5000) + '...\n\n[Conteúdo truncado - muito grande para exibir completamente]';
+    }
+    return conteudo;
+  }
+
+  truncateText(conteudo: string): string {
+    if (!conteudo) return '';
+    // Limita a 2000 caracteres para texto simples
+    if (conteudo.length > 2000) {
+      return conteudo.substring(0, 2000) + '...\n\n[Conteúdo truncado - muito grande para exibir completamente]';
+    }
+    return conteudo;
+  }
+
+  getSafeHtmlUrl(htmlContent: string): string {
+    if (!htmlContent) return '';
+    
+    // Cria um blob com o conteúdo HTML
+    const blob = new Blob([htmlContent], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    
+    // Retorna a URL segura
+    return this.sanitizer.bypassSecurityTrustResourceUrl(url) as string;
   }
 }

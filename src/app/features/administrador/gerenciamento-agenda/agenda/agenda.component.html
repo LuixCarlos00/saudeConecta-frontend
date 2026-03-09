@@ -76,9 +76,9 @@
           <span>Recarregar</span>
         </button>
 
-        <button class="agenda-action-btn" title="Cronograma do dia" (click)="CronogramaDoDia()">
-          <i class="fa-solid fa-clock"></i>
-          <span>Cronograma</span>
+        <button class="agenda-action-btn" title="Filtros" (click)="CronogramaDoDia()">
+          <i class="fa-solid fa-filter"></i>
+          <span>Filtros</span>
         </button>
 
       </div>
@@ -171,13 +171,39 @@
                 [class.hc-status-select--realizada]="element.status === 'REALIZADA'"
                 [class.hc-status-select--cancelada]="element.status === 'CANCELADA'"
                 [class.hc-status-select--pago]="element.status === 'PAGO'"
-                [attr.disabled]="(element.status === 'REALIZADA' || element.status === 'CANCELADA' || element.status === 'PAGO') ? true : null"
+                [attr.disabled]="(element.status === 'CANCELADA' || element.status === 'PAGO') ? true : null"
                 (change)="AlterarStatus(element, $any($event.target).value)">
-                <option value="AGENDADA" [selected]="element.status === 'AGENDADA'">Agendada</option>
-                <option value="CONFIRMADA" [selected]="element.status === 'CONFIRMADA'">Confirmada</option>
-                <option *ngIf="Finalizadas" value="REALIZADA" [selected]="element.status === 'REALIZADA'">Realizada</option>
-                <option *ngIf="Finalizadas" value="PAGO" [selected]="element.status === 'PAGO'">Pago</option>
-                <option value="CANCELADA" [selected]="element.status === 'CANCELADA'">Cancelada</option>
+                
+                <!-- Opções para status AGENDADA -->
+                <ng-container *ngIf="element.status === 'AGENDADA'">
+                  <option value="AGENDADA" selected>Agendada</option>
+                  <option value="CONFIRMADA">Confirmada</option>
+                  <option value="CANCELADA">Cancelada</option>
+                </ng-container>
+                
+                <!-- Opções para status CONFIRMADA -->
+                <ng-container *ngIf="element.status === 'CONFIRMADA'">
+                  <option value="AGENDADA">Agendada</option>
+                  <option value="CONFIRMADA" selected>Confirmada</option>
+                  <option value="CANCELADA">Cancelada</option>
+                </ng-container>
+                
+                <!-- Opções para status REALIZADA - APENAS MARCAR COMO PAGO -->
+                <ng-container *ngIf="element.status === 'REALIZADA'">
+                  <option value="REALIZADA" selected>Realizada</option>
+                  <option value="PAGO">Marcar como Pago</option>
+                </ng-container>
+                
+                <!-- Opções para status PAGO (desabilitado) -->
+                <ng-container *ngIf="element.status === 'PAGO'">
+                  <option value="PAGO" selected>Pago</option>
+                </ng-container>
+                
+                <!-- Opções para status CANCELADA (desabilitado) -->
+                <ng-container *ngIf="element.status === 'CANCELADA'">
+                  <option value="CANCELADA" selected>Cancelada</option>
+                </ng-container>
+                
               </select>
             </td>
           </ng-container>
@@ -208,11 +234,6 @@
                   <i class="fa-solid fa-note-sticky"></i>
                 </button>
 
-                <!-- Enviar Aviso -->
-                <!-- <button class="hc-action-btn hc-action-btn--primary" title="Enviar Aviso"
-                  (click)="EnviarAviso(element)">
-                  <i class="fa-solid fa-paper-plane"></i>
-                </button> -->
 
                 <!-- Gerar Link Questionário (somente antes da finalização) -->
                 <button *ngIf="element.status !== 'REALIZADA'" class="hc-action-btn hc-action-btn--teal" title="Gerar Link do Questionário de Saúde"
@@ -221,7 +242,7 @@
                 </button>
 
                 <!-- Gerar Link Planejamento Terapêutico (somente após finalização) -->
-                <button *ngIf="element.status === 'REALIZADA'" class="hc-action-btn hc-action-btn--teal" title="Gerar Link do Planejamento Terapêutico"
+                <button *ngIf="element.status === 'REALIZADA'" class="hc-action-btn hc-action-btn--teal" title="Gerar Link de Confirmação do Planejamento Terapêutico"
                   (click)="gerarLinkPlanejamento(element)">
                   <i class="fa-solid fa-file-signature"></i>
                 </button>
@@ -236,7 +257,7 @@
                 </a>
 
                 <!-- Editar -->
-                <button class="hc-action-btn hc-action-btn--warning" title="Editar Consulta" [disabled]="Finalizadas"
+                <button *ngIf="element.status === 'AGENDADA' || element.status === 'CONFIRMADA'" class="hc-action-btn hc-action-btn--warning" title="Editar Consulta"
                   (click)="Editar(element)">
                   <i class="fa-solid fa-pen-to-square"></i>
                 </button>
@@ -247,18 +268,9 @@
 <!--                  <i class="fa-solid fa-check"></i>-->
 <!--                </button>-->
 
-                <!-- Comprovante de Pagamento (somente Finalizadas com status REALIZADA) -->
-                <button *ngIf="Finalizadas && element.status === 'REALIZADA'" class="hc-action-btn hc-action-btn--success" title="Gerar Comprovante e Marcar como Pago"
-                  (click)="MarcarComoPago(element)">
-                  <i class="fa-solid fa-money-check-dollar"></i>
-                </button>
-
+                
                 <!-- Gerar Comprovante PDF (Finalizadas) -->
-                <button *ngIf="Finalizadas && (element.status === 'REALIZADA' || element.status === 'PAGO')" class="hc-action-btn hc-action-btn--teal" title="Gerar Comprovante de Pagamento PDF"
-                  (click)="GerarComprovantePagamento(element)">
-                  <i class="fa-solid fa-file-invoice-dollar"></i>
-                </button>
-
+                
                 <!-- Imprimir -->
                 <button class="hc-action-btn hc-action-btn--primary" title="Opções de Impressão"
                   (click)="AbrirOpcoesImpressao(element)">
@@ -266,7 +278,7 @@
                 </button>
 
                 <!-- Excluir -->
-                <button class="hc-action-btn hc-action-btn--danger" title="Excluir Consulta" [disabled]="Finalizadas"
+                <button *ngIf="element.status === 'AGENDADA' || element.status === 'CONFIRMADA'" class="hc-action-btn hc-action-btn--danger" title="Excluir Consulta"
                   (click)="Deletar(element)">
                   <i class="fa-solid fa-trash"></i>
                 </button>
