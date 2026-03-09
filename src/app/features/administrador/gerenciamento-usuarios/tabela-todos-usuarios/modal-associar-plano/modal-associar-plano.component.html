@@ -1,57 +1,140 @@
 <div class="modal-associar-plano">
   <h2 mat-dialog-title>
-    <i class="fa-solid" [ngClass]="modoEdicao ? 'fa-edit' : 'fa-link'"></i>
-    {{ modoEdicao ? 'Alterar Plano da Organização' : 'Associar Plano à Organização' }}
+    <mat-icon>business</mat-icon>
+    Gerenciar Organização: {{ data.nomeOrganizacao }}
   </h2>
 
   <mat-dialog-content>
-    <p class="organizacao-info">
-      <strong>Organização:</strong> {{ data.nomeOrganizacao }}
-    </p>
-
+    <!-- Resumo da assinatura atual -->
     <div *ngIf="modoEdicao && assinaturaAtual" class="plano-atual-info">
       <strong>Plano Atual:</strong> {{ planoAtualNome }}
-      <span class="status-badge" [class]="'status-' + assinaturaAtual.status.toLowerCase()">
+      <span class="status-badge" [ngClass]="getStatusClass(assinaturaAtual.status)">
         {{ assinaturaAtual.status }}
       </span>
     </div>
 
-    <div *ngIf="isLoading" class="loading-container">
-      <mat-spinner diameter="40"></mat-spinner>
-      <p>Carregando planos...</p>
-    </div>
+    <mat-tab-group (selectedIndexChange)="onTabChange($event)" [selectedIndex]="tabAtiva">
 
-    <div *ngIf="!isLoading" class="planos-container">
-      <mat-radio-group [(ngModel)]="planoSelecionado" class="planos-radio-group">
-        <div *ngFor="let plano of planos" class="plano-card" [class.selected]="planoSelecionado === plano.id">
-          <mat-radio-button [value]="plano.id" class="plano-radio">
-            <div class="plano-info">
-              <div class="plano-header">
-                <h3>{{ plano.nome }}</h3>
-                <span class="plano-tipo" [class]="'tipo-' + plano.tipo.toLowerCase()">{{ plano.tipo }}</span>
+      <!-- ===================== ABA 1: PLANO ===================== -->
+      <mat-tab label="Plano">
+        <div class="tab-content">
+          <div *ngIf="isLoading" class="loading-container">
+            <mat-spinner diameter="40"></mat-spinner>
+            <p>Carregando planos...</p>
+          </div>
+
+          <div *ngIf="!isLoading" class="planos-container">
+            <mat-radio-group [(ngModel)]="planoSelecionado" class="planos-radio-group">
+              <div *ngFor="let plano of planos" class="plano-card" [class.selected]="planoSelecionado === plano.id">
+                <mat-radio-button [value]="plano.id" class="plano-radio">
+                  <div class="plano-info">
+                    <div class="plano-header">
+                      <h3>{{ plano.nome }}</h3>
+                      <span class="plano-tipo" [class]="'tipo-' + plano.tipo.toLowerCase()">{{ plano.tipo }}</span>
+                    </div>
+                    <p class="plano-descricao">{{ plano.descricao }}</p>
+                    <div class="plano-valor">{{ formatarValor(plano.valorMensal) }}/mês</div>
+                    <div class="plano-limites">
+                      <span><mat-icon class="limite-icon">admin_panel_settings</mat-icon> Admins: {{ formatarLimite(plano.limiteAdminOrg) }}</span>
+                      <span><mat-icon class="limite-icon">medical_services</mat-icon> Profissionais: {{ formatarLimite(plano.limiteProfissional) }}</span>
+                      <span><mat-icon class="limite-icon">support_agent</mat-icon> Secretárias: {{ formatarLimite(plano.limiteSecretaria) }}</span>
+                    </div>
+                  </div>
+                </mat-radio-button>
               </div>
-              <p class="plano-descricao">{{ plano.descricao }}</p>
-              <div class="plano-valor">{{ formatarValor(plano.valorMensal) }}/mês</div>
-              <div class="plano-limites">
-                <span><i class="fa-solid fa-user-shield"></i> Admins: {{ formatarLimite(plano.limiteAdminOrg) }}</span>
-                <span><i class="fa-solid fa-user-doctor"></i> Profissionais: {{ formatarLimite(plano.limiteProfissional) }}</span>
-                <span><i class="fa-solid fa-user-pen"></i> Secretárias: {{ formatarLimite(plano.limiteSecretaria) }}</span>
-              </div>
-            </div>
-          </mat-radio-button>
+            </mat-radio-group>
+
+            <p *ngIf="planos.length === 0" class="sem-planos">Nenhum plano disponível.</p>
+          </div>
+
+          <div class="tab-actions" *ngIf="!isLoading">
+            <button mat-raised-button color="primary" (click)="associarPlano()" [disabled]="!planoSelecionado || isSaving">
+              <mat-spinner *ngIf="isSaving" diameter="20" style="display: inline-block; margin-right: 8px;"></mat-spinner>
+              <span *ngIf="!isSaving">{{ modoEdicao ? 'Alterar Plano' : 'Associar Plano' }}</span>
+              <span *ngIf="isSaving">{{ modoEdicao ? 'Alterando...' : 'Associando...' }}</span>
+            </button>
+          </div>
         </div>
-      </mat-radio-group>
+      </mat-tab>
 
-      <p *ngIf="planos.length === 0" class="sem-planos">Nenhum plano disponível.</p>
-    </div>
+      <!-- ===================== ABA 2: COBRANÇAS ===================== -->
+      <mat-tab>
+        <ng-template mat-tab-label>
+          Cobranças
+          <span *ngIf="cobrancasPendentes.length > 0" class="tab-badge">{{ cobrancasPendentes.length }}</span>
+        </ng-template>
+
+        <div class="tab-content">
+          <div *ngIf="isLoadingCobrancas" class="loading-container">
+            <mat-spinner diameter="40"></mat-spinner>
+            <p>Carregando cobranças...</p>
+          </div>
+
+          <div *ngIf="!isLoadingCobrancas && cobrancas.length === 0" class="empty-state">
+            <mat-icon>receipt_long</mat-icon>
+            <p>Nenhuma cobrança encontrada para esta organização.</p>
+          </div>
+
+          <div *ngIf="!isLoadingCobrancas && cobrancas.length > 0" class="cobrancas-table-container">
+            <table class="cobrancas-table">
+              <thead>
+                <tr>
+                  <th>Data</th>
+                  <th>Plano</th>
+                  <th>Valor</th>
+                  <th>Vencimento</th>
+                  <th>Status</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let cobranca of cobrancas">
+                  <td>{{ cobranca.criadaEm | date:'dd/MM/yyyy' }}</td>
+                  <td>{{ cobranca.planoNome }}</td>
+                  <td>{{ formatarValor(cobranca.valorTotal) }}</td>
+                  <td>{{ cobranca.dataVencimentoPix | date:'dd/MM/yyyy' }}</td>
+                  <td>
+                    <span class="status-badge" [ngClass]="getStatusClass(cobranca.status)">
+                      {{ cobranca.status }}
+                    </span>
+                  </td>
+                  <td>
+                    <button
+                      *ngIf="cobranca.status === 'PENDENTE'"
+                      mat-raised-button
+                      color="accent"
+                      class="btn-confirmar"
+                      (click)="confirmarPagamento(cobranca.id)"
+                      [disabled]="confirmandoId === cobranca.id">
+                      <mat-spinner *ngIf="confirmandoId === cobranca.id" diameter="18" style="display: inline-block; margin-right: 4px;"></mat-spinner>
+                      <mat-icon *ngIf="confirmandoId !== cobranca.id">check_circle</mat-icon>
+                      {{ confirmandoId === cobranca.id ? 'Confirmando...' : 'Confirmar' }}
+                    </button>
+                    <span *ngIf="cobranca.status === 'PAGO'" class="pago-info">
+                      <mat-icon>verified</mat-icon>
+                      {{ cobranca.dataPagamento | date:'dd/MM/yyyy HH:mm' }}
+                    </span>
+                    <span *ngIf="cobranca.status === 'EXPIRADO'" class="expirado-info">
+                      Expirado
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="tab-actions" *ngIf="!isLoadingCobrancas">
+            <button mat-button color="primary" (click)="carregarCobrancas()">
+              <mat-icon>refresh</mat-icon> Atualizar
+            </button>
+          </div>
+        </div>
+      </mat-tab>
+
+    </mat-tab-group>
   </mat-dialog-content>
 
   <mat-dialog-actions align="end">
-    <button mat-button (click)="fechar()" [disabled]="isSaving">Cancelar</button>
-    <button mat-raised-button color="primary" (click)="associarPlano()" [disabled]="!planoSelecionado || isSaving">
-      <mat-spinner *ngIf="isSaving" diameter="20" style="display: inline-block; margin-right: 8px;"></mat-spinner>
-      <span *ngIf="!isSaving">{{ modoEdicao ? 'Alterar Plano' : 'Associar Plano' }}</span>
-      <span *ngIf="isSaving">{{ modoEdicao ? 'Alterando...' : 'Associando...' }}</span>
-    </button>
+    <button mat-button (click)="fechar()">Fechar</button>
   </mat-dialog-actions>
 </div>

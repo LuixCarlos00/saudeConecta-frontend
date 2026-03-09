@@ -235,6 +235,7 @@ export class AgendaComponent implements OnInit, OnDestroy {
     if (novoStatus === elemento.status) { return; }
 
     // Configurações específicas por status
+    // NOTA: REALIZADA não está aqui pois só pode ser definido pelo médico ao concluir a consulta
     const statusConfig: Record<string, any> = {
       'CONFIRMADA': {
         title: 'Confirmar consulta?',
@@ -318,6 +319,7 @@ export class AgendaComponent implements OnInit, OnDestroy {
       'CONFIRMADA': 'Confirmada',
       'CANCELADA': 'Cancelada',
       'AGENDADA': 'Agendada',
+      'REALIZADA': 'Realizada',
       'PAGO': 'Paga'
     };
 
@@ -372,6 +374,21 @@ export class AgendaComponent implements OnInit, OnDestroy {
 
   Observacoes(observacoes: string): void {
     this.dialog.open(ObservacoesComponent, { width: 'auto', data: { observacoes } });
+  }
+
+  VerMotivoCancelamento(motivo: string): void {
+    Swal.fire({
+      title: 'Motivo do Cancelamento',
+      html: `<div style="text-align: left; padding: 10px;">
+               <p style="margin: 0; color: #374151; font-size: 14px; line-height: 1.6;">
+                 ${motivo}
+               </p>
+             </div>`,
+      icon: 'info',
+      confirmButtonColor: '#dc2626',
+      confirmButtonText: 'Fechar',
+      width: '500px'
+    });
   }
 
   GerarPDF(consulta: Consultav2): void {
@@ -538,17 +555,22 @@ export class AgendaComponent implements OnInit, OnDestroy {
   }
 
   private processarDadosCronologia(dados: any[]): void {
-    const agendadas = this.filtrarConsultasPorTipo(dados, 'AGENDADA');
-    const finalizadas = this.filtrarConsultasPorTipo(dados, 'REALIZADA');
+    // Mantém o contexto atual (Finalizadas ou Agendadas) escolhido pelo usuário
+    const tipo: TipoVisualizacao = this.Finalizadas ? 'REALIZADA' : 'AGENDADA';
+    const dadosFiltrados = this.filtrarConsultasPorTipo(dados, tipo);
 
-    if (finalizadas.length > 0 && agendadas.length === 0) {
-      this.Finalizadas = true;
-      this.dataSource = finalizadas;
-    } else if (agendadas.length > 0) {
-      this.Finalizadas = false;
-      this.dataSource = agendadas;
+    if (dadosFiltrados.length > 0) {
+      // Mostra os dados filtrados do contexto atual
+      this.dataSource = dadosFiltrados;
     } else {
-      this.dataSource = dados;
+      // Se não houver dados no contexto atual, mostra mensagem
+      this.dataSource = [];
+      Swal.fire({
+        icon: 'info',
+        title: 'Nenhum resultado',
+        text: `Nenhuma consulta ${this.Finalizadas ? 'finalizada' : 'agendada'} encontrada com os filtros selecionados.`,
+        confirmButtonColor: '#0066CC'
+      });
     }
   }
 

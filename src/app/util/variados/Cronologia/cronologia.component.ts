@@ -15,6 +15,8 @@ interface FiltrosPesquisa {
   especialidade: string | null;
   dataInicio: Date | null;
   dataFim: Date | null;
+  statusConsulta: string[];
+  statusPagamento: string | null;
 }
 
 interface TipoPesquisa {
@@ -33,6 +35,8 @@ export class CronologiaComponent implements OnInit {
   IntervaloDeDatas!: FormGroup;
   OpcoesCategorias!: FormGroup;
   OpcoesMedicos!: FormGroup;
+  OpcoesStatusConsulta!: FormGroup;
+  OpcoesStatusPagamento!: FormGroup;
 
   // Dados
   especialidades: EspecialidadeResponse[] = [];
@@ -40,6 +44,31 @@ export class CronologiaComponent implements OnInit {
   tipoPesquisaConcluidas = false;
   carregando = false;
   carregandoEspecialidades = false;
+  filtrosAtuais: FiltrosPesquisa | null = null;
+
+  // Status para busca
+  private readonly STATUS_FINALIZADAS = ['REALIZADA', 'CANCELADA', 'PAGO'];
+  private readonly STATUS_AGENDADAS = ['AGENDADA', 'CONFIRMADA'];
+
+  // Opções de status disponíveis
+  statusConsultaOptions = [
+    { value: 'AGENDADA', label: 'Agendada', grupo: 'agendadas' },
+    { value: 'CONFIRMADA', label: 'Confirmada', grupo: 'agendadas' },
+    { value: 'REALIZADA', label: 'Realizada', grupo: 'finalizadas' },
+    { value: 'CANCELADA', label: 'Cancelada', grupo: 'finalizadas' },
+    { value: 'PAGO', label: 'Pago', grupo: 'finalizadas' }
+  ];
+
+  statusPagamentoOptions = [
+    { value: 'PAGO', label: 'Pago' },
+    { value: 'PENDENTE', label: 'Pendente' }
+  ];
+
+  get statusDisponiveis() {
+    return this.statusConsultaOptions.filter(s => 
+      this.tipoPesquisaConcluidas ? s.grupo === 'finalizadas' : s.grupo === 'agendadas'
+    );
+  }
 
   constructor(
     public dialogRef: MatDialogRef<CronologiaComponent>,
@@ -79,6 +108,14 @@ export class CronologiaComponent implements OnInit {
     // CORREÇÃO: Usar o mesmo nome que está no HTML
     this.OpcoesMedicos = this.formBuilder.group({
       NomeMedico: new FormControl<Profissional | null>(null), // Nome correto e tipado
+    });
+
+    this.OpcoesStatusConsulta = this.formBuilder.group({
+      statusSelecionados: new FormControl<string[]>([])
+    });
+
+    this.OpcoesStatusPagamento = this.formBuilder.group({
+      statusPagamento: new FormControl<string | null>(null)
     });
   }
 
@@ -123,10 +160,29 @@ export class CronologiaComponent implements OnInit {
   }
 
   // ==================== AÇÕES DO USUÁRIO ====================
+  toggleStatusConsulta(status: string, checked: boolean): void {
+    const statusSelecionados = this.OpcoesStatusConsulta.get('statusSelecionados')?.value || [];
+    
+    if (checked) {
+      if (!statusSelecionados.includes(status)) {
+        statusSelecionados.push(status);
+      }
+    } else {
+      const index = statusSelecionados.indexOf(status);
+      if (index > -1) {
+        statusSelecionados.splice(index, 1);
+      }
+    }
+    
+    this.OpcoesStatusConsulta.patchValue({ statusSelecionados });
+  }
+
   limparFiltros(): void {
     this.IntervaloDeDatas.reset();
     this.OpcoesCategorias.reset();
     this.OpcoesMedicos.reset();
+    this.OpcoesStatusConsulta.patchValue({ statusSelecionados: [] });
+    this.OpcoesStatusPagamento.reset();
   }
 
   VerificaTipoDePesquisa(): void {
@@ -137,25 +193,30 @@ export class CronologiaComponent implements OnInit {
       return;
     }
 
-    const tipoPesquisa = this.determinarTipoPesquisa(filtros);
-    this.executarPesquisa(tipoPesquisa, filtros);
+    this.executarBuscaDinamica(filtros);
   }
 
   // ==================== OBTENÇÃO E VALIDAÇÃO DE FILTROS ====================
   private obterFiltros(): FiltrosPesquisa {
     const medicoSelecionado = this.OpcoesMedicos.get('NomeMedico')?.value;
+    const statusSelecionados = this.OpcoesStatusConsulta.get('statusSelecionados')?.value || [];
+    const statusPagamento = this.OpcoesStatusPagamento.get('statusPagamento')?.value;
 
     return {
-      medico: medicoSelecionado || null, // Agora pega o objeto completo do Profissional
+      medico: medicoSelecionado || null,
       especialidade: this.OpcoesCategorias.get('Especialidade')?.value || null,
       dataInicio: this.IntervaloDeDatas.get('start')?.value || null,
       dataFim: this.IntervaloDeDatas.get('end')?.value || null,
+      statusConsulta: statusSelecionados,
+      statusPagamento: statusPagamento
     };
   }
 
   private validarFiltros(filtros: FiltrosPesquisa): boolean {
     return !!(filtros.medico || filtros.especialidade ||
-      (filtros.dataInicio && filtros.dataFim));
+      (filtros.dataInicio && filtros.dataFim) ||
+      filtros.statusConsulta.length > 0 ||
+      filtros.statusPagamento);
   }
 
   private validarDatas(dataInicio: Date | null, dataFim: Date | null): boolean {
@@ -171,197 +232,61 @@ export class CronologiaComponent implements OnInit {
     return true;
   }
 
-  // ==================== DETERMINAÇÃO DO TIPO DE PESQUISA ====================
-  private determinarTipoPesquisa(filtros: FiltrosPesquisa): string {
-    const { medico, especialidade, dataInicio, dataFim } = filtros;
-
-    const temMedico = !!medico;
-    const temEspecialidade = !!especialidade;
-    const temDatas = !!(dataInicio && dataFim);
-    // Ordem de prioridade (do mais específico ao menos específico)
-    if (temMedico && temEspecialidade && temDatas) {
-      return 'MEDICO_ESPECIALIDADE_DATAS';
+  // ==================== EXECUÇÃO DE BUSCA DINÂMICA ====================
+  /**
+   * Determina quais status usar na busca baseado nos filtros do usuário
+   */
+  private obterStatusParaBusca(filtros: FiltrosPesquisa): string[] {
+    // Se usuário selecionou status específicos, usa eles
+    if (filtros.statusConsulta.length > 0) {
+      return filtros.statusConsulta;
     }
-    if (temMedico && temDatas) {
-      return 'MEDICO_DATAS';
+    
+    // Se tem apenas filtro de pagamento, busca todos os status finalizados
+    if (filtros.statusPagamento && filtros.statusConsulta.length === 0) {
+      return this.STATUS_FINALIZADAS;
     }
-    if (temEspecialidade && temDatas) {
-      return 'ESPECIALIDADE_DATAS';
-    }
-    if (temMedico && temEspecialidade) {
-      return 'MEDICO_ESPECIALIDADE';
-    }
-    if (temMedico) {
-      return 'MEDICO';
-    }
-    if (temEspecialidade) {
-      return 'ESPECIALIDADE';
-    }
-    if (temDatas) {
-      return 'DATAS';
-    }
-
-    return 'NENHUM';
+    
+    // Caso contrário, usa os status padrão baseado no tipo de pesquisa
+    return this.tipoPesquisaConcluidas ? this.STATUS_FINALIZADAS : this.STATUS_AGENDADAS;
   }
 
-  // ==================== EXECUÇÃO DE PESQUISAS ====================
-  private executarPesquisa(tipo: string, filtros: FiltrosPesquisa): void {
-    const { medico, especialidade, dataInicio, dataFim } = filtros;
+  /**
+   * Executa busca dinâmica com todos os filtros opcionais
+   * Usa o endpoint único /buscar do backend
+   */
+  private executarBuscaDinamica(filtros: FiltrosPesquisa): void {
+    this.carregando = true;
+    this.filtrosAtuais = filtros;
 
-    const metodos: Record<string, () => void> = {
-      'MEDICO_ESPECIALIDADE_DATAS': () =>
-        this.pesquisarMedicoEspecialidadeEmIntervaloDeDatas(
-          medico!.id,
-          especialidade!,
-          dataInicio!,
-          dataFim!
-        ),
-      'MEDICO_DATAS': () =>
-        this.pesquisarClinicasEmIntervaloDeDatas(medico!.id, dataInicio!, dataFim!),
-      'ESPECIALIDADE_DATAS': () =>
-        this.pesquisarEspecialidadeEmIntervaloDeDatas(especialidade!, dataInicio!, dataFim!),
-      'MEDICO_ESPECIALIDADE': () =>
-        this.pesquisarPorMedicoEEspecialidade(medico!.id, especialidade!),
-      'MEDICO': () =>
-        this.pesquisarPorProfissional(medico!.id),
-      'ESPECIALIDADE': () =>
-        this.pesquisarPorEspecialidade(especialidade!),
-      'DATAS': () =>
-        this.pesquisarPorIntervaloDeDatas(dataInicio!, dataFim!),
-    };
+    // Preparar parâmetros para o endpoint dinâmico
+    const profissionalId = filtros.medico?.id;
+    const especialidade = filtros.especialidade || undefined;
+    const dataInicial = filtros.dataInicio ? this.formatarData(filtros.dataInicio) : undefined;
+    const dataFinal = filtros.dataFim ? this.formatarData(filtros.dataFim) : undefined;
+    
+    // Determinar status a buscar
+    const statusParaBuscar = this.obterStatusParaBusca(filtros);
 
-    const metodo = metodos[tipo];
-    if (metodo) {
-      this.carregando = true;
-      metodo();
-    }
-  }
-
-  // ==================== MÉTODOS DE PESQUISA ====================
-  private pesquisarPorIntervaloDeDatas(dataInicio: Date, dataFim: Date): void {
-    if (!this.validarDatas(dataInicio, dataFim)) {
-      this.carregando = false;
-      return;
-    }
-
-    const inicio = this.formatarData(dataInicio);
-    const fim = this.formatarData(dataFim);
-
-    const metodo = this.tipoPesquisaConcluidas
-      ? this.consultaApiService.buscarPorIntervaloDeDatas(inicio, fim, 'REALIZADA')
-      : this.consultaApiService.buscarPorIntervaloDeDatas(inicio, fim, 'AGENDADA');
-    this.executarRequisicao(metodo, 'pesquisa por intervalo de datas');
-  }
-
-  private pesquisarEspecialidadeEmIntervaloDeDatas(
-    especialidade: string,
-    dataInicio: Date,
-    dataFim: Date
-  ): void {
-    if (!this.validarDatas(dataInicio, dataFim)) {
-      this.carregando = false;
-      return;
-    }
-
-    const inicio = this.formatarData(dataInicio);
-    const fim = this.formatarData(dataFim);
-
-    const metodo = this.tipoPesquisaConcluidas
-      ? this.consultaApiService.pesquisarEspecialidadeEmIntervaloDeDatas(
-        inicio, fim, especialidade, 'REALIZADA'
-      )
-      : this.consultaApiService.pesquisarEspecialidadeEmIntervaloDeDatas(
-        inicio, fim, especialidade, 'AGENDADA'
-      );
-
-    this.executarRequisicao(metodo, 'pesquisa por especialidade e datas');
-  }
-
-  private pesquisarPorProfissional(medicoId: number): void {
-    const metodo = this.tipoPesquisaConcluidas
-      ? this.consultaApiService.pesquisarPorProfissional(medicoId)
-      : this.consultaApiService.pesquisarPorProfissional(medicoId);
-
-    this.executarRequisicao(metodo, 'pesquisa por médico');
-  }
-
-  private pesquisarClinicasEmIntervaloDeDatas(
-    medicoId: number,
-    dataInicio: Date,
-    dataFim: Date
-  ): void {
-    if (!this.validarDatas(dataInicio, dataFim)) {
-      this.carregando = false;
-      return;
-    }
-
-    const inicio = this.formatarData(dataInicio);
-    const fim = this.formatarData(dataFim);
-
-    const metodo = this.tipoPesquisaConcluidas
-      ? this.consultaApiService.pesquisarClinicasEmIntervaloDeDatas(
-        medicoId, inicio, fim, 'REALIZADA'
-      )
-      : this.consultaApiService.pesquisarClinicasEmIntervaloDeDatas(
-        medicoId, inicio, fim, 'AGENDADA'
-      );
-
-    this.executarRequisicao(metodo, 'pesquisa por médico e datas');
-  }
-
-  private pesquisarPorEspecialidade(especialidade: string): void {
-    const metodo = this.tipoPesquisaConcluidas
-      ? this.consultaApiService.pesquisarPorEspecialidade(especialidade, 'REALIZADA')
-      : this.consultaApiService.pesquisarPorEspecialidade(especialidade, 'AGENDADA');
-
-    this.executarRequisicao(metodo, 'pesquisa por especialidade');
-  }
-
-  private pesquisarPorMedicoEEspecialidade(medicoId: number, especialidade: string): void {
-    const metodo = this.tipoPesquisaConcluidas
-      ? this.consultaApiService.pesquisarPorMedicoEEspecialidade(
-        medicoId, especialidade, 'REALIZADA'
-      )
-      : this.consultaApiService.pesquisarPorMedicoEEspecialidade(
-        medicoId, especialidade, 'AGENDADA'
-      );
-
-    this.executarRequisicao(metodo, 'pesquisa por médico e especialidade');
-  }
-
-  private pesquisarMedicoEspecialidadeEmIntervaloDeDatas(
-    medicoId: number,
-    especialidade: string,
-    dataInicio: Date,
-    dataFim: Date
-  ): void {
-    if (!this.validarDatas(dataInicio, dataFim)) {
-      this.carregando = false;
-      return;
-    }
-
-    const inicio = this.formatarData(dataInicio);
-    const fim = this.formatarData(dataFim);
-
-    const metodo = this.tipoPesquisaConcluidas
-      ? this.consultaApiService.pesquisarMedicoEspecialidadeEmIntervaloDeDatas(
-        medicoId, especialidade, inicio, fim, 'REALIZADA'
-      )
-      : this.consultaApiService.pesquisarMedicoEspecialidadeEmIntervaloDeDatas(
-        medicoId, especialidade, inicio, fim, 'AGENDADA'
-      );
-
-    this.executarRequisicao(metodo, 'pesquisa completa');
-  }
-
-  // ==================== EXECUÇÃO E TRATAMENTO DE REQUISIÇÕES ====================
-  private executarRequisicao(observable: any, nomePesquisa: string): void {
-    observable.subscribe({
+    // Chamar endpoint dinâmico
+    this.consultaApiService.buscarComFiltrosDinamicos(
+      profissionalId,
+      especialidade,
+      dataInicial,
+      dataFinal,
+      statusParaBuscar
+    ).subscribe({
       next: (dados: any) => {
         this.carregando = false;
 
-        if (dados && Object.keys(dados).length > 0) {
-          this.consultaState.setDadosCronologia(dados);
+        // Aplicar filtro de status de pagamento se especificado
+        let dadosFiltrados = dados;
+        if (filtros.statusPagamento) {
+          dadosFiltrados = this.filtrarPorStatusPagamento(dados, filtros.statusPagamento);
+        }
+
+        if (dadosFiltrados && dadosFiltrados.length > 0) {
+          this.consultaState.setDadosCronologia(dadosFiltrados);
           this.dialogRef.close();
         } else {
           Swal.fire({
@@ -374,7 +299,7 @@ export class CronologiaComponent implements OnInit {
       },
       error: (error: any) => {
         this.carregando = false;
-        console.error(`Erro na ${nomePesquisa}:`, error);
+        console.error('Erro na busca:', error);
 
         Swal.fire({
           icon: 'error',
@@ -386,7 +311,22 @@ export class CronologiaComponent implements OnInit {
     });
   }
 
+
   // ==================== UTILITÁRIOS ====================
+  /**
+   * Filtra consultas por status de pagamento
+   */
+  private filtrarPorStatusPagamento(consultas: any[], statusPagamento: string): any[] {
+    return consultas.filter(consulta => {
+      if (statusPagamento === 'PAGO') {
+        return consulta.status === 'PAGO';
+      } else if (statusPagamento === 'PENDENTE') {
+        return consulta.status === 'REALIZADA' || consulta.status === 'CANCELADA';
+      }
+      return true;
+    });
+  }
+
   private formatarData(data: Date): string {
     return data.toISOString().split('T')[0];
   }

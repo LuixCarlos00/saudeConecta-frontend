@@ -53,7 +53,7 @@ export class DetalheAssinaturaComponent implements OnInit {
   }
 
   private carregarCobrancas(): void {
-    this.cobrancaApiService.minhasCobrancas().subscribe({
+    this.cobrancaApiService.listarMinhasCobrancas().subscribe({
       next: (cobrancas) => {
         this.cobrancas = cobrancas;
         this.isLoading = false;

@@ -164,7 +164,20 @@
               Status
             </th>
             <td mat-cell *matCellDef="let element">
-              <select
+               <div *ngIf="element.status === 'CANCELADA' && element.motivoCancelamento"
+                   style="display: inline-block; cursor: pointer;"
+                   [title]="'Clique para ver o motivo do cancelamento'"
+                   (click)="VerMotivoCancelamento(element.motivoCancelamento)">
+                <select
+                  class="hc-status-select hc-status-select--cancelada"
+                  disabled
+                  style="pointer-events: none;">
+                  <option value="CANCELADA" selected>Cancelada</option>
+                </select>
+              </div>
+
+              <!-- Select normal para outros status -->
+              <select *ngIf="!(element.status === 'CANCELADA' && element.motivoCancelamento)"
                 class="hc-status-select"
                 [class.hc-status-select--agendada]="element.status === 'AGENDADA'"
                 [class.hc-status-select--confirmada]="element.status === 'CONFIRMADA'"
@@ -199,8 +212,8 @@
                   <option value="PAGO" selected>Pago</option>
                 </ng-container>
                 
-                <!-- Opções para status CANCELADA (desabilitado) -->
-                <ng-container *ngIf="element.status === 'CANCELADA'">
+                <!-- Opções para status CANCELADA sem motivo (desabilitado) -->
+                <ng-container *ngIf="element.status === 'CANCELADA' && !element.motivoCancelamento">
                   <option value="CANCELADA" selected>Cancelada</option>
                 </ng-container>
                 
@@ -234,7 +247,6 @@
                   <i class="fa-solid fa-note-sticky"></i>
                 </button>
 
-
                 <!-- Gerar Link Questionário (somente antes da finalização) -->
                 <button *ngIf="element.status !== 'REALIZADA'" class="hc-action-btn hc-action-btn--teal" title="Gerar Link do Questionário de Saúde"
                   (click)="gerarLinkQuestionario(element)">
@@ -262,15 +274,6 @@
                   <i class="fa-solid fa-pen-to-square"></i>
                 </button>
 
-<!--                &lt;!&ndash; Concluir &ndash;&gt;-->
-<!--                <button class="hc-action-btn hc-action-btn&#45;&#45;success" title="Concluir Consulta" [disabled]="Finalizadas"-->
-<!--                  (click)="Concluido(element)">-->
-<!--                  <i class="fa-solid fa-check"></i>-->
-<!--                </button>-->
-
-                
-                <!-- Gerar Comprovante PDF (Finalizadas) -->
-                
                 <!-- Imprimir -->
                 <button class="hc-action-btn hc-action-btn--primary" title="Opções de Impressão"
                   (click)="AbrirOpcoesImpressao(element)">

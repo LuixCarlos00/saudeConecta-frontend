@@ -1,6 +1,6 @@
 .modal-associar-plano {
-  min-width: 500px;
-  max-width: 700px;
+  min-width: 600px;
+  max-width: 800px;
 }
 
 h2 {
@@ -11,16 +11,8 @@ h2 {
   margin: 0;
 }
 
-h2 i {
+h2 mat-icon {
   color: #0066CC;
-}
-
-.organizacao-info {
-  padding: 12px 16px;
-  background: #f3f4f6;
-  border-radius: 8px;
-  margin-bottom: 12px;
-  font-size: 14px;
 }
 
 .plano-atual-info {
@@ -28,7 +20,7 @@ h2 i {
   background: #e0f2fe;
   border-left: 4px solid #0066CC;
   border-radius: 8px;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
   font-size: 14px;
   display: flex;
   align-items: center;
@@ -41,31 +33,41 @@ h2 i {
   font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
+  white-space: nowrap;
 }
 
-.status-trial {
-  background: #fff3e0;
-  color: #e65100;
+.status-trial { background: #fff3e0; color: #e65100; }
+.status-ativa { background: #e8f5e9; color: #2e7d32; }
+.status-inadimplente { background: #ffebee; color: #c62828; }
+.status-suspensa { background: #fce4ec; color: #880e4f; }
+.status-cancelada { background: #f5f5f5; color: #616161; }
+.status-pendente { background: #fff3e0; color: #e65100; }
+.status-pago { background: #e8f5e9; color: #2e7d32; }
+.status-expirado { background: #f5f5f5; color: #616161; }
+
+.tab-content {
+  padding: 16px 0;
 }
 
-.status-ativa {
-  background: #e8f5e9;
-  color: #2e7d32;
+.tab-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 16px;
+  gap: 8px;
 }
 
-.status-inadimplente {
-  background: #ffebee;
-  color: #c62828;
-}
-
-.status-suspensa {
-  background: #fce4ec;
-  color: #880e4f;
-}
-
-.status-cancelada {
-  background: #f5f5f5;
-  color: #616161;
+.tab-badge {
+  background: #f44336;
+  color: #fff;
+  border-radius: 50%;
+  min-width: 20px;
+  height: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  margin-left: 8px;
 }
 
 .loading-container {
@@ -76,8 +78,23 @@ h2 i {
   gap: 16px;
 }
 
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 0;
+  color: #9e9e9e;
+}
+
+.empty-state mat-icon {
+  font-size: 48px;
+  width: 48px;
+  height: 48px;
+  margin-bottom: 12px;
+}
+
 .planos-container {
-  max-height: 500px;
+  max-height: 400px;
   overflow-y: auto;
 }
 
@@ -137,20 +154,9 @@ h2 i {
   text-transform: uppercase;
 }
 
-.tipo-starter {
-  background: #e3f2fd;
-  color: #1565c0;
-}
-
-.tipo-profissional {
-  background: #e8f5e9;
-  color: #2e7d32;
-}
-
-.tipo-business {
-  background: #fff3e0;
-  color: #e65100;
-}
+.tipo-starter { background: #e3f2fd; color: #1565c0; }
+.tipo-profissional { background: #e8f5e9; color: #2e7d32; }
+.tipo-business { background: #fff3e0; color: #e65100; }
 
 .plano-descricao {
   font-size: 13px;
@@ -179,7 +185,10 @@ h2 i {
   gap: 4px;
 }
 
-.plano-limites i {
+.limite-icon {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
   color: #0066CC;
 }
 
@@ -187,6 +196,70 @@ h2 i {
   text-align: center;
   padding: 40px;
   color: #6b7280;
+}
+
+/* ========== TABELA DE COBRANÇAS ========== */
+.cobrancas-table-container {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.cobrancas-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.cobrancas-table thead {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.cobrancas-table th {
+  background: #f8f9fa;
+  color: #495057;
+  font-weight: 600;
+  padding: 10px 12px;
+  text-align: left;
+  border-bottom: 2px solid #dee2e6;
+  white-space: nowrap;
+}
+
+.cobrancas-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #e9ecef;
+  vertical-align: middle;
+}
+
+.cobrancas-table tbody tr:hover {
+  background: #f8f9fa;
+}
+
+.btn-confirmar {
+  font-size: 12px !important;
+  padding: 4px 12px !important;
+  min-height: 32px !important;
+  line-height: 1 !important;
+}
+
+.pago-info {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #2e7d32;
+  font-size: 12px;
+}
+
+.pago-info mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+.expirado-info {
+  color: #9e9e9e;
+  font-size: 12px;
 }
 
 mat-dialog-actions {
