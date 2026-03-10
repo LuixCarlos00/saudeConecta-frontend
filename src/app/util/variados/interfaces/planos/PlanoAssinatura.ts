@@ -7,6 +7,9 @@ export interface PlanoAssinatura {
   limiteAdminOrg: number | null;
   limiteProfissional: number | null;
   limiteSecretaria: number | null;
+  valorAdicionalAdmin: number | null;
+  valorAdicionalProfissional: number | null;
+  valorAdicionalSecretaria: number | null;
   ativo: boolean;
 }
 
@@ -18,6 +21,9 @@ export interface PlanoAssinaturaRequest {
   limiteAdminOrg: number | null;
   limiteProfissional: number | null;
   limiteSecretaria: number | null;
+  valorAdicionalAdmin: number | null;
+  valorAdicionalProfissional: number | null;
+  valorAdicionalSecretaria: number | null;
 }
 
 export interface AssinaturaTenant {
@@ -32,6 +38,13 @@ export interface AssinaturaTenant {
   dataVencimento: string;
   dataProximaCobranca: string;
   valorMensal: number;
+  limiteAdminOrgCustom: number | null;
+  limiteProfissionalCustom: number | null;
+  limiteSecretariaCustom: number | null;
+  qtdAdminExtra: number;
+  qtdProfissionalExtra: number;
+  qtdSecretariaExtra: number;
+  valorAdicionalPerfis: number;
   criadoEm: string;
 }
 
@@ -54,6 +67,12 @@ export interface CobrancaTenant {
   dataVencimentoPix: string;
   dataPagamento: string | null;
   criadaEm: string;
+}
+
+export interface CustomizarPlanoTenantRequest {
+  limiteAdminOrgCustom: number | null;
+  limiteProfissionalCustom: number | null;
+  limiteSecretariaCustom: number | null;
 }
 
 export interface LimitesPlano {

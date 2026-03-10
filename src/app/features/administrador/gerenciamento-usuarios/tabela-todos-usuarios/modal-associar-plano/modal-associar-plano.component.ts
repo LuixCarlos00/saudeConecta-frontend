@@ -4,7 +4,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { PlanoApiService } from 'src/app/services/api/plano-api.service';
 import { AssinaturaApiService } from 'src/app/services/api/assinatura-api.service';
 import { CobrancaApiService } from 'src/app/services/api/cobranca-api.service';
-import { PlanoAssinatura, AssinaturaTenant, CobrancaTenant } from 'src/app/util/variados/interfaces/planos/PlanoAssinatura';
+import { PlanoAssinatura, AssinaturaTenant, CobrancaTenant, CustomizarPlanoTenantRequest } from 'src/app/util/variados/interfaces/planos/PlanoAssinatura';
 import { forkJoin } from 'rxjs';
 
 @Component({
@@ -25,6 +25,23 @@ export class ModalAssociarPlanoComponent implements OnInit {
   cobrancas: CobrancaTenant[] = [];
   isLoadingCobrancas = false;
   confirmandoId: number | null = null;
+
+  // Personalização
+  customLimiteAdmin: number | null = null;
+  customLimiteProf: number | null = null;
+  customLimiteSec: number | null = null;
+  isSavingCustom = false;
+  planoAtual: PlanoAssinatura | null = null;
+
+  // Valores calculados (atualizados via onLimiteChange)
+  extraAdmin = 0;
+  extraProf = 0;
+  extraSec = 0;
+  custoExtraAdmin = 0;
+  custoExtraProf = 0;
+  custoExtraSec = 0;
+  valorAdicionalTotal = 0;
+  valorTotalMensal = 0;
 
   tabAtiva = 0;
 
@@ -61,6 +78,12 @@ export class ModalAssociarPlanoComponent implements OnInit {
             this.planoSelecionado = this.assinaturaAtual.planoId;
             this.planoAtualNome = this.assinaturaAtual.planoNome;
             this.modoEdicao = true;
+
+            this.planoAtual = this.planos.find(p => p.id === assinaturaAtiva.planoId) || null;
+            this.customLimiteAdmin = assinaturaAtiva.limiteAdminOrgCustom ?? this.planoAtual?.limiteAdminOrg ?? null;
+            this.customLimiteProf = assinaturaAtiva.limiteProfissionalCustom ?? this.planoAtual?.limiteProfissional ?? null;
+            this.customLimiteSec = assinaturaAtiva.limiteSecretariaCustom ?? this.planoAtual?.limiteSecretaria ?? null;
+            this.recalcularExtras();
           }
         }
 
@@ -173,5 +196,67 @@ export class ModalAssociarPlanoComponent implements OnInit {
 
   get cobrancasPendentes(): CobrancaTenant[] {
     return this.cobrancas.filter(c => c.status === 'PENDENTE');
+  }
+
+  /**
+   * Chamado pelo (ngModelChange) de cada input de limite.
+   * Recalcula todos os extras e valores derivados.
+   */
+  onLimiteChange(): void {
+    this.recalcularExtras();
+  }
+
+  /**
+   * Recalcula quantidade de extras e custos para cada perfil.
+   */
+  private recalcularExtras(): void {
+    if (!this.planoAtual) return;
+
+    this.extraAdmin = this.calcularExtra(this.customLimiteAdmin, this.planoAtual.limiteAdminOrg);
+    this.extraProf = this.calcularExtra(this.customLimiteProf, this.planoAtual.limiteProfissional);
+    this.extraSec = this.calcularExtra(this.customLimiteSec, this.planoAtual.limiteSecretaria);
+
+    this.custoExtraAdmin = this.extraAdmin * (this.planoAtual.valorAdicionalAdmin || 0);
+    this.custoExtraProf = this.extraProf * (this.planoAtual.valorAdicionalProfissional || 0);
+    this.custoExtraSec = this.extraSec * (this.planoAtual.valorAdicionalSecretaria || 0);
+
+    this.valorAdicionalTotal = this.custoExtraAdmin + this.custoExtraProf + this.custoExtraSec;
+    this.valorTotalMensal = this.planoAtual.valorMensal + this.valorAdicionalTotal;
+  }
+
+  /**
+   * Calcula a quantidade de perfis extras em relação ao limite base do plano.
+   * @param limiteCustom limite personalizado desejado
+   * @param limitePlano limite padrão do plano
+   * @returns quantidade de extras (>= 0)
+   */
+  private calcularExtra(limiteCustom: number | null, limitePlano: number | null): number {
+    if (limiteCustom == null || limitePlano == null) return 0;
+    return Math.max(0, Number(limiteCustom) - Number(limitePlano));
+  }
+
+  /**
+   * Salva a customização dos limites do plano para o tenant (SUPER_ADMIN).
+   */
+  salvarCustomizacao(): void {
+    this.isSavingCustom = true;
+    const request: CustomizarPlanoTenantRequest = {
+      limiteAdminOrgCustom: this.customLimiteAdmin,
+      limiteProfissionalCustom: this.customLimiteProf,
+      limiteSecretariaCustom: this.customLimiteSec
+    };
+
+    this.assinaturaApiService.customizarPlano(this.data.organizacaoId, request).subscribe({
+      next: () => {
+        this.snackBar.open('Plano personalizado com sucesso!', 'Fechar', { duration: 3000 });
+        this.isSavingCustom = false;
+        this.carregarDados();
+      },
+      error: (err) => {
+        const msg = err.error?.message || 'Erro ao personalizar plano';
+        this.snackBar.open(msg, 'Fechar', { duration: 5000 });
+        this.isSavingCustom = false;
+      }
+    });
   }
 }

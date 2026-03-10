@@ -38,7 +38,10 @@ export class GerenciarPlanosComponent implements OnInit {
       valorMensal: [0, [Validators.required, Validators.min(0)]],
       limiteAdminOrg: [null],
       limiteProfissional: [null],
-      limiteSecretaria: [null]
+      limiteSecretaria: [null],
+      valorAdicionalAdmin: [null],
+      valorAdicionalProfissional: [null],
+      valorAdicionalSecretaria: [null]
     });
   }
 
@@ -71,7 +74,10 @@ export class GerenciarPlanosComponent implements OnInit {
       valorMensal: plano.valorMensal,
       limiteAdminOrg: plano.limiteAdminOrg,
       limiteProfissional: plano.limiteProfissional,
-      limiteSecretaria: plano.limiteSecretaria
+      limiteSecretaria: plano.limiteSecretaria,
+      valorAdicionalAdmin: plano.valorAdicionalAdmin,
+      valorAdicionalProfissional: plano.valorAdicionalProfissional,
+      valorAdicionalSecretaria: plano.valorAdicionalSecretaria
     });
     this.mostrarFormulario = true;
   }
@@ -100,7 +106,10 @@ export class GerenciarPlanosComponent implements OnInit {
       valorMensal: this.planoForm.value.valorMensal,
       limiteAdminOrg: this.planoForm.value.limiteAdminOrg || null,
       limiteProfissional: this.planoForm.value.limiteProfissional || null,
-      limiteSecretaria: this.planoForm.value.limiteSecretaria || null
+      limiteSecretaria: this.planoForm.value.limiteSecretaria || null,
+      valorAdicionalAdmin: this.planoForm.value.valorAdicionalAdmin || null,
+      valorAdicionalProfissional: this.planoForm.value.valorAdicionalProfissional || null,
+      valorAdicionalSecretaria: this.planoForm.value.valorAdicionalSecretaria || null
     };
 
     this.atualizarPlano(request);

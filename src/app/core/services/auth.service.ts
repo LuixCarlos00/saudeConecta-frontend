@@ -331,12 +331,12 @@ export class AuthService implements OnDestroy {
   }
 
   /**
-   * Verifica se é recepcionista
-   */
-  isRecepcionista(): boolean {
-    const role = this.getUserRole();
-    return role.includes('ROLE_RECEPCIONISTA');
-  }
+      * Verifica se é recepcionista
+      */
+     isRecepcionista(): boolean {
+       const role = this.getUserRole();
+       return role.includes('ROLE_RECEPCIONISTA');
+     }
 
   // ========== Métodos de API ==========
 
