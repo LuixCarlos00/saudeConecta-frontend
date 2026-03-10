@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { AssinaturaTenant, AssinaturaTenantRequest, LimitesPlano } from 'src/app/util/variados/interfaces/planos/PlanoAssinatura';
+import { AssinaturaTenant, AssinaturaTenantRequest, CustomizarPlanoTenantRequest, LimitesPlano } from 'src/app/util/variados/interfaces/planos/PlanoAssinatura';
 import { environment } from 'src/environments/environment';
 
 @Injectable({
@@ -72,6 +72,16 @@ export class AssinaturaApiService {
    */
   listarPorOrganizacao(organizacaoId: number): Observable<AssinaturaTenant[]> {
     return this.http.get<AssinaturaTenant[]>(`${this.apiUrl}/organizacao/${organizacaoId}`);
+  }
+
+  /**
+   * Customiza os limites do plano para um tenant específico (SUPER_ADMIN).
+   * @param organizacaoId ID da organização
+   * @param request limites customizados
+   * @returns Observable com a assinatura atualizada
+   */
+  customizarPlano(organizacaoId: number, request: CustomizarPlanoTenantRequest): Observable<AssinaturaTenant> {
+    return this.http.put<AssinaturaTenant>(`${this.apiUrl}/organizacao/${organizacaoId}/customizar`, request);
   }
 
   /**

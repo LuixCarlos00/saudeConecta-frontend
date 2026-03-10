@@ -100,7 +100,7 @@ export class AgendaComponent implements OnInit, OnDestroy {
   // ─────────────────────────────────────────────────────────────────────────────
 
   async buscarDadosParaTabela() {
-    try {
+     try {
       const dados = await this.buscarConsultasPorPeriodo();
       if (Array.isArray(dados)) {
         const tipo: TipoVisualizacao = this.Finalizadas ? 'REALIZADA' : 'AGENDADA';

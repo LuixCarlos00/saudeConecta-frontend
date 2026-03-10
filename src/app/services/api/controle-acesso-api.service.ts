@@ -72,9 +72,9 @@ export class ControleAcessoApiService {
     return this.isSuperAdmin() || this.isAdmin();
   }
 
-  // Menu Agenda: Admin apenas (não Super Admin)
+  // Menu Agenda: Admin e Recepcionista (não Super Admin)
   podeVerMenuAgenda(): boolean {
-    return this.isAdmin() && !this.isSuperAdmin();
+    return (this.isAdmin() || this.isRecepcionista()) && !this.isSuperAdmin();
   }
 
   // Menu Minha Agenda: Profissional apenas (não Admin)
@@ -87,9 +87,9 @@ export class ControleAcessoApiService {
     return this.isProfissional() && !this.isDashboardAdministrativo();
   }
 
-  // Menu Meus Dados: Admin, Profissional
+  // Menu Meus Dados: Admin, Profissional, Recepcionista
   podeVerMenuMeusDados(): boolean {
-    return this.isAdmin() || (this.isProfissional() && !this.isDashboardAdministrativo());
+    return this.isAdmin() || this.isRecepcionista() || (this.isProfissional() && !this.isDashboardAdministrativo());
   }
 
   // Menu Pacientes: Profissional apenas (não Admin)
@@ -97,7 +97,7 @@ export class ControleAcessoApiService {
     return this.isProfissional() && !this.isDashboardAdministrativo();
   }
 
-  // Menu Mensageria: Super Admin e Admin
+  // Menu Mensageria: Super Admin, Admin
   podeVerMenuMensageria(): boolean {
     return this.isSuperAdmin() || this.isAdmin();
   }
@@ -105,7 +105,7 @@ export class ControleAcessoApiService {
   // ========== DASHBOARDS ==========
 
   isDashboardAdministrativo(): boolean {
-    return this.isSuperAdmin() || this.isAdmin();
+    return this.isSuperAdmin() || this.isAdmin() || this.isRecepcionista();
   }
 
   isDashboardProfissional(): boolean {
@@ -115,7 +115,7 @@ export class ControleAcessoApiService {
   // ========== RETROCOMPATIBILIDADE ==========
 
   podeGerenciarOrganizacao(): boolean {
-    return this.isSuperAdmin() || this.isAdmin() || this.isGerente();
+    return this.isSuperAdmin() || this.isAdmin() || this.isGerente() || this.isRecepcionista();
   }
 
   podeGerenciarUsuarios(): boolean {

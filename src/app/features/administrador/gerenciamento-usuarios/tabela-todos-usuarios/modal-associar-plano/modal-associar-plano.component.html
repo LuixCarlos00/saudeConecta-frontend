@@ -131,6 +131,150 @@
         </div>
       </mat-tab>
 
+      <!-- ===================== ABA 3: PERSONALIZAR ===================== -->
+      <mat-tab label="Personalizar" [disabled]="!modoEdicao">
+        <div class="tab-content">
+          <div *ngIf="!modoEdicao" class="empty-state">
+            <mat-icon>tune</mat-icon>
+            <p>Associe um plano primeiro para personalizar os limites.</p>
+          </div>
+
+          <div *ngIf="modoEdicao && planoAtual" class="customizar-container">
+            <div class="customizar-header">
+              <h3>Personalizar limites — {{ planoAtualNome }}</h3>
+              <p class="customizar-desc">
+                Ajuste os limites de perfis para esta organização. Perfis além do plano base geram cobrança adicional.
+              </p>
+            </div>
+
+            <!-- Admin Org -->
+            <div class="customizar-campo">
+              <div class="campo-header">
+                <mat-icon class="limite-icon">admin_panel_settings</mat-icon>
+                <strong>Administradores</strong>
+                <span class="campo-base">Base do plano: {{ formatarLimite(planoAtual.limiteAdminOrg) }}</span>
+              </div>
+              <div class="campo-input-row">
+                <div class="stepper-input">
+                  <button mat-icon-button type="button" class="stepper-btn" (click)="customLimiteAdmin = (customLimiteAdmin || 0) - 1; onLimiteChange()" [disabled]="(customLimiteAdmin || 0) <= (planoAtual.limiteAdminOrg || 0)">
+                    <mat-icon>remove</mat-icon>
+                  </button>
+                  <mat-form-field appearance="outline" class="campo-input">
+                    <input matInput type="number" name="customLimiteAdmin" [(ngModel)]="customLimiteAdmin" (ngModelChange)="onLimiteChange()" [min]="planoAtual.limiteAdminOrg || 0">
+                  </mat-form-field>
+                  <button mat-icon-button type="button" class="stepper-btn" (click)="customLimiteAdmin = (customLimiteAdmin || 0) + 1; onLimiteChange()">
+                    <mat-icon>add</mat-icon>
+                  </button>
+                </div>   alterando valores na coluna errado deve alterar na coluna
+                qtd_admin_extra
+                qtd_profissional_extra
+                qtd_secretaria_extra
+
+                e esta alterando
+                limite_admin_org_custom	int
+                limite_profissional_custom	int
+                limite_secretaria_custom	int
+
+                deve ser feito a alteracao nas primeira colunas
+                e na criação de cada perfil deve analizar o limite padrao do plano e se ha uma quantidade que foi contratada
+
+  nao ta atualizadno apos a edição
+
+                <div class="campo-extra" *ngIf="extraAdmin > 0">
+                  <span class="extra-badge">+{{ extraAdmin }} extra(s)</span>
+                  <span class="extra-valor">{{ formatarValor(custoExtraAdmin) }}/mês</span>
+                </div>
+              </div>
+              <p class="preco-unitario" *ngIf="planoAtual.valorAdicionalAdmin">
+                {{ formatarValor(planoAtual.valorAdicionalAdmin) }} por admin adicional
+              </p>
+            </div>
+
+            <!-- Profissional -->
+            <div class="customizar-campo">
+              <div class="campo-header">
+                <mat-icon class="limite-icon">medical_services</mat-icon>
+                <strong>Profissionais</strong>
+                <span class="campo-base">Base do plano: {{ formatarLimite(planoAtual.limiteProfissional) }}</span>
+              </div>
+              <div class="campo-input-row">
+                <div class="stepper-input">
+                  <button mat-icon-button type="button" class="stepper-btn" (click)="customLimiteProf = (customLimiteProf || 0) - 1; onLimiteChange()" [disabled]="(customLimiteProf || 0) <= (planoAtual.limiteProfissional || 0)">
+                    <mat-icon>remove</mat-icon>
+                  </button>
+                  <mat-form-field appearance="outline" class="campo-input">
+                    <input matInput type="number" name="customLimiteProf" [(ngModel)]="customLimiteProf" (ngModelChange)="onLimiteChange()" [min]="planoAtual.limiteProfissional || 0">
+                  </mat-form-field>
+                  <button mat-icon-button type="button" class="stepper-btn" (click)="customLimiteProf = (customLimiteProf || 0) + 1; onLimiteChange()">
+                    <mat-icon>add</mat-icon>
+                  </button>
+                </div>
+                <div class="campo-extra" *ngIf="extraProf > 0">
+                  <span class="extra-badge">+{{ extraProf }} extra(s)</span>
+                  <span class="extra-valor">{{ formatarValor(custoExtraProf) }}/mês</span>
+                </div>
+              </div>
+              <p class="preco-unitario" *ngIf="planoAtual.valorAdicionalProfissional">
+                {{ formatarValor(planoAtual.valorAdicionalProfissional) }} por profissional adicional
+              </p>
+            </div>
+
+            <!-- Secretária -->
+            <div class="customizar-campo">
+              <div class="campo-header">
+                <mat-icon class="limite-icon">support_agent</mat-icon>
+                <strong>Secretárias</strong>
+                <span class="campo-base">Base do plano: {{ formatarLimite(planoAtual.limiteSecretaria) }}</span>
+              </div>
+              <div class="campo-input-row">
+                <div class="stepper-input">
+                  <button mat-icon-button type="button" class="stepper-btn" (click)="customLimiteSec = (customLimiteSec || 0) - 1; onLimiteChange()" [disabled]="(customLimiteSec || 0) <= (planoAtual.limiteSecretaria || 0)">
+                    <mat-icon>remove</mat-icon>
+                  </button>
+                  <mat-form-field appearance="outline" class="campo-input">
+                    <input matInput type="number" name="customLimiteSec" [(ngModel)]="customLimiteSec" (ngModelChange)="onLimiteChange()" [min]="planoAtual.limiteSecretaria || 0">
+                  </mat-form-field>
+                  <button mat-icon-button type="button" class="stepper-btn" (click)="customLimiteSec = (customLimiteSec || 0) + 1; onLimiteChange()">
+                    <mat-icon>add</mat-icon>
+                  </button>
+                </div>
+                <div class="campo-extra" *ngIf="extraSec > 0">
+                  <span class="extra-badge">+{{ extraSec }} extra(s)</span>
+                  <span class="extra-valor">{{ formatarValor(custoExtraSec) }}/mês</span>
+                </div>
+              </div>
+              <p class="preco-unitario" *ngIf="planoAtual.valorAdicionalSecretaria">
+                {{ formatarValor(planoAtual.valorAdicionalSecretaria) }} por secretária adicional
+              </p>
+            </div>
+
+            <!-- Resumo financeiro -->
+            <div class="resumo-financeiro">
+              <div class="resumo-linha">
+                <span>Valor base do plano:</span>
+                <span>{{ formatarValor(planoAtual.valorMensal) }}/mês</span>
+              </div>
+              <div class="resumo-linha" *ngIf="valorAdicionalTotal > 0">
+                <span>Adicional por perfis extras:</span>
+                <span class="valor-adicional">+ {{ formatarValor(valorAdicionalTotal) }}/mês</span>
+              </div>
+              <div class="resumo-linha resumo-total">
+                <span><strong>Total mensal:</strong></span>
+                <span><strong>{{ formatarValor(valorTotalMensal) }}/mês</strong></span>
+              </div>
+            </div>
+
+            <div class="tab-actions">
+              <button mat-raised-button color="primary" (click)="salvarCustomizacao()" [disabled]="isSavingCustom">
+                <mat-spinner *ngIf="isSavingCustom" diameter="20" style="display: inline-block; margin-right: 8px;"></mat-spinner>
+                <span *ngIf="!isSavingCustom">Salvar Personalização</span>
+                <span *ngIf="isSavingCustom">Salvando...</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+
     </mat-tab-group>
   </mat-dialog-content>
 

@@ -77,7 +77,7 @@
         </button>
       </li>
 
-      <!-- Minha Assinatura - Admin Org apenas -->
+      <!-- Minha Assinatura - Admin Org -->
       <li class="nav-item" *ngIf="ControleAcessoService.isAdmin() && !ControleAcessoService.isSuperAdmin()"
         [class.active]="activeRoute === 'MinhaAssinatura'">
         <button class="nav-link" (click)="navigateTo('MinhaAssinatura')" title="Minha Assinatura">
