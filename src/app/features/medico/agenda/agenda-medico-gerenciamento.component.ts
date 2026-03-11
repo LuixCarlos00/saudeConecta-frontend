@@ -237,7 +237,7 @@ export class AgendaMedicoGerenciamentoComponent implements OnInit, OnDestroy {
     const dialogRef = this.dialog.open(SelecaoRelatorioComponent, {
       maxWidth: 'auto',
       panelClass: 'selecao-relatorio-dialog',
-      data: { consulta: element, consultaNaoRealizada, isAdmin: false },
+      data: { consulta: element, consultaNaoRealizada, isAdmin: false, isProfissional: true },
     });
 
     dialogRef.afterClosed().subscribe((opcaoSelecionada: string) => {

@@ -1358,3 +1358,292 @@
   color: var(--text-primary);
   font-weight: 700;
 }
+
+/* ===== Planejamentos - Formulário de Cadastro ===== */
+.proc-form-card {
+  background: var(--bg-card, #fff);
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: 12px;
+  margin-bottom: 20px;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm, 0 1px 3px rgba(0,0,0,0.08));
+}
+
+.proc-form-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  background: linear-gradient(135deg, var(--primary-color, #0066CC) 0%, #0052a3 100%);
+  color: #fff;
+}
+
+.proc-form-header h3 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.proc-form-close {
+  background: rgba(255,255,255,0.2);
+  border: none;
+  color: #fff;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.proc-form-close:hover {
+  background: rgba(255,255,255,0.35);
+}
+
+.proc-form-body {
+  padding: 20px;
+}
+
+.proc-form-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr auto;
+  gap: 16px;
+  align-items: end;
+}
+
+.proc-form-group label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary, #64748b);
+  margin-bottom: 6px;
+}
+
+.proc-form-input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: 8px;
+  font-size: 14px;
+  color: var(--text-primary, #1e293b);
+  background: var(--bg-input, #fff);
+  transition: border-color 0.2s, box-shadow 0.2s;
+  box-sizing: border-box;
+}
+
+.proc-form-input:focus {
+  outline: none;
+  border-color: var(--primary-color, #0066CC);
+  box-shadow: 0 0 0 3px rgba(0,102,204,0.12);
+}
+
+.proc-form-group--btn {
+  display: flex;
+  align-items: flex-end;
+}
+
+.proc-form-group--btn .btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+  height: 42px;
+  padding: 0 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  background: linear-gradient(135deg, var(--primary-color, #0066CC) 0%, #0052a3 100%);
+  color: #fff;
+  transition: all 0.2s;
+  box-shadow: 0 2px 8px rgba(0,102,204,0.25);
+}
+
+.proc-form-group--btn .btn-primary:hover {
+  box-shadow: 0 4px 14px rgba(0,102,204,0.4);
+  transform: translateY(-1px);
+}
+
+.proc-form-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+/* ===== Planejamentos - Tabela ===== */
+.proc-table-wrapper {
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm, 0 1px 3px rgba(0,0,0,0.08));
+}
+
+.proc-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.proc-table thead {
+  background: var(--table-header-bg, #f8fafc);
+}
+
+.proc-table th {
+  padding: 12px 16px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-secondary, #64748b);
+  text-align: left;
+  border-bottom: 2px solid var(--border-color, #e2e8f0);
+}
+
+.proc-table td {
+  padding: 12px 16px;
+  font-size: 14px;
+  color: var(--text-primary, #1e293b);
+  border-bottom: 1px solid var(--border-color, #f1f5f9);
+}
+
+.proc-table tbody tr {
+  transition: background 0.15s;
+}
+
+.proc-table tbody tr:hover {
+  background: var(--table-row-hover, #f8fafc);
+}
+
+.proc-row--inactive {
+  opacity: 0.6;
+}
+
+/* ===== Status Badge ===== */
+.proc-status {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.proc-status--ativo {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.proc-status--bloqueado {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+/* ===== Botões de Ação ===== */
+.proc-actions {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.proc-btn {
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  transition: all 0.2s;
+}
+
+.proc-btn--edit {
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.proc-btn--edit:hover {
+  background: #dbeafe;
+}
+
+.proc-btn--block {
+  background: #fff7ed;
+  color: #ea580c;
+}
+
+.proc-btn--block:hover {
+  background: #ffedd5;
+}
+
+.proc-btn--unblock {
+  background: #f0fdf4;
+  color: #16a34a;
+}
+
+.proc-btn--unblock:hover {
+  background: #dcfce7;
+}
+
+.proc-btn--save {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.proc-btn--save:hover {
+  background: #bbf7d0;
+}
+
+.proc-btn--cancel {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.proc-btn--cancel:hover {
+  background: #fecaca;
+}
+
+/* ===== Edição Inline ===== */
+.proc-edit-input {
+  width: 100%;
+  padding: 6px 10px;
+  border: 1px solid var(--primary-color, #0066CC);
+  border-radius: 6px;
+  font-size: 14px;
+  color: var(--text-primary, #1e293b);
+  background: var(--bg-input, #fff);
+  box-sizing: border-box;
+}
+
+.proc-edit-input:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0,102,204,0.15);
+}
+
+.proc-edit-input--valor {
+  max-width: 120px;
+}
+
+@media (max-width: 600px) {
+  .proc-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .proc-form-group--btn {
+    justify-content: stretch;
+  }
+
+  .proc-form-group--btn .btn-primary {
+    width: 100%;
+  }
+
+  .proc-table th:nth-child(3),
+  .proc-table td:nth-child(3) {
+    display: none;
+  }
+}

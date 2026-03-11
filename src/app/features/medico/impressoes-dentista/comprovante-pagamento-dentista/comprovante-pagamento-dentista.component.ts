@@ -52,12 +52,30 @@ export class ComprovantePagamentoDentistaComponent implements OnInit {
     this.cro = prof?.registroConselho?.trim() || prof?.conselho?.trim() || '';
     this.emailDentista = prof?.email?.trim() || '';
     this.telefoneDentista = prof?.telefone?.trim() || '';
-    this.especialidade = prof?.especialidade?.trim() || '';
+    // Especialidade pode vir como string (DTO) ou como Set (entidade)
+    if (prof?.especialidade) {
+      this.especialidade = prof.especialidade.trim();
+    } else if (prof?.especialidades && prof.especialidades.length > 0) {
+      this.especialidade = prof.especialidades[0]?.nome || '';
+    } else if (Array.isArray(prof?.especialidades) === false && prof?.especialidades) {
+      // Set serializado como objeto
+      const keys = Object.keys(prof.especialidades);
+      if (keys.length > 0) {
+        this.especialidade = prof.especialidades[keys[0]]?.nome || '';
+      }
+    }
 
     // ── Paciente ──
     const consulta = p.consulta as any;
-    this.nomePaciente = consulta?.pacienteNome?.trim() || '';
-    this.cpfPaciente = consulta?.pacienteCpf?.trim() || '';
+    const paciente = consulta?.paciente;
+    this.nomePaciente = paciente?.paciNome?.trim()
+      ?? paciente?.nome?.trim()
+      ?? consulta?.pacienteNome?.trim()
+      ?? '';
+    this.cpfPaciente = paciente?.paciCpf?.trim()
+      ?? paciente?.cpf?.trim()
+      ?? consulta?.pacienteCpf?.trim()
+      ?? '';
 
     // ── Consulta ──
     if (consulta?.dataHora) {
@@ -65,7 +83,9 @@ export class ComprovantePagamentoDentistaComponent implements OnInit {
       this.dataConsulta = dt.toLocaleDateString('pt-BR');
       this.horarioConsulta = dt.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
     }
-    this.formaPagamento = consulta?.formaPagamentoNome || '';
+    this.formaPagamento = consulta?.formaPagamento?.nome
+      ?? consulta?.formaPagamentoNome
+      ?? '';
     this.valorConsulta = consulta?.valor || 0;
 
     // ── Prontuário ──

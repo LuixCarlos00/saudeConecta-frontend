@@ -165,20 +165,7 @@
                   <button mat-icon-button type="button" class="stepper-btn" (click)="customLimiteAdmin = (customLimiteAdmin || 0) + 1; onLimiteChange()">
                     <mat-icon>add</mat-icon>
                   </button>
-                </div>   alterando valores na coluna errado deve alterar na coluna
-                qtd_admin_extra
-                qtd_profissional_extra
-                qtd_secretaria_extra
-
-                e esta alterando
-                limite_admin_org_custom	int
-                limite_profissional_custom	int
-                limite_secretaria_custom	int
-
-                deve ser feito a alteracao nas primeira colunas
-                e na criação de cada perfil deve analizar o limite padrao do plano e se ha uma quantidade que foi contratada
-
-  nao ta atualizadno apos a edição
+                </div>
 
                 <div class="campo-extra" *ngIf="extraAdmin > 0">
                   <span class="extra-badge">+{{ extraAdmin }} extra(s)</span>

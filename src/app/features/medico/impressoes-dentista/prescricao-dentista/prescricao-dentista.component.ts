@@ -60,7 +60,7 @@ export class PrescricaoDentistaComponent implements OnInit {
     // ── Prescrição ────────────────────────────────────────────────────────────
     this.dataPrescricao = p.dataPrescricao || this.dataAtual;
     this.tituloPrescricao = p.tituloPrescricao?.trim() || 'PRESCRIÇÃO ODONTOLÓGICA';
-    this.prescricao = p.prescricao?.trim() || 'Medicamentos conforme prescrição odontológica.';
+    this.prescricao = p.prescricao?.trim() || 'Nada a constar.';
 
     // ── Identificação ─────────────────────────────────────────────────────────
     this.codigoProntuario = String(p.codigo ?? p.codigoProntuario ?? '000000');

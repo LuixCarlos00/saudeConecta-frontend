@@ -279,5 +279,40 @@ export class ConsultaApiService {
     );
   }
 
+  //=============================================================
+  // SALDO FINANCEIRO - Dashboard
+  //=============================================================
 
+  /**
+   * Busca estatísticas financeiras (consultas + procedimentos terapêuticos).
+   *
+   * @param inicio     data de início (yyyy-MM-dd)
+   * @param fim        data de fim (yyyy-MM-dd)
+   * @param agruparPor "mes" ou "semana"
+   * @returns SaldoFinanceiroResponse
+   */
+  getSaldoFinanceiro(inicio: string, fim: string, agruparPor: string = 'mes'): Observable<SaldoFinanceiroResponse> {
+    return this.http.get<SaldoFinanceiroResponse>(
+      `${this.apiUrl}/estatisticas/saldo-financeiro`,
+      { params: { inicio, fim, agruparPor } }
+    );
+  }
+}
+
+// ── Interfaces de Saldo Financeiro ──────────────────────────
+
+export interface SaldoPorPeriodo {
+  periodo: string;
+  valorConsultas: number;
+  valorProcedimentos: number;
+  valorTotal: number;
+}
+
+export interface SaldoFinanceiroResponse {
+  totalConsultas: number;
+  totalProcedimentos: number;
+  totalGeral: number;
+  quantidadeConsultas: number;
+  quantidadeProcedimentos: number;
+  detalhamento: SaldoPorPeriodo[];
 }

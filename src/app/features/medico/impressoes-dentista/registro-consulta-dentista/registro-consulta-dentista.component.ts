@@ -61,7 +61,6 @@ export class RegistroConsultaDentistaComponent implements OnInit {
   gengiva = '';
   habitosNocivos = '';
   portadorAparelho = '';
-  oclusao = '';
   exameOutros = '';
 
   // Odontograma
@@ -164,7 +163,6 @@ export class RegistroConsultaDentistaComponent implements OnInit {
     this.gengiva = p.gengiva || '';
     this.habitosNocivos = p.habitosNocivos || '';
     this.portadorAparelho = p.portadorAparelho || '';
-    this.oclusao = p.oclusao || '';
     this.exameOutros = p.exameOutros || '';
 
     // ── Odontograma ──────────────────────────────────────────────────────────
@@ -289,7 +287,7 @@ export class RegistroConsultaDentistaComponent implements OnInit {
     // Seção: Exame Intrabucal
     const temExameIntrabucal = this.facies || this.linfonodos || this.labios || this.mucosas ||
       this.soalhoBucal || this.palato || this.orofaringe || this.lingua || this.gengiva ||
-      this.habitosNocivos || this.portadorAparelho || this.oclusao || this.exameOutros;
+      this.habitosNocivos || this.portadorAparelho || this.exameOutros;
     if (temExameIntrabucal) {
       const resIntra = this.verificarEspacoAdicionarPagina(doc, y, 30, pageHeight, margin, pageWidth);
       y = resIntra.y; paginaAtual += resIntra.pagina;
@@ -310,7 +308,6 @@ export class RegistroConsultaDentistaComponent implements OnInit {
         { label: 'Gengiva', value: this.gengiva || '-' },
         { label: 'Háb. Nocivos', value: this.habitosNocivos || '-' },
         { label: 'Ap. Ortodôntico', value: this.portadorAparelho || '-' },
-        { label: 'Oclusão', value: this.oclusao || '-' },
       ], y, margin, pageWidth);
       if (this.exameOutros) {
         y = this.adicionarCamposHorizontalDinamico(doc, [

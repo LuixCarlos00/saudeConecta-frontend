@@ -2,12 +2,14 @@ import { AdministradorApiService } from './../../../services/api/administrador-a
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ProfissionalApiService } from 'src/app/services/api/profissional-api.service';
+import { SecretariaApiService } from 'src/app/services/api/secretaria-api.service';
 import { UsuarioApiService } from 'src/app/services/api/usuario-api.service';
 import { CepApiService } from 'src/app/services/api/cep-api.service';
 import { tokenService } from 'src/app/util/Token/Token.service';
 import { Subscription } from 'rxjs';
 import Swal from 'sweetalert2';
 import { EspecialidadeApiService } from "../../../services/api/especialidade-api.service";
+import { ufOptions } from '../../../util/variados/options/options';
 
 @Component({
   selector: 'app-DadosPessoais',
@@ -32,16 +34,40 @@ export class DadosPessoaisComponent implements OnInit, OnDestroy {
   //   as mudanças na tabela de histórico.
 
   dadosPessoaisForm: FormGroup;
+  organizacaoForm: FormGroup;
   enderecoForm: FormGroup;
   IdRegistro: number = 0;
   IdEndereco: number = 0;
 
   isLoading: boolean = true;
-  activeTab: 'pessoais' | 'endereco' | 'profissional' = 'pessoais';
+  activeTab: 'pessoais' | 'endereco' | 'profissional' | 'clinica' = 'pessoais';
   tipoUsuario: string = '';
   isProfissional: boolean = false;
   isAdmin: boolean = false;
+  isSecretaria: boolean = false;
   private cepSubscription?: Subscription;
+
+  // Tipos de clínica para select do Admin Org
+  tiposClinica = [
+    { value: 'CLINICA_MEDICA', label: 'Clínica Médica' },
+    { value: 'CLINICA_ODONTOLOGICA', label: 'Clínica Odontológica' },
+    { value: 'MISTA', label: 'Clínica Mista' },
+    { value: 'CLINICA', label: 'Clínica' },
+    { value: 'CONSULTORIO', label: 'Consultório' },
+    { value: 'HOSPITAL', label: 'Hospital' },
+    { value: 'LABORATORIO', label: 'Laboratório' },
+    { value: 'UPA', label: 'UPA' }
+  ];
+
+  cargos = [
+    { value: 'DIRETOR', label: 'Diretor(a)' },
+    { value: 'GERENTE', label: 'Gerente' },
+    { value: 'ADMINISTRADOR', label: 'Administrador(a)' },
+    { value: 'COORDENADOR', label: 'Coordenador(a)' },
+    { value: 'SUPERVISOR', label: 'Supervisor(a)' }
+  ];
+
+  ufs = ufOptions;
 
   // Propriedades para especialidades
   especialidades: any[] = [];
@@ -50,10 +76,11 @@ export class DadosPessoaisComponent implements OnInit, OnDestroy {
   constructor(
     private tokenService: tokenService,
     private profissionalApiService: ProfissionalApiService,
+    private secretariaApiService: SecretariaApiService,
     private usuarioApiService: UsuarioApiService,
     private cepApiService: CepApiService,
     private especialidadeService: EspecialidadeApiService,
-    private AdministradorApiService: AdministradorApiService,
+    private administradorApiService: AdministradorApiService,
     private fb: FormBuilder
   ) {
     // Inicialize sempre com form completo - será reconfigurado no ngOnInit
@@ -75,6 +102,15 @@ export class DadosPessoaisComponent implements OnInit, OnDestroy {
       status: [''],
       tipoProfissional: [''],
       cargo: [''],
+    });
+
+    this.organizacaoForm = this.fb.group({
+      nomeClinica: ['', Validators.required],
+      razaoSocial: [''],
+      cnpj: [{value: '', disabled: true}],
+      tipoClinica: ['', Validators.required],
+      emailClinica: ['', [Validators.required, Validators.email]],
+      telefone: [''],
     });
 
     this.enderecoForm = this.fb.group({
@@ -106,11 +142,21 @@ export class DadosPessoaisComponent implements OnInit, OnDestroy {
           this.tipoUsuario = dados.tipoUsuario || '';
           this.isProfissional = dados.tipoUsuario === 'PROFISSIONAL';
           this.isAdmin = dados.tipoUsuario === 'ADMIN_ORG';
+          this.isSecretaria = dados.tipoUsuario === 'RECEPCIONISTA';
+
+          // Reconfigura o form de acordo com o tipo de usuário
+          this.configurarFormPorTipo();
 
           if (this.isProfissional && dados.profissional) {
             this.carregarDadosProfissional(dados.profissional);
           } else if (this.isAdmin && dados.adminOrganizacao) {
             this.carregarDadosAdmin(dados.adminOrganizacao);
+          } else if (this.isSecretaria && dados.secretaria) {
+            this.carregarDadosSecretaria(dados.secretaria);
+          }
+
+          if (dados.organizacao && (this.isAdmin || this.isSecretaria)) {
+            this.carregarDadosOrganizacao(dados.organizacao);
           }
 
           if (dados.endereco) {
@@ -186,6 +232,28 @@ export class DadosPessoaisComponent implements OnInit, OnDestroy {
     });
   }
 
+  /**
+   * Reconfigura o dadosPessoaisForm com apenas os campos e validators necessários
+   * para o tipo de usuário logado, evitando falsos erros de validação.
+   */
+  private configurarFormPorTipo(): void {
+    if (this.isAdmin) {
+      this.dadosPessoaisForm = this.fb.group({
+        nome: ['', Validators.required],
+        cargo: [''],
+        email: ['', [Validators.required, Validators.email]],
+      });
+    } else if (this.isSecretaria) {
+      this.dadosPessoaisForm = this.fb.group({
+        nome: ['', Validators.required],
+        cpf: [{value: '', disabled: true}],
+        email: ['', [Validators.required, Validators.email]],
+        telefone: [''],
+      });
+    }
+    // Profissional mantém o form original (já inicializado no construtor)
+  }
+
   // 2. carregarDadosProfissional — mapear todos os campos corretamente
   private carregarDadosProfissional(profissional: any): void {
     this.IdRegistro = profissional.id;
@@ -215,9 +283,7 @@ export class DadosPessoaisComponent implements OnInit, OnDestroy {
   }
 
   private carregarDadosAdmin(admin: any): void {
-    console.log('Carregando dados do administrador:', admin);
     this.IdRegistro = admin.id;
-
     this.dadosPessoaisForm.patchValue({
       nome: admin.nome,
       cargo: admin.cargo || '',
@@ -225,8 +291,30 @@ export class DadosPessoaisComponent implements OnInit, OnDestroy {
     });
   }
 
+  private carregarDadosSecretaria(secretaria: any): void {
+    this.IdRegistro = secretaria.id;
+    this.dadosPessoaisForm.patchValue({
+      nome: secretaria.nome,
+      cpf: secretaria.cpf || '',
+      email: secretaria.email,
+      telefone: secretaria.telefone || '',
+    });
+  }
+
+  private carregarDadosOrganizacao(org: any): void {
+    this.organizacaoForm.patchValue({
+      nomeClinica: org.nome || '',
+      razaoSocial: org.razaoSocial || '',
+      cnpj: org.cnpj || '',
+      tipoClinica: org.tipo || '',
+      emailClinica: org.email || '',
+      telefone: org.telefone || '',
+    });
+  }
+
   private carregarEndereco(endereco: any): void {
     this.IdEndereco = endereco.endCodigo || 0;
+    // emitEvent: false evita que o listener do CEP dispare e sobrescreva os dados do banco
     this.enderecoForm.patchValue({
       rua: endereco.endRua,
       numero: endereco.endNumero,
@@ -236,7 +324,7 @@ export class DadosPessoaisComponent implements OnInit, OnDestroy {
       municipio: endereco.endMunicipio,
       uf: endereco.endUF,
       nacionalidade: endereco.endNacionalidade,
-    });
+    }, { emitEvent: false });
   }
 
   salvar() {
@@ -244,17 +332,41 @@ export class DadosPessoaisComponent implements OnInit, OnDestroy {
       this.salvarProfissional();
     } else if (this.isAdmin) {
       this.salvarAdmin();
+    } else if (this.isSecretaria) {
+      this.salvarSecretaria();
     }
   }
 
   private prepararDadosAdmin(): any {
     const formValues = this.dadosPessoaisForm.value;
+    const orgValues = this.organizacaoForm.getRawValue();
+    const endValues = this.enderecoForm.value;
 
     return {
       nome: formValues.nome,
       email: formValues.email,
       cargo: formValues.cargo,
-      endereco: this.prepararEndereco()
+      nomeClinica: orgValues.nomeClinica,
+      razaoSocial: orgValues.razaoSocial,
+      tipoClinica: orgValues.tipoClinica,
+      emailClinica: orgValues.emailClinica,
+      telefone: orgValues.telefone,
+      cep: endValues.cep,
+      uf: endValues.uf,
+      municipio: endValues.municipio,
+      bairro: endValues.bairro,
+      rua: endValues.rua,
+      numero: endValues.numero ? parseInt(endValues.numero.toString(), 10) : null,
+      complemento: endValues.complemento || null
+    };
+  }
+
+  private prepararDadosSecretaria(): any {
+    const formValues = this.dadosPessoaisForm.value;
+    return {
+      nome: formValues.nome,
+      email: formValues.email,
+      telefone: formValues.telefone,
     };
   }
 
@@ -332,7 +444,38 @@ export class DadosPessoaisComponent implements OnInit, OnDestroy {
   }
 
   private salvarAdmin(): void {
-    console.log('Salvando dados do administrador...', this.dadosPessoaisForm);
+    if (this.dadosPessoaisForm.invalid || this.organizacaoForm.invalid || this.enderecoForm.invalid) {
+      this.dadosPessoaisForm.markAllAsTouched();
+      this.organizacaoForm.markAllAsTouched();
+      this.enderecoForm.markAllAsTouched();
+
+      Swal.fire({
+        icon: 'warning',
+        title: 'Campos obrigatórios',
+        text: 'Por favor, preencha todos os campos obrigatórios marcados com *',
+      });
+      return;
+    }
+
+    const dadosAtualizados = this.prepararDadosAdmin();
+    this.administradorApiService
+      .atualizarMeusDados(this.IdRegistro, dadosAtualizados)
+      .subscribe({
+        next: () => {
+          this.exibirSucessoSalvar();
+        },
+        error: (error) => {
+          console.error('Erro ao atualizar dados do administrador:', error);
+          Swal.fire({
+            icon: 'error',
+            title: 'Erro ao salvar',
+            text: 'Não foi possível atualizar os dados. Tente novamente.',
+          });
+        },
+      });
+  }
+
+  private salvarSecretaria(): void {
     if (this.dadosPessoaisForm.invalid) {
       this.dadosPessoaisForm.markAllAsTouched();
 
@@ -344,16 +487,15 @@ export class DadosPessoaisComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const dadosAtualizados = this.prepararDadosAdmin();
-    console.log('Dados preparados para atualização do administrador:', dadosAtualizados);
-    this.AdministradorApiService
-      .atualizarAdmByOrg(this.IdRegistro, dadosAtualizados)
+    const dadosAtualizados = this.prepararDadosSecretaria();
+    this.secretariaApiService
+      .atualizarSecretariaIdByOrg(this.IdRegistro, dadosAtualizados)
       .subscribe({
         next: () => {
           this.exibirSucessoSalvar();
         },
         error: (error) => {
-          console.error('Erro ao atualizar dados do administrador:', error);
+          console.error('Erro ao atualizar dados da secretária:', error);
           Swal.fire({
             icon: 'error',
             title: 'Erro ao salvar',

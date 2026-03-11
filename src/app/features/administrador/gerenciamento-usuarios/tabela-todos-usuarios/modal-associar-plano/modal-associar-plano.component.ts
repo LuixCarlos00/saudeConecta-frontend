@@ -6,6 +6,7 @@ import { AssinaturaApiService } from 'src/app/services/api/assinatura-api.servic
 import { CobrancaApiService } from 'src/app/services/api/cobranca-api.service';
 import { PlanoAssinatura, AssinaturaTenant, CobrancaTenant, CustomizarPlanoTenantRequest } from 'src/app/util/variados/interfaces/planos/PlanoAssinatura';
 import { forkJoin } from 'rxjs';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-modal-associar-plano',
@@ -241,21 +242,32 @@ export class ModalAssociarPlanoComponent implements OnInit {
   salvarCustomizacao(): void {
     this.isSavingCustom = true;
     const request: CustomizarPlanoTenantRequest = {
-      limiteAdminOrgCustom: this.customLimiteAdmin,
-      limiteProfissionalCustom: this.customLimiteProf,
-      limiteSecretariaCustom: this.customLimiteSec
+      limiteAdminOrgCustom: this.customLimiteAdmin != null ? Number(this.customLimiteAdmin) : null,
+      limiteProfissionalCustom: this.customLimiteProf != null ? Number(this.customLimiteProf) : null,
+      limiteSecretariaCustom: this.customLimiteSec != null ? Number(this.customLimiteSec) : null
     };
 
     this.assinaturaApiService.customizarPlano(this.data.organizacaoId, request).subscribe({
-      next: () => {
-        this.snackBar.open('Plano personalizado com sucesso!', 'Fechar', { duration: 3000 });
+      next: (res) => {
         this.isSavingCustom = false;
+        Swal.fire({
+          icon: 'success',
+          title: 'Plano personalizado!',
+          text: `Limites atualizados com sucesso. Novo valor mensal: R$ ${res.valorMensal?.toFixed(2) || '—'}`,
+          timer: 4000,
+          showConfirmButton: true
+        });
         this.carregarDados();
       },
       error: (err) => {
-        const msg = err.error?.message || 'Erro ao personalizar plano';
-        this.snackBar.open(msg, 'Fechar', { duration: 5000 });
+        console.error('Erro ao customizar plano:', err);
         this.isSavingCustom = false;
+        const msg = err.error?.message || err.message || 'Erro ao personalizar plano';
+        Swal.fire({
+          icon: 'error',
+          title: 'Erro',
+          text: msg
+        });
       }
     });
   }

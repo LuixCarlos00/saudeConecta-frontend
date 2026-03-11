@@ -16,12 +16,20 @@ export class ProcedimentoPadraoApiService {
     return this.http.get<any[]>(`${this.apiUrl}/profissional/${profissionalId}`);
   }
 
+  listarTodosPorProfissional(profissionalId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/profissional/${profissionalId}/todos`);
+  }
+
   criar(profissionalId: number, payload: { nomeProcedimento: string; valorPadrao?: number }): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/profissional/${profissionalId}`, payload);
   }
 
   atualizar(id: number, payload: { nomeProcedimento: string; valorPadrao?: number }): Observable<any> {
     return this.http.put<any>(`${this.apiUrl}/${id}`, payload);
+  }
+
+  toggleAtivo(id: number): Observable<any> {
+    return this.http.patch<any>(`${this.apiUrl}/${id}/toggle`, {});
   }
 
   desativar(id: number): Observable<void> {

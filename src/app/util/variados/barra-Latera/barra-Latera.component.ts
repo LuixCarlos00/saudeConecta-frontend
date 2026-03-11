@@ -79,7 +79,7 @@ export class BarraLateraComponent implements OnInit, OnDestroy {
     const routeMap: { [key: string]: string } = {
       '/Dashboard': 'Dashboard',
       '/Prontuario': 'prontuario',
-      '/Dados-Medicos': 'DadosMedicos',
+      '/dadospessoais': 'DadosMedicos',
       '/gerenciamento': 'gerenciamento',
       '/Gerenciamento-Usuarios': 'Usuarios',
       '/trocaSenha': 'trocar_senha',
@@ -160,7 +160,7 @@ export class BarraLateraComponent implements OnInit, OnDestroy {
       'Usuarios': 'Gerenciamento-Usuarios',
       'prontuario': 'Prontuario',
       'pacientes': 'Pacientes',
-      'DadosMedicos': 'Dados-Medicos',
+      'DadosMedicos': 'dadospessoais',
       'trocar_senha': 'trocaSenha',
       'sistema': 'sistema',
       'suporte': 'suporte',

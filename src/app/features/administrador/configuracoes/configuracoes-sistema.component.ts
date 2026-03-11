@@ -10,6 +10,9 @@ import {
   ConfiguracaoCardResponse,
   AtualizarConfiguracaoCardRequest
 } from 'src/app/services/api/configuracao-card.service';
+import { ProcedimentoPadraoApiService } from 'src/app/services/api/procedimento-padrao-api.service';
+import { UsuarioApiService } from 'src/app/services/api/usuario-api.service';
+import { tokenService } from 'src/app/util/Token/Token.service';
 import { Subscription } from 'rxjs';
 import Swal from 'sweetalert2';
 
@@ -28,12 +31,26 @@ export class ConfiguracoesSistemaComponent implements OnInit, OnDestroy {
   loading = false;
   loadingCards = false;
 
+  // Planejamentos
+  isProfissional = false;
+  profissionalId: number | null = null;
+  procedimentosPadrao: any[] = [];
+  loadingProcedimentos = false;
+  editandoId: number | null = null;
+  editandoNome = '';
+  editandoValor: number | null = null;
+  novoProcedimento = { nomeProcedimento: '', valorPadrao: 0 };
+  mostrarFormNovo = false;
+
   private themeSubscription?: Subscription;
 
   constructor(
     public themeService: ThemeService,
     private configuracaoGraficoService: ConfiguracaoGraficoService,
-    private configuracaoCardService: ConfiguracaoCardService
+    private configuracaoCardService: ConfiguracaoCardService,
+    private procedimentoPadraoService: ProcedimentoPadraoApiService,
+    private usuarioApiService: UsuarioApiService,
+    private tokenSvc: tokenService
   ) {
     this.availableThemes = this.themeService.availableThemes;
   }
@@ -44,6 +61,7 @@ export class ConfiguracoesSistemaComponent implements OnInit, OnDestroy {
     );
     this.carregarConfiguracoes();
     this.carregarConfiguracoesCards();
+    this.verificarProfissional();
   }
 
   ngOnDestroy(): void {
@@ -52,7 +70,7 @@ export class ConfiguracoesSistemaComponent implements OnInit, OnDestroy {
 
   selectTheme(themeId: ThemeType): void { this.themeService.setTheme(themeId); }
   isThemeSelected(themeId: ThemeType): boolean { return this.currentTheme === themeId; }
-  setActiveTab(tab: 'temas' | 'graficos' | 'cards'): void { this.activeTab = tab; }
+  setActiveTab(tab: 'temas' | 'graficos' | 'cards' | 'planejamentos'): void { this.activeTab = tab; }
 
   carregarConfiguracoes(): void {
     this.loading = true;
@@ -280,4 +298,112 @@ export class ConfiguracoesSistemaComponent implements OnInit, OnDestroy {
   private mostrarErro(texto: string): void {
     Swal.fire({ icon: 'error', title: 'Erro', text: texto, confirmButtonColor: '#0066CC' });
   }
+
+  // ── Planejamentos (Procedimentos Padrão) ──────────────────────────────────
+
+  private verificarProfissional(): void {
+    this.tokenSvc.decodificaToken();
+    const usuario = this.tokenSvc.getUsuarioLogado();
+    if (!usuario?.id) return;
+
+    this.usuarioApiService.buscarPerfilCompleto(usuario.id).subscribe({
+      next: (dados: any) => {
+        if (dados.tipoUsuario === 'PROFISSIONAL' && dados.profissional?.id) {
+          this.isProfissional = true;
+          this.profissionalId = dados.profissional.id;
+        }
+      },
+      error: () => {}
+    });
+  }
+
+  carregarProcedimentosPadrao(): void {
+    if (!this.profissionalId) return;
+    this.loadingProcedimentos = true;
+    this.procedimentoPadraoService.listarTodosPorProfissional(this.profissionalId).subscribe({
+      next: (lista) => {
+        this.procedimentosPadrao = lista;
+        this.loadingProcedimentos = false;
+      },
+      error: () => {
+        this.loadingProcedimentos = false;
+        this.mostrarErro('Não foi possível carregar os procedimentos');
+      }
+    });
+  }
+
+  abrirFormNovo(): void {
+    this.mostrarFormNovo = true;
+    this.novoProcedimento = { nomeProcedimento: '', valorPadrao: 0 };
+  }
+
+  fecharFormNovo(): void {
+    this.mostrarFormNovo = false;
+  }
+
+  criarProcedimento(): void {
+    if (!this.novoProcedimento.nomeProcedimento.trim() || !this.profissionalId) {
+      this.mostrarErro('Informe o nome do procedimento');
+      return;
+    }
+    this.procedimentoPadraoService.criar(this.profissionalId, this.novoProcedimento).subscribe({
+      next: (criado) => {
+        this.procedimentosPadrao.push(criado);
+        this.mostrarFormNovo = false;
+        this.novoProcedimento = { nomeProcedimento: '', valorPadrao: 0 };
+        Swal.fire({ icon: 'success', title: 'Procedimento cadastrado', timer: 2000, showConfirmButton: false });
+      },
+      error: () => this.mostrarErro('Erro ao cadastrar procedimento')
+    });
+  }
+
+  iniciarEdicao(proc: any): void {
+    this.editandoId = proc.id;
+    this.editandoNome = proc.nomeProcedimento;
+    this.editandoValor = proc.valorPadrao;
+  }
+
+  cancelarEdicao(): void {
+    this.editandoId = null;
+    this.editandoNome = '';
+    this.editandoValor = null;
+  }
+
+  salvarEdicao(proc: any): void {
+    if (!this.editandoNome.trim()) {
+      this.mostrarErro('Informe o nome do procedimento');
+      return;
+    }
+    this.procedimentoPadraoService.atualizar(proc.id, {
+      nomeProcedimento: this.editandoNome,
+      valorPadrao: this.editandoValor || 0
+    }).subscribe({
+      next: (atualizado) => {
+        proc.nomeProcedimento = atualizado.nomeProcedimento;
+        proc.valorPadrao = atualizado.valorPadrao;
+        this.cancelarEdicao();
+        Swal.fire({ icon: 'success', title: 'Procedimento atualizado', timer: 2000, showConfirmButton: false });
+      },
+      error: () => this.mostrarErro('Erro ao atualizar procedimento')
+    });
+  }
+
+  toggleProcedimento(proc: any): void {
+    this.procedimentoPadraoService.toggleAtivo(proc.id).subscribe({
+      next: (atualizado) => {
+        proc.ativo = atualizado.ativo;
+        Swal.fire({
+          icon: 'success',
+          title: `Procedimento ${atualizado.ativo ? 'ativado' : 'bloqueado'}`,
+          timer: 2000,
+          showConfirmButton: false
+        });
+      },
+      error: () => this.mostrarErro('Erro ao alterar status do procedimento')
+    });
+  }
+
+  get totalProcedimentos(): number { return this.procedimentosPadrao.length; }
+  get ativosProcedimentos(): number { return this.procedimentosPadrao.filter(p => p.ativo).length; }
+  get inativosProcedimentos(): number { return this.procedimentosPadrao.filter(p => !p.ativo).length; }
 }
