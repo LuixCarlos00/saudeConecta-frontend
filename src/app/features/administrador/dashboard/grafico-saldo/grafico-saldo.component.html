@@ -1,4 +1,50 @@
+<div class="saldo-container">
+  <!-- Filtros -->
+  <div class="saldo-filtros">
+    <button class="saldo-filtro-btn"
+            [class.active]="periodoSelecionado === PeriodoFiltro.ESTE_MES"
+            (click)="onPeriodoChange(PeriodoFiltro.ESTE_MES)">Este Mês</button>
+    <button class="saldo-filtro-btn"
+            [class.active]="periodoSelecionado === PeriodoFiltro.ULTIMOS_3_MESES"
+            (click)="onPeriodoChange(PeriodoFiltro.ULTIMOS_3_MESES)">3 Meses</button>
+    <button class="saldo-filtro-btn"
+            [class.active]="periodoSelecionado === PeriodoFiltro.ULTIMOS_6_MESES"
+            (click)="onPeriodoChange(PeriodoFiltro.ULTIMOS_6_MESES)">6 Meses</button>
+    <button class="saldo-filtro-btn"
+            [class.active]="periodoSelecionado === PeriodoFiltro.ESTE_ANO"
+            (click)="onPeriodoChange(PeriodoFiltro.ESTE_ANO)">Este Ano</button>
+  </div>
 
-<div  >
-  <canvas #menuCanvas style="width: 100%;"></canvas>
+  <!-- Resumo -->
+  <div class="saldo-resumo" *ngIf="dados && !isLoading">
+    <div class="saldo-resumo-item consultas">
+      <span class="saldo-resumo-label">Consultas</span>
+      <span class="saldo-resumo-valor">{{ formatarMoeda(dados.totalConsultas) }}</span>
+      <span class="saldo-resumo-qtd">{{ dados.quantidadeConsultas }} realizadas</span>
+    </div>
+    <div class="saldo-resumo-item procedimentos">
+      <span class="saldo-resumo-label">Procedimentos</span>
+      <span class="saldo-resumo-valor">{{ formatarMoeda(dados.totalProcedimentos) }}</span>
+      <span class="saldo-resumo-qtd">{{ dados.quantidadeProcedimentos }} realizados</span>
+    </div>
+    <div class="saldo-resumo-item total">
+      <span class="saldo-resumo-label">Total Geral</span>
+      <span class="saldo-resumo-valor">{{ formatarMoeda(dados.totalGeral) }}</span>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div class="saldo-loading" *ngIf="isLoading">
+    <i class="fa-solid fa-spinner fa-spin"></i> Carregando...
+  </div>
+
+  <!-- Erro -->
+  <div class="saldo-erro" *ngIf="hasError && !isLoading">
+    <i class="fa-solid fa-triangle-exclamation"></i> Não foi possível carregar os dados financeiros.
+  </div>
+
+  <!-- Gráfico -->
+  <div class="saldo-chart-wrapper" [style.display]="isLoading || hasError ? 'none' : 'block'">
+    <canvas #saldoCanvas></canvas>
+  </div>
 </div>

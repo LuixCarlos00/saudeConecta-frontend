@@ -63,7 +63,7 @@ export class AbaExameObjetivoComponent implements OnInit {
   gengiva = '';
   habitosNocivos = '';
   portadorAparelho = '';
-  oclusao = '';
+  oclusal = '';
   exameOutros = '';
   ATM = '';
 
@@ -186,7 +186,7 @@ export class AbaExameObjetivoComponent implements OnInit {
     this.gengiva = dados.gengiva || '';
     this.habitosNocivos = dados.habitosNocivos || '';
     this.portadorAparelho = dados.portadorAparelho || '';
-    this.oclusao = dados.oclusao || '';
+    this.oclusal = dados.oclusal || '';
     this.exameOutros = dados.exameOutros || '';
     this.ATM = dados.atm || '';
     this.Diagnostico = dados.diagnostico || '';
@@ -215,7 +215,7 @@ export class AbaExameObjetivoComponent implements OnInit {
       observacao: this.observacao,
       higieneBucal: this.HigieneBucal,
       condicaoGengival: this.CondicaoGengival,
-      oclusal: '',
+      oclusal: this.oclusal,
       atm: this.ATM,
       odontograma: this.serializarOdontograma(),
       diagnostico: this.Diagnostico,
@@ -237,7 +237,6 @@ export class AbaExameObjetivoComponent implements OnInit {
       gengiva: this.gengiva,
       habitosNocivos: this.habitosNocivos,
       portadorAparelho: this.portadorAparelho,
-      oclusao: this.oclusao,
       exameOutros: this.exameOutros,
     };
   }

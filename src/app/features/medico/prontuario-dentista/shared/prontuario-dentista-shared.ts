@@ -49,7 +49,6 @@ export interface DadosExameObjetivo {
   gengiva: string;
   habitosNocivos: string;
   portadorAparelho: string;
-  oclusao: string;
   exameOutros: string;
   // Diagnóstico
   Diagnostico: string;

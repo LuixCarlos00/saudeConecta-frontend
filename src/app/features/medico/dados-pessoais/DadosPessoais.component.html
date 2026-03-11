@@ -3,15 +3,21 @@
   <div class="profile-header">
     <div class="avatar-section">
       <div class="avatar">
-        <i class="fa" [ngClass]="isAdmin ? 'fa-user-tie' : 'fa-user-md'"></i>
+        <i class="fa" [ngClass]="isAdmin ? 'fa-user-tie' : (isSecretaria ? 'fa-user-pen' : 'fa-user-md')"></i>
       </div>
       <div class="profile-info">
-        <h1>{{ isAdmin ? (dadosPessoaisForm.get('nome')?.value || 'Carregando...') :
-          (dadosPessoaisForm.get('nome')?.value || 'Carregando...') }}</h1>
-        <span class="specialty-badge">
-          <i class="fa fa-stethoscope" *ngIf="isProfissional"></i>
-          {{ isProfissional ? (dadosPessoaisForm.get('especialidade')?.value || 'Especialidade') :
-          (dadosPessoaisForm.get('cargo')?.value || 'Cargo') }}
+        <h1>{{ dadosPessoaisForm.get('nome')?.value || 'Carregando...' }}</h1>
+        <span class="specialty-badge" *ngIf="isProfissional">
+          <i class="fa fa-stethoscope"></i>
+          {{ dadosPessoaisForm.get('especialidade')?.value || 'Especialidade' }}
+        </span>
+        <span class="specialty-badge" *ngIf="isAdmin">
+          <i class="fa fa-briefcase"></i>
+          {{ dadosPessoaisForm.get('cargo')?.value || 'Administrador' }}
+        </span>
+        <span class="specialty-badge" *ngIf="isSecretaria">
+          <i class="fa fa-user-pen"></i>
+          Secretária
         </span>
         <span class="crm-badge" *ngIf="isProfissional">
           <i class="fa fa-id-card"></i>
@@ -38,8 +44,12 @@
     <button class="tab-btn" [class.active]="activeTab === 'pessoais'" (click)="activeTab = 'pessoais'">
       <i class="fa fa-user"></i> Dados Pessoais
     </button>
+    <button class="tab-btn" [class.active]="activeTab === 'clinica'" (click)="activeTab = 'clinica'"
+      *ngIf="isAdmin">
+      <i class="fa fa-hospital"></i> Dados da Clínica
+    </button>
     <button class="tab-btn" [class.active]="activeTab === 'endereco'" (click)="activeTab = 'endereco'"
-      *ngIf="isProfissional">
+      *ngIf="isProfissional || isAdmin">
       <i class="fa fa-map-marker-alt"></i> Endereço
     </button>
     <button class="tab-btn" [class.active]="activeTab === 'profissional'" (click)="activeTab = 'profissional'"
@@ -62,36 +72,85 @@
           <div class="card-body">
             <div class="form-grid">
               <div class="form-group full-width">
-                <label for="Nome">
+                <label for="nomeAdmin">
                   <i class="fa fa-user"></i> Nome Completo <span class="required">*</span>
                 </label>
-                <input formControlName="nome" type="text" id="Nome" placeholder="Digite seu nome completo">
+                <input formControlName="nome" type="text" id="nomeAdmin" placeholder="Digite seu nome completo">
                 <span class="error-message"
                   *ngIf="dadosPessoaisForm.get('nome')?.touched && dadosPessoaisForm.get('nome')?.invalid">
                   {{ getCampoErro('nome') }}
                 </span>
               </div>
 
-              <!-- <div class="form-group full-width">
-                <label for="Cargo">
+              <div class="form-group">
+                <label for="cargoAdmin">
                   <i class="fa fa-briefcase"></i> Cargo <span class="required">*</span>
                 </label>
-                <input formControlName="cargo" type="text" id="Cargo" placeholder="Digite seu cargo">
-                <span class="error-message"
-                  *ngIf="dadosPessoaisForm.get('cargo')?.touched && dadosPessoaisForm.get('cargo')?.invalid">
-                  {{ getCampoErro('cargo') }}
-                </span>
-              </div> -->
+                <select formControlName="cargo" id="cargoAdmin">
+                  <option value="">Selecione o cargo</option>
+                  <option *ngFor="let c of cargos" [value]="c.value">{{ c.label }}</option>
+                </select>
+              </div>
 
               <div class="form-group">
-                <label for="Email">
+                <label for="emailAdmin">
                   <i class="fa fa-envelope"></i> E-mail <span class="required">*</span>
                 </label>
-                <input formControlName="email" type="email" id="Email" placeholder="seu@email.com">
+                <input formControlName="email" type="email" id="emailAdmin" placeholder="seu@email.com">
                 <span class="error-message"
                   *ngIf="dadosPessoaisForm.get('email')?.touched && dadosPessoaisForm.get('email')?.invalid">
                   {{ getCampoErro('email') }}
                 </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+
+      <!-- Formulário Secretária -->
+      <form [formGroup]="dadosPessoaisForm" *ngIf="isSecretaria">
+        <div class="card">
+          <div class="card-header">
+            <i class="fa fa-user-pen"></i>
+            <h2>Informações Pessoais</h2>
+          </div>
+          <div class="card-body">
+            <div class="form-grid">
+              <div class="form-group full-width">
+                <label for="nomeSecretaria">
+                  <i class="fa fa-user"></i> Nome Completo <span class="required">*</span>
+                </label>
+                <input formControlName="nome" type="text" id="nomeSecretaria" placeholder="Digite seu nome completo">
+                <span class="error-message"
+                  *ngIf="dadosPessoaisForm.get('nome')?.touched && dadosPessoaisForm.get('nome')?.invalid">
+                  {{ getCampoErro('nome') }}
+                </span>
+              </div>
+
+              <div class="form-group">
+                <label for="cpfSecretaria">
+                  <i class="fa fa-id-card"></i> CPF
+                </label>
+                <input formControlName="cpf" type="text" id="cpfSecretaria" readonly
+                  style="background:#f3f4f6; color:#6b7280; cursor:default;">
+              </div>
+
+              <div class="form-group">
+                <label for="emailSecretaria">
+                  <i class="fa fa-envelope"></i> E-mail <span class="required">*</span>
+                </label>
+                <input formControlName="email" type="email" id="emailSecretaria" placeholder="seu@email.com">
+                <span class="error-message"
+                  *ngIf="dadosPessoaisForm.get('email')?.touched && dadosPessoaisForm.get('email')?.invalid">
+                  {{ getCampoErro('email') }}
+                </span>
+              </div>
+
+              <div class="form-group">
+                <label for="telefoneSecretaria">
+                  <i class="fa fa-phone"></i> Telefone
+                </label>
+                <input formControlName="telefone" type="tel" id="telefoneSecretaria" placeholder="(00) 00000-0000">
               </div>
             </div>
           </div>
@@ -187,6 +246,79 @@
       </form>
     </div>
 
+    <!-- Tab Dados da Clínica (Admin Org) -->
+    <div class="tab-panel" *ngIf="activeTab === 'clinica'">
+      <form [formGroup]="organizacaoForm">
+        <div class="card">
+          <div class="card-header">
+            <i class="fa fa-hospital"></i>
+            <h2>Dados da Clínica</h2>
+          </div>
+          <div class="card-body">
+            <div class="form-grid">
+              <div class="form-group full-width">
+                <label for="nomeClinica">
+                  <i class="fa fa-hospital"></i> Nome da Clínica <span class="required">*</span>
+                </label>
+                <input formControlName="nomeClinica" type="text" id="nomeClinica" placeholder="Nome da clínica">
+                <span class="error-message"
+                  *ngIf="organizacaoForm.get('nomeClinica')?.touched && organizacaoForm.get('nomeClinica')?.invalid">
+                  Nome da clínica é obrigatório
+                </span>
+              </div>
+
+              <div class="form-group">
+                <label for="razaoSocial">
+                  <i class="fa fa-file-contract"></i> Razão Social
+                </label>
+                <input formControlName="razaoSocial" type="text" id="razaoSocial" placeholder="Razão social">
+              </div>
+
+              <div class="form-group">
+                <label for="cnpjClinica">
+                  <i class="fa fa-id-card"></i> CNPJ
+                </label>
+                <input formControlName="cnpj" type="text" id="cnpjClinica"
+                  style="background:#f3f4f6; color:#6b7280; cursor:default;">
+              </div>
+
+              <div class="form-group">
+                <label for="tipoClinica">
+                  <i class="fa fa-tags"></i> Tipo <span class="required">*</span>
+                </label>
+                <select formControlName="tipoClinica" id="tipoClinica">
+                  <option value="">Selecione o tipo</option>
+                  <option *ngFor="let t of tiposClinica" [value]="t.value">{{ t.label }}</option>
+                </select>
+                <span class="error-message"
+                  *ngIf="organizacaoForm.get('tipoClinica')?.touched && organizacaoForm.get('tipoClinica')?.invalid">
+                  Tipo é obrigatório
+                </span>
+              </div>
+
+              <div class="form-group">
+                <label for="emailClinica">
+                  <i class="fa fa-envelope"></i> Email da Clínica <span class="required">*</span>
+                </label>
+                <input formControlName="emailClinica" type="email" id="emailClinica" placeholder="contato@clinica.com">
+                <span class="error-message"
+                  *ngIf="organizacaoForm.get('emailClinica')?.touched && organizacaoForm.get('emailClinica')?.invalid">
+                  Email da clínica é obrigatório
+                </span>
+              </div>
+
+              <div class="form-group">
+                <label for="telefoneClinica">
+                  <i class="fa fa-phone"></i> Telefone
+                </label>
+                <input formControlName="telefone" type="text" id="telefoneClinica" placeholder="(00) 00000-0000">
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+
     <!-- Tab Endereço -->
     <div class="tab-panel" *ngIf="activeTab === 'endereco'">
       <form [formGroup]="enderecoForm">
@@ -263,7 +395,9 @@
                 <label for="uf">
                   <i class="fa fa-flag"></i> UF <span class="required">*</span>
                 </label>
-                <input formControlName="uf" type="text" id="uf" placeholder="SP" maxlength="2">
+                <select formControlName="uf" id="uf">
+                  <option *ngFor="let uf of ufs" [value]="uf.value">{{ uf.label }}</option>
+                </select>
                 <span class="error-message" *ngIf="enderecoForm.get('uf')?.touched && enderecoForm.get('uf')?.invalid">
                   {{ getCampoErro('uf') }}
                 </span>

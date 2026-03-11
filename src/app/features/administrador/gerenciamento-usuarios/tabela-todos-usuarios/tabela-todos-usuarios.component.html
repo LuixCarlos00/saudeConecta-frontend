@@ -44,7 +44,7 @@
         </th>
         <td mat-cell *matCellDef="let usuario" class="col-nome">
           <div class="user-info">
-            <div class="user-avatar" [ngClass]="'avatar-' + usuario.categoria.toLowerCase()">
+            <div class="user-avatar" [ngClass]="'avatar-' + normalizarClasse(usuario.categoria)">
               <i class="fa-solid" [ngClass]="usuario.categoriaIcon"></i>
             </div>
             <div class="user-details">
@@ -64,7 +64,7 @@
           <i class="fa-solid fa-tag"></i> Categoria
         </th>
         <td mat-cell *matCellDef="let usuario" class="col-categoria">
-          <span class="categoria-badge" [ngClass]="'categoria-' + usuario.categoria.toLowerCase()">
+          <span class="categoria-badge" [ngClass]="'categoria-' + normalizarClasse(usuario.categoria)">
             <i class="fa-solid" [ngClass]="usuario.categoriaIcon"></i>
             {{ usuario.categoria }}
           </span>

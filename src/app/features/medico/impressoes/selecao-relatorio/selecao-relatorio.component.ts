@@ -70,6 +70,7 @@ export class SelecaoRelatorioComponent implements OnInit {
   opcoes: RelatorioOption[] = [];
   consultaNaoRealizada: boolean = false;
   isAdmin: boolean = false;
+  isProfissional: boolean = false;
 
   constructor(
     public dialogRef: MatDialogRef<SelecaoRelatorioComponent>,
@@ -79,6 +80,7 @@ export class SelecaoRelatorioComponent implements OnInit {
   ngOnInit(): void {
     this.consultaNaoRealizada = this.data?.consultaNaoRealizada || false;
     this.isAdmin = this.data?.isAdmin || false;
+    this.isProfissional = this.data?.isProfissional || false;
     this.filtrarOpcoes();
   }
 
@@ -93,9 +95,12 @@ export class SelecaoRelatorioComponent implements OnInit {
     else if (statusConsulta === 'REALIZADA' || statusConsulta === 'PAGO') {
       this.opcoes = this.todasOpcoes.filter(opcao => {
         if (opcao.id === '6') {
-          return this.isAdmin; // Relatório dinâmico apenas para admin
+          return this.isAdmin;
         }
-        return true; // Inclui comprovante de pagamento (id: 7)
+        if (opcao.id === '7') {
+          return !this.isProfissional;
+        }
+        return true;
       });
     }
     // Para qualquer outro status - mantém a lógica anterior
@@ -103,6 +108,9 @@ export class SelecaoRelatorioComponent implements OnInit {
       this.opcoes = this.todasOpcoes.filter(opcao => {
         if (opcao.id === '6') {
           return this.isAdmin;
+        }
+        if (opcao.id === '7') {
+          return !this.isProfissional;
         }
         return true;
       });

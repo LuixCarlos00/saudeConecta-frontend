@@ -189,7 +189,7 @@
       </div>
 
       <!-- Seção: Exame Intrabucal -->
-      <div class="pdf-section" *ngIf="facies || linfonodos || labios || mucosas || soalhoBucal || palato || orofaringe || lingua || gengiva || habitosNocivos || portadorAparelho || oclusao || exameOutros">
+      <div class="pdf-section" *ngIf="facies || linfonodos || labios || mucosas || soalhoBucal || palato || orofaringe || lingua || gengiva || habitosNocivos || portadorAparelho || exameOutros">
         <div class="section-header section-header--executive">
           <h2>EXAME INTRABUCAL</h2>
         </div>
@@ -241,10 +241,6 @@
           <div class="pdf-field">
             <span class="field-label">AP. ORTODÔNTICO</span>
             <span class="field-value">{{ portadorAparelho || '-' }}</span>
-          </div>
-          <div class="pdf-field">
-            <span class="field-label">OCLUSÃO</span>
-            <span class="field-value">{{ oclusao || '-' }}</span>
           </div>
         </div>
         <div class="section-content section-content--vertical" *ngIf="exameOutros">

@@ -243,6 +243,18 @@ export class TabelaTodosUsuariosComponent implements OnInit, OnDestroy {
       .toUpperCase();
   }
 
+  /**
+   * Normaliza uma string para uso em classes CSS (sem acentos, lowercase).
+   * @param valor string com possíveis acentos
+   * @returns string normalizada para CSS
+   */
+  normalizarClasse(valor: string): string {
+    return (valor || '')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase();
+  }
+
   confirmarDelecao(usuario: UsuarioUnificado): void {
     Swal.fire({
       title: 'Confirmar exclusão',

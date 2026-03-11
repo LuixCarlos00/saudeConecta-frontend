@@ -1,0 +1,123 @@
+.saldo-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ── Filtros ──────────────────────────────────────────────── */
+.saldo-filtros {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.saldo-filtro-btn {
+  padding: 5px 14px;
+  border: 1px solid var(--border-color, #dee2e6);
+  border-radius: 20px;
+  background: var(--bg-secondary, #f8f9fa);
+  color: var(--text-secondary, #6c757d);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.saldo-filtro-btn:hover {
+  background: var(--primary-light, #e8f0fe);
+  color: var(--primary-color, #0066CC);
+  border-color: var(--primary-color, #0066CC);
+}
+
+.saldo-filtro-btn.active {
+  background: var(--primary-color, #0066CC);
+  color: #fff;
+  border-color: var(--primary-color, #0066CC);
+}
+
+/* ── Resumo ──────────────────────────────────────────────── */
+.saldo-resumo {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.saldo-resumo-item {
+  display: flex;
+  flex-direction: column;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: var(--bg-secondary, #f8f9fa);
+  border-left: 3px solid transparent;
+}
+
+.saldo-resumo-item.consultas {
+  border-left-color: rgba(59, 130, 246, 1);
+}
+
+.saldo-resumo-item.procedimentos {
+  border-left-color: rgba(16, 185, 129, 1);
+}
+
+.saldo-resumo-item.total {
+  border-left-color: var(--primary-color, #0066CC);
+}
+
+.saldo-resumo-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted, #999);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.saldo-resumo-valor {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary, #212529);
+  margin-top: 2px;
+}
+
+.saldo-resumo-qtd {
+  font-size: 11px;
+  color: var(--text-muted, #999);
+  margin-top: 2px;
+}
+
+/* ── Chart ───────────────────────────────────────────────── */
+.saldo-chart-wrapper {
+  position: relative;
+  height: 220px;
+}
+
+/* ── Loading / Erro ──────────────────────────────────────── */
+.saldo-loading,
+.saldo-erro {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 40px 0;
+  font-size: 13px;
+  color: var(--text-muted, #999);
+}
+
+.saldo-erro {
+  color: var(--error-color, #e74c3c);
+}
+
+/* ── Responsivo ──────────────────────────────────────────── */
+@media (max-width: 600px) {
+  .saldo-resumo {
+    grid-template-columns: 1fr;
+  }
+
+  .saldo-filtros {
+    gap: 4px;
+  }
+
+  .saldo-filtro-btn {
+    font-size: 11px;
+    padding: 4px 10px;
+  }
+}

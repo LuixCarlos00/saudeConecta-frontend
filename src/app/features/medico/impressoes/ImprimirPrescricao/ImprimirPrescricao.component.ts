@@ -48,7 +48,7 @@ export class ImprimirPrescricaoComponent implements OnInit {
     // Dados da prescrição
     this.dataPrescricao = this.data.dataPrescricao || this.dataAtual;
     this.tituloPrescricao = this.data.tituloPrescricao?.trim() || 'PRESCRIÇÃO MÉDICA';
-    this.prescricao = this.data.prescricao?.trim() || 'Medicamentos conforme prescrição médica.';
+    this.prescricao = this.data.prescricao?.trim() || 'Nada a constar.';
   }
 
   GerarPDF() {

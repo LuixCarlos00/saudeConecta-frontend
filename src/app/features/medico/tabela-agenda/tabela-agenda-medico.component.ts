@@ -71,9 +71,8 @@ export class TabelaAgendaMedicoComponent implements OnInit {
       confirmButtonText: 'Sim, abrir!',
     }).then((result) => {
       if (result.isConfirmed) {
-        //TODO veridicar se e dentista ou medico e manda para a rota correta
-        this.route.navigate(['startconsulta']);
         this.prontuarioStateService.setConsulta(element);
+        this.navegarParaProntuario();
       } else {
         this.BuscarDadosDeAgendaDoMedicoDoDia();
       }
@@ -83,8 +82,16 @@ export class TabelaAgendaMedicoComponent implements OnInit {
 
 
   AbrirConsulta(element: any) {
-    this.route.navigate(['startconsulta']);
     this.prontuarioStateService.setConsulta(element);
+    this.navegarParaProntuario();
+  }
+
+  private navegarParaProntuario(): void {
+    if (this.UsuarioLogado.perfil === 'DENTISTA') {
+      this.route.navigate(['startconsulta-dentista']);
+    } else {
+      this.route.navigate(['startconsulta']);
+    }
   }
 
 
