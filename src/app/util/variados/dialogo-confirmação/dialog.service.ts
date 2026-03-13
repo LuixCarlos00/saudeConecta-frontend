@@ -1,7 +1,7 @@
 import { ConsultaApiService } from 'src/app/services/api/consulta-api.service';
 import { Injectable } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { CalendarDialogComponent } from '../Cronologia/cronologia.component';
+import { CronologiaComponent } from '../Cronologia/cronologia.component';
 import { MatDialog } from '@angular/material/dialog';
 
 @Injectable({

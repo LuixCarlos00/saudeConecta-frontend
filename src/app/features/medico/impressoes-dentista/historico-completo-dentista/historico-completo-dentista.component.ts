@@ -40,7 +40,7 @@ export class HistoricoCompletoDentistaComponent implements OnInit {
     });
 
     this.consultaApiService
-      .BuscandoHistoricoDeConsultasDoPaciente_dentista(this.data.pacienteId)
+      .BuscandoHistoricoDeConsultasDoPaciente(this.data.pacienteId, 'dentista')
       .subscribe((data: HistoricoCompletoDentistaResponse[]) => {
         console.log('Histórico dental recebido:', data);
         this.historico = data || [];
@@ -66,132 +66,173 @@ export class HistoricoCompletoDentistaComponent implements OnInit {
 
   GerarPDF() {
     const doc = new jsPDF('p', 'mm', 'a4');
-    const pageWidth = doc.internal.pageSize.getWidth();
-    const pageHeight = doc.internal.pageSize.getHeight();
-    const margin = 15;
-    let y = 20;
+    const pw = doc.internal.pageSize.getWidth();
+    const ph = doc.internal.pageSize.getHeight();
+    const m = 10;
+    const w = pw - m * 2;
+    let y = 12;
 
-    this.adicionarCabecalhoExecutivo(doc, pageWidth, margin, y);
-    y += 20;
+    // ── Cabeçalho compacto ──
+    this.pdfCabecalho(doc, pw, m, y);
+    y += 12;
 
+    // ── Dados do Paciente ──
     if (this.pacienteInfo) {
-      y = this.adicionarSecaoHorizontal(doc, 'DADOS DO PACIENTE', margin, y, pageWidth);
-      y = this.adicionarCamposHorizontal(doc, [
-        { label: 'Nome:', value: this.pacienteInfo.nome, width: 60 },
-        { label: 'CPF:', value: this.pacienteInfo.cpf, width: 35 },
-        { label: 'Data Nasc.:', value: this.formatarData(this.pacienteInfo.dataNascimento), width: 30 },
-        { label: 'Telefone:', value: this.pacienteInfo.telefone, width: 35 },
-      ], margin, y, pageWidth);
-      y += 8;
+      y = this.pdfSecao(doc, 'DADOS DO PACIENTE', m, y, w);
+      y = this.pdfTabela(doc, [[
+        { b: 'Nome:', t: this.pacienteInfo.nome },
+        { b: 'CPF:', t: this.pacienteInfo.cpf },
+        { b: 'Nasc.:', t: this.formatarData(this.pacienteInfo.dataNascimento) },
+        { b: 'Tel.:', t: this.pacienteInfo.telefone },
+      ]], m, y, w);
     }
 
-    y = this.adicionarSecaoHorizontal(
-      doc, `HISTÓRICO DE CONSULTAS ODONTOLÓGICAS (${this.historico?.length || 0} registros)`,
-      margin, y, pageWidth
-    );
-    y += 5;
+    y = this.pdfSecao(doc, `CONSULTAS ODONTOLÓGICAS (${this.historico?.length || 0} registros)`, m, y, w);
 
     if (this.historico && this.historico.length > 0) {
       for (let i = 0; i < this.historico.length; i++) {
-        const item = this.historico[i];
+        const it = this.historico[i];
 
-        if (y > pageHeight - 120) {
-          doc.addPage();
-          y = 20;
-          this.adicionarCabecalhoExecutivo(doc, pageWidth, margin, y);
-          y += 20;
-        }
+        y = this.pdfQuebraPagina(doc, y, 30, pw, ph, m);
 
-        y = this.adicionarSubsecao(
-          doc, `Consulta ${i + 1} — ${this.formatarData(item.dataHora)}`, margin, y, pageWidth
-        );
-        y += 3;
-
-        y = this.adicionarCamposHorizontal(doc, [
-          { label: 'Data:', value: this.formatarData(item.dataHora), width: 25 },
-          { label: 'Horário:', value: this.formatarHora(item.dataHora), width: 20 },
-          { label: 'Dentista:', value: `Dr(a). ${item.profissionalNome || '-'}`, width: 45 },
-          { label: 'CRO / Especialidade:', value: `${item.profissionalCrm || '-'} | ${item.profissionalEspecialidade || '-'}`, width: 45 },
-        ], margin, y, pageWidth);
+        // ── Barra da consulta ──
+        doc.setFillColor(55, 65, 81);
+        doc.rect(m, y, w, 5, 'F');
+        doc.setFontSize(8.5);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(255, 255, 255);
+        doc.text(`Consulta ${i + 1} — ${this.formatarData(it.dataHora)}`, m + 2, y + 3.5);
         y += 5;
 
-        // Queixa / Diagnóstico
-        const clinica: any[] = [];
-        if (item.queixaPrincipal) { clinica.push({ label: 'Queixa Principal:', value: item.queixaPrincipal }); }
-        if (item.diagnostico) { clinica.push({ label: 'Diagnóstico:', value: item.diagnostico }); }
-        if (clinica.length > 0) { y = this.adicionarCamposHorizontal(doc, clinica, margin, y, pageWidth); y += 5; }
+        // ── Info da consulta (tabela) ──
+        y = this.pdfTabela(doc, [
+          [
+            { b: 'Nº:', t: it.consultaId?.toString() || '-' },
+            { b: 'Pront.:', t: it.codigoProntuario?.toString() || '-' },
+            { b: 'Data:', t: this.formatarData(it.dataHora) },
+            { b: 'Hora:', t: this.formatarHora(it.dataHora) },
+            { b: 'Status:', t: it.status || '-' },
+          ],
+          [
+            { b: 'Dentista:', t: `Dr(a). ${it.profissionalNome || '-'}`, span: 2 },
+            { b: 'CRO:', t: `${it.profissionalCrm || '-'} | ${it.profissionalEspecialidade || '-'}` },
+            { b: 'Valor:', t: it.valor ? `R$ ${it.valor.toFixed(2)}` : '-' },
+            { b: 'Duração:', t: it.duracaoMinutos ? `${it.duracaoMinutos} min` : (it.tempoDuracao || '-') },
+          ],
+        ], m, y, w);
 
-        // Exame Clínico Bucal
-        const exameBucal: any[] = [];
-        if (item.higieneBucal) { exameBucal.push({ label: 'Higiene Bucal:', value: item.higieneBucal }); }
-        if (item.condicaoGengival) { exameBucal.push({ label: 'Condição Gengival:', value: item.condicaoGengival }); }
-        if (item.oclusal) { exameBucal.push({ label: 'Oclusal:', value: item.oclusal }); }
-        if (item.atm) { exameBucal.push({ label: 'ATM:', value: item.atm }); }
-        if (exameBucal.length > 0) { y = this.adicionarCamposHorizontal(doc, exameBucal, margin, y, pageWidth); y += 5; }
+        // ── Sinais vitais (tabela) ──
+        const sv: any[] = [];
+        if (it.peso) sv.push({ b: 'Peso:', t: `${it.peso} kg` });
+        if (it.altura) sv.push({ b: 'Altura:', t: `${it.altura} cm` });
+        if (it.temperatura) sv.push({ b: 'Temp.:', t: `${it.temperatura} °C` });
+        if (it.pressao) sv.push({ b: 'PA:', t: it.pressao });
+        if (it.pulso) sv.push({ b: 'Pulso:', t: `${it.pulso} bpm` });
+        if (it.saturacao) sv.push({ b: 'SpO2:', t: `${it.saturacao}%` });
+        if (sv.length > 0) y = this.pdfTabela(doc, [sv], m, y, w);
 
-        // Anamnese
-        if (item.anamnese) {
-          y = this.adicionarCaixaExpansivel(doc, 'Anamnese:', item.anamnese, margin, y, pageWidth, pageHeight);
-          y += 3;
+        // ── Queixa / Diagnóstico (tabela) ──
+        const qd: any[] = [];
+        if (it.queixaPrincipal) qd.push({ b: 'Queixa:', t: it.queixaPrincipal });
+        if (it.diagnostico) qd.push({ b: 'Diagnóstico:', t: it.diagnostico });
+        if (qd.length > 0) y = this.pdfTabela(doc, [qd], m, y, w);
+
+        // ── Campos inline (linhas individuais) ──
+        if (it.cidTexto) { y = this.pdfQuebraPagina(doc, y, 6, pw, ph, m); y = this.pdfLinhaInline(doc, 'CID:', it.cidTexto, m, y, w); }
+        if (it.anamnese) { y = this.pdfQuebraPagina(doc, y, 6, pw, ph, m); y = this.pdfLinhaInline(doc, 'Anamnese:', it.anamnese, m, y, w); }
+
+        // ── Extra-oral (linhas) ──
+        if (it.facies) { y = this.pdfQuebraPagina(doc, y, 5, pw, ph, m); y = this.pdfLinhaInline(doc, 'Fácies:', it.facies, m, y, w); }
+        if (it.linfonodos) { y = this.pdfQuebraPagina(doc, y, 5, pw, ph, m); y = this.pdfLinhaInline(doc, 'Linfonodos:', it.linfonodos, m, y, w); }
+        if (it.atm) { y = this.pdfQuebraPagina(doc, y, 5, pw, ph, m); y = this.pdfLinhaInline(doc, 'ATM:', it.atm, m, y, w); }
+        if (it.edema) { y = this.pdfQuebraPagina(doc, y, 5, pw, ph, m); y = this.pdfLinhaInline(doc, 'Edema:', it.edema, m, y, w); }
+
+        // ── Intra-oral (linhas) ──
+        if (it.labios) { y = this.pdfQuebraPagina(doc, y, 5, pw, ph, m); y = this.pdfLinhaInline(doc, 'Lábios:', it.labios, m, y, w); }
+        if (it.lingua) { y = this.pdfQuebraPagina(doc, y, 5, pw, ph, m); y = this.pdfLinhaInline(doc, 'Língua:', it.lingua, m, y, w); }
+        if (it.gengiva) { y = this.pdfQuebraPagina(doc, y, 5, pw, ph, m); y = this.pdfLinhaInline(doc, 'Gengiva:', it.gengiva, m, y, w); }
+        if (it.mucosas) { y = this.pdfQuebraPagina(doc, y, 5, pw, ph, m); y = this.pdfLinhaInline(doc, 'Mucosas:', it.mucosas, m, y, w); }
+        if (it.palato) { y = this.pdfQuebraPagina(doc, y, 5, pw, ph, m); y = this.pdfLinhaInline(doc, 'Palato:', it.palato, m, y, w); }
+        if (it.orofaringe) { y = this.pdfQuebraPagina(doc, y, 5, pw, ph, m); y = this.pdfLinhaInline(doc, 'Orofaringe:', it.orofaringe, m, y, w); }
+        if (it.soalhoBucal) { y = this.pdfQuebraPagina(doc, y, 5, pw, ph, m); y = this.pdfLinhaInline(doc, 'Soalho Bucal:', it.soalhoBucal, m, y, w); }
+
+        // ── Condições bucais (linhas) ──
+        if (it.higieneBucal) { y = this.pdfQuebraPagina(doc, y, 5, pw, ph, m); y = this.pdfLinhaInline(doc, 'Higiene Bucal:', it.higieneBucal, m, y, w); }
+        if (it.condicaoGengival) { y = this.pdfQuebraPagina(doc, y, 5, pw, ph, m); y = this.pdfLinhaInline(doc, 'Cond. Gengival:', it.condicaoGengival, m, y, w); }
+        if (it.oclusal) { y = this.pdfQuebraPagina(doc, y, 5, pw, ph, m); y = this.pdfLinhaInline(doc, 'Oclusal:', it.oclusal, m, y, w); }
+        if (it.portadorAparelho) { y = this.pdfQuebraPagina(doc, y, 5, pw, ph, m); y = this.pdfLinhaInline(doc, 'Aparelho:', it.portadorAparelho, m, y, w); }
+        if (it.habitosNocivos) { y = this.pdfQuebraPagina(doc, y, 5, pw, ph, m); y = this.pdfLinhaInline(doc, 'Háb. Nocivos:', it.habitosNocivos, m, y, w); }
+
+        // ── Tratamento (tabela curta + linhas) ──
+        const trat: any[] = [];
+        if (it.inicioTratamento) trat.push({ b: 'Início:', t: it.inicioTratamento });
+        if (it.terminoTratamento) trat.push({ b: 'Término:', t: it.terminoTratamento });
+        if (it.responsavel) trat.push({ b: 'Responsável:', t: it.responsavel });
+        if (it.interrupcao) trat.push({ b: 'Interrupção:', t: it.interrupcao });
+        if (trat.length > 0) { y = this.pdfQuebraPagina(doc, y, 8, pw, ph, m); y = this.pdfTabela(doc, [trat], m, y, w); }
+
+        if (it.conduta) { y = this.pdfQuebraPagina(doc, y, 6, pw, ph, m); y = this.pdfLinhaInline(doc, 'Conduta:', it.conduta, m, y, w); }
+        if (it.planoTratamento) { y = this.pdfQuebraPagina(doc, y, 6, pw, ph, m); y = this.pdfLinhaInline(doc, 'Plano de Tratamento:', it.planoTratamento, m, y, w); }
+        if (it.orientacoes) { y = this.pdfQuebraPagina(doc, y, 6, pw, ph, m); y = this.pdfLinhaInline(doc, 'Orientações:', it.orientacoes, m, y, w); }
+
+        // ── Prescrição ──
+        if (it.prescricao) {
+          const lbl = `Prescrição${it.tituloPrescricao ? ' — ' + it.tituloPrescricao : ''}${it.dataPrescricao ? ' (' + it.dataPrescricao + ')' : ''}:`;
+          y = this.pdfQuebraPagina(doc, y, 6, pw, ph, m);
+          y = this.pdfLinhaInline(doc, lbl, it.prescricao, m, y, w);
         }
 
-        // Plano de Tratamento / Procedimentos / Orientações
-        const tratamento: any[] = [];
-        if (item.planoTratamento) { tratamento.push({ label: 'Plano de Tratamento:', value: item.planoTratamento }); }
-        if (item.procedimentos) { tratamento.push({ label: 'Procedimentos:', value: item.procedimentos }); }
-        if (tratamento.length > 0) { y = this.adicionarCamposHorizontal(doc, tratamento, margin, y, pageWidth); y += 5; }
-        if (item.orientacoes) {
-          y = this.adicionarCaixaExpansivel(doc, 'Orientações:', item.orientacoes, margin, y, pageWidth, pageHeight);
-          y += 3;
+        // ── Exames ──
+        if (it.solicitacaoExameTexto) { y = this.pdfQuebraPagina(doc, y, 6, pw, ph, m); y = this.pdfLinhaInline(doc, 'Solic. Exames:', it.solicitacaoExameTexto, m, y, w); }
+        if (it.tussTexto) { y = this.pdfQuebraPagina(doc, y, 6, pw, ph, m); y = this.pdfLinhaInline(doc, 'TUSS:', it.tussTexto, m, y, w); }
+        if (it.exameOutros) { y = this.pdfQuebraPagina(doc, y, 6, pw, ph, m); y = this.pdfLinhaInline(doc, 'Outros Exames:', it.exameOutros, m, y, w); }
+
+        // ── Observações ──
+        if (it.observacao) { y = this.pdfQuebraPagina(doc, y, 6, pw, ph, m); y = this.pdfLinhaInline(doc, 'Observações:', it.observacao, m, y, w); }
+
+        // ── Odontograma ──
+        if (it.dentes && it.dentes.length > 0) {
+          y = this.pdfQuebraPagina(doc, y, 10, pw, ph, m);
+          y = this.pdfSecao(doc, 'ODONTOGRAMA', m, y, w);
+          const txt = it.dentes
+            .sort((a: any, b: any) => a.numeroFdi - b.numeroFdi)
+            .map((d: any) => `${d.numeroFdi}:${d.status}${d.observacao ? '(' + d.observacao + ')' : ''}`)
+            .join(' | ');
+          y = this.pdfLinhaInline(doc, 'Dentes:', txt, m, y, w);
         }
 
-        // Prescrição
-        if (item.prescricao) {
-          y = this.adicionarCaixaExpansivel(doc, `Prescrição (${item.tituloPrescricao || ''} ${item.dataPrescricao || ''}):`, item.prescricao, margin, y, pageWidth, pageHeight);
-          y += 3;
+        // ── Planejamentos ──
+        if (it.planejamentos && it.planejamentos.length > 0) {
+          y = this.pdfQuebraPagina(doc, y, 10, pw, ph, m);
+          y = this.pdfSecao(doc, 'PLANEJAMENTOS TERAPÊUTICOS', m, y, w);
+          const rows = it.planejamentos.map((p: any) => [
+            { b: 'Data:', t: p.dataProcedimento || '-' },
+            { b: 'Proced.:', t: p.procedimentoRealizado || p.procedimento || '-' },
+            { b: 'Valor:', t: p.valor ? `R$ ${p.valor.toFixed(2)}` : '-' },
+            { b: 'Assin.:', t: p.statusAssinatura || '-' },
+          ]);
+          y = this.pdfTabela(doc, rows, m, y, w);
         }
 
-        // Exames
-        if (item.tituloExame) {
-          y = this.adicionarCamposHorizontal(doc, [
-            { label: 'Exame:', value: item.tituloExame },
-            { label: 'Data Exame:', value: item.dataExame || '-' },
-          ], margin, y, pageWidth);
+        // ── Separador entre consultas ──
+        if (i < this.historico.length - 1) {
+          y += 2;
+          doc.setDrawColor(150, 150, 150);
+          doc.setLineWidth(0.8);
+          doc.line(m, y, m + w, y);
+          doc.setLineWidth(0.3);
+          doc.line(m, y + 1.5, m + w, y + 1.5);
           y += 5;
         }
-
-        // Observações
-        if (item.observacao) {
-          y = this.adicionarCaixaExpansivel(doc, 'Observações:', item.observacao, margin, y, pageWidth, pageHeight);
-          y += 3;
-        }
-
-        // Odontograma
-        if (item.dentes && item.dentes.length > 0) {
-          if (y > pageHeight - 60) { doc.addPage(); y = 20; }
-          y = this.adicionarSecaoHorizontal(doc, 'ODONTOGRAMA', margin, y, pageWidth);
-          const dentesTexto = item.dentes
-            .sort((a, b) => a.numeroFdi - b.numeroFdi)
-            .map(d => `Dente ${d.numeroFdi}: ${d.status}${d.observacao ? ' — ' + d.observacao : ''}`)
-            .join('  |  ');
-          y = this.adicionarCaixaExpansivel(doc, 'Dentes:', dentesTexto, margin, y, pageWidth, pageHeight);
-          y += 3;
-        }
-
-        y += 5;
-        doc.setDrawColor(229, 231, 235);
-        doc.setLineWidth(0.3);
-        doc.line(margin, y, pageWidth - margin, y);
-        y += 10;
       }
     } else {
-      doc.setFontSize(10);
+      doc.setFontSize(9.5);
       doc.setFont('helvetica', 'italic');
       doc.setTextColor(156, 163, 175);
-      doc.text('Nenhum registro de consulta odontológica encontrado.', margin, y);
+      doc.text('Nenhum registro de consulta odontológica encontrado.', m, y);
     }
 
-    this.adicionarRodapeExecutivo(doc, pageWidth, pageHeight);
+    this.pdfRodape(doc, pw, ph);
 
     const nome = this.pacienteInfo
       ? `Historico_Dental_${this.pacienteInfo.nome.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`
@@ -217,130 +258,144 @@ export class HistoricoCompletoDentistaComponent implements OnInit {
     return classes[status] ?? '';
   }
 
-  // ── Helpers PDF (idênticos ao componente médico) ──────────────────────────
+  // ── Helpers PDF (compacto, bordas unificadas) ──────────────────────────────
 
-  private adicionarCabecalhoExecutivo(doc: any, pageWidth: number, margin: number, y: number) {
+  private pdfQuebraPagina(doc: any, y: number, necessario: number, pw: number, ph: number, m: number): number {
+    if (y + necessario > ph - 12) {
+      doc.addPage();
+      y = 8;
+    }
+    return y;
+  }
+
+  private pdfCabecalho(doc: any, pw: number, m: number, y: number): void {
+    const w = pw - m * 2;
     doc.setFillColor(44, 62, 80);
-    doc.rect(margin, y - 10, pageWidth - (margin * 2), 15, 'F');
-    doc.setFontSize(14);
+    doc.rect(m, y - 4, w, 10, 'F');
+    doc.setFontSize(11.5);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(255, 255, 255);
-    doc.text('HISTÓRICO ODONTOLÓGICO COMPLETO', pageWidth / 2, y, { align: 'center' });
-    doc.setFontSize(8);
+    doc.text('HISTÓRICO ODONTOLÓGICO COMPLETO', pw / 2, y + 1, { align: 'center' });
+    doc.setFontSize(7.5);
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(200, 200, 200);
-    doc.text('Relatório Executivo de Consultas Odontológicas', pageWidth / 2, y + 4, { align: 'center' });
+    doc.text('Relatório Executivo de Consultas Odontológicas', pw / 2, y + 5, { align: 'center' });
   }
 
-  private adicionarSecaoHorizontal(doc: any, titulo: string, margin: number, y: number, pageWidth: number): number {
+  private pdfSecao(doc: any, titulo: string, m: number, y: number, w: number): number {
     doc.setFillColor(107, 114, 128);
-    doc.rect(margin, y, 3, 8, 'F');
+    doc.rect(m, y, 2, 5, 'F');
     doc.setFillColor(248, 249, 250);
-    doc.rect(margin + 3, y, pageWidth - (margin * 2) - 3, 8, 'F');
-    doc.setFontSize(9);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(107, 114, 128);
-    doc.text(titulo.toUpperCase(), margin + 8, y + 5);
-    return y + 12;
-  }
-
-  private adicionarSubsecao(doc: any, titulo: string, margin: number, y: number, pageWidth: number): number {
+    doc.rect(m + 2, y, w - 2, 5, 'F');
     doc.setFontSize(8);
     doc.setFont('helvetica', 'bold');
-    doc.setTextColor(55, 65, 81);
-    doc.text(titulo, margin, y + 3);
+    doc.setTextColor(107, 114, 128);
+    doc.text(titulo.toUpperCase(), m + 5, y + 3.5);
     return y + 6;
   }
 
-  private adicionarCamposHorizontal(doc: any, campos: any[], margin: number, y: number, pageWidth: number): number {
-    const availableWidth = pageWidth - margin * 2;
-    const colunas = campos.length;
-    const larguraColuna = availableWidth / colunas;
-    let lineY = y;
+  private pdfTabela(doc: any, rows: any[][], m: number, y: number, w: number): number {
+    doc.setLineWidth(0.15);
+    doc.setDrawColor(180, 180, 180);
 
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(8);
-    doc.setTextColor(0, 0, 0);
+    for (const row of rows) {
+      const totalSpan = row.reduce((s: number, c: any) => s + (c.span || 1), 0);
+      const colW = w / totalSpan;
+      let x = m;
+      let maxH = 4;
 
-    let maxLines = 1;
-    const textosProcessados: Array<{ lines: string[]; x: number; y: number }> = [];
-
-    campos.forEach((campo, index) => {
-      const x = margin + index * larguraColuna + 2;
-      const valor = campo.value || '-';
-      const texto = doc.splitTextToSize(valor, larguraColuna - 4);
-      textosProcessados.push({ lines: texto, x, y: lineY + 4 });
-      maxLines = Math.max(maxLines, texto.length);
-    });
-
-    const alturaDinamica = 4 + maxLines * 3;
-
-    doc.setLineWidth(0.1);
-    doc.setDrawColor(150, 150, 150);
-    campos.forEach((_, index) => {
-      const x = margin + index * larguraColuna;
-      doc.line(x, lineY - 2, x + larguraColuna, lineY - 2);
-      doc.line(x, lineY + alturaDinamica - 1, x + larguraColuna, lineY + alturaDinamica - 1);
-      if (index < colunas - 1) {
-        doc.line(x + larguraColuna, lineY - 2, x + larguraColuna, lineY + alturaDinamica - 1);
+      const processados: Array<{ x: number; cw: number; lines: string[] }> = [];
+      for (const cell of row) {
+        const cw = colW * (cell.span || 1);
+        const fullText = `${cell.b} ${cell.t || '-'}`;
+        const lines = doc.splitTextToSize(fullText, cw - 2);
+        const h = Math.max(4, lines.length * 2.8 + 1);
+        maxH = Math.max(maxH, h);
+        processados.push({ x, cw, lines });
+        x += cw;
       }
-    });
 
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(6);
-    doc.setTextColor(102, 102, 102);
-    campos.forEach((campo, index) => {
-      const x = margin + index * larguraColuna + 2;
-      doc.text(campo.label.toUpperCase(), x, lineY);
-    });
+      // bordas
+      x = m;
+      for (const p of processados) {
+        doc.rect(p.x, y, p.cw, maxH);
+        x += p.cw;
+      }
 
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(8);
-    doc.setTextColor(0, 0, 0);
-    textosProcessados.forEach((t) => doc.text(t.lines, t.x, t.y));
+      // textos
+      doc.setFontSize(8);
+      doc.setTextColor(30, 30, 30);
+      for (const p of processados) {
+        let ty = y + 2.8;
+        for (const line of p.lines) {
+          const parts = this.splitBoldNormal(line, p.lines.indexOf(line) === 0 ? (row.find((c: any) => true)?.b || '') : '');
+          doc.setFont('helvetica', 'bold');
+          doc.text(parts.bold, p.x + 1, ty);
+          const boldWidth = doc.getTextWidth(parts.bold);
+          doc.setFont('helvetica', 'normal');
+          doc.text(parts.normal, p.x + 1 + boldWidth, ty);
+          ty += 2.8;
+        }
+      }
 
-    return lineY + alturaDinamica + 2;
+      y += maxH;
+    }
+    return y;
   }
 
-  private adicionarCaixaExpansivel(
-    doc: any, label: string, texto: string,
-    margin: number, y: number, pageWidth: number, pageHeight: number
-  ): number {
-    const availableWidth = pageWidth - margin * 2;
-    if (y + 20 > pageHeight - 20) { doc.addPage(); y = 20; }
-    const linhas = doc.splitTextToSize(texto || '-', availableWidth - 10);
-    const alturaNecessaria = 10 + linhas.length * 4;
-    doc.setFillColor(249, 250, 251);
-    doc.rect(margin, y - 2, availableWidth, alturaNecessaria, 'F');
-    doc.setLineWidth(0.1);
-    doc.setDrawColor(150, 150, 150);
-    doc.line(margin, y - 2, margin + availableWidth, y - 2);
-    doc.line(margin, y - 2, margin, y + alturaNecessaria - 2);
-    doc.line(margin + availableWidth, y - 2, margin + availableWidth, y + alturaNecessaria - 2);
-    doc.line(margin, y + alturaNecessaria - 2, margin + availableWidth, y + alturaNecessaria - 2);
-    doc.setFontSize(8);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(107, 114, 128);
-    doc.text(label, margin + 3, y + 2);
-    doc.setFont('helvetica', 'normal');
-    doc.setTextColor(55, 65, 81);
-    doc.text(linhas, margin + 3, y + 8);
-    return y + alturaNecessaria + 4;
+  private splitBoldNormal(fullLine: string, boldLabel: string): { bold: string; normal: string } {
+    if (boldLabel && fullLine.startsWith(boldLabel)) {
+      return { bold: boldLabel + ' ', normal: fullLine.substring(boldLabel.length).trim() };
+    }
+    return { bold: '', normal: fullLine };
   }
 
-  private adicionarRodapeExecutivo(doc: any, pageWidth: number, pageHeight: number) {
-    const totalPages = doc.getNumberOfPages();
-    for (let i = 1; i <= totalPages; i++) {
+  private pdfLinhaInline(doc: any, label: string, texto: string, m: number, y: number, w: number): number {
+    doc.setLineWidth(0.15);
+    doc.setDrawColor(180, 180, 180);
+    doc.setFontSize(8);
+
+    const fullText = `${label} ${texto || '-'}`;
+    const lines = doc.splitTextToSize(fullText, w - 2);
+    const h = Math.max(4.5, lines.length * 3.2 + 1);
+
+    doc.rect(m, y, w, h);
+
+    let ty = y + 2.8;
+    for (let i = 0; i < lines.length; i++) {
+      if (i === 0) {
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(55, 65, 81);
+        doc.text(label, m + 1, ty);
+        const lw = doc.getTextWidth(label + ' ');
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(30, 30, 30);
+        const restText = lines[0].substring(label.length).trim();
+        doc.text(restText, m + 1 + lw, ty);
+      } else {
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(30, 30, 30);
+        doc.text(lines[i], m + 1, ty);
+      }
+      ty += 3.2;
+    }
+
+    return y + h;
+  }
+
+  private pdfRodape(doc: any, pw: number, ph: number): void {
+    const total = doc.getNumberOfPages();
+    for (let i = 1; i <= total; i++) {
       doc.setPage(i);
       doc.setDrawColor(107, 114, 128);
-      doc.setLineWidth(0.5);
-      doc.line(15, pageHeight - 15, pageWidth - 15, pageHeight - 15);
+      doc.setLineWidth(0.3);
+      doc.line(10, ph - 10, pw - 10, ph - 10);
       doc.setFontSize(7);
       doc.setFont('helvetica', 'italic');
       doc.setTextColor(156, 163, 175);
       doc.text(
-        `Página ${i} de ${totalPages} | Gerado em ${new Date().toLocaleString('pt-BR')}`,
-        pageWidth / 2, pageHeight - 10, { align: 'center' }
+        `Página ${i} de ${total} | Gerado em ${new Date().toLocaleString('pt-BR')}`,
+        pw / 2, ph - 7, { align: 'center' }
       );
     }
   }

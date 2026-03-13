@@ -1,19 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { Administrador } from 'src/app/util/variados/interfaces/administrado/adiministrador';
 import { environment } from 'src/environments/environment';
 
-export interface Administrador {
-  admCodigo?: number;
-  admNome?: string;
-  admCpf?: string;
-  admRg?: string;
-  admTelefone?: string;
-  admEmail?: string;
-  admDataNascimento?: string;
-  admEndereco?: number;
-  admUsuario?: number;
-}
 
 @Injectable({
   providedIn: 'root'
@@ -33,8 +23,6 @@ export class AdministradorApiService {
     return this.http.post<Administrador>(`${this.apiUrl}/cadastrarAdminByOrg`, administrador);
   }
 
-
-
   buscarrAdminByOrg(id: number): Observable<Administrador> {
     return this.http.get<Administrador>(`${this.apiUrl}/buscarrAdminByOrg/${id}`);
   }
@@ -43,31 +31,19 @@ export class AdministradorApiService {
     return this.http.put<Administrador>(`${this.apiUrl}/atualizarAdmByOrg/${id}`, administrador);
   }
 
+  buscarAdminOrgCompleto(id: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/buscarAdminOrgCompleto/${id}`);
+  }
 
+  atualizarAdminOrgCompleto(id: number, dados: any): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/atualizarAdminOrgCompleto/${id}`, dados);
+  }
+
+  atualizarMeusDados(id: number, dados: any): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/atualizarMeusDados/${id}`, dados);
+  }
 
   deletarAdmByOrg(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/deletarAdmByOrg/${id}`);
   }
-
-
-
-
-
-
-
-
-  buscarPorEmail(email: string): Observable<Administrador> {
-    return this.http.get<Administrador>(`${this.apiUrl}/buscarPorEmail/${email}`);
-  }
-
-
-  confirmarCodigoSeguranca(codigo: string): Observable<Administrador> {
-    return this.http.get<Administrador>(`${this.apiUrl}/verificarCodigo/${codigo}`);
-  }
-
-  obterCodigoRecuperacao(email: string): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/obterCodigoRecuperacao/${email}`);
-  }
-
-
 }

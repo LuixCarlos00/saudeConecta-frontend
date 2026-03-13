@@ -18,52 +18,118 @@
     </div>
   </header>
 
+  <!-- Banner de Inadimplência -->
+  <!-- Banner de cobrança pendente (gerada automaticamente dia 1º do mês) -->
+  <div class="banner-cobranca-pendente" *ngIf="cobrancaPendente && !assinaturaInadimplente">
+    <div class="banner-cobranca-pendente__icon">
+      <i class="fa-solid fa-receipt"></i>
+    </div>
+    <div class="banner-cobranca-pendente__content">
+      <strong>Cobrança mensal gerada</strong>
+      <p>
+        Sua cobrança de <strong>{{ cobrancaPendente.valorTotal | currency:'BRL' }}</strong> foi gerada automaticamente.
+        Você tem até <strong>{{ cobrancaPendente.dataVencimentoPix | date:'dd/MM/yyyy' }}</strong> para realizar o pagamento.
+      </p>
+      <p class="banner-cobranca-pendente__prazo">
+        <i class="fa-solid fa-clock"></i>
+        <span *ngIf="diasRestantesPagamento > 0">
+          <strong>{{ diasRestantesPagamento }}</strong> {{ diasRestantesPagamento === 1 ? 'dia restante' : 'dias restantes' }} para pagamento
+        </span>
+        <span *ngIf="diasRestantesPagamento === 0" class="banner-cobranca-pendente__urgente">
+          Vence hoje! Pague para evitar inadimplência
+        </span>
+      </p>
+    </div>
+    <button class="banner-cobranca-pendente__action" (click)="navegarPara('/minha-assinatura')">
+      <i class="fa-solid fa-qrcode"></i>
+      Ver QR Code Pix
+    </button>
+  </div>
+
+  <!-- Banner de inadimplência (prioridade sobre cobrança pendente) -->
+  <div class="banner-inadimplencia" *ngIf="assinaturaInadimplente">
+    <div class="banner-inadimplencia__icon">
+      <i class="fa-solid fa-triangle-exclamation"></i>
+    </div>
+    <div class="banner-inadimplencia__content">
+      <strong>Sua organização está inadimplente</strong>
+      <p>
+        O pagamento do seu plano não foi identificado.
+        Regularize sua situação para evitar a suspensão do acesso ao sistema.
+      </p>
+      <p class="banner-inadimplencia__prazo" *ngIf="dataLimiteAcesso">
+        <i class="fa-solid fa-clock"></i>
+        Você tem acesso até <strong>{{ dataLimiteAcesso | date:'dd/MM/yyyy' }}</strong>
+        <span *ngIf="diasRestantes > 0">({{ diasRestantes }} {{ diasRestantes === 1 ? 'dia restante' : 'dias restantes' }})</span>
+        <span *ngIf="diasRestantes === 0" class="banner-inadimplencia__urgente">— acesso pode ser suspenso a qualquer momento</span>
+      </p>
+    </div>
+    <button class="banner-inadimplencia__action" (click)="navegarPara('/minha-assinatura')">
+      <i class="fa-solid fa-credit-card"></i>
+      Regularizar
+    </button>
+  </div>
+
   <!-- ================================================================
        Dashboard Administrativo (Super Admin, Admin)
        ================================================================ -->
   <div class="dashboard-grid" *ngIf="ControleAcessoService.isDashboardAdministrativo()">
 
-    <!-- Cards de Estatísticas Rápidas -->
-    <section class="dashboard-stats">
-      <div class="hc-stat-card">
-        <div class="hc-stat-card__icon hc-stat-card__icon--primary">
-          <i class="fa-solid fa-calendar-check"></i>
-        </div>
-        <div class="hc-stat-card__content">
-          <span class="hc-stat-card__value">{{ carregandoEstatisticas ? '--' : consultasHoje }}</span>
-          <span class="hc-stat-card__label">Total de Consultas</span>
+    <!-- Carrossel de Cards de Estatísticas -->
+    <section class="stats-carousel" *ngIf="cardsVisiveis.length > 0">
+
+      <div class="stats-carousel__header">
+        <span class="stats-carousel__title">
+          <i class="fa-solid fa-chart-simple"></i>
+          Estatísticas
+        </span>
+        <div class="stats-carousel__controls">
+          <span class="stats-carousel__counter">
+            {{ carrosselOffset + 1 }}–{{ minVal(carrosselOffset + CARDS_POR_PAGINA, cardsVisiveis.length) }}
+            de {{ cardsVisiveis.length }}
+          </span>
+          <button class="stats-carousel__btn"
+                  (click)="carrosselAnterior()"
+                  [disabled]="!podePrev"
+                  aria-label="Anterior">
+            <i class="fa-solid fa-chevron-left"></i>
+          </button>
+          <button class="stats-carousel__btn"
+                  (click)="carrosselProximo()"
+                  [disabled]="!podeNext"
+                  aria-label="Próximo">
+            <i class="fa-solid fa-chevron-right"></i>
+          </button>
         </div>
       </div>
 
-      <div class="hc-stat-card">
-        <div class="hc-stat-card__icon hc-stat-card__icon--success">
-          <i class="fa-solid fa-user-check"></i>
-        </div>
-        <div class="hc-stat-card__content">
-          <span class="hc-stat-card__value">{{ carregandoEstatisticas ? '--' : consultasAtendidas }}</span>
-          <span class="hc-stat-card__label">Atendidos</span>
+      <!-- Grade de até 5 cards visíveis -->
+      <div class="stats-carousel__grid">
+        <div class="sc-card sc-card--{{ card.cor }}"
+             *ngFor="let card of cardsNaPagina"
+             [@cardSlide]>
+
+          <div class="sc-card__accent"></div>
+
+          <div class="sc-card__icon">
+            <i class="fa-solid {{ card.icon }}"></i>
+          </div>
+
+          <div class="sc-card__content">
+            <span class="sc-card__value">
+              <ng-container *ngIf="carregandoEstatisticas">
+                <span class="sc-card__skeleton"></span>
+              </ng-container>
+              <ng-container *ngIf="!carregandoEstatisticas">
+                {{ getValorCard(card.tipo) }}
+              </ng-container>
+            </span>
+            <span class="sc-card__label">{{ card.label }}</span>
+          </div>
+
         </div>
       </div>
 
-      <div class="hc-stat-card">
-        <div class="hc-stat-card__icon hc-stat-card__icon--warning">
-          <i class="fa-solid fa-clock"></i>
-        </div>
-        <div class="hc-stat-card__content">
-          <span class="hc-stat-card__value">{{ carregandoEstatisticas ? '--' : consultasAguardando }}</span>
-          <span class="hc-stat-card__label">Aguardando</span>
-        </div>
-      </div>
-
-      <div class="hc-stat-card">
-        <div class="hc-stat-card__icon hc-stat-card__icon--info">
-          <i class="fa-solid fa-user-doctor"></i>
-        </div>
-        <div class="hc-stat-card__content">
-          <span class="hc-stat-card__value">{{ carregandoEstatisticas ? '--' : medicosAtivos }}</span>
-          <span class="hc-stat-card__label">Clínico Ativos</span>
-        </div>
-      </div>
     </section>
 
     <!-- Gráficos Principais -->
@@ -245,7 +311,7 @@
             <span class="quick-action-btn__description">Ver consultas do dia</span>
           </button>
 
-          <button class="quick-action-btn quick-action-btn--info" (click)="navegarPara('/Dados-Medicos')">
+          <button class="quick-action-btn quick-action-btn--info" (click)="navegarPara('/dadospessoais')">
             <div class="quick-action-btn__icon">
               <i class="fa-solid fa-user-doctor"></i>
             </div>

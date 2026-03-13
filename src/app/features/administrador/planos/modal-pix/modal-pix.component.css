@@ -1,0 +1,104 @@
+.modal-pix-container {
+  padding: 8px;
+}
+
+.pix-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.valor-destaque {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.valor-destaque .label {
+  font-size: 1rem;
+  color: #666;
+}
+
+.valor-destaque .valor {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #1976d2;
+}
+
+.vencimento {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.qrcode-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px 0;
+}
+
+.qrcode-container h4 {
+  margin-bottom: 12px;
+  color: #555;
+}
+
+.qrcode-img {
+  width: 220px;
+  height: 220px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+}
+
+.copia-cola-container {
+  padding: 16px 0;
+}
+
+.copia-cola-container h4 {
+  margin-bottom: 8px;
+  color: #555;
+}
+
+.copia-cola-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pix-textarea {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 0.8rem;
+  resize: none;
+  background-color: #f5f5f5;
+  box-sizing: border-box;
+}
+
+.txid-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 8px;
+  background: #f5f5f5;
+  border-radius: 4px;
+}
+
+.txid-info .label {
+  font-size: 0.75rem;
+  color: #888;
+  font-weight: 600;
+}
+
+.txid-info .txid {
+  font-size: 0.75rem;
+  color: #555;
+  font-family: monospace;
+}

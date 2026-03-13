@@ -88,7 +88,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let msg of mensagens" [class.row--falha]="msg.status === 'FALHOU' && !msg.adminNotificado">
+          <tr *ngFor="let msg of mensagens" [class.row--falha]="msg.status === 'FALHOU' && !msg.adminNotificado" (click)="abrirDetalhe(msg)" style="cursor: pointer;">
             <td class="col-id">#{{ msg.id }}</td>
             <td class="col-destinatario">
               <div class="destinatario-info">
@@ -110,13 +110,10 @@
             </td>
             <td class="col-data">{{ formatarData(msg.dataCriacao) }}</td>
             <td class="col-acoes">
-              <button class="action-btn action-btn--view" (click)="abrirDetalhe(msg)" title="Ver detalhes">
-                <i class="fa-solid fa-eye"></i>
-              </button>
               <button
                 class="action-btn action-btn--notify"
                 *ngIf="msg.status === 'FALHOU' && !msg.adminNotificado"
-                (click)="marcarComoNotificado(msg)"
+                (click)="marcarComoNotificado(msg); $event.stopPropagation()"
                 [disabled]="isNotificando"
                 title="Marcar como notificado">
                 <i class="fa-solid fa-bell"></i>
@@ -150,15 +147,30 @@
 
 </div>
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <!-- Modal de Detalhe -->
-<div class="modal-overlay" *ngIf="mostrarDetalhe" (click)="fecharDetalhe()">
+<div class="modal-overlay" *ngIf="mostrarDetalhe && mensagemSelecionada" (click)="fecharDetalhe()">
   <div class="modal-dialog" (click)="$event.stopPropagation()">
     <div class="modal-header">
       <div class="modal-header-info">
         <i class="fa-solid fa-envelope-open-text"></i>
         <h2>Detalhes da Mensagem #{{ mensagemSelecionada?.id }}</h2>
       </div>
-      <button class="modal-close" (click)="fecharDetalhe()">
+      <button class="modal-close" (click)="fecharDetalhe()" aria-label="Fechar modal">
         <i class="fa-solid fa-xmark"></i>
       </button>
     </div>
@@ -235,15 +247,36 @@
       <!-- Corpo da mensagem -->
       <div class="detail-section">
         <h3 class="section-title">
-          <i class="fa-solid fa-file-lines"></i> Conteúdo Registrado
+          <i class="fa-solid fa-file-lines"></i> Conteúdo da Mensagem
         </h3>
-        <div class="message-body-box">{{ mensagemSelecionada.corpoMensagem }}</div>
+        
+        <!-- Visualização do HTML -->
+        <div *ngIf="isHtml(mensagemSelecionada.corpoMensagem) && mensagemSelecionada.corpoMensagem" 
+             class="preview-container">
+          <iframe [src]="getSafeHtmlUrl(mensagemSelecionada.corpoMensagem)" 
+                  class="html-preview-frame"
+                  sandbox="allow-same-origin allow-forms"></iframe>
+        </div>
+        <div *ngIf="!isHtml(mensagemSelecionada.corpoMensagem) && mensagemSelecionada.corpoMensagem" 
+             class="message-body-box">
+          {{ truncateText(mensagemSelecionada.corpoMensagem) }}
+        </div>
+        <div *ngIf="!mensagemSelecionada.corpoMensagem" class="message-body-box">
+          <em>Sem conteúdo registrado</em>
+        </div>
       </div>
 
     </div>
 
     <div class="modal-footer">
       <button class="btn btn--secondary" (click)="fecharDetalhe()">Fechar</button>
+      <button
+        class="btn btn--primary"
+        (click)="reenviarMensagem(mensagemSelecionada!)"
+        [disabled]="isReenviando">
+        <i class="fa-solid fa-paper-plane" [class.fa-spin]="isReenviando"></i>
+        {{ isReenviando ? 'Reenviando...' : 'Reenviar Mensagem' }}
+      </button>
       <button
         class="btn btn--warning"
         *ngIf="mensagemSelecionada?.status === 'FALHOU' && !mensagemSelecionada?.adminNotificado"

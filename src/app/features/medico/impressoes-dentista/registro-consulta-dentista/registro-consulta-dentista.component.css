@@ -1,380 +1,222 @@
 /* =============================================================================
-   REGISTRO DE CONSULTA ODONTOLÓGICA - LAYOUT EXECUTIVO
+   REGISTRO DE CONSULTA ODONTOLÓGICA — LAYOUT COMPACTO
    ============================================================================= */
 
 .registro-container {
-  background: var(--bg-card, #ffffff);
-  border-radius: 16px;
+  background: #fff;
   overflow: hidden;
   max-height: 90vh;
   display: flex;
   flex-direction: column;
 }
 
-/* =============================================================================
-   HEADER DO DIALOG
-   ============================================================================= */
+/* ── HEADER DO DIALOG ──────────────────────────────────────────────────────── */
 .dialog-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 20px 24px;
-  background: linear-gradient(135deg, #0066CC 0%, #0052a3 100%);
+  padding: 10px 16px;
+  background: #374151;
   color: white;
 }
-
-.header-info {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
+.header-info { display: flex; align-items: center; gap: 10px; }
 .header-icon {
-  width: 50px;
-  height: 50px;
-  background: rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(10px);
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 22px;
+  width: 32px; height: 32px;
+  background: rgba(255,255,255,0.15);
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px;
 }
-
-.header-text {
-  flex: 1;
-}
-
-.header-title {
-  margin: 0;
-  font-size: 20px;
-  font-weight: bold;
-  color: white;
-}
-
-.header-subtitle {
-  margin: 4px 0 0;
-  font-size: 14px;
-  color: rgba(255, 255, 255, 0.8);
-}
-
+.header-text { flex: 1; }
+.header-title { margin: 0; font-size: 13px; font-weight: bold; color: white; }
+.header-subtitle { margin: 2px 0 0; font-size: 9px; color: rgba(255,255,255,0.7); }
 .close-btn {
-  width: 36px;
-  height: 36px;
-  border: none;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
-  color: white;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 16px;
-  transition: all 0.2s ease;
+  width: 28px; height: 28px; border: none;
+  background: rgba(255,255,255,0.1); border-radius: 6px;
+  color: white; cursor: pointer; display: flex;
+  align-items: center; justify-content: center; font-size: 13px;
+  transition: background 0.2s;
 }
+.close-btn:hover { background: rgba(255,255,255,0.25); }
 
-.close-btn:hover {
-  background: rgba(255, 255, 255, 0.3);
-  transform: scale(1.05);
-}
+/* ── BODY ──────────────────────────────────────────────────────────────────── */
+.dialog-body { flex: 1; overflow-y: auto; padding: 8px; background: #f3f4f6; }
 
-/* =============================================================================
-   BODY DO DIALOG
-   ============================================================================= */
-.dialog-body {
-  flex: 1;
-  overflow-y: auto;
-  padding: 20px;
-  background: #f8f9fa;
-}
-
-/* =============================================================================
-   CONTEÚDO DO PDF
-   ============================================================================= */
+/* ── PDF CONTENT ───────────────────────────────────────────────────────────── */
 .pdf-content {
   background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
   overflow: hidden;
   font-family: 'Helvetica', Arial, sans-serif;
 }
 
-/* Cabeçalho do PDF */
+/* ── CABEÇALHO PDF ─────────────────────────────────────────────────────────── */
 .pdf-header {
-  background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
-  padding: 15px 20px;
+  background: #2c3e50;
+  padding: 6px 12px;
   text-align: center;
   color: white;
 }
-
 .pdf-title {
   margin: 0;
-  font-size: 16px;
+  font-size: 12.5px;
   font-weight: bold;
   color: white;
-  letter-spacing: 1px;
+  letter-spacing: 0.8px;
+}
+.pdf-subtitle {
+  margin: 1px 0 0;
+  font-size: 8.5px;
+  color: #cbd5e1;
 }
 
-/* =============================================================================
-   SEÇÕES DO DOCUMENTO
-   ============================================================================= */
-.pdf-section {
-  margin-bottom: 0;
-  border-bottom: 1px solid #f0f0f0;
-}
-
-.pdf-section:last-of-type {
-  border-bottom: none;
-}
-
+/* ── SEÇÃO HEADER ──────────────────────────────────────────────────────────── */
 .section-header {
-  background: #f8f9fa;
-  height: 24px;
   display: flex;
   align-items: center;
-  padding: 0 12px;
-  border-bottom: 1px solid #e5e7eb;
-  position: relative;
+  background: #f8f9fa;
+  height: 16px;
+  padding: 0;
+  border-bottom: 1px solid #d1d5db;
 }
-
-.section-header--executive {
-  border-left: 8px solid #6b7280;
+.section-bar {
+  width: 3px;
+  height: 100%;
+  background: #6b7280;
+  flex-shrink: 0;
 }
-
-.section-header h2 {
-  margin: 0;
-  font-size: 11px;
+.section-title {
+  font-size: 8.5px;
   font-weight: bold;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  font-family: Arial, sans-serif;
+  letter-spacing: 0.4px;
+  color: #374151;
+  margin-left: 6px;
 }
 
-.section-header--executive h2 {
+/* ── TABELA DE DADOS ───────────────────────────────────────────────────────── */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: auto;
+}
+.data-table .cell {
+  font-size: 9.5px;
   color: #1f2937;
+  padding: 2px 6px;
+  border: 1px solid #d1d5db;
+  line-height: 1.3;
+  word-wrap: break-word;
+  white-space: pre-wrap;
 }
-
-.section-content {
-  padding: 8px 12px;
-}
-
-/* Layout Horizontal */
-.section-content--horizontal {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  align-items: flex-start;
-}
-
-.section-content--horizontal .pdf-field {
-  flex: 1;
-  min-width: 120px;
-  display: flex;
-  flex-direction: column;
-  padding: 4px 0;
-}
-
-.section-content--horizontal .field-label {
-  font-size: 7px;
+.data-table .cell strong {
   font-weight: bold;
-  color: #666;
+  color: #374151;
+}
+.data-table .cell--header {
+  font-size: 8.5px;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: #6b7280;
+  background: #f3f4f6;
+  letter-spacing: 0.3px;
+}
+
+/* ── CAMPOS INLINE (linhas) ────────────────────────────────────────────────── */
+.inline-field {
+  font-size: 9.5px;
+  color: #1f2937;
+  line-height: 1.3;
+  padding: 2px 6px;
+  border: 1px solid #d1d5db;
+  border-top: none;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+}
+.inline-field:first-of-type {
+  border-top: 1px solid #d1d5db;
+}
+.inline-field strong {
+  font-weight: bold;
+  color: #374151;
+}
+
+/* ── RODAPÉ PDF ────────────────────────────────────────────────────────────── */
+.pdf-footer {
+  padding: 4px 8px;
+  border-top: 1px solid #d1d5db;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.footer-date {
+  font-size: 7.5px;
+  color: #9ca3af;
+  font-style: italic;
+}
+.footer-info {
+  font-size: 7.5px;
+  color: #9ca3af;
   text-transform: uppercase;
   letter-spacing: 0.3px;
-  margin-bottom: 2px;
 }
 
-.section-content--horizontal .field-value {
-  font-size: 9px;
-  color: #000;
-  word-break: break-word;
-  line-height: 1.3;
-}
-
-/* Layout Vertical */
-.section-content--vertical {
-  display: block;
-}
-
-/* Campos padrão */
-.pdf-field {
-  display: flex;
-  align-items: center;
-  padding: 6px 0;
-  border-bottom: 1px solid #f0f0f0;
-}
-
-.pdf-field:last-child {
-  border-bottom: none;
-}
-
-.field-label {
-  font-size: 9px;
-  font-weight: bold;
-  text-transform: uppercase;
-  color: #666;
-  min-width: 120px;
-  letter-spacing: 0.5px;
-}
-
-.field-value {
-  font-size: 11px;
-  color: #000;
-  line-height: 1.4;
-  flex: 1;
-}
-
-/* Conteúdo Clínico */
-.clinical-content {
-  font-size: 9px;
-  line-height: 1.5;
-  color: #333;
-  white-space: pre-wrap;
-  padding: 8px 12px;
-  background: #fafafa;
-  border-radius: 4px;
-  border: 1px solid #f0f0f0;
-  min-height: 30px;
-}
-
-/* =============================================================================
-   RODAPÉ
-   ============================================================================= */
-.pdf-footer {
-  padding: 12px 16px;
-  border-top: 1px solid #f0f0f0;
-}
-
-.footer-line {
-  width: 100%;
-  height: 1px;
-  background: #3498db;
-  margin-bottom: 8px;
-}
-
-.footer-date {
-  font-size: 8px;
-  color: #888;
-  font-style: italic;
-  margin-bottom: 4px;
-}
-
-.footer-info {
-  font-size: 7px;
-  color: #999;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-/* =============================================================================
-   FOOTER DO DIALOG
-   ============================================================================= */
+/* ── FOOTER DIALOG ─────────────────────────────────────────────────────────── */
 .dialog-footer {
-  padding: 16px 24px;
+  padding: 8px 16px;
   background: #f8f9fa;
-  border-top: 1px solid #e9ecef;
+  border-top: 1px solid #e5e7eb;
   display: flex;
-  gap: 12px;
+  gap: 8px;
   justify-content: flex-end;
 }
-
 .btn {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 20px;
+  gap: 6px;
+  padding: 6px 14px;
   border: none;
-  border-radius: 10px;
-  font-size: 14px;
+  border-radius: 6px;
+  font-size: 11px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
 }
-
 .btn--primary {
-  background: linear-gradient(135deg, #0066CC 0%, #0052a3 100%);
+  background: #374151;
   color: white;
 }
-
 .btn--primary:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(0, 102, 204, 0.4);
+  background: #1f2937;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
 }
-
 .btn--secondary {
   background: #f3f4f6;
   color: #6b7280;
 }
-
 .btn--secondary:hover {
   background: #e5e7eb;
   color: #374151;
 }
 
-/* =============================================================================
-   RESPONSIVIDADE
-   ============================================================================= */
+/* ── RESPONSIVIDADE ────────────────────────────────────────────────────────── */
 @media (max-width: 768px) {
-  .dialog-header {
-    padding: 16px 20px;
-  }
-
-  .dialog-body {
-    padding: 16px;
-  }
-
-  .pdf-title {
-    font-size: 13px;
-  }
-
-  .section-header h2 {
-    font-size: 10px;
-  }
-
-  .section-content--horizontal .field-label {
-    font-size: 6px;
-  }
-
-  .section-content--horizontal .field-value {
-    font-size: 8px;
-  }
-
-  .clinical-content {
-    font-size: 8px;
-  }
+  .dialog-header { padding: 8px 12px; }
+  .dialog-body { padding: 6px; }
+  .pdf-title { font-size: 10px; }
+  .section-title { font-size: 6px; }
+  .data-table .cell { font-size: 8.5px; }
+  .inline-field { font-size: 8.5px; }
 }
 
 @media (max-width: 600px) {
-  .dialog-footer {
-    flex-direction: column;
-  }
-
-  .btn {
-    width: 100%;
-    justify-content: center;
-  }
+  .dialog-footer { flex-direction: column; }
+  .btn { width: 100%; justify-content: center; }
 }
 
-/* =============================================================================
-   IMPRESSÃO
-   ============================================================================= */
+/* ── IMPRESSÃO ─────────────────────────────────────────────────────────────── */
 @media print {
-
-  .dialog-header,
-  .dialog-footer {
-    display: none;
-  }
-
-  .dialog-body {
-    padding: 0;
-    background: white;
-  }
-
-  .pdf-content {
-    box-shadow: none;
-    border-radius: 0;
-  }
-
-  .pdf-section {
-    page-break-inside: avoid;
-  }
+  .dialog-header, .dialog-footer { display: none; }
+  .dialog-body { padding: 0; background: white; }
+  .pdf-content { box-shadow: none; }
 }

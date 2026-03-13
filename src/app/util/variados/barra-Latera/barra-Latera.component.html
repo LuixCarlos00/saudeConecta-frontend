@@ -39,6 +39,13 @@
       </li>
 
       <!-- ========== MENU SUPER ADMIN / ADMIN ========== -->
+        <li class="nav-item" *ngIf="ControleAcessoService.podeVerMenuAgenda()"
+            [class.active]="activeRoute === 'gerenciamento'">
+            <button class="nav-link" (click)="navigateTo('gerenciamento')" title="Gerenciamento de Agenda">
+                <i class="fa-solid fa-calendar-check nav-icon"></i>
+                <span class="nav-text">Agenda</span>
+            </button>
+        </li>
 
       <!-- Gerenciamento de Usuários - Super Admin, Admin -->
       <li class="nav-item" *ngIf="ControleAcessoService.podeVerMenuUsuarios()"
@@ -50,13 +57,7 @@
       </li>
 
       <!-- Gerenciamento de Agenda - Admin apenas -->
-      <li class="nav-item" *ngIf="ControleAcessoService.podeVerMenuAgenda()"
-        [class.active]="activeRoute === 'gerenciamento'">
-        <button class="nav-link" (click)="navigateTo('gerenciamento')" title="Gerenciamento de Agenda">
-          <i class="fa-solid fa-calendar-check nav-icon"></i>
-          <span class="nav-text">Agenda</span>
-        </button>
-      </li>
+
 
       <!-- Mensageria - Admin apenas -->
       <li class="nav-item" *ngIf="ControleAcessoService.podeVerMenuMensageria()"
@@ -64,6 +65,24 @@
         <button class="nav-link" (click)="navigateTo('Mensageria')" title="Mensageria">
           <i class="fa-solid fa-envelope nav-icon"></i>
           <span class="nav-text">Mensageria</span>
+        </button>
+      </li>
+
+      <!-- Gerenciar Planos - Super Admin apenas -->
+      <li class="nav-item" *ngIf="ControleAcessoService.isSuperAdmin()"
+        [class.active]="activeRoute === 'GerenciarPlanos'">
+        <button class="nav-link" (click)="navigateTo('GerenciarPlanos')" title="Gerenciar Planos">
+          <i class="fa-solid fa-layer-group nav-icon"></i>
+          <span class="nav-text">Gerenciar Planos</span>
+        </button>
+      </li>
+
+      <!-- Minha Assinatura - Admin Org -->
+      <li class="nav-item" *ngIf="ControleAcessoService.isAdmin() && !ControleAcessoService.isSuperAdmin()"
+        [class.active]="activeRoute === 'MinhaAssinatura'">
+        <button class="nav-link" (click)="navigateTo('MinhaAssinatura')" title="Minha Assinatura">
+          <i class="fa-solid fa-file-contract nav-icon"></i>
+          <span class="nav-text">Minha Assinatura</span>
         </button>
       </li>
 

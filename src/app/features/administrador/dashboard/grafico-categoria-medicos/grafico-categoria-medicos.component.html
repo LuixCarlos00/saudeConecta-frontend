@@ -1,6 +1,27 @@
-<!-- grafico-categoria-medicos.component.html -->
-<div>
-  <label style="font-weight: bold; font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;">Total de
-    Clínico: {{ totalMedicos }}</label>
+<div class="especialidade-container">
+  <!-- Resumo -->
+  <div class="especialidade-resumo" *ngIf="!isLoading && !hasError && totalClinicos > 0">
+    <span class="especialidade-resumo-total">{{ totalClinicos }}</span>
+    <span class="especialidade-resumo-label">clínicos em {{ especialidades.length }} especialidade{{ especialidades.length !== 1 ? 's' : '' }}</span>
+  </div>
+
+  <!-- Loading -->
+  <div class="especialidade-status" *ngIf="isLoading">
+    <i class="fa-solid fa-spinner fa-spin"></i> Carregando...
+  </div>
+
+  <!-- Erro -->
+  <div class="especialidade-status especialidade-status--erro" *ngIf="hasError && !isLoading">
+    <i class="fa-solid fa-triangle-exclamation"></i> Não foi possível carregar os dados.
+  </div>
+
+  <!-- Gráfico de barras horizontais -->
+  <div class="especialidade-chart-wrapper" [style.display]="isLoading || hasError || especialidades.length === 0 ? 'none' : 'block'">
+    <canvas #especialidadeCanvas></canvas>
+  </div>
+
+  <!-- Vazio -->
+  <div class="especialidade-status" *ngIf="!isLoading && !hasError && especialidades.length === 0">
+    <i class="fa-solid fa-user-doctor"></i> Nenhum clínico cadastrado
+  </div>
 </div>
-<canvas #menuCanvas></canvas>

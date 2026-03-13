@@ -1,17 +1,32 @@
+import { ProfissionalApiService } from './../../../services/api/profissional-api.service';
+import { DashboardApiService } from 'src/app/services/api/dashboard-api.service';
+import { ConfiguracaoCardService } from 'src/app/services/api/configuracao-card.service';
 import { ControleAcessoApiService } from 'src/app/services/api/controle-acesso-api.service';
+import { AssinaturaApiService } from 'src/app/services/api/assinatura-api.service';
+import { CobrancaApiService } from 'src/app/services/api/cobranca-api.service';
+import { AssinaturaTenant, CobrancaTenant } from 'src/app/util/variados/interfaces/planos/PlanoAssinatura';
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { trigger, transition, style, animate } from '@angular/animations';
 import { Router } from '@angular/router';
 import { ThemeService } from 'src/app/services/theme/theme.service';
 import { Subscription, forkJoin } from 'rxjs';
 import { ConsultaApiService } from 'src/app/services/api/consulta-api.service';
 import { tokenService } from 'src/app/util/Token/Token.service';
 import { ConfiguracaoGraficoDashboardService } from 'src/app/core/services/configuracao-grafico-dashboard.service';
-import { ConfiguracaoGraficoDashboard, TipoGraficoDashboard } from 'src/app/shared/models/configuracao-grafico-dashboard.interface';
+import { ConfiguracaoGraficoDashboard, TipoGraficoDashboard, TipoCardDashboard } from 'src/app/shared/models/configuracao-grafico-dashboard.interface';
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
+  animations: [
+    trigger('cardSlide', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'translateY(12px)' }),
+        animate('220ms ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
+      ])
+    ])
+  ]
 })
 export class DashboardComponent implements OnInit, OnDestroy {
   today = new Date();
@@ -24,6 +39,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
   consultasAguardando: number = 0;
   medicosAtivos: number = 0;
   consultasSemana: number = 0;
+  canceladosSemana: number = 0;
+  confirmadosSemana: number = 0;
   carregandoEstatisticas: boolean = true;
 
   // Configurações de Gráficos
@@ -31,8 +48,36 @@ export class DashboardComponent implements OnInit, OnDestroy {
   graficosAtivos: Map<TipoGraficoDashboard, boolean> = new Map();
   carregandoConfiguracoes: boolean = true;
 
-  // Expor enum para o template
+  // Configurações de Cards
+  cardsAtivos: Map<TipoCardDashboard, boolean> = new Map();
+  carregandoCards: boolean = true;
+
+  // Carrossel de cards
+  carrosselOffset: number = 0;
+  readonly CARDS_POR_PAGINA = 5;
+
+  // Status da assinatura (banner de inadimplência)
+  assinaturaInadimplente = false;
+  dataLimiteAcesso: Date | null = null;
+  diasRestantes: number = 0;
+
+  // Cobrança pendente (banner de pagamento)
+  cobrancaPendente: CobrancaTenant | null = null;
+  diasRestantesPagamento: number = 0;
+
+  // Expor enums para o template
   TipoGraficoDashboard = TipoGraficoDashboard;
+  TipoCardDashboard = TipoCardDashboard;
+
+  readonly todosCards = [
+    { tipo: TipoCardDashboard.CONSULTAS_HOJE,       icon: 'fa-calendar-check',  cor: 'blue',   label: 'Total Hoje' },
+    { tipo: TipoCardDashboard.CONSULTAS_ATENDIDAS,  icon: 'fa-user-check',      cor: 'green',  label: 'Atendidos' },
+    { tipo: TipoCardDashboard.CONSULTAS_AGUARDANDO, icon: 'fa-clock',           cor: 'orange', label: 'Aguardando' },
+    { tipo: TipoCardDashboard.MEDICOS_ATIVOS,       icon: 'fa-user-doctor',     cor: 'cyan',   label: 'Cl\u00ednicos Ativos' },
+    { tipo: TipoCardDashboard.CONSULTAS_SEMANA,     icon: 'fa-calendar-week',   cor: 'purple', label: 'Esta Semana' },
+    { tipo: TipoCardDashboard.CANCELADOS_SEMANA,    icon: 'fa-calendar-xmark',  cor: 'red',    label: 'Cancelados (Semana)' },
+    { tipo: TipoCardDashboard.CONFIRMADOS_SEMANA,   icon: 'fa-calendar-check',  cor: 'teal',   label: 'Confirmados (Semana)' },
+  ];
 
   constructor(
     public ControleAcessoService: ControleAcessoApiService,
@@ -40,7 +85,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
     public themeService: ThemeService,
     private consultaApiService: ConsultaApiService,
     private tokenService: tokenService,
-    private configuracaoGraficoService: ConfiguracaoGraficoDashboardService
+    private configuracaoGraficoService: ConfiguracaoGraficoDashboardService,
+    private profissionalApiService: ProfissionalApiService,
+    private configuracaoCardService: ConfiguracaoCardService,
+    private dashboardApiService: DashboardApiService,
+    private assinaturaApiService: AssinaturaApiService,
+    private cobrancaApiService: CobrancaApiService
   ) { }
 
   ngOnInit(): void {
@@ -48,7 +98,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
       (theme) => this.isDarkMode = theme.isDark
     );
     this.carregarConfiguracoesGraficos();
+    this.carregarConfiguracoesCards();
     this.carregarEstatisticas();
+    this.verificarStatusAssinatura();
   }
 
   ngOnDestroy(): void {
@@ -63,22 +115,25 @@ export class DashboardComponent implements OnInit, OnDestroy {
     }
   }
 
+
+  
   private carregarEstatisticasAdmin(): void {
     console.log('Carregando estatísticas para dashboard administrativo');
     this.carregandoEstatisticas = true;
     const organizacaoId = this.tokenService.obterOrganizacaoId();
     console.log('Carregando estatísticas para organização ID:', organizacaoId);
-    if (organizacaoId) {// Se o usuario tiver um ID de organização, carrega as estatísticas específicas da organização
+    if (organizacaoId) {
       forkJoin({
-        consultasHoje: this.consultaApiService.buscarEstatisticasConsultasHojePorOrganizacao(organizacaoId),
-        consultasAtendidas: this.consultaApiService.buscarEstatisticasRealizadasHojePorOrganizacao(organizacaoId),
-        consultasAguardando: this.consultaApiService.buscarEstatisticasAgendadasHojePorOrganizacao(organizacaoId),
-        medicosAtivos: this.consultaApiService.buscarEstatisticasMedicosAtivosPorOrganizacao(organizacaoId),
+        consultas: this.consultaApiService.getEstatisticasDashboardAdminOrg(organizacaoId),
+        medicosAtivos: this.profissionalApiService.getEstatisticasMedicosAtivosByOrg(organizacaoId),
       }).subscribe({
         next: (r) => {
-          this.consultasHoje = r.consultasHoje;
-          this.consultasAtendidas = r.consultasAtendidas;
-          this.consultasAguardando = r.consultasAguardando;
+          this.consultasHoje = r.consultas.consultasHoje;
+          this.consultasAtendidas = r.consultas.consultasAtendidas;
+          this.consultasAguardando = r.consultas.consultasAguardando;
+          this.consultasSemana = r.consultas.consultasSemana;
+          this.canceladosSemana = r.consultas.canceladosSemana;
+          this.confirmadosSemana = r.consultas.confirmadosSemana;
           this.medicosAtivos = r.medicosAtivos;
           this.carregandoEstatisticas = false;
         },
@@ -87,18 +142,19 @@ export class DashboardComponent implements OnInit, OnDestroy {
           this.carregandoEstatisticas = false;
         },
       });
-    } else {// Se não tiver um ID de organização, carrega as estatísticas globais (admin geral)
+    } else {
       forkJoin({
-        consultasHoje: this.consultaApiService.buscarEstatisticasConsultasHoje(),
-        consultasAtendidas: this.consultaApiService.buscarEstatisticasRealizadasHoje(),
-        consultasAguardando: this.consultaApiService.buscarEstatisticasAgendadasHoje(),
-        medicosAtivos: this.consultaApiService.buscarEstatisticasMedicosAtivos(),
+        consultas: this.dashboardApiService.getEstatisticasDashboardSuperAdmin(),
+        medicosAtivos: this.profissionalApiService.getEstatisticasMedicosAtivosGlobal(),
       }).subscribe({
         next: (r) => {
-          this.consultasHoje = r.consultasHoje;
-          this.consultasAtendidas = r.consultasAtendidas;
-          this.consultasAguardando = r.consultasAguardando;
-          this.medicosAtivos = r.medicosAtivos;
+          this.consultasHoje       = r.consultas.consultasHoje;
+          this.consultasAtendidas  = r.consultas.consultasAtendidas;
+          this.consultasAguardando = r.consultas.consultasAguardando;
+          this.consultasSemana     = r.consultas.consultasSemana;
+          this.canceladosSemana    = r.consultas.canceladosSemana;
+          this.confirmadosSemana   = r.consultas.confirmadosSemana;
+          this.medicosAtivos       = r.medicosAtivos;
           this.carregandoEstatisticas = false;
         },
         error: (erro) => {
@@ -124,22 +180,59 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   private carregarDadosPorUsuario(usuarioId: number): void {
     forkJoin({
-      consultasHoje: this.consultaApiService.buscarEstatisticasConsultasHojePorProfissional(usuarioId),
-      consultasAtendidas: this.consultaApiService.buscarEstatisticasRealizadasHojePorProfissional(usuarioId),
-      consultasAguardando: this.consultaApiService.buscarEstatisticasAgendadasHojePorProfissional(usuarioId),
-      consultasSemana: this.consultaApiService.buscarEstatisticasSemanaPorProfissional(usuarioId),
+      consultas: this.dashboardApiService.getEstatisticasDashboardProfissional(usuarioId),
     }).subscribe({
       next: (r) => {
-        this.consultasHoje = r.consultasHoje;
-        this.consultasAtendidas = r.consultasAtendidas;
-        this.consultasAguardando = r.consultasAguardando;
-        this.consultasSemana = r.consultasSemana;
+        this.consultasHoje       = r.consultas.consultasHoje;
+        this.consultasAtendidas  = r.consultas.consultasAtendidas;
+        this.consultasAguardando = r.consultas.consultasAguardando;
+        this.consultasSemana     = r.consultas.consultasSemana;
+        this.canceladosSemana    = r.consultas.canceladosSemana;
+        this.confirmadosSemana   = r.consultas.confirmadosSemana;
         this.carregandoEstatisticas = false;
       },
       error: (erro) => {
-        console.error('Erro ao carregar estatísticas do médico:', erro);
+        console.error('Erro ao carregar estatísticas do profissional:', erro);
         this.carregandoEstatisticas = false;
       },
+    });
+  }
+
+  /**
+   * Verifica o status da assinatura e cobrança pendente.
+   * - Banner de inadimplência: exibido quando status = INADIMPLENTE
+   * - Banner de pagamento: exibido quando há cobrança PENDENTE (gerada automaticamente dia 1º)
+   */
+  private verificarStatusAssinatura(): void {
+    if (this.ControleAcessoService.isSuperAdmin()) return;
+
+    forkJoin({
+      assinatura: this.assinaturaApiService.minhaAssinatura(),
+      cobranca: this.cobrancaApiService.buscarCobrancaPendenteAtual()
+    }).subscribe({
+      next: ({ assinatura, cobranca }) => {
+        // Banner de inadimplência
+        if (assinatura.status === 'INADIMPLENTE') {
+          this.assinaturaInadimplente = true;
+          const dataVencimento = new Date(assinatura.dataVencimento);
+          this.dataLimiteAcesso = new Date(dataVencimento);
+          this.dataLimiteAcesso.setDate(this.dataLimiteAcesso.getDate() + 10);
+
+          const hoje = new Date();
+          const diffMs = this.dataLimiteAcesso.getTime() - hoje.getTime();
+          this.diasRestantes = Math.max(0, Math.ceil(diffMs / (1000 * 60 * 60 * 24)));
+        }
+
+        // Banner de cobrança pendente (gerada automaticamente)
+        if (cobranca && cobranca.status === 'PENDENTE') {
+          this.cobrancaPendente = cobranca;
+          const dataVencimento = new Date(cobranca.dataVencimentoPix);
+          const hoje = new Date();
+          const diffMs = dataVencimento.getTime() - hoje.getTime();
+          this.diasRestantesPagamento = Math.max(0, Math.ceil(diffMs / (1000 * 60 * 60 * 24)));
+        }
+      },
+      error: (err) => console.warn('Não foi possível verificar status da assinatura:', err)
     });
   }
 
@@ -173,5 +266,66 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   isGraficoAtivo(tipo: TipoGraficoDashboard): boolean {
     return this.graficosAtivos.get(tipo) === true;
+  }
+
+  get cardsVisiveis() {
+    return this.todosCards.filter(c => this.isCardAtivo(c.tipo));
+  }
+
+  get cardsNaPagina() {
+    return this.cardsVisiveis.slice(this.carrosselOffset, this.carrosselOffset + this.CARDS_POR_PAGINA);
+  }
+
+  get podePrev(): boolean { return this.carrosselOffset > 0; }
+  get podeNext(): boolean { return this.carrosselOffset + this.CARDS_POR_PAGINA < this.cardsVisiveis.length; }
+
+  minVal(a: number, b: number): number { return Math.min(a, b); }
+
+  carrosselAnterior(): void {
+    if (this.podePrev) { this.carrosselOffset--; }
+  }
+
+  carrosselProximo(): void {
+    if (this.podeNext) { this.carrosselOffset++; }
+  }
+
+  getValorCard(tipo: TipoCardDashboard): number {
+    const map: Record<TipoCardDashboard, number> = {
+      [TipoCardDashboard.CONSULTAS_HOJE]:       this.consultasHoje,
+      [TipoCardDashboard.CONSULTAS_ATENDIDAS]:  this.consultasAtendidas,
+      [TipoCardDashboard.CONSULTAS_AGUARDANDO]: this.consultasAguardando,
+      [TipoCardDashboard.MEDICOS_ATIVOS]:       this.medicosAtivos,
+      [TipoCardDashboard.CONSULTAS_SEMANA]:     this.consultasSemana,
+      [TipoCardDashboard.CANCELADOS_SEMANA]:    this.canceladosSemana,
+      [TipoCardDashboard.CONFIRMADOS_SEMANA]:   this.confirmadosSemana,
+    };
+    return map[tipo] ?? 0;
+  }
+
+  isCardAtivo(tipo: TipoCardDashboard): boolean {
+    if (this.carregandoCards) { return true; }
+    return this.cardsAtivos.get(tipo) !== false;
+  }
+
+  private carregarConfiguracoesCards(): void {
+    this.carregandoCards = true;
+    this.configuracaoCardService.listarCardsAtivos().subscribe({
+      next: (configs) => {
+        this.cardsAtivos.clear();
+        Object.values(TipoCardDashboard).forEach(tipo =>
+          this.cardsAtivos.set(tipo as TipoCardDashboard, false)
+        );
+        configs.forEach(config =>
+          this.cardsAtivos.set(config.tipoCard as TipoCardDashboard, true)
+        );
+        this.carregandoCards = false;
+      },
+      error: () => {
+        Object.values(TipoCardDashboard).forEach(tipo =>
+          this.cardsAtivos.set(tipo as TipoCardDashboard, true)
+        );
+        this.carregandoCards = false;
+      },
+    });
   }
 }

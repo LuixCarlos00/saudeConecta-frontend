@@ -12,7 +12,7 @@ import { ProntuarioApiService } from 'src/app/services/api/prontuario-api.servic
 import { tokenService } from 'src/app/util/Token/Token.service';
 import { Usuario } from 'src/app/util/variados/interfaces/usuario/usuario';
 import { Tabela } from 'src/app/util/variados/interfaces/tabela/Tabela';
-import { CalendarDialogComponent } from 'src/app/util/variados/Cronologia/cronologia.component';
+import { CronologiaComponent } from 'src/app/util/variados/Cronologia/cronologia.component';
 import { ObservacoesComponent } from 'src/app/features/administrador/gerenciamento-agenda/agenda/Observacoes/Observacoes.component';
 import { ImprimirPrescricaoComponent } from '../impressoes/ImprimirPrescricao/ImprimirPrescricao.component';
 import { ImprimirSoliciatacaoDeExamesComponent } from '../impressoes/ImprimirSoliciatacaoDeExames/ImprimirSoliciatacaoDeExames.component';
@@ -26,11 +26,15 @@ import { Consultav2 } from 'src/app/util/variados/interfaces/consulta/consultav2
 import { Prontuario } from 'src/app/util/variados/interfaces/Prontuario/Prontuario';
 import { PrescricaoDentistaComponent } from '../impressoes-dentista/prescricao-dentista/prescricao-dentista.component';
 import { AtestadoDentistaComponent } from '../impressoes-dentista/atestado-dentista/atestado-dentista.component';
+import { EditarProntuarioDentistaComponent } from '../prontuario-dentista/editar-prontuario-dentista/editar-prontuario-dentista.component';
+import { ComprovantePagamentoDentistaComponent } from '../impressoes-dentista/comprovante-pagamento-dentista/comprovante-pagamento-dentista.component';
+import { QuestionarioSaudeDentistaComponent } from '../impressoes-dentista/questionario-saude-dentista/questionario-saude-dentista.component';
+import { PlanejamentoOdontologicoDentistaComponent } from '../impressoes-dentista/planejamento-odontologico-dentista/planejamento-odontologico-dentista.component';
 
-type TipoVisualizacao = 'AGENDADA' | 'REALIZADA';
+type TipoVisualizacao = 'CONFIRMADA' | 'REALIZADA';
 type TipoPeriodo = 'diario' | 'semanal' | 'mensal' | 'anual';
 
-const STATUS_AGENDADAS = ['AGENDADA'];
+const STATUS_AGENDADAS = ['CONFIRMADA'];
 const STATUS_FINALIZADAS = ['REALIZADA'];
 
 @Component({
@@ -95,7 +99,8 @@ export class AgendaMedicoGerenciamentoComponent implements OnInit, OnDestroy {
     try {
       const dados = await this.buscarConsultasPorPeriodo();
       if (Array.isArray(dados)) {
-        const tipoVisualizacao: TipoVisualizacao = this.Finalizadas ? 'REALIZADA' : 'AGENDADA';
+        console.log('Dados brutos recebidos do backend:', dados);
+        const tipoVisualizacao: TipoVisualizacao = this.Finalizadas ? 'REALIZADA' : 'CONFIRMADA';
         const consultasFiltradas = this.filtrarConsultasPorTipo(dados, tipoVisualizacao);
         this.dataSource = [...consultasFiltradas];
         console.log('this.dataSource', this.dataSource);
@@ -162,7 +167,7 @@ export class AgendaMedicoGerenciamentoComponent implements OnInit, OnDestroy {
   }
 
   CronogramaDoDia() {
-    this.dialog.open(CalendarDialogComponent, {
+    this.dialog.open(CronologiaComponent, {
       width: 'auto',
       maxWidth: 'auto',
       panelClass: 'cronologia-dialog',
@@ -234,7 +239,7 @@ export class AgendaMedicoGerenciamentoComponent implements OnInit, OnDestroy {
     const dialogRef = this.dialog.open(SelecaoRelatorioComponent, {
       maxWidth: 'auto',
       panelClass: 'selecao-relatorio-dialog',
-      data: { consulta: element, consultaNaoRealizada, isAdmin: false },
+      data: { consulta: element, consultaNaoRealizada, isAdmin: false, isProfissional: true },
     });
 
     dialogRef.afterClosed().subscribe((opcaoSelecionada: string) => {
@@ -279,6 +284,9 @@ export class AgendaMedicoGerenciamentoComponent implements OnInit, OnDestroy {
       case '2': this.dialog.open(PrescricaoDentistaComponent, { width: dialogWidth, height: dialogHeight, data: dados }); break;
       case '4': this.dialog.open(AtestadoDentistaComponent, { width: dialogWidth, height: dialogHeight, data: dados }); break;
       case '5': this.dialog.open(RegistroConsultaDentistaComponent, { width: dialogWidth, height: dialogHeight, data: dados }); break;
+      case '6': this.dialog.open(ComprovantePagamentoDentistaComponent, { width: dialogWidth, height: dialogHeight, data: dados }); break;
+      case '8': this.dialog.open(QuestionarioSaudeDentistaComponent, { width: dialogWidth, height: dialogHeight, data: dados }); break;
+      case '9': this.dialog.open(PlanejamentoOdontologicoDentistaComponent, { width: dialogWidth, height: dialogHeight, data: dados }); break;
     }
   }
 
@@ -297,6 +305,26 @@ export class AgendaMedicoGerenciamentoComponent implements OnInit, OnDestroy {
     });
   }
 
+  /**
+   * Abre o dialog de edição do prontuário odontológico.
+   * @param element Consulta selecionada (finalizada)
+   */
+  EditarProntuario(element: Consultav2): void {
+    const dialogRef = this.dialog.open(EditarProntuarioDentistaComponent, {
+      width: '90%',
+      maxWidth: '1200px',
+      height: '90%',
+      panelClass: 'editar-prontuario-dialog',
+      data: { consulta: element },
+    });
+
+    dialogRef.afterClosed().subscribe((atualizado: boolean) => {
+      if (atualizado) {
+        this.buscarDadosParaTabela();
+      }
+    });
+  }
+
   ImprimirHistoricoCompleto(dados: Consultav2) {
     const dialogConfig = { width: '60%', height: '90%', data: dados };
     if (this.UsuarioLogado.perfil === 'DENTISTA') {
@@ -307,7 +335,7 @@ export class AgendaMedicoGerenciamentoComponent implements OnInit, OnDestroy {
   }
 
   private filtrarConsultasPorTipo(dados: any[], tipo: TipoVisualizacao): any[] {
-    const statusPermitidos = tipo === 'AGENDADA' ? STATUS_AGENDADAS : STATUS_FINALIZADAS;
+    const statusPermitidos = tipo === 'CONFIRMADA' ? STATUS_AGENDADAS : STATUS_FINALIZADAS;
     return dados.filter((consulta) => statusPermitidos.includes(consulta.status));
   }
 

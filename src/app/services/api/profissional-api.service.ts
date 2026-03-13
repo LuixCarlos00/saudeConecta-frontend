@@ -10,6 +10,7 @@ import { environment } from 'src/environments/environment';
   providedIn: 'root'
 })
 export class ProfissionalApiService {
+ 
 
   private readonly apiUrl = `${environment.apiUrl}/profissionais`;
 
@@ -30,11 +31,12 @@ export class ProfissionalApiService {
     this.emitProfissionaisChange(profissionais);
   }
 
+
+
+
   // ==========================================
   // CRUD - NOVOS ENDPOINTS
   // ==========================================
-
-
 
   cadastraClinicoByOrg(profissional: any): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/cadastraClinicoByOrg`, profissional);
@@ -55,6 +57,30 @@ export class ProfissionalApiService {
 
   buscarTodosClinicosByOrg(): Observable<Profissional[]> {
     return this.http.get<Profissional[]>(`${this.apiUrl}`);
+  }
+
+  buscarPorOrganizacao(organizcaoId: number): Observable<Profissional[]> {
+    return this.http.get<Profissional[]>(`${environment.apiUrl}/profissionais/organizacao/${organizcaoId}`);
+  }
+
+  // ==========================================
+  // PESQUISA COM FILTRO DINÂMICO
+  // ==========================================
+
+  pesquisarComFiltro(option: number, pesquisa: string, filtro: string): Observable<any[]> {
+    const metodosBusca: { [key: number]: () => Observable<any[]> } = {
+      1: () => this.buscarPorNome(pesquisa, filtro),
+      2: () => this.buscarPorCRM(pesquisa, filtro),
+      3: () => this.buscarPorCidade(pesquisa, filtro),
+      4: () => this.buscarPorEspecialidade(pesquisa, filtro),
+      5: () => this.buscarTodos(filtro),
+    };
+
+    const metodo = metodosBusca[option];
+    if (!metodo) {
+      throw new Error('Filtro de pesquisa inválido.');
+    }
+    return metodo();
   }
 
   buscarPorCRM(crm: string, filtro: string = 'ALL'): Observable<any[]> {
@@ -78,88 +104,20 @@ export class ProfissionalApiService {
   }
 
 
+  //=============================================================
+  // BUSCAS DE ESTATISTICAS - Dashboard - Admin_ORGANIZACAO
+  //=============================================================
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-  buscarPorOrganizacao(organizacaoId: number): Observable<Profissional[]> {
-    return this.http.get<Profissional[]>(`${this.apiUrl}/organizacao/${organizacaoId}`);
-  }
-
-
-
-  buscarPorUsuarioId(usuarioId: number): Observable<Profissional> {
-    return this.http.get<Profissional>(`${this.apiUrl}/usuario/${usuarioId}`);
-  }
-
-
-
-
-
-  buscarMedicos(): Observable<Profissional[]> {
-    return this.http.get<Profissional[]>(`${this.apiUrl}/medicos`);
-  }
-
-  buscarDentistas(): Observable<Profissional[]> {
-    return this.http.get<Profissional[]>(`${this.apiUrl}/dentistas`);
-  }
-
-  buscarPorTipo(tipoCodigo: string): Observable<Profissional[]> {
-    return this.http.get<Profissional[]>(`${this.apiUrl}/tipo/${tipoCodigo}`);
-  }
-
-  contarAtivos(): Observable<number> {
-    return this.http.get<number>(`${this.apiUrl}/count`);
-  }
-
-  contarAtivosPorOrganizacao(organizacaoId: number): Observable<number> {
+  getEstatisticasMedicosAtivosByOrg(organizacaoId: number): Observable<number> {
     return this.http.get<number>(`${this.apiUrl}/estatisticas/organizacao/${organizacaoId}/medicos-ativos`);
   }
 
-  // ==========================================
-  // CRUD - ENDPOINTS LEGADOS
-  // ==========================================
+  //=============================================================
+  // BUSCAS DE ESTATISTICAS - Dashboard - SUPER_ADMIN (global)
+  //=============================================================
 
-
-
-
-  atualizarEndereco(enderecoId: number, endereco: any): Observable<any> {
-    return this.http.put<any>(`${environment.apiUrl}/endereco/atualizar/${enderecoId}`, endereco);
+  getEstatisticasMedicosAtivosGlobal(): Observable<number> {
+    return this.http.get<number>(`${this.apiUrl}/estatisticas/medicos-ativos`);
   }
 
-  // ==========================================
-  // BUSCAS LEGADAS
-  // ==========================================
-
-
-
-  // ==========================================
-  // PESQUISA COM FILTRO DINÂMICO
-  // ==========================================
-
-  pesquisarComFiltro(option: number, pesquisa: string, filtro: string): Observable<any[]> {
-    const metodosBusca: { [key: number]: () => Observable<any[]> } = {
-      1: () => this.buscarPorNome(pesquisa, filtro),
-      2: () => this.buscarPorCRM(pesquisa, filtro),
-      3: () => this.buscarPorCidade(pesquisa, filtro),
-      4: () => this.buscarPorEspecialidade(pesquisa, filtro),
-      5: () => this.buscarTodos(filtro),
-    };
-
-    const metodo = metodosBusca[option];
-    if (!metodo) {
-      throw new Error('Filtro de pesquisa inválido.');
-    }
-    return metodo();
-  }
 }

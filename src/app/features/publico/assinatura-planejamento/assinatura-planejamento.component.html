@@ -1,0 +1,142 @@
+<div class="assinatura-container">
+
+  <!-- LOADING -->
+  <div class="assinatura-loading" *ngIf="loading">
+    <div class="spinner"></div>
+    <p>Carregando planejamento...</p>
+  </div>
+
+  <!-- ERRO -->
+  <div class="assinatura-erro" *ngIf="erro && !loading">
+    <div class="erro-icon">
+      <i class="fa-solid fa-circle-xmark"></i>
+    </div>
+    <h2>Ops!</h2>
+    <p>{{ erro }}</p>
+  </div>
+
+  <!-- ENVIADO COM SUCESSO -->
+  <div class="assinatura-sucesso" *ngIf="enviado && !loading && !erro">
+    <div class="sucesso-icon">
+      <i class="fa-solid fa-circle-check"></i>
+    </div>
+    <h2>Assinatura Registrada!</h2>
+    <p>O planejamento terapêutico foi assinado com sucesso. Obrigado!</p>
+    <p class="sucesso-sub">Você já pode fechar esta página.</p>
+  </div>
+
+  <!-- CONTEÚDO -->
+  <div *ngIf="!loading && !erro && !enviado">
+
+    <!-- HEADER -->
+    <header class="assinatura-header">
+      <div class="header-logo">
+        <i class="fa-solid fa-file-signature"></i>
+      </div>
+      <div class="header-info">
+        <h1>Planejamento Terapêutico</h1>
+        <p *ngIf="clinicaNome">{{ clinicaNome }}</p>
+      </div>
+    </header>
+
+    <!-- INFO PACIENTE -->
+    <div class="assinatura-paciente" *ngIf="pacienteNome">
+      <div class="paciente-row">
+        <span class="paciente-label">Paciente:</span>
+        <span class="paciente-value">{{ pacienteNome }}</span>
+      </div>
+      <div class="paciente-row" *ngIf="profissionalNome">
+        <span class="paciente-label">Profissional:</span>
+        <span class="paciente-value">{{ profissionalNome }}</span>
+      </div>
+    </div>
+
+    <!-- TABELA DE PROCEDIMENTOS -->
+    <div class="assinatura-tabela">
+      <h3>
+        <i class="fa-solid fa-list-check"></i> Procedimentos Planejados
+      </h3>
+      <div class="tabela-wrapper">
+        <table class="procedimentos-table">
+          <thead>
+            <tr>
+              <th>Data</th>
+              <th>Procedimento</th>
+              <th>Valor</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of itens">
+              <td>{{ item.dataProcedimento }}</td>
+              <td>{{ item.procedimentoRealizado }}</td>
+              <td>R$ {{ item.valor | number:'1.2-2' }}</td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="2"><strong>Total</strong></td>
+              <td><strong>R$ {{ totalValor | number:'1.2-2' }}</strong></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+
+    <!-- DECLARAÇÃO -->
+    <div class="assinatura-declaracao">
+      <i class="fa-solid fa-info-circle"></i>
+      <p>Ao assinar abaixo, declaro que estou ciente dos procedimentos listados acima, seus respectivos valores e autorizo a realização dos mesmos.</p>
+    </div>
+
+    <!-- ASSINATURA DIGITAL — DIGITADA -->
+    <div class="assinatura-campo">
+      <h3>
+        <i class="fa-solid fa-signature"></i> Assinatura do Paciente
+      </h3>
+      <p class="campo-instrucao">Digite seu nome completo e escolha o estilo da assinatura.</p>
+
+      <div class="assinatura-input-group">
+        <input type="text" class="assinatura-input" [(ngModel)]="assinaturaNome"
+          (input)="onAssinaturaInput()" placeholder="Digite seu nome completo..." autocomplete="off" />
+        <button class="assinatura-limpar-btn" (click)="limparAssinatura()" *ngIf="assinaturaPreenchida">
+          <i class="fa-solid fa-eraser"></i> Limpar
+        </button>
+      </div>
+
+      <div class="assinatura-fontes">
+        <button *ngFor="let fonte of FONTES" class="fonte-option"
+          [class.fonte-option--active]="fonteSelecionada === fonte.id"
+          [style.font-family]="fonte.css"
+          (click)="selecionarFonte(fonte.id)">
+          {{ assinaturaNome || fonte.label }}
+        </button>
+      </div>
+
+      <div class="assinatura-preview" *ngIf="assinaturaPreenchida">
+        <div class="assinatura-preview-text" [style.font-family]="getFonteCss()">
+          {{ assinaturaNome }}
+        </div>
+      </div>
+      <div class="assinatura-preview assinatura-preview--vazio" *ngIf="!assinaturaPreenchida">
+        <span>Sua assinatura aparecerá aqui</span>
+      </div>
+
+      <canvas #canvasOculto style="display: none;"></canvas>
+
+      <p class="campo-aviso" *ngIf="!assinaturaPreenchida">
+        <i class="fa-solid fa-exclamation-triangle"></i>
+        A assinatura é obrigatória.
+      </p>
+    </div>
+
+    <!-- BOTÃO ASSINAR -->
+    <div class="assinatura-footer">
+      <button class="btn-assinar" [disabled]="!assinaturaPreenchida || enviando" (click)="assinarPlanejamento()">
+        <i class="fa-solid fa-check-circle" *ngIf="!enviando"></i>
+        <div class="spinner-sm" *ngIf="enviando"></div>
+        {{ enviando ? 'Enviando...' : 'Assinar Planejamento' }}
+      </button>
+    </div>
+
+  </div>
+</div>

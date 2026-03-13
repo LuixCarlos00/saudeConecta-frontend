@@ -13,28 +13,32 @@ export class ProntuarioDentistaApiService {
 
   constructor(private http: HttpClient) { }
 
-
   cadastrarProntuarioByOrg(payload: ProntuarioDentistaRequest) {
     return this.http.post(`${this.apiUrl}/cadastrarProntuarioByOrg`, payload);
   }
 
-
-  /**
-   * Busca o prontuário odontológico mais recente pelo ID da consulta.
-   * Usado em AbrirOpcoesImpressao junto com buscarProntuarioById do serviço médico.
-   */
   buscarProntuarioDentistaById(consultaId: number): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/consulta/${consultaId}/recente`);
   }
 
-  listarPorConsulta(consultaId: number): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/consulta/${consultaId}`);
+  /**
+   * Atualiza um prontuário odontológico existente.
+   * @param prontuarioId ID do prontuário
+   * @param payload Dados atualizados
+   */
+  atualizarProntuario(prontuarioId: number, payload: any): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/${prontuarioId}`, payload);
   }
 
-  listarPorProfissional(profissionalId: number): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/profissional/${profissionalId}`);
+  gerarLinkQuestionario(consultaId: number): Observable<{ token: string }> {
+    return this.http.post<{ token: string }>(`${this.apiUrl}/gerar-link-questionario/${consultaId}`, {});
   }
 
+  buscarQuestionarioSaude(consultaId: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/questionario-saude/${consultaId}`);
+  }
 
-
+  listarHistoricoPorPaciente(pacienteId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/paciente/${pacienteId}`);
+  }
 }

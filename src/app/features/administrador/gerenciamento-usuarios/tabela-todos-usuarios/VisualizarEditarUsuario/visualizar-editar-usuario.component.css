@@ -9,8 +9,8 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  border-radius: 0px;
 }
-
 /* ===== Header ===== */
 .dialog-header {
   padding: 8px 11px;

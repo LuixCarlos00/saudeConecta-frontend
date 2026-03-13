@@ -1,6 +1,6 @@
 import { NgModule, LOCALE_ID } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { registerLocaleData } from '@angular/common';
+import { registerLocaleData, DatePipe } from '@angular/common';
 import localePt from '@angular/common/locales/pt';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -27,11 +27,13 @@ import { SobreComponent } from './features/administrador/sobre/sobre.component';
 import { SuporteComponent } from './features/administrador/suporte/suporte.component';
 import { FilterPipe } from './shared/pipes/filter.pipe';
 import { MensageriaComponent } from './features/administrador/mensageria/mensageria.component';
+import { QuestionarioSaudeComponent } from './features/publico/questionario-saude/questionario-saude.component';
+import { AssinaturaPlanejamentoComponent } from './features/publico/assinatura-planejamento/assinatura-planejamento.component';
 
 registerLocaleData(localePt);
 
 @NgModule({
-  declarations: [AppComponent, LoginComponent, LandingPageComponent, BarraLateraComponent, ConfiguracoesSistemaComponent, SobreComponent, SuporteComponent, FilterPipe, MensageriaComponent],
+  declarations: [AppComponent, LoginComponent, LandingPageComponent, BarraLateraComponent, ConfiguracoesSistemaComponent, SobreComponent, SuporteComponent, FilterPipe, MensageriaComponent, QuestionarioSaudeComponent, AssinaturaPlanejamentoComponent],
   imports: [
     BrowserModule,
     CoreModule, // DEVE ser importado primeiro para registrar os interceptors
@@ -52,7 +54,8 @@ registerLocaleData(localePt);
   ],
   providers: [
     provideAnimationsAsync(),
-    { provide: LOCALE_ID, useValue: 'pt-BR' }
+    { provide: LOCALE_ID, useValue: 'pt-BR' },
+    DatePipe
   ],
   bootstrap: [AppComponent],
 })

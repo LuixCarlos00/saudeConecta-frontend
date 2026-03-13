@@ -1,10 +1,8 @@
-import { log } from 'node:console';
 import { ProfissionalApiService } from 'src/app/services/api/profissional-api.service';
 import { Component, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { ConsultaApiService } from 'src/app/services/api/consulta-api.service';
-import { MedicoApiService } from 'src/app/services/api/medico-api.service';
 import { PacienteApiService } from 'src/app/services/api/paciente-api.service';
 import { Paciente } from 'src/app/util/variados/interfaces/paciente/paciente';
 import { HoradaConsulta } from 'src/app/util/variados/options/options';
@@ -519,7 +517,7 @@ export class EditarConsultasComponent implements OnInit {
     if (!especialidades) {
       return 'Não informada';
     }
-    
+
     // Se for array, pega o primeiro item
     if (Array.isArray(especialidades)) {
       if (especialidades.length === 0) {
@@ -527,17 +525,17 @@ export class EditarConsultasComponent implements OnInit {
       }
       return especialidades[0]?.nome || 'Não informada';
     }
-    
+
     // Se for string, retorna diretamente
     if (typeof especialidades === 'string') {
       return especialidades;
     }
-    
+
     // Se for objeto com propriedade nome
     if (especialidades.nome) {
       return especialidades.nome;
     }
-    
+
     return 'Não informada';
   }
 }

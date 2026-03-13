@@ -107,6 +107,19 @@ export interface Prontuario {
   tempoDuracao?: string;
 
   // =============================================================================
+  // CÓDIGOS TUSS E CID (Prontuário Dentista)
+  // =============================================================================
+
+  /** Texto dos códigos TUSS selecionados */
+  tussTexto?: string;
+
+  /** Texto dos códigos CID selecionados */
+  cidTexto?: string;
+
+  /** Texto da solicitação de exames (TUSS/CID de exame) */
+  solicitacaoExameTexto?: string;
+
+  // =============================================================================
   // CONTROLE E FINALIZAÇÃO
   // =============================================================================
 

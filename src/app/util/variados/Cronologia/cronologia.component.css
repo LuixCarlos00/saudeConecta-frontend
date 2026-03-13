@@ -164,6 +164,39 @@
   border-color: #1565c0 !important;
 }
 
+/* Grupo de Checkboxes */
+.checkbox-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  background: #f9fafb;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.status-checkbox {
+  font-size: 14px;
+}
+
+::ng-deep .checkbox-group .mat-mdc-checkbox-label {
+  color: #374151 !important;
+  font-size: 14px;
+}
+
+::ng-deep .checkbox-group .mdc-checkbox__background {
+  border-color: #d1d5db !important;
+}
+
+::ng-deep .checkbox-group .mat-mdc-checkbox.mat-accent .mdc-checkbox--selected .mdc-checkbox__background {
+  background-color: #667eea !important;
+  border-color: #667eea !important;
+}
+
+::ng-deep .checkbox-group .mat-mdc-checkbox .mdc-checkbox__ripple {
+  background-color: #667eea !important;
+}
+
 /* Seção de Ações */
 .actions-section {
   display: flex;

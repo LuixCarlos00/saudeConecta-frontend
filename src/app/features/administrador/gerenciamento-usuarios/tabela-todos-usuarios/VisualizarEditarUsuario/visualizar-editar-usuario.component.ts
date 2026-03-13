@@ -10,7 +10,8 @@ import { AdministradorApiService } from 'src/app/services/api/administrador-api.
 import { UsuarioUnificado } from '../tabela-todos-usuarios.component';
 import { SecretariaApiService } from 'src/app/services/api/secretaria-api.service';
 import { ufOptions } from 'src/app/util/variados/options/options';
-import { EspecialidadeService, EspecialidadeResponse } from 'src/app/services/api/especialidade.service';
+import { EspecialidadeApiService, EspecialidadeResponse } from 'src/app/services/api/especialidade-api.service';
+import { ControleAcessoApiService } from 'src/app/services/api/controle-acesso-api.service';
 
 export interface DialogData {
   usuario: UsuarioUnificado;
@@ -37,6 +38,7 @@ export class VisualizarEditarUsuarioComponent implements OnInit {
   mostrarModalNovaEspecialidade = false;
   novaEspecialidadeNome = '';
   tipoProfissionalSelecionado: string = 'MEDICO';
+  isSuperAdmin = false;
 
   constructor(
     public dialogRef: MatDialogRef<VisualizarEditarUsuarioComponent>,
@@ -46,9 +48,11 @@ export class VisualizarEditarUsuarioComponent implements OnInit {
     private profissionalApiService: ProfissionalApiService,
     private administradorApiService: AdministradorApiService,
     private secretariaApiService: SecretariaApiService,
-    private especialidadeService: EspecialidadeService
+    private especialidadeService: EspecialidadeApiService,
+    private controleAcessoService: ControleAcessoApiService
   ) {
     this.categoria = data.usuario.categoria;
+    this.isSuperAdmin = this.controleAcessoService.isSuperAdmin();
   }
 
   ngOnInit(): void {
@@ -130,11 +134,35 @@ export class VisualizarEditarUsuarioComponent implements OnInit {
         break;
 
       case 'Administrador':
-        this.formulario = this.fb.group({
-          id: [{ value: '', disabled: true }],
-          nome: ['', [Validators.required, Validators.minLength(3)]],
-          email: ['', [Validators.required, Validators.email]]
-        });
+        if (this.isSuperAdmin) {
+          this.formulario = this.fb.group({
+            id: [{ value: '', disabled: true }],
+            nome: ['', [Validators.required, Validators.minLength(3)]],
+            cargo: [''],
+            email: ['', [Validators.required, Validators.email]],
+            // Dados da Organização
+            nomeClinica: ['', [Validators.required]],
+            razaoSocial: [''],
+            cnpj: [{ value: '', disabled: true }],
+            tipoClinica: ['', [Validators.required]],
+            emailClinica: ['', [Validators.email]],
+            telefoneClinica: [''],
+            // Endereço
+            uf: ['', Validators.required],
+            municipio: ['', Validators.required],
+            bairro: [''],
+            cep: ['', Validators.required],
+            rua: ['', Validators.required],
+            numero: ['', Validators.required],
+            complemento: [''],
+          });
+        } else {
+          this.formulario = this.fb.group({
+            id: [{ value: '', disabled: true }],
+            nome: ['', [Validators.required, Validators.minLength(3)]],
+            email: ['', [Validators.required, Validators.email]]
+          });
+        }
         break;
     }
   }
@@ -149,7 +177,9 @@ export class VisualizarEditarUsuarioComponent implements OnInit {
       'Paciente': this.pacienteApiService.buscarrPacientebyOrg(codigo),
       'Clinico': this.profissionalApiService.buscarClinicoIdByOrg(codigo),
       'Secretária': this.secretariaApiService.buscarSecretariaIdByOrg(codigo),
-      'Administrador': this.administradorApiService.buscarrAdminByOrg(codigo)
+      'Administrador': this.isSuperAdmin
+        ? this.administradorApiService.buscarAdminOrgCompleto(codigo)
+        : this.administradorApiService.buscarrAdminByOrg(codigo)
     };
 
     const servico = servicosMap[this.categoria];
@@ -186,8 +216,11 @@ export class VisualizarEditarUsuarioComponent implements OnInit {
         break;
 
       case 'Secretária':
-      case 'Administrador':
         dadosFormulario = dados;
+        break;
+
+      case 'Administrador':
+        dadosFormulario = this.isSuperAdmin ? this.mapearDadosAdminCompleto(dados) : dados;
         break;
 
       default:
@@ -417,6 +450,28 @@ export class VisualizarEditarUsuarioComponent implements OnInit {
     });
   }
 
+  private mapearDadosAdminCompleto(dados: any): any {
+    return {
+      id: dados.id,
+      nome: dados.nome,
+      cargo: dados.cargo || '',
+      email: dados.email,
+      nomeClinica: dados.nomeClinica || '',
+      razaoSocial: dados.razaoSocial || '',
+      cnpj: dados.cnpj || '',
+      tipoClinica: dados.tipoClinica || '',
+      emailClinica: dados.emailClinica || '',
+      telefoneClinica: dados.telefoneClinica || '',
+      uf: dados.uf || '',
+      municipio: dados.municipio || '',
+      bairro: dados.bairro || '',
+      cep: dados.cep || '',
+      rua: dados.rua || '',
+      numero: dados.numero || '',
+      complemento: dados.complemento || '',
+    };
+  }
+
   private prepararEndereco(formValues: any): any {
     return {
       codigo: this.dadosOriginais.endereco?.codigo || null,
@@ -459,6 +514,26 @@ export class VisualizarEditarUsuarioComponent implements OnInit {
   }
 
   private prepararDadosAdministrador(formValues: any, codigo: number): any {
+    if (this.isSuperAdmin) {
+      return {
+        nome: formValues.nome,
+        cargo: formValues.cargo || null,
+        email: formValues.email,
+        nomeClinica: formValues.nomeClinica,
+        razaoSocial: formValues.razaoSocial || null,
+        cnpj: formValues.cnpj || null,
+        tipoClinica: formValues.tipoClinica,
+        emailClinica: formValues.emailClinica || null,
+        telefone: formValues.telefoneClinica || null,
+        cep: formValues.cep,
+        uf: formValues.uf,
+        municipio: formValues.municipio,
+        bairro: formValues.bairro || null,
+        rua: formValues.rua,
+        numero: formValues.numero ? parseInt(formValues.numero.toString(), 10) : null,
+        complemento: formValues.complemento || null,
+      };
+    }
     return { codigo: codigo, nome: formValues.nome, email: formValues.email };
   }
 
@@ -471,7 +546,9 @@ export class VisualizarEditarUsuarioComponent implements OnInit {
       'Paciente': this.pacienteApiService.atualizarPacientebyOrg(codigo, dadosAtualizados),
       'Clinico': this.profissionalApiService.atualizarClinicoIdByOrg(codigo, dadosAtualizados),
       'Secretária': this.secretariaApiService.atualizarSecretariaIdByOrg(codigo, dadosAtualizados),
-      'Administrador': this.administradorApiService.atualizarAdmByOrg(codigo, dadosAtualizados)
+      'Administrador': this.isSuperAdmin
+        ? this.administradorApiService.atualizarAdminOrgCompleto(codigo, dadosAtualizados)
+        : this.administradorApiService.atualizarAdmByOrg(codigo, dadosAtualizados)
     };
 
     const servico = servicosMap[this.categoria];

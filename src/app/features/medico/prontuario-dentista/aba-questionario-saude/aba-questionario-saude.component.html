@@ -1,0 +1,81 @@
+<section class="pep-section">
+  <div class="pep-section__header">
+    <h2 class="pep-section__title">
+      <i class="fa-solid fa-clipboard-question"></i>
+      Questionário de Saúde
+    </h2>
+  </div>
+  <div class="pep-section__body">
+
+    <!-- Questionário Respondido -->
+    <div *ngIf="questionarioRespondido">
+      <div class="form-section"
+        style="background: #f0fdf4; border: 1px solid #86efac; border-radius: 8px; padding: 16px;">
+        <h3 class="form-section__title">
+          <i class="fa-solid fa-check-double" style="color: #16a34a;"></i> Questionário Respondido e Assinado
+        </h3>
+        <p style="font-size: 0.9rem; color: #374151;">
+          <i class="fa-solid fa-calendar"></i> Data da assinatura: <strong>{{ questionarioDataAssinatura |
+            date:'dd/MM/yyyy HH:mm' }}</strong>
+        </p>
+      </div>
+
+      <!-- Exibir Respostas -->
+      <div class="form-section" *ngIf="questionarioPerguntas.length > 0" style="margin-top: 16px;">
+        <h3 class="form-section__title">
+          <i class="fa-solid fa-list-ol"></i> Respostas do Paciente
+        </h3>
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th style="width: 50%;">Pergunta</th>
+                <th style="width: 15%;">Resposta</th>
+                <th style="width: 35%;">Observação</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of questionarioPerguntas">
+                <td>{{ item.pergunta }}</td>
+                <td>
+                  <span class="badge" [class.badge--success]="item.resposta === 'Não'"
+                    [class.badge--warning]="item.resposta === 'Sim'">
+                    {{ item.resposta }}
+                  </span>
+                </td>
+                <td>{{ item.observacao || '—' }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Exibir Assinatura -->
+      <div class="form-section" *ngIf="questionarioAssinatura" style="margin-top: 16px;">
+        <h3 class="form-section__title">
+          <i class="fa-solid fa-signature"></i> Assinatura Digital do Paciente
+        </h3>
+        <div
+          style="text-align: center; padding: 16px; background: #fff; border: 1px solid #e5e7eb; border-radius: 8px;">
+          <img [src]="questionarioAssinatura" alt="Assinatura do paciente"
+            style="max-width: 400px; max-height: 200px;" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Questionário não respondido -->
+    <div class="dente-placeholder" *ngIf="!questionarioRespondido">
+      <div class="dente-placeholder__icon">
+        <i class="fa-solid fa-clipboard-question"></i>
+      </div>
+      <p class="dente-placeholder__text">
+        O questionário de saúde ainda não foi respondido pelo paciente.
+      </p>
+      <span class="dente-placeholder__hint">
+        <i class="fa-solid fa-info-circle"></i>
+        O link do questionário é gerado antes da consulta.
+      </span>
+    </div>
+
+  </div>
+</section>

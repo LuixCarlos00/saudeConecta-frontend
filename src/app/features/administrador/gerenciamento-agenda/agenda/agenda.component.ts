@@ -1,11 +1,11 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Subject, takeUntil } from 'rxjs';
+import { Subject, takeUntil, Observable } from 'rxjs';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ConsultaApiService } from 'src/app/services/api/consulta-api.service';
 import { ConsultaStateService } from 'src/app/services/state/consulta-state.service';
 import { MatDialog } from '@angular/material/dialog';
-import { CalendarDialogComponent } from 'src/app/util/variados/Cronologia/cronologia.component';
+import { CronologiaComponent } from 'src/app/util/variados/Cronologia/cronologia.component';
 import Swal from 'sweetalert2';
 import { EditarConsultasComponent } from './Editar-Consultas/Editar-Consultas.component';
 import { Template_PDFComponent } from './template_PDF/template_PDF.component';
@@ -17,6 +17,7 @@ import { ImprimirPrescricaoComponent } from 'src/app/features/medico/impressoes/
 import { ImprimirSoliciatacaoDeExamesComponent } from 'src/app/features/medico/impressoes/ImprimirSoliciatacaoDeExames/ImprimirSoliciatacaoDeExames.component';
 import { AtestadoPacienteComponent } from 'src/app/features/medico/impressoes/AtestadoPaciente/AtestadoPaciente.component';
 import { HistoricoCompletoComponent } from 'src/app/features/medico/impressoes/historicoCompleto/historicoCompleto.component';
+import { HistoricoCompletoDentistaComponent } from 'src/app/features/medico/impressoes-dentista/historico-completo-dentista/historico-completo-dentista.component';
 import { ImprimirRegistroComponent } from 'src/app/features/medico/impressoes/ImprimirRegistro/ImprimirRegistro.component';
 import { Consultav2 } from 'src/app/util/variados/interfaces/consulta/consultav2';
 import { Prontuario } from 'src/app/util/variados/interfaces/Prontuario/Prontuario';
@@ -27,12 +28,16 @@ import { RegistroConsultaDentistaComponent } from 'src/app/features/medico/impre
 import { Usuario } from 'src/app/util/variados/interfaces/usuario/usuario';
 import { tokenService } from 'src/app/util/Token/Token.service';
 import { ProntuarioDentistaApiService } from 'src/app/services/api/prontuario-dentista-api.service';
+import { PlanejamentoTerapeuticoApiService } from 'src/app/services/api/planejamento-terapeutico-api.service';
+import { ComprovantePagamentoDentistaComponent } from 'src/app/features/medico/impressoes-dentista/comprovante-pagamento-dentista/comprovante-pagamento-dentista.component';
+import { QuestionarioSaudeDentistaComponent } from 'src/app/features/medico/impressoes-dentista/questionario-saude-dentista/questionario-saude-dentista.component';
+import { PlanejamentoOdontologicoDentistaComponent } from 'src/app/features/medico/impressoes-dentista/planejamento-odontologico-dentista/planejamento-odontologico-dentista.component';
 
 type TipoVisualizacao = 'AGENDADA' | 'REALIZADA';
 type TipoPeriodo = 'diario' | 'semanal' | 'mensal' | 'anual';
 
 const STATUS_AGENDADAS = ['AGENDADA', 'CONFIRMADA'];
-const STATUS_FINALIZADAS = ['REALIZADA', 'CANCELADA'];
+const STATUS_FINALIZADAS = ['REALIZADA', 'CANCELADA', 'PAGO'];
 
 @Component({
   selector: 'app-agenda',
@@ -43,13 +48,17 @@ export class AgendaComponent implements OnInit, OnDestroy {
   FormularioAgenda!: FormGroup;
   dataSource: Consultav2[] = [];
   displayedColumns: string[] = ['consulta', 'medico', 'paciente', 'diaSemana', 'data', 'horario', 'status', 'Seleciona'];
+  displayedColumnsFinalizadas: string[] = ['consulta', 'medico', 'paciente', 'diaSemana', 'data', 'horario', 'status', 'statusPagamento', 'Seleciona'];
   Finalizadas = false;
   clickedRows = new Set<Tabela>();
+  planejamentosAssinados = new Set<number>();
+  questionariosRespondidos = new Set<number>();
   ValorOpcao: any;
   tipoPeriodoSelecionado: TipoPeriodo = 'diario';
   private destroy$ = new Subject<void>();
 
   UsuarioLogado: Usuario = { id: 0, aud: '', exp: '', iss: '', sub: '' };
+
 
   constructor(
     private formBuilder: FormBuilder,
@@ -58,7 +67,8 @@ export class AgendaComponent implements OnInit, OnDestroy {
     private consultaState: ConsultaStateService,
     private prontuarioApiService: ProntuarioApiService,
     private tokenService: tokenService,
-    private prontuarioDentistaApiService: ProntuarioDentistaApiService
+    private prontuarioDentistaApiService: ProntuarioDentistaApiService,
+    private planejamentoApi: PlanejamentoTerapeuticoApiService
   ) { }
 
   async ngOnInit() {
@@ -95,11 +105,16 @@ export class AgendaComponent implements OnInit, OnDestroy {
   // ─────────────────────────────────────────────────────────────────────────────
 
   async buscarDadosParaTabela() {
-    try {
+     try {
       const dados = await this.buscarConsultasPorPeriodo();
       if (Array.isArray(dados)) {
         const tipo: TipoVisualizacao = this.Finalizadas ? 'REALIZADA' : 'AGENDADA';
         this.dataSource = this.filtrarConsultasPorTipo(dados, tipo);
+        if (this.Finalizadas) {
+          this.verificarPlanejamentosAssinados();
+        } else {
+          this.verificarQuestionariosRespondidos();
+        }
       }
     } catch (error) {
       console.error(error);
@@ -180,14 +195,31 @@ export class AgendaComponent implements OnInit, OnDestroy {
   // Ações da tabela
   // ─────────────────────────────────────────────────────────────────────────────
 
-  async Deletar(consulta: Tabela) {
+  async Deletar(consulta: Consultav2) {
+    const confirmar = await Swal.fire({
+      title: 'Confirmar exclusão',
+      text: `Deseja excluir a consulta de ${consulta.pacienteNome}? O questionário de saúde será excluído.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Sim, excluir',
+      cancelButtonText: 'Cancelar'
+    });
+
+    if (!confirmar.isConfirmed) return;
+
     try {
-      await this.consultaApi.deletar(consulta.consulta).toPromise();
+      await this.consultaApi.deletarConsulta(consulta.id).toPromise();
       Swal.fire('Deletado', 'Consulta deletada com sucesso', 'success');
       this.buscarDadosParaTabela();
-    } catch (error) {
-      console.error(error);
-      Swal.fire('Erro', 'Erro ao deletar consulta', 'error');
+    } catch (error: any) {
+      const status = error?.status;
+      if (status === 409) {
+        Swal.fire('Exclusão bloqueada', 'Esta consulta possui prontuário clínico e não pode ser excluída. Os dados clínicos devem ser preservados.', 'info');
+      } else {
+        Swal.fire('Erro', 'Erro ao deletar consulta', 'error');
+      }
     }
   }
 
@@ -228,70 +260,110 @@ export class AgendaComponent implements OnInit, OnDestroy {
 
   AlterarStatus(elemento: Consultav2, novoStatus: string) {
     if (novoStatus === elemento.status) { return; }
-    if (novoStatus === 'CONFIRMADA') {
-      this.Confirmar(elemento);
-    } else if (novoStatus === 'CANCELADA') {
-      this.Cancelar(elemento);
+
+    // Configurações específicas por status
+    // NOTA: REALIZADA não está aqui pois só pode ser definido pelo médico ao concluir a consulta
+    const statusConfig: Record<string, any> = {
+      'CONFIRMADA': {
+        title: 'Confirmar consulta?',
+        text: `Consulta de ${elemento.pacienteNome} será marcada como CONFIRMADA.`,
+        confirmText: 'Sim, confirmar!',
+        confirmColor: '#2563eb'
+      },
+      'CANCELADA': {
+        title: 'Cancelar consulta?',
+        text: `Consulta de ${elemento.pacienteNome} será CANCELADA.`,
+        confirmText: 'Sim, cancelar!',
+        confirmColor: '#dc2626',
+        requiresMotivo: true
+      },
+      'AGENDADA': {
+        title: 'Voltar consulta para Agendada?',
+        text: `Consulta de ${elemento.pacienteNome} voltará para status AGENDADA.`,
+        confirmText: 'Sim, voltar para Agendada!',
+        confirmColor: '#f59e0b'
+      },
+      'PAGO': {
+        title: 'Marcar consulta como Paga?',
+        text: `Consulta de ${elemento.pacienteNome} será marcada como PAGO.`,
+        confirmText: 'Sim, marcar como pago!',
+        confirmColor: '#27ae60'
+      }
+    };
+
+    const config = statusConfig[novoStatus];
+    if (!config) {
+      console.error('Status não reconhecido:', novoStatus);
+      return;
+    }
+
+    // Se precisa de motivo (CANCELADA), mostra input
+    if (config.requiresMotivo) {
+      Swal.fire({
+        title: config.title,
+        text: config.text,
+        icon: 'question',
+        input: 'textarea',
+        inputLabel: 'Motivo do cancelamento',
+        inputPlaceholder: 'Informe o motivo...',
+        inputValidator: (value) => {
+          if (!value || value.trim().length < 3) {
+            return 'Informe o motivo (mínimo 3 caracteres).';
+          }
+          return null;
+        },
+        showCancelButton: true,
+        confirmButtonColor: config.confirmColor,
+        cancelButtonColor: '#6b7280',
+        confirmButtonText: config.confirmText,
+        cancelButtonText: 'Cancelar',
+      }).then((result) => {
+        if (result.isConfirmed && result.value) {
+          this.executarAlteracaoStatus(elemento.id, novoStatus, result.value);
+        }
+      });
+    } else {
+      // Status que não precisam de motivo
+      Swal.fire({
+        title: config.title,
+        text: config.text,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: config.confirmColor,
+        cancelButtonColor: '#6b7280',
+        confirmButtonText: config.confirmText,
+        cancelButtonText: 'Cancelar',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.executarAlteracaoStatus(elemento.id, novoStatus);
+        }
+      });
     }
   }
 
-  Confirmar(elemento: Consultav2) {
-    Swal.fire({
-      title: 'Confirmar consulta?',
-      text: `Consulta de ${elemento.pacienteNome} será marcada como CONFIRMADA.`,
-      icon: 'question',
-      showCancelButton: true,
-      confirmButtonColor: '#2563eb',
-      cancelButtonColor: '#6b7280',
-      confirmButtonText: 'Sim, confirmar!',
-      cancelButtonText: 'Cancelar',
-    }).then((result) => {
-      if (result.isConfirmed) {
-        this.consultaApi.confirmarConsulta(elemento.id).subscribe({
-          next: () => {
-            Swal.fire('Confirmada!', 'Consulta confirmada com sucesso.', 'success');
-            this.buscarDadosParaTabela();
-          },
-          error: (err) => {
-            console.error(err);
-            Swal.fire('Erro', 'Não foi possível confirmar a consulta.', 'error');
-          },
-        });
-      }
-    });
-  }
+  private executarAlteracaoStatus(id: number, status: string, motivo?: string) {
+    const statusLabels: Record<string, string> = {
+      'CONFIRMADA': 'Confirmada',
+      'CANCELADA': 'Cancelada',
+      'AGENDADA': 'Agendada',
+      'REALIZADA': 'Realizada',
+      'PAGO': 'Paga'
+    };
 
-  Cancelar(elemento: Consultav2) {
-    Swal.fire({
-      title: 'Cancelar consulta?',
-      input: 'textarea',
-      inputLabel: 'Motivo do cancelamento',
-      inputPlaceholder: 'Informe o motivo...',
-      inputAttributes: { 'aria-label': 'Motivo' },
-      showCancelButton: true,
-      confirmButtonColor: '#dc2626',
-      cancelButtonColor: '#6b7280',
-      confirmButtonText: 'Cancelar consulta',
-      cancelButtonText: 'Voltar',
-      inputValidator: (value) => {
-        if (!value || value.trim().length < 3) {
-          return 'Informe o motivo do cancelamento (mínimo 3 caracteres).';
-        }
-        return null;
+    let apiCall: Observable<Consultav2>;
+
+    // Usa o endpoint único do backend
+    apiCall = this.consultaApi.alterarStatusConsulta(id, status, motivo);
+
+    apiCall.subscribe({
+      next: () => {
+        Swal.fire(`${statusLabels[status]}!`, `Consulta marcada como ${statusLabels[status].toLowerCase()} com sucesso.`, 'success');
+        this.buscarDadosParaTabela();
       },
-    }).then((result) => {
-      if (result.isConfirmed && result.value) {
-        this.consultaApi.cancelarConsulta(elemento.id, result.value).subscribe({
-          next: () => {
-            Swal.fire('Cancelada!', 'Consulta cancelada com sucesso.', 'success');
-            this.buscarDadosParaTabela();
-          },
-          error: (err) => {
-            console.error(err);
-            Swal.fire('Erro', 'Não foi possível cancelar a consulta.', 'error');
-          },
-        });
-      }
+      error: (err: any) => {
+        console.error(err);
+        Swal.fire('Erro', `Não foi possível alterar a consulta para ${statusLabels[status].toLowerCase()}.`, 'error');
+      },
     });
   }
 
@@ -301,12 +373,49 @@ export class AgendaComponent implements OnInit, OnDestroy {
       CONFIRMADA: 'Confirmada',
       REALIZADA: 'Realizada',
       CANCELADA: 'Cancelada',
+      PAGO: 'Pago',
     };
     return labels[status] ?? status;
   }
 
+  /**
+   * Abre o comprovante de pagamento para uma consulta finalizada.
+   * Tenta buscar prontuário médico, se falhar tenta dentista.
+   */
+  GerarComprovantePagamento(element: Consultav2): void {
+    this.prontuarioApiService.buscarProntuarioById(element.id).subscribe(
+      (dados) => this.dialog.open(ComprovantePagamentoDentistaComponent, { width: '60%', height: '90%', data: dados }),
+      () => this.prontuarioDentistaApiService.buscarProntuarioDentistaById(element.id).subscribe(
+        (dados) => this.dialog.open(ComprovantePagamentoDentistaComponent, { width: '60%', height: '90%', data: dados }),
+        () => this.mostrarErroProntuarioNaoEncontrado()
+      )
+    );
+  }
+
+  /**
+   * Retorna o label do status de pagamento para exibição na coluna.
+   */
+  getLabelStatusPagamento(status: string): string {
+    return status === 'PAGO' ? 'Pago' : 'Pendente';
+  }
+
   Observacoes(observacoes: string): void {
     this.dialog.open(ObservacoesComponent, { width: 'auto', data: { observacoes } });
+  }
+
+  VerMotivoCancelamento(motivo: string): void {
+    Swal.fire({
+      title: 'Motivo do Cancelamento',
+      html: `<div style="text-align: left; padding: 10px;">
+               <p style="margin: 0; color: #374151; font-size: 14px; line-height: 1.6;">
+                 ${motivo}
+               </p>
+             </div>`,
+      icon: 'info',
+      confirmButtonColor: '#dc2626',
+      confirmButtonText: 'Fechar',
+      width: '500px'
+    });
   }
 
   GerarPDF(consulta: Consultav2): void {
@@ -330,7 +439,7 @@ export class AgendaComponent implements OnInit, OnDestroy {
   }
 
   CronogramaDoDia() {
-    this.dialog.open(CalendarDialogComponent, {
+    this.dialog.open(CronologiaComponent, {
       width: 'auto',
       panelClass: 'cronologia-dialog',
       data: { Pesquisa: this.Finalizadas },
@@ -355,7 +464,6 @@ export class AgendaComponent implements OnInit, OnDestroy {
       panelClass: 'selecao-relatorio-dialog',
       data: {
         consulta: element,
-        consultaNaoRealizada: (element.status as any) === 'AGENDADA',
         isAdmin: false,
       },
     });
@@ -365,6 +473,11 @@ export class AgendaComponent implements OnInit, OnDestroy {
 
       if (opcao === '3') {
         this.ImprimirHistoricoCompleto(element);
+        return;
+      }
+
+      if (opcao === '7') {
+        this.GerarComprovantePagamento(element);
         return;
       }
 
@@ -395,6 +508,9 @@ export class AgendaComponent implements OnInit, OnDestroy {
       '2': () => this.prescricaoDentista(dados),
       '4': () => this.atestadoDentista(dados),
       '5': () => this.registroConsultaDentista(dados),
+      '6': () => this.comprovantePagamentoDentista(dados),
+      '8': () => this.questionarioSaudeDentista(dados),
+      '9': () => this.planejamentoOdontologicoDentista(dados),
     };
     acoes[opcao]?.();
   }
@@ -433,7 +549,11 @@ export class AgendaComponent implements OnInit, OnDestroy {
   }
 
   ImprimirHistoricoCompleto(dados: Consultav2) {
-    this.dialog.open(HistoricoCompletoComponent, { width: '60%', height: '90%', data: dados });
+    const dialogConfig = { width: '60%', height: '90%', data: dados };
+    this.prontuarioApiService.buscarProntuarioById(dados.id).subscribe(
+      () => this.dialog.open(HistoricoCompletoComponent, dialogConfig),
+      () => this.dialog.open(HistoricoCompletoDentistaComponent, dialogConfig)
+    );
   }
 
   // ── Dialogs Dentista ─────────────────────────────────────────────────────────
@@ -454,6 +574,18 @@ export class AgendaComponent implements OnInit, OnDestroy {
     this.dialog.open(RegistroConsultaDentistaComponent, { width: '60%', height: '90%', data: dados });
   }
 
+  comprovantePagamentoDentista(dados: Prontuario) {
+    this.dialog.open(ComprovantePagamentoDentistaComponent, { width: '60%', height: '90%', data: dados });
+  }
+
+  questionarioSaudeDentista(dados: Prontuario) {
+    this.dialog.open(QuestionarioSaudeDentistaComponent, { width: '60%', height: '90%', data: dados });
+  }
+
+  planejamentoOdontologicoDentista(dados: Prontuario) {
+    this.dialog.open(PlanejamentoOdontologicoDentistaComponent, { width: '60%', height: '90%', data: dados });
+  }
+
   // ─────────────────────────────────────────────────────────────────────────────
   // Utilitários privados
   // ─────────────────────────────────────────────────────────────────────────────
@@ -464,18 +596,213 @@ export class AgendaComponent implements OnInit, OnDestroy {
   }
 
   private processarDadosCronologia(dados: any[]): void {
-    const agendadas = this.filtrarConsultasPorTipo(dados, 'AGENDADA');
-    const finalizadas = this.filtrarConsultasPorTipo(dados, 'REALIZADA');
+    // Mantém o contexto atual (Finalizadas ou Agendadas) escolhido pelo usuário
+    const tipo: TipoVisualizacao = this.Finalizadas ? 'REALIZADA' : 'AGENDADA';
+    const dadosFiltrados = this.filtrarConsultasPorTipo(dados, tipo);
 
-    if (finalizadas.length > 0 && agendadas.length === 0) {
-      this.Finalizadas = true;
-      this.dataSource = finalizadas;
-    } else if (agendadas.length > 0) {
-      this.Finalizadas = false;
-      this.dataSource = agendadas;
+    if (dadosFiltrados.length > 0) {
+      // Mostra os dados filtrados do contexto atual
+      this.dataSource = dadosFiltrados;
     } else {
-      this.dataSource = dados;
+      // Se não houver dados no contexto atual, mostra mensagem
+      this.dataSource = [];
+      Swal.fire({
+        icon: 'info',
+        title: 'Nenhum resultado',
+        text: `Nenhuma consulta ${this.Finalizadas ? 'finalizada' : 'agendada'} encontrada com os filtros selecionados.`,
+        confirmButtonColor: '#0066CC'
+      });
     }
+  }
+
+  // ─────────────────────────────────────────────────────────────────────────────
+  // Gerar Link do Planejamento Terapêutico
+  // ─────────────────────────────────────────────────────────────────────────────
+  private verificarPlanejamentosAssinados(): void {
+    const finalizadas = this.dataSource.filter(c => c.status === 'REALIZADA');
+    for (const consulta of finalizadas) {
+      if (!consulta?.id || this.planejamentosAssinados.has(consulta.id)) continue;
+      this.prontuarioDentistaApiService.buscarProntuarioDentistaById(consulta.id)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: (prontuario: any) => {
+            const plans = prontuario?.planejamentosTerapeuticos || prontuario?.planejamentos || [];
+            if (plans.length > 0 && plans.every((p: any) => p.statusAssinatura === 'ASSINADO')) {
+              this.planejamentosAssinados.add(consulta.id);
+            }
+          }
+        });
+    }
+  }
+
+  gerarLinkPlanejamento(element: Consultav2): void {
+    if (!element?.id) return;
+    this.prontuarioDentistaApiService.buscarProntuarioDentistaById(element.id)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (prontuario: any) => {
+          if (!prontuario?.codigo) {
+            Swal.fire('Aviso', 'Nenhum prontuário encontrado para esta consulta.', 'warning');
+            return;
+          }
+          const plans = prontuario?.planejamentosTerapeuticos || prontuario?.planejamentos || [];
+          if (plans.length > 0 && plans.every((p: any) => p.statusAssinatura === 'ASSINADO')) {
+            this.planejamentosAssinados.add(element.id);
+            Swal.fire('Aviso', 'Todos os itens do planejamento já foram assinados pelo paciente.', 'info');
+            return;
+          }
+          this.planejamentoApi.gerarLinkAssinatura(prontuario.codigo)
+            .pipe(takeUntil(this.destroy$))
+            .subscribe({
+              next: (resp) => {
+                const baseUrl = window.location.origin;
+                const link = `${baseUrl}/#/assinatura-planejamento/${resp.token}`;
+                navigator.clipboard.writeText(link).then(() => {
+                  Swal.fire({
+                    icon: 'success',
+                    title: 'Link Gerado!',
+                    html: `<p style="font-size:0.9rem;">Link do planejamento copiado para a área de transferência.</p>
+                           <input type="text" value="${link}" readonly
+                             style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px;margin-top:8px;font-size:0.82rem;" />`,
+                    confirmButtonText: 'OK'
+                  });
+                }).catch(() => {
+                  Swal.fire({
+                    icon: 'info',
+                    title: 'Link Gerado',
+                    html: `<p style="font-size:0.9rem;">Copie o link abaixo e envie ao paciente:</p>
+                           <input type="text" value="${link}" readonly
+                             style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px;margin-top:8px;font-size:0.82rem;" />`,
+                    confirmButtonText: 'OK'
+                  });
+                });
+              },
+              error: () => {
+                Swal.fire('Erro', 'Não foi possível gerar o link do planejamento.', 'error');
+              }
+            });
+        },
+        error: () => {
+          Swal.fire('Erro', 'Não foi possível buscar o prontuário desta consulta.', 'error');
+        }
+      });
+  }
+
+  // ─────────────────────────────────────────────────────────────────────────────
+  // Gerar Link do Questionário de Saúde
+  // ─────────────────────────────────────────────────────────────────────────────
+  private verificarQuestionariosRespondidos(): void {
+    const confirmadas = this.dataSource.filter(c => c.status === 'CONFIRMADA');
+    for (const consulta of confirmadas) {
+      if (!consulta?.id || this.questionariosRespondidos.has(consulta.id)) continue;
+      this.prontuarioDentistaApiService.buscarQuestionarioSaude(consulta.id)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: (resp: any) => {
+            if (resp?.respondido) {
+              this.questionariosRespondidos.add(consulta.id);
+            }
+          }
+        });
+    }
+  }
+
+  gerarLinkQuestionario(element: Consultav2): void {
+    if (!element?.id) return;
+
+    // Verifica se já foi respondido antes de gerar
+    this.prontuarioDentistaApiService.buscarQuestionarioSaude(element.id)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (resp: any) => {
+          if (resp?.respondido) {
+            this.questionariosRespondidos.add(element.id);
+            Swal.fire('Aviso', 'O questionário de saúde já foi respondido e assinado pelo paciente.', 'info');
+            return;
+          }
+          this.executarGeracaoLinkQuestionario(element);
+        },
+        error: () => {
+          // Se não encontrou questionário, permite gerar o link
+          this.executarGeracaoLinkQuestionario(element);
+        }
+      });
+  }
+
+  private executarGeracaoLinkQuestionario(element: Consultav2): void {
+    this.prontuarioDentistaApiService.gerarLinkQuestionario(element.id)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (resp) => {
+          const baseUrl = window.location.origin;
+          const link = `${baseUrl}/#/questionario-saude/${resp.token}`;
+          navigator.clipboard.writeText(link).then(() => {
+            Swal.fire({
+              icon: 'success',
+              title: 'Link Gerado!',
+              html: `<p style="font-size:0.9rem;">Link copiado para a área de transferência.</p>
+                     <input type="text" value="${link}" readonly
+                       style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px;margin-top:8px;font-size:0.82rem;" />`,
+              confirmButtonText: 'OK'
+            });
+          }).catch(() => {
+            Swal.fire({
+              icon: 'info',
+              title: 'Link Gerado',
+              html: `<p style="font-size:0.9rem;">Copie o link abaixo e envie ao paciente:</p>
+                     <input type="text" value="${link}" readonly
+                       style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px;margin-top:8px;font-size:0.82rem;" />`,
+              confirmButtonText: 'OK'
+            });
+          });
+        },
+        error: () => {
+          Swal.fire('Erro', 'Não foi possível gerar o link do questionário.', 'error');
+        }
+      });
+  }
+
+  // ─────────────────────────────────────────────────────────────────────────────
+  // WhatsApp Individual
+  // ─────────────────────────────────────────────────────────────────────────────
+
+  /**
+   * Gera o link do WhatsApp Web com mensagem personalizada para o paciente.
+   * @param consulta - Dados da consulta com telefone do paciente
+   * @returns URL completa para wa.me com mensagem codificada
+   */
+  gerarLinkWhatsApp(consulta: Consultav2): string {
+    if (!consulta.pacienteTelefone) { return ''; }
+
+    const telefone = this.formatarTelefoneWhatsApp(consulta.pacienteTelefone);
+    const mensagem = this.gerarMensagemWhatsApp(consulta);
+    return `https://wa.me/${telefone}?text=${encodeURIComponent(mensagem)}`;
+  }
+
+  /**
+   * Gera a mensagem de confirmação de consulta com dados dinâmicos.
+   * @param consulta - Dados da consulta
+   * @returns Mensagem personalizada com nome, médico, data e horário
+   */
+  private gerarMensagemWhatsApp(consulta: Consultav2): string {
+    const dataHora = new Date(consulta.dataHora);
+    const data = dataHora.toLocaleDateString('pt-BR');
+    const horario = dataHora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    const paciente = consulta.pacienteNome || 'Paciente';
+    const medico = consulta.profissionalNome || 'Profissional';
+
+    return `Olá ${paciente}, tudo bem?\n\nGostaríamos de confirmar sua consulta com ${medico} no dia ${data} às ${horario}.\n\nPor favor, confirme sua presença respondendo esta mensagem.\n\nAtenciosamente,\nEquipe da Clínica.`;
+  }
+
+  /**
+   * Formata o número de telefone para o padrão internacional brasileiro.
+   * Remove caracteres não numéricos e adiciona o código do país.
+   * @param telefone - Número de telefone em qualquer formato
+   * @returns Número formatado com código 55 do Brasil
+   */
+  private formatarTelefoneWhatsApp(telefone: string): string {
+    const numeros = telefone.replace(/\D/g, '');
+    return numeros.startsWith('55') ? numeros : '55' + numeros;
   }
 
   tratarDadosParaTabela(dados: any[]): Tabela[] {

@@ -25,6 +25,9 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatInputModule } from '@angular/material/input';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatButtonModule } from '@angular/material/button';
 
 
 
@@ -64,14 +67,20 @@ import { GerenciamentoUsuarioComponent } from '../features/administrador/gerenci
 import { TabelaTodosUsuariosComponent } from '../features/administrador/gerenciamento-usuarios/tabela-todos-usuarios/tabela-todos-usuarios.component';
 import { TrocaSenhaUsuariosComponent } from '../features/administrador/gerenciamento-usuarios/tabela-todos-usuarios/TrocaSenhaUsuarios/TrocaSenhaUsuarios.component';
 import { VisualizarEditarUsuarioComponent } from '../features/administrador/gerenciamento-usuarios/tabela-todos-usuarios/VisualizarEditarUsuario/visualizar-editar-usuario.component';
+import { ModalAssociarPlanoComponent } from '../features/administrador/gerenciamento-usuarios/tabela-todos-usuarios/modal-associar-plano/modal-associar-plano.component';
 import { MatBadgeModule } from '@angular/material/badge';
+
+// ========== FEATURES ADMINISTRADOR - PLANOS ==========
+import { GerenciarPlanosComponent } from '../features/administrador/planos/gerenciar-planos/gerenciar-planos.component';
+import { ListaPlanosComponent } from '../features/administrador/planos/lista-planos/lista-planos.component';
+import { DetalheAssinaturaComponent } from '../features/administrador/planos/detalhe-assinatura/detalhe-assinatura.component';
+import { ModalPixComponent } from '../features/administrador/planos/modal-pix/modal-pix.component';
 
 // ========== FEATURES MÉDICO ==========
 import { TabelaAgendaMedicoComponent } from '../features/medico/tabela-agenda/tabela-agenda-medico.component';
 import { ProntuarioComponent } from '../features/medico/prontuario/prontuario.component';
 import { ImprimirPrescricaoComponent } from '../features/medico/impressoes/ImprimirPrescricao/ImprimirPrescricao.component';
 import { ImprimirSoliciatacaoDeExamesComponent } from '../features/medico/impressoes/ImprimirSoliciatacaoDeExames/ImprimirSoliciatacaoDeExames.component';
-import { HistoricosComponent } from '../features/medico/historico/historicos.component';
 import { DadosPessoaisComponent } from '../features/medico/dados-pessoais/DadosPessoais.component';
 import { AtestadoPacienteComponent } from '../features/medico/impressoes/AtestadoPaciente/AtestadoPaciente.component';
 import { HistoricoCompletoComponent } from '../features/medico/impressoes/historicoCompleto/historicoCompleto.component';
@@ -86,6 +95,9 @@ import { HistoricoCompletoDentistaComponent } from '../features/medico/impressoe
 import { PrescricaoDentistaComponent } from '../features/medico/impressoes-dentista/prescricao-dentista/prescricao-dentista.component';
 import { SolicitacaoExamesDentistaComponent } from '../features/medico/impressoes-dentista/solicitacao-exames-dentista/solicitacao-exames-dentista.component';
 import { RegistroConsultaDentistaComponent } from '../features/medico/impressoes-dentista/registro-consulta-dentista/registro-consulta-dentista.component';
+import { ComprovantePagamentoDentistaComponent } from '../features/medico/impressoes-dentista/comprovante-pagamento-dentista/comprovante-pagamento-dentista.component';
+import { QuestionarioSaudeDentistaComponent } from '../features/medico/impressoes-dentista/questionario-saude-dentista/questionario-saude-dentista.component';
+import { PlanejamentoOdontologicoDentistaComponent } from '../features/medico/impressoes-dentista/planejamento-odontologico-dentista/planejamento-odontologico-dentista.component';
 
 
 @NgModule({
@@ -117,13 +129,17 @@ import { RegistroConsultaDentistaComponent } from '../features/medico/impressoes
     GraficoCategoriaMedicosComponent,
     GraficoConsultasPorStatusComponent,
     GerenciamentoUsuarioComponent,
+    GerenciarPlanosComponent,
+    ListaPlanosComponent,
+    DetalheAssinaturaComponent,
+    ModalPixComponent,
+    ModalAssociarPlanoComponent,
     TabelaTodosUsuariosComponent,
     TabelaAgendaMedicoComponent,
     ProntuarioComponent,
     TabelaEditarPacienteConsultasComponent,
     ImprimirPrescricaoComponent,
     ImprimirSoliciatacaoDeExamesComponent,
-    HistoricosComponent,
     DadosPessoaisComponent,
     AtestadoPacienteComponent,
     TrocaSenhaUsuariosComponent,
@@ -136,7 +152,10 @@ import { RegistroConsultaDentistaComponent } from '../features/medico/impressoes
     PrescricaoDentistaComponent,
     SolicitacaoExamesDentistaComponent,
     RegistroConsultaDentistaComponent,
-    AtestadoDentistaComponent
+    AtestadoDentistaComponent,
+    ComprovantePagamentoDentistaComponent,
+    QuestionarioSaudeDentistaComponent,
+    PlanejamentoOdontologicoDentistaComponent
   ],
   exports: [],
 
@@ -167,6 +186,9 @@ import { RegistroConsultaDentistaComponent } from '../features/medico/impressoes
     MatAutocompleteModule,
     MatRadioModule,
     MatBadgeModule,
+    MatProgressBarModule,
+    MatDividerModule,
+    MatButtonModule,
     SharedModule,
     GraficoMediaTempoConsultaComponent
   ],

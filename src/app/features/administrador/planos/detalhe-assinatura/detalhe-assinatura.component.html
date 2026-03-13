@@ -1,0 +1,146 @@
+<div class="assinatura-container">
+  <h2>Minha Assinatura</h2>
+
+  <div *ngIf="isLoading" class="loading-container">
+    <mat-spinner diameter="40"></mat-spinner>
+  </div>
+
+  <div *ngIf="!isLoading && !assinatura" class="sem-assinatura">
+    <mat-icon>info</mat-icon>
+    <p>Nenhuma assinatura ativa encontrada.</p>
+  </div>
+
+  <div *ngIf="!isLoading && assinatura" class="conteudo">
+
+    <!-- Card da Assinatura -->
+    <mat-card class="assinatura-card">
+      <mat-card-header>
+        <mat-card-title>{{ assinatura.planoNome }}</mat-card-title>
+        <mat-card-subtitle>
+          <span class="status-badge" [ngClass]="getStatusClass(assinatura.status)">
+            {{ assinatura.status }}
+          </span>
+        </mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-content>
+        <div class="info-grid">
+          <div class="info-item">
+            <span class="label">Valor Mensal</span>
+            <span class="value">{{ formatarValor(assinatura.valorMensal) }}</span>
+          </div>
+          <div class="info-item">
+            <span class="label">Início</span>
+            <span class="value">{{ assinatura.dataInicio | date:'dd/MM/yyyy' }}</span>
+          </div>
+          <div class="info-item">
+            <span class="label">Vencimento</span>
+            <span class="value">{{ assinatura.dataVencimento | date:'dd/MM/yyyy' }}</span>
+          </div>
+          <div class="info-item">
+            <span class="label">Próxima Cobrança</span>
+            <span class="value">{{ assinatura.dataProximaCobranca | date:'dd/MM/yyyy' }}</span>
+          </div>
+        </div>
+      </mat-card-content>
+
+      <mat-card-actions>
+        <button mat-raised-button color="primary" (click)="gerarCobranca()">
+          <mat-icon>pix</mat-icon>
+          Gerar Cobrança Pix
+        </button>
+      </mat-card-actions>
+    </mat-card>
+
+    <!-- Card de Limites -->
+    <mat-card *ngIf="limites" class="limites-card">
+      <mat-card-header>
+        <mat-card-title>Uso do Plano</mat-card-title>
+      </mat-card-header>
+
+      <mat-card-content>
+        <div class="limite-row">
+          <div class="limite-info">
+            <mat-icon>admin_panel_settings</mat-icon>
+            <span>Admins</span>
+            <span class="contagem">{{ limites.usadoAdminOrg }}/{{ formatarLimite(limites.limiteAdminOrg) }}</span>
+          </div>
+          <mat-progress-bar *ngIf="limites.limiteAdminOrg !== null"
+                            mode="determinate"
+                            [value]="calcularPercentual(limites.usadoAdminOrg, limites.limiteAdminOrg)"
+                            [color]="limites.podeAdicionarAdminOrg ? 'primary' : 'warn'">
+          </mat-progress-bar>
+        </div>
+
+        <div class="limite-row">
+          <div class="limite-info">
+            <mat-icon>medical_services</mat-icon>
+            <span>Profissionais</span>
+            <span class="contagem">{{ limites.usadoProfissional }}/{{ formatarLimite(limites.limiteProfissional) }}</span>
+          </div>
+          <mat-progress-bar *ngIf="limites.limiteProfissional !== null"
+                            mode="determinate"
+                            [value]="calcularPercentual(limites.usadoProfissional, limites.limiteProfissional)"
+                            [color]="limites.podeAdicionarProfissional ? 'primary' : 'warn'">
+          </mat-progress-bar>
+        </div>
+
+        <div class="limite-row">
+          <div class="limite-info">
+            <mat-icon>person</mat-icon>
+            <span>Secretárias</span>
+            <span class="contagem">{{ limites.usadoSecretaria }}/{{ formatarLimite(limites.limiteSecretaria) }}</span>
+          </div>
+          <mat-progress-bar *ngIf="limites.limiteSecretaria !== null"
+                            mode="determinate"
+                            [value]="calcularPercentual(limites.usadoSecretaria, limites.limiteSecretaria)"
+                            [color]="limites.podeAdicionarSecretaria ? 'primary' : 'warn'">
+          </mat-progress-bar>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Histórico de Cobranças -->
+    <mat-card class="cobrancas-card">
+      <mat-card-header>
+        <mat-card-title>Histórico de Cobranças</mat-card-title>
+      </mat-card-header>
+
+      <mat-card-content>
+        <table mat-table [dataSource]="cobrancas" *ngIf="cobrancas.length > 0" class="cobrancas-table">
+
+          <ng-container matColumnDef="criadaEm">
+            <th mat-header-cell *matHeaderCellDef>Data</th>
+            <td mat-cell *matCellDef="let c">{{ c.criadaEm | date:'dd/MM/yyyy' }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="valorTotal">
+            <th mat-header-cell *matHeaderCellDef>Valor</th>
+            <td mat-cell *matCellDef="let c">{{ formatarValor(c.valorTotal) }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>Status</th>
+            <td mat-cell *matCellDef="let c">
+              <span class="status-badge" [ngClass]="getStatusClass(c.status)">{{ c.status }}</span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="acoes">
+            <th mat-header-cell *matHeaderCellDef>Ações</th>
+            <td mat-cell *matCellDef="let c">
+              <button mat-icon-button *ngIf="c.status === 'PENDENTE'" (click)="abrirModalPix(c)" matTooltip="Ver Pix">
+                <mat-icon>qr_code_2</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="['criadaEm', 'valorTotal', 'status', 'acoes']"></tr>
+          <tr mat-row *matRowDef="let row; columns: ['criadaEm', 'valorTotal', 'status', 'acoes'];"></tr>
+        </table>
+
+        <p *ngIf="cobrancas.length === 0" class="sem-cobrancas">Nenhuma cobrança registrada.</p>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

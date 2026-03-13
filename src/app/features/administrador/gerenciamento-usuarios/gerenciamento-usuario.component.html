@@ -10,6 +10,63 @@
     </div>
   </header>
 
+  <!-- Painel de Limites do Plano -->
+  <section class="limites-plano-section" *ngIf="limites && !isSuperAdmin">
+    <h2 class="section-title">
+      <i class="fa-solid fa-chart-pie"></i>
+      Uso do Plano — {{ limites.planoNome }}
+    </h2>
+    <div class="limites-cards">
+      <div class="limite-card" [class.limite-esgotado]="!limites.podeAdicionarProfissional">
+        <div class="limite-card__icon">
+          <i class="fa-solid fa-user-doctor"></i>
+        </div>
+        <div class="limite-card__info">
+          <span class="limite-card__title">Profissionais</span>
+          <span class="limite-card__contagem">{{ limites.usadoProfissional }} / {{ formatarLimite(limites.limiteProfissional) }}</span>
+          <div class="limite-card__barra" *ngIf="limites.limiteProfissional !== null">
+            <div class="limite-card__progresso"
+                 [style.width.%]="calcularPercentual(limites.usadoProfissional, limites.limiteProfissional)"
+                 [class.progresso-critico]="!limites.podeAdicionarProfissional">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="limite-card" [class.limite-esgotado]="!limites.podeAdicionarSecretaria">
+        <div class="limite-card__icon">
+          <i class="fa-solid fa-user-pen"></i>
+        </div>
+        <div class="limite-card__info">
+          <span class="limite-card__title">Secretárias</span>
+          <span class="limite-card__contagem">{{ limites.usadoSecretaria }} / {{ formatarLimite(limites.limiteSecretaria) }}</span>
+          <div class="limite-card__barra" *ngIf="limites.limiteSecretaria !== null">
+            <div class="limite-card__progresso"
+                 [style.width.%]="calcularPercentual(limites.usadoSecretaria, limites.limiteSecretaria)"
+                 [class.progresso-critico]="!limites.podeAdicionarSecretaria">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="limite-card" [class.limite-esgotado]="!limites.podeAdicionarAdminOrg">
+        <div class="limite-card__icon">
+          <i class="fa-solid fa-user-shield"></i>
+        </div>
+        <div class="limite-card__info">
+          <span class="limite-card__title">Admins</span>
+          <span class="limite-card__contagem">{{ limites.usadoAdminOrg }} / {{ formatarLimite(limites.limiteAdminOrg) }}</span>
+          <div class="limite-card__barra" *ngIf="limites.limiteAdminOrg !== null">
+            <div class="limite-card__progresso"
+                 [style.width.%]="calcularPercentual(limites.usadoAdminOrg, limites.limiteAdminOrg)"
+                 [class.progresso-critico]="!limites.podeAdicionarAdminOrg">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- Cards de Ações Rápidas -->
   <section class="quick-actions-section">
     <h2 class="section-title">
@@ -17,7 +74,8 @@
       Cadastrar Novo Usuário
     </h2>
     <div class="action-cards">
-      <button class="action-card action-card--success" (click)="AdicionarClinico()">
+      <button class="action-card action-card--success" *ngIf="!isSuperAdmin" (click)="AdicionarClinico()"
+              [class.action-card--disabled]="limites && !limites.podeAdicionarProfissional">
         <div class="action-card__icon">
           <i class="fa-solid fa-user-doctor"></i>
         </div>
@@ -28,7 +86,7 @@
         <i class="fa-solid fa-chevron-right action-card__arrow"></i>
       </button>
 
-      <button class="action-card action-card--warning" (click)="AdicionarPaciente()">
+      <button class="action-card action-card--warning" *ngIf="!isSuperAdmin" (click)="AdicionarPaciente()">
         <div class="action-card__icon">
           <i class="fa-solid fa-hospital-user"></i>
         </div>
@@ -39,7 +97,8 @@
         <i class="fa-solid fa-chevron-right action-card__arrow"></i>
       </button>
 
-      <button class="action-card action-card--info" (click)="AdicionarSecretaria()">
+      <button class="action-card action-card--info" *ngIf="!isSuperAdmin" (click)="AdicionarSecretaria()"
+              [class.action-card--disabled]="limites && !limites.podeAdicionarSecretaria">
         <div class="action-card__icon">
           <i class="fa-solid fa-user-pen"></i>
         </div>
@@ -50,7 +109,8 @@
         <i class="fa-solid fa-chevron-right action-card__arrow"></i>
       </button>
 
-      <button class="action-card action-card--purple" (click)="AdicionarAdministrador()">
+      <button class="action-card action-card--purple" *ngIf="!isSuperAdmin" (click)="AdicionarAdministrador()"
+              [class.action-card--disabled]="limites && !limites.podeAdicionarAdminOrg">
         <div class="action-card__icon">
           <i class="fa-solid fa-user-shield"></i>
         </div>
@@ -101,7 +161,7 @@
     </div>
 
     <!-- Filtros por Categoria -->
-    <div class="filter-tabs">
+    <div class="filter-tabs" *ngIf="!isSuperAdmin">
       <button
         class="filter-tab"
         [class.active]="radioValue == 5 || radioValue == 0"
@@ -136,6 +196,13 @@
         (click)="radioValue = 4; PesquisaCategoria()">
         <i class="fa-solid fa-user-shield"></i>
         <span>Admins</span>
+      </button>
+    </div>
+    <div class="filter-tabs" *ngIf="isSuperAdmin">
+      <button
+        class="filter-tab active">
+        <i class="fa-solid fa-user-shield"></i>
+        <span>Admins Org</span>
       </button>
     </div>
 

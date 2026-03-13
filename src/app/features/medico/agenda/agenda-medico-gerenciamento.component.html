@@ -175,6 +175,13 @@
                     <i class="fa-solid fa-stethoscope"></i>
                   </button>
 
+                  <!-- Editar Prontuário - Apenas para Finalizadas (Dentista) -->
+                  <button *ngIf="Finalizadas && UsuarioLogado.perfil === 'DENTISTA'"
+                    class="hc-action-btn hc-action-btn--warning" title="Editar Prontuário"
+                    (click)="EditarProntuario(element)">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                  </button>
+
                   <!-- Imprimir Documentos -->
                   <button class="hc-action-btn hc-action-btn--primary" title="Gerar Documentos"
                     (click)="AbrirOpcoesImpressao(element)">

@@ -121,8 +121,13 @@ export class LoginComponent implements OnInit, OnDestroy {
    */
   private handleLoginError(error: any): void {
     this.isLoading = false;
-    this.errorHandler.showError('Email ou senha inválidos');
     console.error('[Login] Erro:', error);
+
+    if (error.status === 403 && error.error?.message) {
+      this.errorHandler.showWarning(error.error.message, 'Acesso bloqueado');
+    } else {
+      this.errorHandler.showError('Email ou senha inválidos');
+    }
   }
 
   // ========== Getters para template ==========

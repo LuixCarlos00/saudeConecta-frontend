@@ -1,4 +1,3 @@
-import { log } from 'node:console';
 import { Component, OnInit, OnDestroy, Optional } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
@@ -7,15 +6,13 @@ import { MatDialogRef } from '@angular/material/dialog';
 import Swal from 'sweetalert2';
 
 import { ProfissionalApiService } from 'src/app/services/api/profissional-api.service';
-import { Endereco } from 'src/app/util/variados/interfaces/endereco/endereco';
-import { Medico } from 'src/app/util/variados/interfaces/medico/medico';
 import { ufOptions } from 'src/app/util/variados/options/options';
 import { FiltroStateService } from 'src/app/services/state/filtro-state.service';
 import { CepApiService } from 'src/app/services/api/cep-api.service';
 import { cpfValidator } from 'src/app/util/validators/cpf-form.validator';
 import { CpfValidator } from 'src/app/util/validators/cpf.validator';
 import { logradouro } from 'src/app/util/variados/interfaces/endereco/logradouro';
-import { EspecialidadeService, EspecialidadeResponse } from 'src/app/services/api/especialidade.service';
+import { EspecialidadeApiService, EspecialidadeResponse } from 'src/app/services/api/especialidade-api.service';
 
 @Component({
   selector: 'app-cadastro-medico',
@@ -55,7 +52,7 @@ export class CadastroMedicoComponent implements OnInit, OnDestroy {
     @Optional() private dialogRef: MatDialogRef<CadastroMedicoComponent>,
     private filtroStateService: FiltroStateService,
     private cepApiService: CepApiService,
-    private especialidadeService: EspecialidadeService
+    private especialidadeService: EspecialidadeApiService
   ) { }
 
   ngOnInit(): void {
@@ -310,15 +307,21 @@ export class CadastroMedicoComponent implements OnInit, OnDestroy {
   private handleHttpError(error: any) {
     console.error('Erro HTTP:', error);
     let errorMessage = 'Erro desconhecido ao realizar o cadastro.';
+    let titulo = 'Erro';
+    let icone: 'error' | 'warning' = 'error';
 
-    if (error.status === 409 && error.error.includes && error.error.includes('CPF já cadastrado no sistema')) {
+    if (error.status === 422 && error.error?.message) {
+      icone = 'warning';
+      titulo = 'Limite do plano atingido';
+      errorMessage = error.error.message;
+    } else if (error.status === 409 && error.error?.includes && error.error.includes('CPF já cadastrado no sistema')) {
       errorMessage = 'CPF já cadastrado no sistema. Por favor, verifique os dados.';
-    } else if (error.status === 409 && error.error.includes && error.error.includes('Email já cadastrado no sistema como')) {
-      if (error.error.includes && error.error.includes('Email já cadastrado no sistema')) {
+    } else if (error.status === 409 && error.error?.includes && error.error.includes('Email já cadastrado no sistema como')) {
+      if (error.error.includes('Email já cadastrado no sistema')) {
         errorMessage = 'Email já cadastrado no sistema. Por favor, utilize outro email.';
-      } else if (error.error.includes && error.error.includes('Duplicate entry') && error.error.includes('medico.MedEmail_UNIQUE')) {
+      } else if (error.error.includes('Duplicate entry') && error.error.includes('medico.MedEmail_UNIQUE')) {
         errorMessage = 'Já existe um Médico registrado com esse email.';
-      } else if (error.error.includes && error.error.includes('Duplicate entry') && error.error.includes('medico.MedCrm_UNIQUE')) {
+      } else if (error.error.includes('Duplicate entry') && error.error.includes('medico.MedCrm_UNIQUE')) {
         errorMessage = 'Já existe um Médico registrado com esse CRM.';
       } else {
         errorMessage = typeof error.error === 'string' ? error.error : 'Erro ao processar cadastro.';
@@ -326,8 +329,8 @@ export class CadastroMedicoComponent implements OnInit, OnDestroy {
     }
 
     Swal.fire({
-      icon: 'error',
-      title: 'Erro',
+      icon: icone,
+      title: titulo,
       text: errorMessage,
     });
   }

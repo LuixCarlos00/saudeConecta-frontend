@@ -31,18 +31,18 @@ export class SelecaoRelatorioComponent implements OnInit {
       cor: '#10b981'
     },
     {
-      id: '3',
-      titulo: 'Histórico Completo',
-      descricao: 'Histórico de todas as consultas do paciente',
-      icone: 'fa-solid fa-file-medical',
-      cor: '#8b5cf6'
-    },
-    {
       id: '4',
       titulo: 'Atestado Médico',
       descricao: 'Documento de atestado para fins diversos',
       icone: 'fa-solid fa-file-signature',
       cor: '#f59e0b'
+    },
+    {
+      id: '3',
+      titulo: 'Histórico Completo',
+      descricao: 'Histórico de todas as consultas do paciente',
+      icone: 'fa-solid fa-file-medical',
+      cor: '#8b5cf6'
     },
     {
       id: '5',
@@ -52,17 +52,39 @@ export class SelecaoRelatorioComponent implements OnInit {
       cor: '#64748b'
     },
     {
+      id: '7',
+      titulo: 'Comprovante de Pagamento',
+      descricao: 'Gerar comprovante de pagamento da consulta',
+      icone: 'fa-solid fa-file-invoice-dollar',
+      cor: '#14b8a6'
+    },
+    {
       id: '6',
       titulo: 'Relatório Dinâmico',
       descricao: 'Gerar relatório personalizado da consulta',
       icone: 'fa-solid fa-file-pdf',
       cor: '#ef4444'
+    },
+    {
+      id: '8',
+      titulo: 'Questionário de Saúde',
+      descricao: 'Visualizar respostas e assinatura do questionário',
+      icone: 'fa-solid fa-clipboard-question',
+      cor: '#0ea5e9'
+    },
+    {
+      id: '9',
+      titulo: 'Planejamento Odontológico',
+      descricao: 'Visualizar procedimentos e assinatura do planejamento',
+      icone: 'fa-solid fa-list-check',
+      cor: '#d946ef'
     }
   ];
 
   opcoes: RelatorioOption[] = [];
   consultaNaoRealizada: boolean = false;
   isAdmin: boolean = false;
+  isProfissional: boolean = false;
 
   constructor(
     public dialogRef: MatDialogRef<SelecaoRelatorioComponent>,
@@ -72,16 +94,37 @@ export class SelecaoRelatorioComponent implements OnInit {
   ngOnInit(): void {
     this.consultaNaoRealizada = this.data?.consultaNaoRealizada || false;
     this.isAdmin = this.data?.isAdmin || false;
+    this.isProfissional = this.data?.isProfissional || false;
     this.filtrarOpcoes();
   }
 
   private filtrarOpcoes(): void {
-    if (this.consultaNaoRealizada) {
+    const statusConsulta = this.data?.consulta?.status;
+    
+    // Se estiver AGENDADA, CONFIRMADA ou CANCELADA - apenas histórico completo
+    if (statusConsulta === 'AGENDADA' || statusConsulta === 'CONFIRMADA' || statusConsulta === 'CANCELADA') {
       this.opcoes = this.todasOpcoes.filter(opcao => opcao.id === '3');
-    } else {
+    } 
+    // Se estiver REALIZADA ou PAGO - todas as opções + comprovante de pagamento
+    else if (statusConsulta === 'REALIZADA' || statusConsulta === 'PAGO') {
       this.opcoes = this.todasOpcoes.filter(opcao => {
         if (opcao.id === '6') {
           return this.isAdmin;
+        }
+        if (opcao.id === '7') {
+          return !this.isProfissional;
+        }
+        return true;
+      });
+    }
+    // Para qualquer outro status - mantém a lógica anterior
+    else {
+      this.opcoes = this.todasOpcoes.filter(opcao => {
+        if (opcao.id === '6') {
+          return this.isAdmin;
+        }
+        if (opcao.id === '7') {
+          return !this.isProfissional;
         }
         return true;
       });

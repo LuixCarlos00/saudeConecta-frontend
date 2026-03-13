@@ -62,7 +62,7 @@ export class ImprimirSoliciatacaoDeExamesComponent implements OnInit {
     // Dentista usa "procedimentos" para o conteúdo dos exames
     this.dataSolicitacao = p.dataPrescricao || this.dataAtual;
     this.tituloExame = p.tituloExame?.trim() || 'SOLICITAÇÃO DE EXAMES';
-    this.exame = p.procedimentos?.trim() || p.exame?.trim() || 'Exames a serem realizados conforme avaliação clínica.';
+    this.exame = p.procedimentos?.trim() || p.exame?.trim() || 'Nada a constar.';
     this.dataExame = p.dataExame || this.dataAtual;
 
     // ── Identificação ─────────────────────────────────────────────────────────

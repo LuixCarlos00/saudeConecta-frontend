@@ -1,0 +1,96 @@
+.planos-container {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.planos-container h2 {
+  text-align: center;
+  margin-bottom: 32px;
+  font-size: 1.8rem;
+  color: #333;
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 48px 0;
+}
+
+.planos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 24px;
+}
+
+.plano-card {
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+  border-radius: 12px;
+}
+
+.plano-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.plano-atual {
+  border-color: #4caf50;
+  background-color: #f1f8e9;
+}
+
+.plano-selecionado {
+  border-color: #ff9800;
+}
+
+.plano-preco {
+  text-align: center;
+  margin: 16px 0;
+}
+
+.plano-preco .valor {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1976d2;
+}
+
+.plano-preco .periodo {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.descricao {
+  color: #666;
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.limites {
+  margin-top: 16px;
+}
+
+.limites h4 {
+  margin-bottom: 12px;
+  color: #555;
+}
+
+.limite-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+}
+
+.limite-item mat-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  color: #1976d2;
+}
+
+mat-card-actions {
+  display: flex;
+  justify-content: center;
+  padding: 16px;
+}

@@ -5,6 +5,7 @@ export interface Consultav2 {
   profissionalConselho: string;
   pacienteId: number;
   pacienteNome: string;
+  pacienteTelefone: string | null;
   especialidadeId: number;
   especialidadeNome: string;
   dataHora: string;
@@ -24,11 +25,12 @@ export interface Consultav2 {
 
 export enum StatusConsulta {
   AGENDADA = 'AGENDADA',
+  CONFIRMADA = 'CONFIRMADA',
   REALIZADA = 'REALIZADA',
   CANCELADA = 'CANCELADA',
+  PAGO = 'PAGO',
   FALTOU = 'FALTOU',
   REMARCADA = 'REMARCADA'
-
 }
 export enum FormaPagamento {
   PARTICULAR = 1,

@@ -1,12 +1,5 @@
 export interface Paciente {
 
-
-
-
-
-
-
-
   paciCodigo?: number;
   paciNome?: string;
   paciSexo?: number;

@@ -1,8 +1,9 @@
 /* You can add global styles to this file, and also import other style files */
 @import "~@fortawesome/fontawesome-free/css/all.css";
 
-html, body { 
-  height: 100%; 
+html,
+body {
+  height: 100%;
   margin: 0;
   font-family: Roboto, "Helvetica Neue", sans-serif;
 }
@@ -19,7 +20,7 @@ body.theme-light {
   --primary-dark: #1d4ed8;
   --primary-light: #60a5fa;
   --primary-rgb: 59, 130, 246;
-  
+
   /* Cores de Fundo */
   --bg-primary: #f8fafc;
   --bg-secondary: #f1f5f9;
@@ -27,33 +28,33 @@ body.theme-light {
   --bg-input: #f9fafb;
   --bg-hover: #f3f4f6;
   --bg-sidebar: #1e293b;
-  
+
   /* Cores de Texto */
   --text-primary: #1f2937;
   --text-secondary: #4b5563;
   --text-muted: #9ca3af;
   --text-inverse: #ffffff;
-  
+
   /* Bordas */
   --border-color: #e5e7eb;
   --border-light: #f3f4f6;
-  
+
   /* Status */
   --success-color: #10b981;
   --warning-color: #f59e0b;
   --error-color: #ef4444;
   --info-color: #3b82f6;
-  
+
   /* Sombras */
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-  
+
   /* Tabelas */
   --table-header-bg: #f8fafc;
   --table-row-hover: #f1f5f9;
   --table-border: #e5e7eb;
-  
+
   /* Botões */
   --btn-secondary-bg: #f3f4f6;
   --btn-secondary-hover: #e5e7eb;
@@ -69,7 +70,7 @@ body.dark-theme.theme-dark-blue {
   --primary-dark: #3b82f6;
   --primary-light: #93c5fd;
   --primary-rgb: 96, 165, 250;
-  
+
   /* Cores de Fundo - Azul Escuro */
   --bg-primary: #0f172a;
   --bg-secondary: #1e293b;
@@ -77,33 +78,33 @@ body.dark-theme.theme-dark-blue {
   --bg-input: #334155;
   --bg-hover: #334155;
   --bg-sidebar: #0f172a;
-  
+
   /* Cores de Texto - Branco */
   --text-primary: #f8fafc;
   --text-secondary: #e2e8f0;
   --text-muted: #94a3b8;
   --text-inverse: #0f172a;
-  
+
   /* Bordas */
   --border-color: #334155;
   --border-light: #475569;
-  
+
   /* Status */
   --success-color: #34d399;
   --warning-color: #fbbf24;
   --error-color: #f87171;
   --info-color: #60a5fa;
-  
+
   /* Sombras */
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
-  
+
   /* Tabelas */
   --table-header-bg: #1e293b;
   --table-row-hover: #334155;
   --table-border: #334155;
-  
+
   /* Botões */
   --btn-secondary-bg: #334155;
   --btn-secondary-hover: #475569;
@@ -119,7 +120,7 @@ body.dark-theme.theme-dark-black {
   --primary-dark: #7c3aed;
   --primary-light: #c4b5fd;
   --primary-rgb: 167, 139, 250;
-  
+
   /* Cores de Fundo - Preto VERDADEIRO */
   --bg-primary: #000000;
   --bg-secondary: #0a0a0a;
@@ -129,33 +130,33 @@ body.dark-theme.theme-dark-black {
   --bg-hover: #1a1a1a;
   --bg-selected: #262626;
   --bg-sidebar: #000000;
-  
+
   /* Cores de Texto - Branco */
   --text-primary: #ffffff;
   --text-secondary: #e5e5e5;
   --text-muted: #a3a3a3;
   --text-inverse: #000000;
-  
+
   /* Bordas */
   --border-color: #262626;
   --border-light: #333333;
-  
+
   /* Status */
   --success-color: #4ade80;
   --warning-color: #facc15;
   --error-color: #fb7185;
   --info-color: #a78bfa;
-  
+
   /* Sombras */
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.6);
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.7);
-  
+
   /* Tabelas */
   --table-header-bg: #0a0a0a;
   --table-row-hover: #1a1a1a;
   --table-border: #262626;
-  
+
   /* Botões */
   --btn-secondary-bg: #1a1a1a;
   --btn-secondary-hover: #262626;
@@ -374,7 +375,9 @@ body {
 }
 
 /* Inputs globais */
-input, textarea, select {
+input,
+textarea,
+select {
   background-color: var(--bg-input) !important;
   color: var(--text-primary) !important;
   border-color: var(--border-color) !important;
@@ -391,7 +394,18 @@ label {
 }
 
 /* Textos globais */
-p, span, h1, h2, h3, h4, h5, h6, div, li, td, th {
+p,
+span,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+div,
+li,
+td,
+th {
   color: var(--text-primary);
 }
 
@@ -615,10 +629,10 @@ body.dark-theme *::-webkit-scrollbar-thumb:hover {
 
 /* Transições suaves para mudança de tema */
 * {
-  transition: background-color 0.2s ease, 
-              border-color 0.2s ease,
-              color 0.2s ease,
-              box-shadow 0.2s ease;
+  transition: background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 /* ============================================

@@ -18,3 +18,36 @@
 .cadastro-header--super .cadastro-header__icon {
   background: linear-gradient(135deg, #6f42c1, #4a2d8a);
 }
+
+.cadastro-field__cep-wrapper {
+  display: flex;
+  gap: 8px;
+}
+
+.cadastro-field__cep-wrapper .cadastro-field__input {
+  flex: 1;
+}
+
+.cadastro-btn-cep {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 14px;
+  background: var(--primary-color, #4a2d8a);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.2s;
+  white-space: nowrap;
+}
+
+.cadastro-btn-cep:hover:not(:disabled) {
+  background: var(--primary-dark, #3a1f72);
+}
+
+.cadastro-btn-cep:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

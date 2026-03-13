@@ -44,7 +44,7 @@
         </th>
         <td mat-cell *matCellDef="let usuario" class="col-nome">
           <div class="user-info">
-            <div class="user-avatar" [ngClass]="'avatar-' + usuario.categoria.toLowerCase()">
+            <div class="user-avatar" [ngClass]="'avatar-' + normalizarClasse(usuario.categoria)">
               <i class="fa-solid" [ngClass]="usuario.categoriaIcon"></i>
             </div>
             <div class="user-details">
@@ -64,7 +64,7 @@
           <i class="fa-solid fa-tag"></i> Categoria
         </th>
         <td mat-cell *matCellDef="let usuario" class="col-categoria">
-          <span class="categoria-badge" [ngClass]="'categoria-' + usuario.categoria.toLowerCase()">
+          <span class="categoria-badge" [ngClass]="'categoria-' + normalizarClasse(usuario.categoria)">
             <i class="fa-solid" [ngClass]="usuario.categoriaIcon"></i>
             {{ usuario.categoria }}
           </span>
@@ -79,6 +79,26 @@
         <td mat-cell *matCellDef="let usuario" class="col-email">
           <span class="email-text" [title]="usuario.email">
             {{ usuario.email || 'Não informado' }}
+          </span>
+        </td>
+      </ng-container>
+
+      <!-- Coluna Plano (apenas SUPER_ADMIN) -->
+      <ng-container matColumnDef="plano">
+        <th mat-header-cell *matHeaderCellDef class="col-plano">
+          <i class="fa-solid fa-layer-group"></i> Plano
+        </th>
+        <td mat-cell *matCellDef="let usuario" class="col-plano">
+          <span *ngIf="usuario.nomePlano" class="plano-badge">
+            <i class="fa-solid fa-check-circle"></i>
+            {{ usuario.nomePlano }}
+          </span>
+          <span *ngIf="!usuario.nomePlano && isAdministrador(usuario)" class="plano-badge sem-plano">
+            <i class="fa-solid fa-exclamation-circle"></i>
+            Sem plano
+          </span>
+          <span *ngIf="!isAdministrador(usuario)" class="plano-badge na">
+            -
           </span>
         </td>
       </ng-container>
@@ -103,14 +123,6 @@
         </th>
         <td mat-cell *matCellDef="let usuario" class="col-acoes">
           <div class="action-buttons">
-            <!-- Botão Visualizar/Editar -->
-            <button
-              class="btn-action btn-visualizar"
-              (click)="abrirVisualizarEditar(usuario); $event.stopPropagation()"
-              title="Visualizar/Editar">
-              <i class="fa-solid fa-eye"></i>
-            </button>
-
             <!-- Botão Trocar Senha -->
             <button
               *ngIf="!isPaciente(usuario)"
@@ -120,8 +132,18 @@
               <i class="fa-solid fa-key"></i>
             </button>
 
-            <!-- Botão Bloquear/Desbloquear -->
+            <!-- Botão Associar Plano (SUPER_ADMIN apenas para Administradores) -->
             <button
+              *ngIf="controleAcessoService.isSuperAdmin() && isAdministrador(usuario)"
+              class="btn-action btn-plano"
+              (click)="abrirAssociarPlano(usuario); $event.stopPropagation()"
+              title="Associar plano à organização">
+              <i class="fa-solid fa-link"></i>
+            </button>
+
+            <!-- Botão Bloquear/Desbloquear (oculto para o próprio AdminOrg) -->
+            <button
+              *ngIf="!isProprioUsuario(usuario)"
               class="btn-action"
               [ngClass]="usuario.status ? 'btn-bloquear' : 'btn-desbloquear'"
               (click)="alternarStatusUsuario(usuario); $event.stopPropagation()"
@@ -129,8 +151,9 @@
               <i class="fa-solid" [ngClass]="usuario.status ? 'fa-lock-open' : 'fa-lock'"></i>
             </button>
 
-            <!-- Botão Deletar -->
+            <!-- Botão Deletar (oculto para o próprio AdminOrg) -->
             <button
+              *ngIf="!isProprioUsuario(usuario)"
               class="btn-action btn-deletar"
               (click)="confirmarDelecao(usuario); $event.stopPropagation()"
               title="Excluir usuário">

@@ -58,7 +58,7 @@ export class RoleGuard implements CanActivate {
     }
 
     // Usuário não tem permissão para esta rota
-    // Redireciona para Dashboard (rota padrão após login)
-    return this.router.createUrlTree(['/Dashboard']);
+    // Redireciona para login para evitar loop infinito
+    return this.router.createUrlTree(['/login']);
   }
 }

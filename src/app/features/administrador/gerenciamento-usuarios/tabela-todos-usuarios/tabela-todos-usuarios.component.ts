@@ -18,6 +18,8 @@ import { Paciente } from 'src/app/util/variados/interfaces/paciente/paciente';
 import { ProfissionalApiService } from 'src/app/services/api/profissional-api.service';
 import { is } from 'date-fns/locale';
 import { Profissional } from 'src/app/util/variados/interfaces/medico/Profissional';
+import { ControleAcessoApiService } from 'src/app/services/api/controle-acesso-api.service';
+import { ModalAssociarPlanoComponent } from './modal-associar-plano/modal-associar-plano.component';
 
 export enum CategoriaUsuario {
   PACIENTE = 1,
@@ -36,6 +38,7 @@ export interface UsuarioUnificado {
   status: boolean;
   dadosOriginais: any;
   nomeOrganizacao?: string;
+  nomePlano?: string;
 }
 
 @Component({
@@ -70,10 +73,16 @@ export class TabelaTodosUsuariosComponent implements OnInit, OnDestroy {
     private filtroStateService: FiltroStateService,
     private dialogService: DialogService,
     private dialog: MatDialog,
-    private clinicoApiService: ProfissionalApiService
+    private clinicoApiService: ProfissionalApiService,
+    public controleAcessoService: ControleAcessoApiService
   ) { }
 
   ngOnInit(): void {
+    // Adiciona coluna 'plano' se for SUPER_ADMIN
+    if (this.controleAcessoService.isSuperAdmin()) {
+      this.displayedColumns = ['index', 'nome', 'categoria', 'email', 'plano', 'status', 'acoes'];
+    }
+    
     this.inicializarSubscriptions();
     this.carregarUsuarios();
   }
@@ -115,10 +124,17 @@ export class TabelaTodosUsuariosComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (data: any) => {
-          this.pacientes = data.paciente || [];
-          this.clinico = data.clinico || [];
-          this.secretarias = data.secretaria || [];
-          this.administradores = data.administrador || [];
+          if (this.controleAcessoService.isSuperAdmin()) {
+            this.pacientes = [];
+            this.clinico = [];
+            this.secretarias = [];
+            this.administradores = data.administrador || [];
+          } else {
+            this.pacientes = data.paciente || [];
+            this.clinico = data.clinico || [];
+            this.secretarias = data.secretaria || [];
+            this.administradores = data.administrador || [];
+          }
           this.todosUsuarios = this.unificarUsuarios();
           this.aplicarFiltros();
           this.isLoading = false;
@@ -172,7 +188,8 @@ export class TabelaTodosUsuariosComponent implements OnInit, OnDestroy {
       categoriaIcon: 'fa-user-shield',
       status: (a as any).status === 'ATIVO',
       dadosOriginais: a,
-      nomeOrganizacao: (a as any).nomeOrganizacao ?? undefined
+      nomeOrganizacao: (a as any).nomeOrganizacao ?? undefined,
+      nomePlano: (a as any).nomePlano ?? undefined
     }));
 
     return usuarios;
@@ -226,6 +243,18 @@ export class TabelaTodosUsuariosComponent implements OnInit, OnDestroy {
       .toUpperCase();
   }
 
+  /**
+   * Normaliza uma string para uso em classes CSS (sem acentos, lowercase).
+   * @param valor string com possíveis acentos
+   * @returns string normalizada para CSS
+   */
+  normalizarClasse(valor: string): string {
+    return (valor || '')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase();
+  }
+
   confirmarDelecao(usuario: UsuarioUnificado): void {
     Swal.fire({
       title: 'Confirmar exclusão',
@@ -244,6 +273,7 @@ export class TabelaTodosUsuariosComponent implements OnInit, OnDestroy {
   }
 
   private deletar(usuario: UsuarioUnificado): void {
+      console.log("usuario deletar", usuario.dadosOriginais)
     const element = usuario.dadosOriginais;
     let request$;
     // Escolhe o endpoint correto dependendo do tipo de usuário
@@ -327,10 +357,16 @@ export class TabelaTodosUsuariosComponent implements OnInit, OnDestroy {
     const novoStatus = usuario.status ? 0 : 1;
     const acao = novoStatus === 0 ? 'bloquear' : 'desbloquear';
 
+    // SUPER_ADMIN bloqueando Administrador → aviso de cascata
+    const isCascata = this.controleAcessoService.isSuperAdmin() && usuario.categoria === 'Administrador';
+    const textoConfirmacao = isCascata
+      ? `Deseja ${acao} o tenant ${usuario.nome}? Todos os usuários desta organização também serão ${novoStatus === 0 ? 'bloqueados' : 'desbloqueados'}.`
+      : `Deseja ${acao} o usuário ${usuario.nome}?`;
+
     Swal.fire({
       title: `Confirmar ${acao}`,
-      text: `Deseja ${acao} o usuário ${usuario.nome}?`,
-      icon: 'question',
+      text: textoConfirmacao,
+      icon: isCascata ? 'warning' : 'question',
       showCancelButton: true,
       confirmButtonColor: novoStatus === 0 ? '#d33' : '#28a745',
       cancelButtonColor: '#6c757d',
@@ -406,5 +442,48 @@ export class TabelaTodosUsuariosComponent implements OnInit, OnDestroy {
         this.carregarUsuarios();
       }
     });
+  }
+
+  abrirAssociarPlano(usuario: UsuarioUnificado): void {
+    if (usuario.categoria !== 'Administrador') return;
+console.log(usuario);
+    const admin = usuario.dadosOriginais as any;
+    const organizacaoId = admin.organizacaoId || admin.organizacao?.id;
+    const nomeOrganizacao = usuario.nomeOrganizacao || 'Organização';
+
+    if (!organizacaoId) {
+      this.mostrarErro('ID da organização não encontrado.');
+      return;
+    }
+console.log(organizacaoId, nomeOrganizacao);
+    const dialogRef = this.dialog.open(ModalAssociarPlanoComponent, {
+      width: '700px',
+      data: { organizacaoId, nomeOrganizacao },
+      disableClose: true
+    });
+
+    dialogRef.afterClosed().subscribe((associado: boolean) => {
+      if (associado) {
+        this.mostrarSucesso('Plano associado com sucesso!');
+        this.carregarUsuarios();
+      }
+    });
+  }
+
+  isAdministrador(usuario: UsuarioUnificado): boolean {
+    return usuario.categoria === 'Administrador';
+  }
+
+  /**
+   * Verifica se o usuário da tabela é o próprio AdminOrg logado.
+   * Usado para impedir que o admin bloqueie ou delete a si mesmo.
+   * @param usuario Usuário unificado da tabela
+   * @returns true se for o próprio usuário logado
+   */
+  isProprioUsuario(usuario: UsuarioUnificado): boolean {
+    if (usuario.categoria !== 'Administrador') return false;
+    const usuarioIdLogado = this.controleAcessoService.UsuarioLogado?.id;
+    const usuarioIdTabela = usuario.dadosOriginais?.usuarioId;
+    return usuarioIdLogado > 0 && usuarioIdTabela > 0 && usuarioIdLogado === usuarioIdTabela;
   }
 }

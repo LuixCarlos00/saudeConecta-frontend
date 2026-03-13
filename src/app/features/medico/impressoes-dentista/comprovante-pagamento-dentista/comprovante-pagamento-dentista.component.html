@@ -1,0 +1,167 @@
+<div class="atestado-container">
+  <!-- Header do Dialog -->
+  <div class="dialog-header">
+    <div class="header-info">
+      <div class="header-icon">
+        <i class="fa-solid fa-file-invoice-dollar"></i>
+      </div>
+      <div class="header-text">
+        <h1 class="header-title">Comprovante de Pagamento</h1>
+        <p class="header-subtitle">Pré-visualização do documento</p>
+      </div>
+    </div>
+    <button class="close-btn" (click)="fechar()">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+  </div>
+
+  <!-- Body do Dialog -->
+  <div class="dialog-body">
+    <div class="pdf-content">
+
+      <!-- Cabeçalho do PDF -->
+      <div class="pdf-header">
+        <h1 class="pdf-title">COMPROVANTE DE PAGAMENTO - CONSULTA</h1>
+        <p class="pdf-number">Prontuário Nº {{ codigoProntuario }}</p>
+      </div>
+
+      <!-- Seção: Dados do Profissional -->
+      <div class="pdf-section">
+        <div class="section-header">
+          <h2>DADOS DO PROFISSIONAL</h2>
+        </div>
+        <div class="section-content section-content--horizontal">
+          <div class="pdf-field">
+            <span class="field-label">NOME</span>
+            <span class="field-value">{{ nomeDentista }}</span>
+          </div>
+          <div class="pdf-field">
+            <span class="field-label">CRO</span>
+            <span class="field-value">{{ cro }}</span>
+          </div>
+          <div class="pdf-field">
+            <span class="field-label">ESPECIALIDADE</span>
+            <span class="field-value">{{ especialidade || '-' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Seção: Dados do Paciente -->
+      <div class="pdf-section">
+        <div class="section-header">
+          <h2>DADOS DO PACIENTE</h2>
+        </div>
+        <div class="section-content section-content--horizontal">
+          <div class="pdf-field">
+            <span class="field-label">PACIENTE</span>
+            <span class="field-value">{{ nomePaciente }}</span>
+          </div>
+          <div class="pdf-field">
+            <span class="field-label">CPF</span>
+            <span class="field-value">{{ cpfPaciente || '-' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Seção: Informações da Consulta -->
+      <div class="pdf-section">
+        <div class="section-header">
+          <h2>INFORMAÇÕES DA CONSULTA</h2>
+        </div>
+        <div class="section-content section-content--horizontal">
+          <div class="pdf-field">
+            <span class="field-label">CONSULTA Nº</span>
+            <span class="field-value">{{ consultaId }}</span>
+          </div>
+          <div class="pdf-field">
+            <span class="field-label">DATA</span>
+            <span class="field-value">{{ dataConsulta }}</span>
+          </div>
+          <div class="pdf-field">
+            <span class="field-label">HORÁRIO</span>
+            <span class="field-value">{{ horarioConsulta }}</span>
+          </div>
+          <div class="pdf-field">
+            <span class="field-label">FORMA PGTO.</span>
+            <span class="field-value">{{ formaPagamento || '-' }}</span>
+          </div>
+          <div class="pdf-field">
+            <span class="field-label">VALOR CONSULTA</span>
+            <span class="field-value">{{ formatarMoeda(valorConsulta) }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Seção: Planejamento Terapêutico -->
+      <div class="pdf-section" *ngIf="planejamentos.length > 0">
+        <div class="section-header">
+          <h2>PLANEJAMENTO TERAPÊUTICO</h2>
+        </div>
+        <div class="section-content section-content--vertical">
+          <table class="pagamento-table">
+            <thead>
+              <tr>
+                <th>DATA</th>
+                <th>PROCEDIMENTO</th>
+                <th>VALOR</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let plan of planejamentos">
+                <td>{{ plan.dataProcedimento }}</td>
+                <td>{{ plan.procedimentoRealizado }}</td>
+                <td>{{ formatarMoeda(plan.valor) }}</td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr>
+                <td colspan="2" class="total-label">TOTAL PLANEJAMENTO</td>
+                <td class="total-value">{{ formatarMoeda(totalPlanejamento) }}</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+
+      <!-- Seção: Resumo Financeiro -->
+      <div class="pdf-section">
+        <div class="section-header">
+          <h2>RESUMO FINANCEIRO</h2>
+        </div>
+        <div class="section-content section-content--vertical">
+          <div class="resumo-item">
+            <span class="resumo-label">Valor da Consulta</span>
+            <span class="resumo-valor">{{ formatarMoeda(valorConsulta) }}</span>
+          </div>
+          <div class="resumo-item" *ngIf="totalPlanejamento > 0">
+            <span class="resumo-label">Total Planejamento Terapêutico</span>
+            <span class="resumo-valor">{{ formatarMoeda(totalPlanejamento) }}</span>
+          </div>
+          <div class="resumo-total">
+            <span class="resumo-total-label">TOTAL GERAL</span>
+            <span class="resumo-total-valor">{{ formatarMoeda(valorConsulta + totalPlanejamento) }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Rodapé -->
+      <div class="pdf-footer">
+        <div class="footer-line"></div>
+        <div class="footer-date">Emitido em: {{ getDataAtual() }} às {{ getHoraAtual() }}</div>
+        <div class="footer-info">Documento financeiro - Confidencial</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer do Dialog -->
+  <div class="dialog-footer">
+    <button class="btn btn--secondary" (click)="fechar()">
+      <i class="fa-solid fa-xmark"></i>
+      Cancelar
+    </button>
+    <button class="btn btn--primary" (click)="GerarPDF()">
+      <i class="fa-solid fa-file-pdf"></i>
+      Gerar PDF
+    </button>
+  </div>
+</div>

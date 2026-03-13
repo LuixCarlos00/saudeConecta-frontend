@@ -79,12 +79,14 @@ export class BarraLateraComponent implements OnInit, OnDestroy {
     const routeMap: { [key: string]: string } = {
       '/Dashboard': 'Dashboard',
       '/Prontuario': 'prontuario',
-      '/Dados-Medicos': 'DadosMedicos',
+      '/dadospessoais': 'DadosMedicos',
       '/gerenciamento': 'gerenciamento',
       '/Gerenciamento-Usuarios': 'Usuarios',
       '/trocaSenha': 'trocar_senha',
       '/Agenda-Medico': 'AgendaMedico',
-      '/mensageria': 'Mensageria'
+      '/mensageria': 'Mensageria',
+      '/gerenciar-planos': 'GerenciarPlanos',
+      '/minha-assinatura': 'MinhaAssinatura'
     };
 
     this.activeRoute = routeMap[url] || '';
@@ -158,14 +160,16 @@ export class BarraLateraComponent implements OnInit, OnDestroy {
       'Usuarios': 'Gerenciamento-Usuarios',
       'prontuario': 'Prontuario',
       'pacientes': 'Pacientes',
-      'DadosMedicos': 'Dados-Medicos',
+      'DadosMedicos': 'dadospessoais',
       'trocar_senha': 'trocaSenha',
       'sistema': 'sistema',
       'suporte': 'suporte',
       'sobre': 'sobre',
       'AgendaMedico': 'Agenda-Medico',
       'startconsulta': 'startconsulta',
-      'Mensageria': 'mensageria'
+      'Mensageria': 'mensageria',
+      'GerenciarPlanos': 'gerenciar-planos',
+      'MinhaAssinatura': 'minha-assinatura'
     };
 
     const route = routes[rota];

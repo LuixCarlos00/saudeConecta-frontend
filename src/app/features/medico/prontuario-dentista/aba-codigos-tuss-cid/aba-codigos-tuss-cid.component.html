@@ -1,0 +1,208 @@
+<section class="pep-section">
+  <div class="pep-section__header">
+    <h2 class="pep-section__title">
+      <i class="fa-solid fa-barcode"></i>
+      Códigos TUSS e CID
+    </h2>
+  </div>
+  <div class="pep-section__body">
+
+    <!-- ═══════════ LINHA 1: TUSS e CID lado a lado ═══════════ -->
+    <div class="cards-grid cards-grid--2">
+
+      <!-- ── CARD 1: REGISTROS TUSS ── -->
+      <div class="card-panel card-panel--tuss">
+        <div class="card-panel__header">
+          <i class="fa-solid fa-barcode"></i>
+          <span>Registros TUSS</span>
+          <small>Terminologia Unificada da Saúde Suplementar</small>
+        </div>
+        <div class="card-panel__body">
+          <div class="form-group">
+            <label class="form-label"><i class="fa-solid fa-search"></i> Pesquisar TUSS</label>
+            <input class="form-input" type="text" [(ngModel)]="buscaTuss"
+              (input)="filtrarTuss()" placeholder="Código ou descrição do procedimento..." />
+            <div class="autocomplete-list" *ngIf="tussResultados.length > 0">
+              <div class="autocomplete-item" *ngFor="let item of tussResultados"
+                (click)="adicionarTuss(item)">
+                <strong>{{ item.codigo }}</strong> — {{ item.descricao }}
+                <span class="autocomplete-hint" *ngIf="item.fabricante">{{ item.fabricante }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="tags-container" *ngIf="tussSelecionados.length > 0">
+            <label class="form-label form-label--sm">
+              <i class="fa-solid fa-check-double"></i> Selecionados ({{ tussSelecionados.length }})
+            </label>
+            <div class="tags-list">
+              <div class="tag-item tag-item--tuss" *ngFor="let item of tussSelecionados; let i = index">
+                <span class="tag-item__text">
+                  <strong>{{ item.codigo }}</strong> — {{ item.descricao }}
+                </span>
+                <button class="btn-remove-tag" (click)="removerTuss(i)" title="Remover">
+                  <i class="fa-solid fa-xmark"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label form-label--sm">
+              <i class="fa-solid fa-file-lines"></i> Registro
+            </label>
+            <textarea class="form-textarea" [(ngModel)]="textoTuss" rows="3"
+              placeholder="Nenhum código TUSS selecionado..."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── CARD 2: REGISTROS CID ── -->
+      <div class="card-panel card-panel--cid">
+        <div class="card-panel__header">
+          <i class="fa-solid fa-disease"></i>
+          <span>Registros CID</span>
+          <small>Classificação Internacional de Doenças</small>
+        </div>
+        <div class="card-panel__body">
+          <div class="form-group">
+            <label class="form-label"><i class="fa-solid fa-search"></i> Pesquisar CID</label>
+            <input class="form-input" type="text" [(ngModel)]="buscaCid"
+              (input)="filtrarCid()" placeholder="Código ou nome da doença..." />
+            <div class="autocomplete-list" *ngIf="cidResultados.length > 0">
+              <div class="autocomplete-item" *ngFor="let item of cidResultados"
+                (click)="adicionarCid(item)">
+                <strong>{{ item.codigo }}</strong> — {{ item.label }}
+              </div>
+            </div>
+          </div>
+
+          <div class="tags-container" *ngIf="cidSelecionados.length > 0">
+            <label class="form-label form-label--sm">
+              <i class="fa-solid fa-check-double"></i> Selecionados ({{ cidSelecionados.length }})
+            </label>
+            <div class="tags-list">
+              <div class="tag-item tag-item--cid" *ngFor="let item of cidSelecionados; let i = index">
+                <span class="tag-item__text">
+                  <strong>{{ item.codigo }}</strong> — {{ item.label }}
+                </span>
+                <button class="btn-remove-tag" (click)="removerCid(i)" title="Remover">
+                  <i class="fa-solid fa-xmark"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label form-label--sm">
+              <i class="fa-solid fa-file-lines"></i> Registro
+            </label>
+            <textarea class="form-textarea" [(ngModel)]="textoCid" rows="3"
+              placeholder="Nenhum código CID selecionado..."></textarea>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ═══════════ LINHA 2: Prescrição e Solicitação de Exame lado a lado ═══════════ -->
+    <div class="cards-grid cards-grid--2" style="margin-top: 20px;">
+
+      <!-- ── CARD 3: PRESCRIÇÃO ── -->
+      <div class="card-panel card-panel--prescricao">
+        <div class="card-panel__header">
+          <i class="fa-solid fa-prescription-bottle-medical"></i>
+          <span>Prescrição Odontológica</span>
+        </div>
+        <div class="card-panel__body">
+          <div class="form-group">
+            <label class="form-label">
+              <i class="fa-solid fa-file-prescription"></i> Prescrição
+            </label>
+            <textarea class="form-textarea form-textarea--lg" [(ngModel)]="Prescricao" rows="8"
+              placeholder="Descreva a prescrição de medicamentos, posologia, duração do tratamento..."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── CARD 4: SOLICITAÇÃO DE EXAME ── -->
+      <div class="card-panel card-panel--exame">
+        <div class="card-panel__header">
+          <i class="fa-solid fa-flask"></i>
+          <span>Solicitação de Exame</span>
+        </div>
+        <div class="card-panel__body">
+
+          <!-- Busca TUSS para exame -->
+          <div class="form-group">
+            <label class="form-label"><i class="fa-solid fa-barcode"></i> TUSS do Exame</label>
+            <input class="form-input" type="text" [(ngModel)]="buscaTussExame"
+              (input)="filtrarTussExame()" placeholder="Código ou descrição do exame..." />
+            <div class="autocomplete-list" *ngIf="tussExameResultados.length > 0">
+              <div class="autocomplete-item" *ngFor="let item of tussExameResultados"
+                (click)="adicionarTussExame(item)">
+                <strong>{{ item.codigo }}</strong> — {{ item.descricao }}
+              </div>
+            </div>
+          </div>
+
+          <div class="tags-container" *ngIf="tussExameSelecionados.length > 0">
+            <label class="form-label form-label--sm">
+              <i class="fa-solid fa-check-double"></i> TUSS ({{ tussExameSelecionados.length }})
+            </label>
+            <div class="tags-list">
+              <div class="tag-item tag-item--tuss" *ngFor="let item of tussExameSelecionados; let i = index">
+                <span class="tag-item__text">
+                  <strong>{{ item.codigo }}</strong> — {{ item.descricao }}
+                </span>
+                <button class="btn-remove-tag" (click)="removerTussExame(i)" title="Remover">
+                  <i class="fa-solid fa-xmark"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Busca CID para exame -->
+          <div class="form-group" style="margin-top: 12px;">
+            <label class="form-label"><i class="fa-solid fa-disease"></i> CID do Exame</label>
+            <input class="form-input" type="text" [(ngModel)]="buscaCidExame"
+              (input)="filtrarCidExame()" placeholder="Código ou nome da doença..." />
+            <div class="autocomplete-list" *ngIf="cidExameResultados.length > 0">
+              <div class="autocomplete-item" *ngFor="let item of cidExameResultados"
+                (click)="adicionarCidExame(item)">
+                <strong>{{ item.codigo }}</strong> — {{ item.label }}
+              </div>
+            </div>
+          </div>
+
+          <div class="tags-container" *ngIf="cidExameSelecionados.length > 0">
+            <label class="form-label form-label--sm">
+              <i class="fa-solid fa-check-double"></i> CID ({{ cidExameSelecionados.length }})
+            </label>
+            <div class="tags-list">
+              <div class="tag-item tag-item--cid" *ngFor="let item of cidExameSelecionados; let i = index">
+                <span class="tag-item__text">
+                  <strong>{{ item.codigo }}</strong> — {{ item.label }}
+                </span>
+                <button class="btn-remove-tag" (click)="removerCidExame(i)" title="Remover">
+                  <i class="fa-solid fa-xmark"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Texto da solicitação -->
+          <div class="form-group" style="margin-top: 12px;">
+            <label class="form-label form-label--sm">
+              <i class="fa-solid fa-file-lines"></i> Registro da Solicitação
+            </label>
+            <textarea class="form-textarea" [(ngModel)]="textoSolicitacaoExame" rows="3"
+              placeholder="Detalhes da solicitação de exame..."></textarea>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</section>
