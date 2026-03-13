@@ -17,6 +17,7 @@ import { ImprimirPrescricaoComponent } from 'src/app/features/medico/impressoes/
 import { ImprimirSoliciatacaoDeExamesComponent } from 'src/app/features/medico/impressoes/ImprimirSoliciatacaoDeExames/ImprimirSoliciatacaoDeExames.component';
 import { AtestadoPacienteComponent } from 'src/app/features/medico/impressoes/AtestadoPaciente/AtestadoPaciente.component';
 import { HistoricoCompletoComponent } from 'src/app/features/medico/impressoes/historicoCompleto/historicoCompleto.component';
+import { HistoricoCompletoDentistaComponent } from 'src/app/features/medico/impressoes-dentista/historico-completo-dentista/historico-completo-dentista.component';
 import { ImprimirRegistroComponent } from 'src/app/features/medico/impressoes/ImprimirRegistro/ImprimirRegistro.component';
 import { Consultav2 } from 'src/app/util/variados/interfaces/consulta/consultav2';
 import { Prontuario } from 'src/app/util/variados/interfaces/Prontuario/Prontuario';
@@ -29,6 +30,8 @@ import { tokenService } from 'src/app/util/Token/Token.service';
 import { ProntuarioDentistaApiService } from 'src/app/services/api/prontuario-dentista-api.service';
 import { PlanejamentoTerapeuticoApiService } from 'src/app/services/api/planejamento-terapeutico-api.service';
 import { ComprovantePagamentoDentistaComponent } from 'src/app/features/medico/impressoes-dentista/comprovante-pagamento-dentista/comprovante-pagamento-dentista.component';
+import { QuestionarioSaudeDentistaComponent } from 'src/app/features/medico/impressoes-dentista/questionario-saude-dentista/questionario-saude-dentista.component';
+import { PlanejamentoOdontologicoDentistaComponent } from 'src/app/features/medico/impressoes-dentista/planejamento-odontologico-dentista/planejamento-odontologico-dentista.component';
 
 type TipoVisualizacao = 'AGENDADA' | 'REALIZADA';
 type TipoPeriodo = 'diario' | 'semanal' | 'mensal' | 'anual';
@@ -48,6 +51,8 @@ export class AgendaComponent implements OnInit, OnDestroy {
   displayedColumnsFinalizadas: string[] = ['consulta', 'medico', 'paciente', 'diaSemana', 'data', 'horario', 'status', 'statusPagamento', 'Seleciona'];
   Finalizadas = false;
   clickedRows = new Set<Tabela>();
+  planejamentosAssinados = new Set<number>();
+  questionariosRespondidos = new Set<number>();
   ValorOpcao: any;
   tipoPeriodoSelecionado: TipoPeriodo = 'diario';
   private destroy$ = new Subject<void>();
@@ -105,6 +110,11 @@ export class AgendaComponent implements OnInit, OnDestroy {
       if (Array.isArray(dados)) {
         const tipo: TipoVisualizacao = this.Finalizadas ? 'REALIZADA' : 'AGENDADA';
         this.dataSource = this.filtrarConsultasPorTipo(dados, tipo);
+        if (this.Finalizadas) {
+          this.verificarPlanejamentosAssinados();
+        } else {
+          this.verificarQuestionariosRespondidos();
+        }
       }
     } catch (error) {
       console.error(error);
@@ -185,14 +195,31 @@ export class AgendaComponent implements OnInit, OnDestroy {
   // Ações da tabela
   // ─────────────────────────────────────────────────────────────────────────────
 
-  async Deletar(consulta: Tabela) {
+  async Deletar(consulta: Consultav2) {
+    const confirmar = await Swal.fire({
+      title: 'Confirmar exclusão',
+      text: `Deseja excluir a consulta de ${consulta.pacienteNome}? O questionário de saúde será excluído.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Sim, excluir',
+      cancelButtonText: 'Cancelar'
+    });
+
+    if (!confirmar.isConfirmed) return;
+
     try {
-      await this.consultaApi.deletarConsulta(consulta.consulta).toPromise();
+      await this.consultaApi.deletarConsulta(consulta.id).toPromise();
       Swal.fire('Deletado', 'Consulta deletada com sucesso', 'success');
       this.buscarDadosParaTabela();
-    } catch (error) {
-      console.error(error);
-      Swal.fire('Erro', 'Erro ao deletar consulta', 'error');
+    } catch (error: any) {
+      const status = error?.status;
+      if (status === 409) {
+        Swal.fire('Exclusão bloqueada', 'Esta consulta possui prontuário clínico e não pode ser excluída. Os dados clínicos devem ser preservados.', 'info');
+      } else {
+        Swal.fire('Erro', 'Erro ao deletar consulta', 'error');
+      }
     }
   }
 
@@ -482,6 +509,8 @@ export class AgendaComponent implements OnInit, OnDestroy {
       '4': () => this.atestadoDentista(dados),
       '5': () => this.registroConsultaDentista(dados),
       '6': () => this.comprovantePagamentoDentista(dados),
+      '8': () => this.questionarioSaudeDentista(dados),
+      '9': () => this.planejamentoOdontologicoDentista(dados),
     };
     acoes[opcao]?.();
   }
@@ -520,7 +549,11 @@ export class AgendaComponent implements OnInit, OnDestroy {
   }
 
   ImprimirHistoricoCompleto(dados: Consultav2) {
-    this.dialog.open(HistoricoCompletoComponent, { width: '60%', height: '90%', data: dados });
+    const dialogConfig = { width: '60%', height: '90%', data: dados };
+    this.prontuarioApiService.buscarProntuarioById(dados.id).subscribe(
+      () => this.dialog.open(HistoricoCompletoComponent, dialogConfig),
+      () => this.dialog.open(HistoricoCompletoDentistaComponent, dialogConfig)
+    );
   }
 
   // ── Dialogs Dentista ─────────────────────────────────────────────────────────
@@ -543,6 +576,14 @@ export class AgendaComponent implements OnInit, OnDestroy {
 
   comprovantePagamentoDentista(dados: Prontuario) {
     this.dialog.open(ComprovantePagamentoDentistaComponent, { width: '60%', height: '90%', data: dados });
+  }
+
+  questionarioSaudeDentista(dados: Prontuario) {
+    this.dialog.open(QuestionarioSaudeDentistaComponent, { width: '60%', height: '90%', data: dados });
+  }
+
+  planejamentoOdontologicoDentista(dados: Prontuario) {
+    this.dialog.open(PlanejamentoOdontologicoDentistaComponent, { width: '60%', height: '90%', data: dados });
   }
 
   // ─────────────────────────────────────────────────────────────────────────────
@@ -577,6 +618,23 @@ export class AgendaComponent implements OnInit, OnDestroy {
   // ─────────────────────────────────────────────────────────────────────────────
   // Gerar Link do Planejamento Terapêutico
   // ─────────────────────────────────────────────────────────────────────────────
+  private verificarPlanejamentosAssinados(): void {
+    const finalizadas = this.dataSource.filter(c => c.status === 'REALIZADA');
+    for (const consulta of finalizadas) {
+      if (!consulta?.id || this.planejamentosAssinados.has(consulta.id)) continue;
+      this.prontuarioDentistaApiService.buscarProntuarioDentistaById(consulta.id)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: (prontuario: any) => {
+            const plans = prontuario?.planejamentosTerapeuticos || prontuario?.planejamentos || [];
+            if (plans.length > 0 && plans.every((p: any) => p.statusAssinatura === 'ASSINADO')) {
+              this.planejamentosAssinados.add(consulta.id);
+            }
+          }
+        });
+    }
+  }
+
   gerarLinkPlanejamento(element: Consultav2): void {
     if (!element?.id) return;
     this.prontuarioDentistaApiService.buscarProntuarioDentistaById(element.id)
@@ -585,6 +643,12 @@ export class AgendaComponent implements OnInit, OnDestroy {
         next: (prontuario: any) => {
           if (!prontuario?.codigo) {
             Swal.fire('Aviso', 'Nenhum prontuário encontrado para esta consulta.', 'warning');
+            return;
+          }
+          const plans = prontuario?.planejamentosTerapeuticos || prontuario?.planejamentos || [];
+          if (plans.length > 0 && plans.every((p: any) => p.statusAssinatura === 'ASSINADO')) {
+            this.planejamentosAssinados.add(element.id);
+            Swal.fire('Aviso', 'Todos os itens do planejamento já foram assinados pelo paciente.', 'info');
             return;
           }
           this.planejamentoApi.gerarLinkAssinatura(prontuario.codigo)
@@ -627,9 +691,45 @@ export class AgendaComponent implements OnInit, OnDestroy {
   // ─────────────────────────────────────────────────────────────────────────────
   // Gerar Link do Questionário de Saúde
   // ─────────────────────────────────────────────────────────────────────────────
+  private verificarQuestionariosRespondidos(): void {
+    const confirmadas = this.dataSource.filter(c => c.status === 'CONFIRMADA');
+    for (const consulta of confirmadas) {
+      if (!consulta?.id || this.questionariosRespondidos.has(consulta.id)) continue;
+      this.prontuarioDentistaApiService.buscarQuestionarioSaude(consulta.id)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: (resp: any) => {
+            if (resp?.respondido) {
+              this.questionariosRespondidos.add(consulta.id);
+            }
+          }
+        });
+    }
+  }
+
   gerarLinkQuestionario(element: Consultav2): void {
-    console.log(element);
     if (!element?.id) return;
+
+    // Verifica se já foi respondido antes de gerar
+    this.prontuarioDentistaApiService.buscarQuestionarioSaude(element.id)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (resp: any) => {
+          if (resp?.respondido) {
+            this.questionariosRespondidos.add(element.id);
+            Swal.fire('Aviso', 'O questionário de saúde já foi respondido e assinado pelo paciente.', 'info');
+            return;
+          }
+          this.executarGeracaoLinkQuestionario(element);
+        },
+        error: () => {
+          // Se não encontrou questionário, permite gerar o link
+          this.executarGeracaoLinkQuestionario(element);
+        }
+      });
+  }
+
+  private executarGeracaoLinkQuestionario(element: Consultav2): void {
     this.prontuarioDentistaApiService.gerarLinkQuestionario(element.id)
       .pipe(takeUntil(this.destroy$))
       .subscribe({

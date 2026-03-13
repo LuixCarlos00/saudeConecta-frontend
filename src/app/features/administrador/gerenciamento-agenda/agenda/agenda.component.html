@@ -247,14 +247,14 @@
                   <i class="fa-solid fa-note-sticky"></i>
                 </button>
 
-                <!-- Gerar Link Questionário (somente antes da finalização) -->
-                <button *ngIf="element.status !== 'REALIZADA'" class="hc-action-btn hc-action-btn--teal" title="Gerar Link do Questionário de Saúde"
+                <!-- Gerar Link Questionário (somente quando confirmada e não respondido) -->
+                <button *ngIf="element.status === 'CONFIRMADA' && !questionariosRespondidos.has(element.id)" class="hc-action-btn hc-action-btn--teal" title="Gerar Link do Questionário de Saúde"
                   (click)="gerarLinkQuestionario(element)">
                   <i class="fa-solid fa-link"></i>
                 </button>
 
-                <!-- Gerar Link Planejamento Terapêutico (somente após finalização) -->
-                <button *ngIf="element.status === 'REALIZADA'" class="hc-action-btn hc-action-btn--teal" title="Gerar Link de Confirmação do Planejamento Terapêutico"
+                <!-- Gerar Link Planejamento Terapêutico (somente após finalização e se não assinado) -->
+                <button *ngIf="element.status === 'REALIZADA' && !planejamentosAssinados.has(element.id)" class="hc-action-btn hc-action-btn--teal" title="Gerar Link de Confirmação do Planejamento Terapêutico"
                   (click)="gerarLinkPlanejamento(element)">
                   <i class="fa-solid fa-file-signature"></i>
                 </button>
@@ -269,7 +269,7 @@
                 </a>
 
                 <!-- Editar -->
-                <button *ngIf="element.status === 'AGENDADA' || element.status === 'CONFIRMADA'" class="hc-action-btn hc-action-btn--warning" title="Editar Consulta"
+                <button *ngIf="element.status === 'AGENDADA'" class="hc-action-btn hc-action-btn--warning" title="Editar Consulta"
                   (click)="Editar(element)">
                   <i class="fa-solid fa-pen-to-square"></i>
                 </button>
@@ -280,7 +280,7 @@
                   <i class="fa-solid fa-print"></i>
                 </button>
 
-                <!-- Excluir -->
+                <!-- Excluir (somente AGENDADA ou CONFIRMADA) -->
                 <button *ngIf="element.status === 'AGENDADA' || element.status === 'CONFIRMADA'" class="hc-action-btn hc-action-btn--danger" title="Excluir Consulta"
                   (click)="Deletar(element)">
                   <i class="fa-solid fa-trash"></i>

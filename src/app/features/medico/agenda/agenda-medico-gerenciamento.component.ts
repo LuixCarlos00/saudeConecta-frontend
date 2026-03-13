@@ -28,6 +28,8 @@ import { PrescricaoDentistaComponent } from '../impressoes-dentista/prescricao-d
 import { AtestadoDentistaComponent } from '../impressoes-dentista/atestado-dentista/atestado-dentista.component';
 import { EditarProntuarioDentistaComponent } from '../prontuario-dentista/editar-prontuario-dentista/editar-prontuario-dentista.component';
 import { ComprovantePagamentoDentistaComponent } from '../impressoes-dentista/comprovante-pagamento-dentista/comprovante-pagamento-dentista.component';
+import { QuestionarioSaudeDentistaComponent } from '../impressoes-dentista/questionario-saude-dentista/questionario-saude-dentista.component';
+import { PlanejamentoOdontologicoDentistaComponent } from '../impressoes-dentista/planejamento-odontologico-dentista/planejamento-odontologico-dentista.component';
 
 type TipoVisualizacao = 'CONFIRMADA' | 'REALIZADA';
 type TipoPeriodo = 'diario' | 'semanal' | 'mensal' | 'anual';
@@ -283,6 +285,8 @@ export class AgendaMedicoGerenciamentoComponent implements OnInit, OnDestroy {
       case '4': this.dialog.open(AtestadoDentistaComponent, { width: dialogWidth, height: dialogHeight, data: dados }); break;
       case '5': this.dialog.open(RegistroConsultaDentistaComponent, { width: dialogWidth, height: dialogHeight, data: dados }); break;
       case '6': this.dialog.open(ComprovantePagamentoDentistaComponent, { width: dialogWidth, height: dialogHeight, data: dados }); break;
+      case '8': this.dialog.open(QuestionarioSaudeDentistaComponent, { width: dialogWidth, height: dialogHeight, data: dados }); break;
+      case '9': this.dialog.open(PlanejamentoOdontologicoDentistaComponent, { width: dialogWidth, height: dialogHeight, data: dados }); break;
     }
   }
 

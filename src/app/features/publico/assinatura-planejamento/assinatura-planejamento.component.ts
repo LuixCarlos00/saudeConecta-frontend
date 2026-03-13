@@ -38,6 +38,7 @@ export class AssinaturaPlanejamentoComponent implements OnInit {
 
   ngOnInit(): void {
     this.token = this.route.snapshot.paramMap.get('token') || '';
+    console.log('Token recebido:', this.token);
     if (!this.token) {
       this.erro = 'Link inválido. Token não encontrado.';
       this.loading = false;

@@ -23,6 +23,7 @@ export class ComprovantePagamentoDentistaComponent implements OnInit {
   cpfPaciente = '';
 
   // Dados da consulta
+  consultaId = '';
   dataConsulta = '';
   horarioConsulta = '';
   formaPagamento = '';
@@ -44,7 +45,6 @@ export class ComprovantePagamentoDentistaComponent implements OnInit {
 
   ngOnInit() {
     const p = this.data;
-    console.log('Dados recebidos (comprovante pagamento):', p);
 
     // ── Profissional ──
     const prof = p.profissional as any;
@@ -78,6 +78,7 @@ export class ComprovantePagamentoDentistaComponent implements OnInit {
       ?? '';
 
     // ── Consulta ──
+    this.consultaId = consulta?.id?.toString() || '';
     if (consulta?.dataHora) {
       const dt = new Date(consulta.dataHora);
       this.dataConsulta = dt.toLocaleDateString('pt-BR');
@@ -154,7 +155,7 @@ export class ComprovantePagamentoDentistaComponent implements OnInit {
     y = 30;
 
     // ── Dados do Profissional ──
-    y = this.adicionarSecaoVertical(doc, 'DADOS DO PROFISSIONAL', '#3498db', y, margin, pageWidth);
+    y = this.adicionarSecao(doc, 'DADOS DO PROFISSIONAL', y, margin, pageWidth);
     y = this.adicionarCamposHorizontal(doc, [
       { label: 'Nome', value: this.nomeDentista },
       { label: 'CRO', value: this.cro },
@@ -163,7 +164,7 @@ export class ComprovantePagamentoDentistaComponent implements OnInit {
     y += 3;
 
     // ── Dados do Paciente ──
-    y = this.adicionarSecaoVertical(doc, 'DADOS DO PACIENTE', '#27ae60', y, margin, pageWidth);
+    y = this.adicionarSecao(doc, 'DADOS DO PACIENTE', y, margin, pageWidth);
     y = this.adicionarCamposHorizontal(doc, [
       { label: 'Paciente', value: this.nomePaciente },
       { label: 'CPF', value: this.cpfPaciente || '-' },
@@ -171,8 +172,9 @@ export class ComprovantePagamentoDentistaComponent implements OnInit {
     y += 3;
 
     // ── Dados da Consulta ──
-    y = this.adicionarSecaoVertical(doc, 'INFORMAÇÕES DA CONSULTA', '#e67e22', y, margin, pageWidth);
+    y = this.adicionarSecao(doc, 'INFORMAÇÕES DA CONSULTA', y, margin, pageWidth);
     y = this.adicionarCamposHorizontal(doc, [
+      { label: 'Consulta Nº', value: this.consultaId },
       { label: 'Data', value: this.dataConsulta },
       { label: 'Horário', value: this.horarioConsulta },
       { label: 'Forma Pgto.', value: this.formaPagamento || '-' },
@@ -182,7 +184,7 @@ export class ComprovantePagamentoDentistaComponent implements OnInit {
 
     // ── Planejamento Terapêutico ──
     if (this.planejamentos.length > 0) {
-      y = this.adicionarSecaoVertical(doc, 'PLANEJAMENTO TERAPÊUTICO', '#8e44ad', y, margin, pageWidth);
+      y = this.adicionarSecao(doc, 'PLANEJAMENTO TERAPÊUTICO', y, margin, pageWidth);
 
       const colWidths = [30, (pageWidth - (margin * 2) - 60), 30];
 
@@ -225,7 +227,7 @@ export class ComprovantePagamentoDentistaComponent implements OnInit {
     }
 
     // ── Resumo Financeiro ──
-    y = this.adicionarSecaoVertical(doc, 'RESUMO FINANCEIRO', '#c0392b', y, margin, pageWidth);
+    y = this.adicionarSecao(doc, 'RESUMO FINANCEIRO', y, margin, pageWidth);
 
     doc.setLineWidth(0.1);
     doc.setDrawColor(180, 180, 180);
@@ -282,8 +284,8 @@ export class ComprovantePagamentoDentistaComponent implements OnInit {
 
     // ── Rodapé ──
     const footerY = pageHeight - 12;
-    doc.setDrawColor(52, 152, 219);
-    doc.setLineWidth(0.5);
+    doc.setDrawColor(100, 100, 100);
+    doc.setLineWidth(0.3);
     doc.line(margin, footerY, pageWidth - margin, footerY);
     doc.setFont('helvetica', 'italic');
     doc.setFontSize(7);
@@ -299,26 +301,14 @@ export class ComprovantePagamentoDentistaComponent implements OnInit {
 
   // ── Métodos auxiliares ──
 
-  private adicionarSecaoVertical(
-    doc: jsPDF, titulo: string, cor: string | null,
-    y: number, margin: number, pageWidth: number
-  ): number {
+  private adicionarSecao(doc: jsPDF, titulo: string, y: number, margin: number, pageWidth: number): number {
     doc.setFillColor(248, 249, 250);
     doc.rect(margin, y, pageWidth - (margin * 2), 6, 'F');
-    if (cor) {
-      const rgb = this.hexToRgb(cor);
-      doc.setFillColor(rgb.r, rgb.g, rgb.b);
-      doc.rect(margin, y, 2, 6, 'F');
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(8);
-      doc.setTextColor(rgb.r, rgb.g, rgb.b);
-    } else {
-      doc.setFillColor(100, 100, 100);
-      doc.rect(margin, y, 2, 6, 'F');
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(8);
-      doc.setTextColor(0, 0, 0);
-    }
+    doc.setFillColor(100, 100, 100);
+    doc.rect(margin, y, 2, 6, 'F');
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(8);
+    doc.setTextColor(0, 0, 0);
     doc.text(titulo.toUpperCase(), margin + 4, y + 4);
     doc.setTextColor(0, 0, 0);
     return y + 7.5;
@@ -358,10 +348,4 @@ export class ComprovantePagamentoDentistaComponent implements OnInit {
     return y + alturaCampo;
   }
 
-  private hexToRgb(hex: string): { r: number; g: number; b: number } {
-    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-    return result
-      ? { r: parseInt(result[1], 16), g: parseInt(result[2], 16), b: parseInt(result[3], 16) }
-      : { r: 0, g: 0, b: 0 };
-  }
 }
