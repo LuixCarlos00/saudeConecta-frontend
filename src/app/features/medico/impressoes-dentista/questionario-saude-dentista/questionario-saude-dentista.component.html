@@ -3,10 +3,10 @@
   <div class="dialog-header">
     <div class="header-info">
       <div class="header-icon">
-        <i class="fa-solid fa-file-invoice-dollar"></i>
+        <i class="fa-solid fa-clipboard-question"></i>
       </div>
       <div class="header-text">
-        <h1 class="header-title">Comprovante de Pagamento</h1>
+        <h1 class="header-title">Questionário de Saúde</h1>
         <p class="header-subtitle">Pré-visualização do documento</p>
       </div>
     </div>
@@ -17,17 +17,26 @@
 
   <!-- Body do Dialog -->
   <div class="dialog-body">
-    <div class="pdf-content">
+    <div class="pdf-content" [class.content-blur]="!questionarioRespondido">
+
+      <!-- Aviso de não assinado -->
+      <div class="blur-overlay" *ngIf="!questionarioRespondido">
+        <div class="blur-message">
+          <i class="fa-solid fa-lock"></i>
+          <h3>Questionário não assinado</h3>
+          <p>O paciente ainda não respondeu/assinou o questionário de saúde.</p>
+        </div>
+      </div>
 
       <!-- Cabeçalho do PDF -->
-      <div class="pdf-header">
-        <h1 class="pdf-title">COMPROVANTE DE PAGAMENTO - CONSULTA</h1>
+      <div class="pdf-header pdf-header--blue">
+        <h1 class="pdf-title">QUESTIONÁRIO DE SAÚDE</h1>
         <p class="pdf-number">Prontuário Nº {{ codigoProntuario }}</p>
       </div>
 
       <!-- Seção: Dados do Profissional -->
       <div class="pdf-section">
-        <div class="section-header">
+        <div class="section-header section-header--blue">
           <h2>DADOS DO PROFISSIONAL</h2>
         </div>
         <div class="section-content section-content--horizontal">
@@ -39,16 +48,12 @@
             <span class="field-label">CRO</span>
             <span class="field-value">{{ cro }}</span>
           </div>
-          <div class="pdf-field">
-            <span class="field-label">ESPECIALIDADE</span>
-            <span class="field-value">{{ especialidade || '-' }}</span>
-          </div>
         </div>
       </div>
 
       <!-- Seção: Dados do Paciente -->
       <div class="pdf-section">
-        <div class="section-header">
+        <div class="section-header section-header--green">
           <h2>DADOS DO PACIENTE</h2>
         </div>
         <div class="section-content section-content--horizontal">
@@ -63,10 +68,10 @@
         </div>
       </div>
 
-      <!-- Seção: Informações da Consulta -->
+      <!-- Seção: Dados da Consulta -->
       <div class="pdf-section">
-        <div class="section-header">
-          <h2>INFORMAÇÕES DA CONSULTA</h2>
+        <div class="section-header section-header--blue">
+          <h2>DADOS DA CONSULTA</h2>
         </div>
         <div class="section-content section-content--horizontal">
           <div class="pdf-field">
@@ -81,65 +86,60 @@
             <span class="field-label">HORÁRIO</span>
             <span class="field-value">{{ horarioConsulta }}</span>
           </div>
-          <div class="pdf-field">
-            <span class="field-label">FORMA PGTO.</span>
-            <span class="field-value">{{ formaPagamento || '-' }}</span>
-          </div>
-          <div class="pdf-field">
-            <span class="field-label">VALOR CONSULTA</span>
-            <span class="field-value">{{ formatarMoeda(valorConsulta) }}</span>
-          </div>
         </div>
       </div>
 
-      <!-- Seção: Planejamento Terapêutico -->
-      <div class="pdf-section" *ngIf="planejamentos.length > 0">
-        <div class="section-header">
-          <h2>PLANEJAMENTO TERAPÊUTICO</h2>
+      <!-- Seção: Respostas do Questionário -->
+      <div class="pdf-section" *ngIf="questionarioPerguntas.length > 0">
+        <div class="section-header section-header--purple">
+          <h2>RESPOSTAS DO QUESTIONÁRIO</h2>
         </div>
         <div class="section-content section-content--vertical">
-          <table class="pagamento-table">
+          <table class="questionario-table">
             <thead>
               <tr>
-                <th>DATA</th>
-                <th>PROCEDIMENTO</th>
-                <th>VALOR</th>
+                <th style="width: 50%;">PERGUNTA</th>
+                <th style="width: 15%;">RESPOSTA</th>
+                <th style="width: 35%;">OBSERVAÇÃO</th>
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let plan of planejamentos">
-                <td>{{ plan.dataProcedimento }}</td>
-                <td>{{ plan.procedimentoRealizado }}</td>
-                <td>{{ formatarMoeda(plan.valor) }}</td>
+              <tr *ngFor="let item of questionarioPerguntas">
+                <td>{{ item.pergunta }}</td>
+                <td>
+                  <span class="badge" [class.badge--success]="item.resposta === 'Não'"
+                    [class.badge--warning]="item.resposta === 'Sim'">
+                    {{ item.resposta }}
+                  </span>
+                </td>
+                <td>{{ item.observacao || '—' }}</td>
               </tr>
             </tbody>
-            <tfoot>
-              <tr>
-                <td colspan="2" class="total-label">TOTAL PLANEJAMENTO</td>
-                <td class="total-value">{{ formatarMoeda(totalPlanejamento) }}</td>
-              </tr>
-            </tfoot>
           </table>
         </div>
       </div>
 
-      <!-- Seção: Resumo Financeiro -->
-      <div class="pdf-section">
-        <div class="section-header">
-          <h2>RESUMO FINANCEIRO</h2>
+      <!-- Seção: Assinatura Digital -->
+      <div class="pdf-section" *ngIf="questionarioRespondido">
+        <div class="section-header section-header--teal">
+          <h2>ASSINATURA DIGITAL</h2>
         </div>
         <div class="section-content section-content--vertical">
-          <div class="resumo-item">
-            <span class="resumo-label">Valor da Consulta</span>
-            <span class="resumo-valor">{{ formatarMoeda(valorConsulta) }}</span>
-          </div>
-          <div class="resumo-item" *ngIf="totalPlanejamento > 0">
-            <span class="resumo-label">Total Planejamento Terapêutico</span>
-            <span class="resumo-valor">{{ formatarMoeda(totalPlanejamento) }}</span>
-          </div>
-          <div class="resumo-total">
-            <span class="resumo-total-label">TOTAL GERAL</span>
-            <span class="resumo-total-valor">{{ formatarMoeda(valorConsulta + totalPlanejamento) }}</span>
+          <div class="assinatura-info">
+            <div class="assinatura-dados">
+              <div class="assinatura-item">
+                <i class="fa-solid fa-calendar-check"></i>
+                <span><strong>Data/Hora:</strong> {{ formatarDataAssinatura() }}</span>
+              </div>
+              <div class="assinatura-item">
+                <i class="fa-solid fa-network-wired"></i>
+                <span><strong>IP de Origem:</strong> {{ questionarioIpOrigem || '-' }}</span>
+              </div>
+            </div>
+            <div class="assinatura-imagem" *ngIf="questionarioAssinatura">
+              <p class="assinatura-label">Assinatura do Paciente</p>
+              <img [src]="questionarioAssinatura" alt="Assinatura do paciente" />
+            </div>
           </div>
         </div>
       </div>
@@ -148,7 +148,7 @@
       <div class="pdf-footer">
         <div class="footer-line"></div>
         <div class="footer-date">Emitido em: {{ getDataAtual() }} às {{ getHoraAtual() }}</div>
-        <div class="footer-info">Documento financeiro - Confidencial</div>
+        <div class="footer-info">Documento clínico - Confidencial</div>
       </div>
     </div>
   </div>
@@ -159,7 +159,7 @@
       <i class="fa-solid fa-xmark"></i>
       Cancelar
     </button>
-    <button class="btn btn--primary" (click)="GerarPDF()">
+    <button class="btn btn--primary" (click)="GerarPDF()" [disabled]="!questionarioRespondido">
       <i class="fa-solid fa-file-pdf"></i>
       Gerar PDF
     </button>

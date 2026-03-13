@@ -1,405 +1,177 @@
 <div class="registro-container">
-  <!-- Header do Dialog -->
   <header class="dialog-header">
     <div class="header-info">
-      <div class="header-icon">
-        <i class="fa-solid fa-file-lines"></i>
-      </div>
+      <div class="header-icon"><i class="fa-solid fa-file-lines"></i></div>
       <div class="header-text">
         <h2 class="header-title">Registro de Consulta Odontológica</h2>
         <p class="header-subtitle">Documento clínico completo</p>
       </div>
     </div>
-    <button class="close-btn" mat-dialog-close>
-      <i class="fa-solid fa-xmark"></i>
-    </button>
+    <button class="close-btn" mat-dialog-close><i class="fa-solid fa-xmark"></i></button>
   </header>
 
-  <!-- Conteúdo do PDF -->
   <div class="dialog-body">
     <div id="pdfContent" class="pdf-content">
-      <!-- Cabeçalho do Documento -->
+
+      <!-- Cabeçalho -->
       <div class="pdf-header">
         <h1 class="pdf-title">REGISTRO DE CONSULTA ODONTOLÓGICA</h1>
+        <div class="pdf-subtitle">Nº {{ codigoProntuario }}</div>
       </div>
 
-      <!-- Seção: Dados do Paciente -->
-      <div class="pdf-section">
-        <div class="section-header section-header--executive">
-          <h2>DADOS DO PACIENTE</h2>
-        </div>
-        <div class="section-content section-content--horizontal">
-          <div class="pdf-field">
-            <span class="field-label">NOME</span>
-            <span class="field-value">{{ nomePaciente }}</span>
-          </div>
-          <div class="pdf-field">
-            <span class="field-label">CPF</span>
-            <span class="field-value">{{ cpfPaciente }}</span>
-          </div>
-          <div class="pdf-field">
-            <span class="field-label">DATA NASC.</span>
-            <span class="field-value">{{ dataNascimento }}</span>
-          </div>
-          <div class="pdf-field">
-            <span class="field-label">EMAIL</span>
-            <span class="field-value">{{ emailPaciente }}</span>
-          </div>
-          <div class="pdf-field">
-            <span class="field-label">TELEFONE</span>
-            <span class="field-value">{{ telefonePaciente }}</span>
-          </div>
-        </div>
-      </div>
+      <!-- Dados do Paciente -->
+      <div class="section-header"><div class="section-bar"></div><span class="section-title">DADOS DO PACIENTE</span></div>
+      <table class="data-table">
+        <tr>
+          <td class="cell"><strong>Nome:</strong> {{ nomePaciente }}</td>
+          <td class="cell"><strong>CPF:</strong> {{ cpfPaciente }}</td>
+          <td class="cell"><strong>Nasc.:</strong> {{ dataNascimento }}</td>
+        </tr>
+        <tr>
+          <td class="cell"><strong>Email:</strong> {{ emailPaciente }}</td>
+          <td class="cell"><strong>Telefone:</strong> {{ telefonePaciente }}</td>
+          <td class="cell">&nbsp;</td>
+        </tr>
+      </table>
 
-      <!-- Seção: Dados da Consulta -->
-      <div class="pdf-section">
-        <div class="section-header section-header--executive">
-          <h2>DADOS DA CONSULTA</h2>
-        </div>
-        <div class="section-content section-content--horizontal">
-          <div class="pdf-field">
-            <span class="field-label">DATA</span>
-            <span class="field-value">{{ dataConsulta }}</span>
-          </div>
-          <div class="pdf-field">
-            <span class="field-label">HORÁRIO</span>
-            <span class="field-value">{{ horarioConsulta }}</span>
-          </div>
-          <div class="pdf-field">
-            <span class="field-label">DIA DA SEMANA</span>
-            <span class="field-value">{{ diaSemana }}</span>
-          </div>
-          <div class="pdf-field">
-            <span class="field-label">STATUS</span>
-            <span class="field-value">{{ statusConsulta }}</span>
-          </div>
-        </div>
-      </div>
+      <!-- Dados da Consulta -->
+      <div class="section-header"><div class="section-bar"></div><span class="section-title">DADOS DA CONSULTA</span></div>
+      <table class="data-table">
+        <tr>
+          <td class="cell"><strong>Data:</strong> {{ dataConsulta }}</td>
+          <td class="cell"><strong>Horário:</strong> {{ horarioConsulta }}</td>
+          <td class="cell"><strong>Dia:</strong> {{ diaSemana }}</td>
+          <td class="cell"><strong>Status:</strong> {{ statusConsulta }}</td>
+        </tr>
+      </table>
 
-      <!-- Seção: Dentista Atendente -->
-      <div class="pdf-section">
-        <div class="section-header section-header--executive">
-          <h2>DENTISTA ATENDENTE</h2>
-        </div>
-        <div class="section-content section-content--horizontal">
-          <div class="pdf-field">
-            <span class="field-label">NOME</span>
-            <span class="field-value">Dr. {{ nomeDentista }}</span>
-          </div>
-          <div class="pdf-field">
-            <span class="field-label">CRO</span>
-            <span class="field-value">{{ cro }}</span>
-          </div>
-          <div class="pdf-field">
-            <span class="field-label">EMAIL</span>
-            <span class="field-value">{{ emailDentista }}</span>
-          </div>
-          <div class="pdf-field">
-            <span class="field-label">TELEFONE</span>
-            <span class="field-value">{{ telefoneDentista }}</span>
-          </div>
-        </div>
-      </div>
+      <!-- Dentista Atendente -->
+      <div class="section-header"><div class="section-bar"></div><span class="section-title">DENTISTA ATENDENTE</span></div>
+      <table class="data-table">
+        <tr>
+          <td class="cell"><strong>Nome:</strong> Dr. {{ nomeDentista }}</td>
+          <td class="cell"><strong>CRO:</strong> {{ cro }}</td>
+          <td class="cell"><strong>Email:</strong> {{ emailDentista }}</td>
+          <td class="cell"><strong>Tel.:</strong> {{ telefoneDentista }}</td>
+        </tr>
+      </table>
 
-      <!-- Seção: Sinais Vitais -->
-      <div class="pdf-section" *ngIf="pressaoArterial || pulso || peso || altura || temperatura || edema">
-        <div class="section-header section-header--executive">
-          <h2>SINAIS VITAIS</h2>
-        </div>
-        <div class="section-content section-content--horizontal">
-          <div class="pdf-field">
-            <span class="field-label">PRESSÃO ARTERIAL</span>
-            <span class="field-value">{{ pressaoArterial || '-' }}</span>
-          </div>
-          <div class="pdf-field">
-            <span class="field-label">PULSO</span>
-            <span class="field-value">{{ pulso || '-' }}</span>
-          </div>
-          <div class="pdf-field">
-            <span class="field-label">PESO</span>
-            <span class="field-value">{{ peso || '-' }}</span>
-          </div>
-          <div class="pdf-field">
-            <span class="field-label">ALTURA</span>
-            <span class="field-value">{{ altura || '-' }}</span>
-          </div>
-          <div class="pdf-field">
-            <span class="field-label">TEMPERATURA</span>
-            <span class="field-value">{{ temperatura || '-' }}</span>
-          </div>
-          <div class="pdf-field">
-            <span class="field-label">EDEMA</span>
-            <span class="field-value">{{ edema || '-' }}</span>
-          </div>
-        </div>
-      </div>
+      <!-- Sinais Vitais -->
+      <ng-container *ngIf="pressaoArterial || pulso || peso || altura || temperatura || edema">
+        <div class="section-header"><div class="section-bar"></div><span class="section-title">SINAIS VITAIS</span></div>
+        <table class="data-table">
+          <tr>
+            <td class="cell" *ngIf="pressaoArterial"><strong>PA:</strong> {{ pressaoArterial }}</td>
+            <td class="cell" *ngIf="pulso"><strong>Pulso:</strong> {{ pulso }}</td>
+            <td class="cell" *ngIf="peso"><strong>Peso:</strong> {{ peso }}</td>
+            <td class="cell" *ngIf="altura"><strong>Altura:</strong> {{ altura }}</td>
+            <td class="cell" *ngIf="temperatura"><strong>Temp.:</strong> {{ temperatura }}</td>
+            <td class="cell" *ngIf="edema"><strong>Edema:</strong> {{ edema }}</td>
+          </tr>
+        </table>
+      </ng-container>
 
-      <!-- Seção: Anamnese -->
-      <div class="pdf-section" *ngIf="queixaPrincipal">
-        <div class="section-header section-header--executive">
-          <h2>QUEIXA PRINCIPAL</h2>
-        </div>
-        <div class="section-content section-content--vertical">
-          <div class="clinical-content">{{ queixaPrincipal }}</div>
-        </div>
-      </div>
+      <!-- Queixa / Anamnese / Observações (inline) -->
+      <div class="inline-field" *ngIf="queixaPrincipal"><strong>Queixa Principal:</strong> {{ queixaPrincipal }}</div>
+      <div class="inline-field" *ngIf="anamnese"><strong>Anamnese:</strong> {{ anamnese }}</div>
+      <div class="inline-field" *ngIf="observacao"><strong>Observações:</strong> {{ observacao }}</div>
 
-      <div class="pdf-section" *ngIf="anamnese">
-        <div class="section-header section-header--executive">
-          <h2>ANAMNESE</h2>
-        </div>
-        <div class="section-content section-content--vertical">
-          <div class="clinical-content">{{ anamnese }}</div>
-        </div>
-      </div>
+      <!-- Exame Clínico (inline) -->
+      <ng-container *ngIf="higieneBucal || condicaoGengival || oclusal || atm">
+        <div class="section-header"><div class="section-bar"></div><span class="section-title">EXAME CLÍNICO</span></div>
+        <div class="inline-field" *ngIf="higieneBucal"><strong>Higiene Bucal:</strong> {{ higieneBucal }}</div>
+        <div class="inline-field" *ngIf="condicaoGengival"><strong>Condição Gengival:</strong> {{ condicaoGengival }}</div>
+        <div class="inline-field" *ngIf="oclusal"><strong>Oclusal:</strong> {{ oclusal }}</div>
+        <div class="inline-field" *ngIf="atm"><strong>ATM:</strong> {{ atm }}</div>
+      </ng-container>
 
-      <div class="pdf-section" *ngIf="observacao">
-        <div class="section-header section-header--executive">
-          <h2>OBSERVAÇÕES</h2>
-        </div>
-        <div class="section-content section-content--vertical">
-          <div class="clinical-content">{{ observacao }}</div>
-        </div>
-      </div>
+      <!-- Exame Intrabucal (inline — formato linhas) -->
+      <ng-container *ngIf="facies || linfonodos || labios || mucosas || soalhoBucal || palato || orofaringe || lingua || gengiva || habitosNocivos || portadorAparelho || exameOutros">
+        <div class="section-header"><div class="section-bar"></div><span class="section-title">EXAME INTRABUCAL</span></div>
+        <div class="inline-field" *ngIf="facies"><strong>Fácies:</strong> {{ facies }}</div>
+        <div class="inline-field" *ngIf="linfonodos"><strong>Linfonodos:</strong> {{ linfonodos }}</div>
+        <div class="inline-field" *ngIf="labios"><strong>Lábios:</strong> {{ labios }}</div>
+        <div class="inline-field" *ngIf="mucosas"><strong>Mucosas:</strong> {{ mucosas }}</div>
+        <div class="inline-field" *ngIf="soalhoBucal"><strong>Soalho Bucal:</strong> {{ soalhoBucal }}</div>
+        <div class="inline-field" *ngIf="palato"><strong>Palato:</strong> {{ palato }}</div>
+        <div class="inline-field" *ngIf="orofaringe"><strong>Orofaringe:</strong> {{ orofaringe }}</div>
+        <div class="inline-field" *ngIf="lingua"><strong>Língua:</strong> {{ lingua }}</div>
+        <div class="inline-field" *ngIf="gengiva"><strong>Gengiva:</strong> {{ gengiva }}</div>
+        <div class="inline-field" *ngIf="habitosNocivos"><strong>Hábitos Nocivos:</strong> {{ habitosNocivos }}</div>
+        <div class="inline-field" *ngIf="portadorAparelho"><strong>Ap. Ortodôntico:</strong> {{ portadorAparelho }}</div>
+        <div class="inline-field" *ngIf="exameOutros"><strong>Outros:</strong> {{ exameOutros }}</div>
+      </ng-container>
 
-      <!-- Seção: Exame Clínico -->
-      <div class="pdf-section">
-        <div class="section-header section-header--executive">
-          <h2>EXAME CLÍNICO</h2>
-        </div>
-        <div class="section-content section-content--horizontal">
-          <div class="pdf-field">
-            <span class="field-label">HIGIENE BUCAL</span>
-            <span class="field-value">{{ higieneBucal || '-' }}</span>
-          </div>
-          <div class="pdf-field">
-            <span class="field-label">COND. GENGIVAL</span>
-            <span class="field-value">{{ condicaoGengival || '-' }}</span>
-          </div>
-          <div class="pdf-field">
-            <span class="field-label">OCLUSAL</span>
-            <span class="field-value">{{ oclusal || '-' }}</span>
-          </div>
-          <div class="pdf-field">
-            <span class="field-label">ATM</span>
-            <span class="field-value">{{ atm || '-' }}</span>
-          </div>
-        </div>
-      </div>
+      <!-- Odontograma -->
+      <ng-container *ngIf="dentes.length > 0">
+        <div class="section-header"><div class="section-bar"></div><span class="section-title">ODONTOGRAMA (DENTES ALTERADOS)</span></div>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th class="cell cell--header">DENTE (FDI)</th>
+              <th class="cell cell--header">STATUS</th>
+              <th class="cell cell--header">OBSERVAÇÃO</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let dente of dentes">
+              <td class="cell">{{ dente.numeroFdi }}</td>
+              <td class="cell">{{ dente.status }}</td>
+              <td class="cell">{{ dente.observacao || '-' }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </ng-container>
 
-      <!-- Seção: Exame Intrabucal -->
-      <div class="pdf-section" *ngIf="facies || linfonodos || labios || mucosas || soalhoBucal || palato || orofaringe || lingua || gengiva || habitosNocivos || portadorAparelho || exameOutros">
-        <div class="section-header section-header--executive">
-          <h2>EXAME INTRABUCAL</h2>
-        </div>
-        <div class="section-content section-content--horizontal">
-          <div class="pdf-field">
-            <span class="field-label">FÁCIES</span>
-            <span class="field-value">{{ facies || '-' }}</span>
-          </div>
-          <div class="pdf-field">
-            <span class="field-label">LINFONODOS</span>
-            <span class="field-value">{{ linfonodos || '-' }}</span>
-          </div>
-          <div class="pdf-field">
-            <span class="field-label">LÁBIOS</span>
-            <span class="field-value">{{ labios || '-' }}</span>
-          </div>
-          <div class="pdf-field">
-            <span class="field-label">MUCOSAS</span>
-            <span class="field-value">{{ mucosas || '-' }}</span>
-          </div>
-        </div>
-        <div class="section-content section-content--horizontal">
-          <div class="pdf-field">
-            <span class="field-label">SOALHO BUCAL</span>
-            <span class="field-value">{{ soalhoBucal || '-' }}</span>
-          </div>
-          <div class="pdf-field">
-            <span class="field-label">PALATO</span>
-            <span class="field-value">{{ palato || '-' }}</span>
-          </div>
-          <div class="pdf-field">
-            <span class="field-label">OROFARINGE</span>
-            <span class="field-value">{{ orofaringe || '-' }}</span>
-          </div>
-          <div class="pdf-field">
-            <span class="field-label">LÍNGUA</span>
-            <span class="field-value">{{ lingua || '-' }}</span>
-          </div>
-        </div>
-        <div class="section-content section-content--horizontal">
-          <div class="pdf-field">
-            <span class="field-label">GENGIVA</span>
-            <span class="field-value">{{ gengiva || '-' }}</span>
-          </div>
-          <div class="pdf-field">
-            <span class="field-label">HÁB. NOCIVOS</span>
-            <span class="field-value">{{ habitosNocivos || '-' }}</span>
-          </div>
-          <div class="pdf-field">
-            <span class="field-label">AP. ORTODÔNTICO</span>
-            <span class="field-value">{{ portadorAparelho || '-' }}</span>
-          </div>
-        </div>
-        <div class="section-content section-content--vertical" *ngIf="exameOutros">
-          <div class="pdf-field">
-            <span class="field-label">OUTROS</span>
-            <span class="field-value">{{ exameOutros }}</span>
-          </div>
-        </div>
-      </div>
+      <!-- Diagnóstico / Tratamento / Procedimentos / Prescrição / Orientações (inline) -->
+      <div class="inline-field" *ngIf="diagnostico"><strong>Diagnóstico:</strong> {{ diagnostico }}</div>
+      <div class="inline-field" *ngIf="planoTratamento"><strong>Plano de Tratamento:</strong> {{ planoTratamento }}</div>
+      <div class="inline-field" *ngIf="procedimentos"><strong>Procedimentos Realizados:</strong> {{ procedimentos }}</div>
+      <div class="inline-field" *ngIf="prescricao"><strong>Prescrição Odontológica:</strong> {{ prescricao }}</div>
+      <div class="inline-field" *ngIf="orientacoes"><strong>Orientações:</strong> {{ orientacoes }}</div>
 
-      <!-- Seção: Odontograma -->
-      <div class="pdf-section" *ngIf="dentes.length > 0">
-        <div class="section-header section-header--executive">
-          <h2>ODONTOGRAMA (DENTES ALTERADOS)</h2>
-        </div>
-        <div class="section-content section-content--vertical">
-          <table class="odontograma-table">
-            <thead>
-              <tr>
-                <th>DENTE (FDI)</th>
-                <th>STATUS</th>
-                <th>OBSERVAÇÃO</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let dente of dentes">
-                <td>{{ dente.numeroFdi }}</td>
-                <td>{{ dente.status }}</td>
-                <td>{{ dente.observacao || '-' }}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <!-- Códigos CID / TUSS -->
+      <ng-container *ngIf="cidTexto || tussTexto || solicitacaoExameTexto">
+        <div class="section-header"><div class="section-bar"></div><span class="section-title">CÓDIGOS CID / TUSS</span></div>
+        <div class="inline-field" *ngIf="cidTexto"><strong>CID:</strong> {{ cidTexto }}</div>
+        <div class="inline-field" *ngIf="tussTexto"><strong>TUSS:</strong> {{ tussTexto }}</div>
+        <div class="inline-field" *ngIf="solicitacaoExameTexto"><strong>Solicitação de Exame:</strong> {{ solicitacaoExameTexto }}</div>
+      </ng-container>
 
-      <!-- Seção: Diagnóstico -->
-      <div class="pdf-section" *ngIf="diagnostico">
-        <div class="section-header section-header--executive">
-          <h2>DIAGNÓSTICO</h2>
-        </div>
-        <div class="section-content section-content--vertical">
-          <div class="clinical-content">{{ diagnostico }}</div>
-        </div>
-      </div>
+      <!-- Planejamento Terapêutico -->
+      <ng-container *ngIf="planejamentos.length > 0">
+        <div class="section-header"><div class="section-bar"></div><span class="section-title">PLANEJAMENTO TERAPÊUTICO</span></div>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th class="cell cell--header">DATA</th>
+              <th class="cell cell--header">PROCEDIMENTO</th>
+              <th class="cell cell--header">VALOR</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let plan of planejamentos">
+              <td class="cell">{{ plan.dataProcedimento }}</td>
+              <td class="cell">{{ plan.procedimentoRealizado }}</td>
+              <td class="cell">R$ {{ plan.valor?.toFixed(2) || '0.00' }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </ng-container>
 
-      <!-- Seção: Plano de Tratamento -->
-      <div class="pdf-section" *ngIf="planoTratamento">
-        <div class="section-header section-header--executive">
-          <h2>PLANO DE TRATAMENTO</h2>
-        </div>
-        <div class="section-content section-content--vertical">
-          <div class="clinical-content">{{ planoTratamento }}</div>
-        </div>
-      </div>
-
-      <!-- Seção: Procedimentos -->
-      <div class="pdf-section" *ngIf="procedimentos">
-        <div class="section-header section-header--executive">
-          <h2>PROCEDIMENTOS REALIZADOS</h2>
-        </div>
-        <div class="section-content section-content--vertical">
-          <div class="clinical-content">{{ procedimentos }}</div>
-        </div>
-      </div>
-
-      <!-- Seção: Prescrição -->
-      <div class="pdf-section" *ngIf="prescricao">
-        <div class="section-header section-header--executive">
-          <h2>PRESCRIÇÃO ODONTOLÓGICA</h2>
-        </div>
-        <div class="section-content section-content--vertical">
-          <div class="clinical-content">{{ prescricao }}</div>
-        </div>
-      </div>
-
-      <!-- Seção: Orientações -->
-      <div class="pdf-section" *ngIf="orientacoes">
-        <div class="section-header section-header--executive">
-          <h2>ORIENTAÇÕES</h2>
-        </div>
-        <div class="section-content section-content--vertical">
-          <div class="clinical-content">{{ orientacoes }}</div>
-        </div>
-      </div>
-
-      <!-- Seção: Códigos CID / TUSS -->
-      <div class="pdf-section" *ngIf="cidTexto || tussTexto || solicitacaoExameTexto">
-        <div class="section-header section-header--executive">
-          <h2>CÓDIGOS CID / TUSS</h2>
-        </div>
-        <div class="section-content section-content--vertical">
-          <div class="pdf-field" *ngIf="cidTexto">
-            <span class="field-label">CID</span>
-            <span class="field-value">{{ cidTexto }}</span>
-          </div>
-          <div class="pdf-field" *ngIf="tussTexto">
-            <span class="field-label">TUSS</span>
-            <span class="field-value">{{ tussTexto }}</span>
-          </div>
-          <div class="pdf-field" *ngIf="solicitacaoExameTexto">
-            <span class="field-label">SOLICITAÇÃO DE EXAME</span>
-            <span class="field-value">{{ solicitacaoExameTexto }}</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Seção: Planejamento Terapêutico -->
-      <div class="pdf-section" *ngIf="planejamentos.length > 0">
-        <div class="section-header section-header--executive">
-          <h2>PLANEJAMENTO TERAPÊUTICO</h2>
-        </div>
-        <div class="section-content section-content--vertical">
-          <table class="odontograma-table">
-            <thead>
-              <tr>
-                <th>DATA</th>
-                <th>PROCEDIMENTO</th>
-                <th>VALOR</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let plan of planejamentos">
-                <td>{{ plan.dataProcedimento }}</td>
-                <td>{{ plan.procedimentoRealizado }}</td>
-                <td>R$ {{ plan.valor?.toFixed(2) || '0.00' }}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- Seção: Tempo de Consulta -->
-      <div class="pdf-section" *ngIf="tempoDuracao">
-        <div class="section-header section-header--executive">
-          <h2>TEMPO DE CONSULTA</h2>
-        </div>
-        <div class="section-content section-content--vertical">
-          <div class="clinical-content">{{ tempoDuracao }}</div>
-        </div>
-      </div>
+      <!-- Tempo de Consulta -->
+      <div class="inline-field" *ngIf="tempoDuracao"><strong>Tempo de Consulta:</strong> {{ tempoDuracao }}</div>
 
       <!-- Rodapé -->
       <div class="pdf-footer">
-        <div class="footer-line"></div>
         <div class="footer-date">Emitido em: {{ getDataAtual() }} às {{ getHoraAtual() }}</div>
         <div class="footer-info">Documento de registro clínico - Confidencial</div>
       </div>
     </div>
   </div>
 
-  <!-- Footer com Ações -->
   <footer class="dialog-footer">
-    <button class="btn btn--secondary" mat-dialog-close>
-      <i class="fa-solid fa-xmark"></i>
-      Cancelar
-    </button>
-    <button class="btn btn--primary" (click)="GerarPDF()">
-      <i class="fa-solid fa-file-pdf"></i>
-      Gerar PDF
-    </button>
+    <button class="btn btn--secondary" mat-dialog-close><i class="fa-solid fa-xmark"></i> Cancelar</button>
+    <button class="btn btn--primary" (click)="GerarPDF()"><i class="fa-solid fa-file-pdf"></i> Gerar PDF</button>
   </footer>
 </div>

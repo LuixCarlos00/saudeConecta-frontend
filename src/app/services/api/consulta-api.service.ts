@@ -157,12 +157,8 @@ export class ConsultaApiService {
     return this.http.post<Consultav2>(`${this.apiUrl}/cadastrarConsultaByOrg`, consultav2);
   }
 
-  BuscandoHistoricoDeConsultasDoPaciente(codigoID: number): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/BuscandoHistoricoDeConsultasDoPaciente/${codigoID}`);
-  }
-
-  BuscandoHistoricoDeConsultasDoPaciente_dentista(pacienteId: number) {
-    return this.http.get<any[]>(`${this.apiUrl}/BuscandoHistoricoDeConsultasDoPaciente_dentista/${pacienteId}`);
+  BuscandoHistoricoDeConsultasDoPaciente(pacienteId: number, tipo: string = 'medico'): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/BuscandoHistoricoDeConsultasDoPaciente/${pacienteId}?tipo=${tipo}`);
   }
 
   buscarEstatisticasPorMedicoEIntervalo(medicoId: number, dataInicio: string, dataFim: string): Observable<any[]> {

@@ -96,6 +96,8 @@ import { PrescricaoDentistaComponent } from '../features/medico/impressoes-denti
 import { SolicitacaoExamesDentistaComponent } from '../features/medico/impressoes-dentista/solicitacao-exames-dentista/solicitacao-exames-dentista.component';
 import { RegistroConsultaDentistaComponent } from '../features/medico/impressoes-dentista/registro-consulta-dentista/registro-consulta-dentista.component';
 import { ComprovantePagamentoDentistaComponent } from '../features/medico/impressoes-dentista/comprovante-pagamento-dentista/comprovante-pagamento-dentista.component';
+import { QuestionarioSaudeDentistaComponent } from '../features/medico/impressoes-dentista/questionario-saude-dentista/questionario-saude-dentista.component';
+import { PlanejamentoOdontologicoDentistaComponent } from '../features/medico/impressoes-dentista/planejamento-odontologico-dentista/planejamento-odontologico-dentista.component';
 
 
 @NgModule({
@@ -151,7 +153,9 @@ import { ComprovantePagamentoDentistaComponent } from '../features/medico/impres
     SolicitacaoExamesDentistaComponent,
     RegistroConsultaDentistaComponent,
     AtestadoDentistaComponent,
-    ComprovantePagamentoDentistaComponent
+    ComprovantePagamentoDentistaComponent,
+    QuestionarioSaudeDentistaComponent,
+    PlanejamentoOdontologicoDentistaComponent
   ],
   exports: [],
 

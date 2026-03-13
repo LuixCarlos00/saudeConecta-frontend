@@ -25,6 +25,7 @@ export interface Consultav2 {
 
 export enum StatusConsulta {
   AGENDADA = 'AGENDADA',
+  CONFIRMADA = 'CONFIRMADA',
   REALIZADA = 'REALIZADA',
   CANCELADA = 'CANCELADA',
   PAGO = 'PAGO',

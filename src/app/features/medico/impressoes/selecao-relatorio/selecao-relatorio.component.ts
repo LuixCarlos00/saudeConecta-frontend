@@ -31,18 +31,18 @@ export class SelecaoRelatorioComponent implements OnInit {
       cor: '#10b981'
     },
     {
-      id: '3',
-      titulo: 'Histórico Completo',
-      descricao: 'Histórico de todas as consultas do paciente',
-      icone: 'fa-solid fa-file-medical',
-      cor: '#8b5cf6'
-    },
-    {
       id: '4',
       titulo: 'Atestado Médico',
       descricao: 'Documento de atestado para fins diversos',
       icone: 'fa-solid fa-file-signature',
       cor: '#f59e0b'
+    },
+    {
+      id: '3',
+      titulo: 'Histórico Completo',
+      descricao: 'Histórico de todas as consultas do paciente',
+      icone: 'fa-solid fa-file-medical',
+      cor: '#8b5cf6'
     },
     {
       id: '5',
@@ -64,6 +64,20 @@ export class SelecaoRelatorioComponent implements OnInit {
       descricao: 'Gerar relatório personalizado da consulta',
       icone: 'fa-solid fa-file-pdf',
       cor: '#ef4444'
+    },
+    {
+      id: '8',
+      titulo: 'Questionário de Saúde',
+      descricao: 'Visualizar respostas e assinatura do questionário',
+      icone: 'fa-solid fa-clipboard-question',
+      cor: '#0ea5e9'
+    },
+    {
+      id: '9',
+      titulo: 'Planejamento Odontológico',
+      descricao: 'Visualizar procedimentos e assinatura do planejamento',
+      icone: 'fa-solid fa-list-check',
+      cor: '#d946ef'
     }
   ];
 
