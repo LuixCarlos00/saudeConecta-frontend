@@ -193,7 +193,7 @@ export class CronologiaComponent implements OnInit {
 
   VerificaTipoDePesquisa(): void {
     const filtros = this.obterFiltros();
-
+console.log(filtros);
     if (!this.validarFiltros(filtros)) {
       Swal.fire('Atenção', 'Selecione pelo menos um filtro para pesquisar.', 'warning');
       return;
@@ -204,7 +204,11 @@ export class CronologiaComponent implements OnInit {
 
   // ==================== OBTENÇÃO E VALIDAÇÃO DE FILTROS ====================
   private obterFiltros(): FiltrosPesquisa {
-    const medicoSelecionado = this.OpcoesMedicos.get('NomeMedico')?.value;
+    const medicoId = this.OpcoesMedicos.get('NomeMedico')?.value;
+    const medicoSelecionado = medicoId
+    ? this.ListaMedicos.find(m => m.id == medicoId) || null
+    : null;
+
     const statusSelecionados = this.OpcoesStatusConsulta.get('statusSelecionados')?.value || [];
     const statusPagamento = this.OpcoesStatusPagamento.get('statusPagamento')?.value;
 

@@ -36,6 +36,16 @@ import { PlanejamentoOdontologicoDentistaComponent } from 'src/app/features/medi
 type TipoVisualizacao = 'AGENDADA' | 'REALIZADA';
 type TipoPeriodo = 'diario' | 'semanal' | 'mensal' | 'anual';
 
+interface DadosCronologiaAlteracao {
+  alteracao: {
+    id: number;
+    novoStatus: string;
+    motivo?: string;
+  };
+}
+
+interface DadosCronologiaBusca extends Array<any> {}
+
 const STATUS_AGENDADAS = ['AGENDADA', 'CONFIRMADA'];
 const STATUS_FINALIZADAS = ['REALIZADA', 'CANCELADA', 'PAGO'];
 
@@ -56,6 +66,7 @@ export class AgendaComponent implements OnInit, OnDestroy {
   ValorOpcao: any;
   tipoPeriodoSelecionado: TipoPeriodo = 'diario';
   private destroy$ = new Subject<void>();
+  private emModoBuscaLocal = false; // Flag para controlar modo de busca
 
   UsuarioLogado: Usuario = { id: 0, aud: '', exp: '', iss: '', sub: '' };
 
@@ -83,7 +94,7 @@ export class AgendaComponent implements OnInit, OnDestroy {
     this.FormularioAgenda = this.formBuilder.group({ busca: [''] });
 
     this.consultaState.dadosCronologia$.subscribe((dados) => {
-      if (dados && Array.isArray(dados) && dados.length > 0) {
+      if (!this.emModoBuscaLocal && dados && (Array.isArray(dados) || 'alteracao' in dados)) {
         this.processarDadosCronologia(dados);
       }
     });
@@ -105,6 +116,8 @@ export class AgendaComponent implements OnInit, OnDestroy {
   // ─────────────────────────────────────────────────────────────────────────────
 
   async buscarDadosParaTabela() {
+     this.emModoBuscaLocal = false;
+
      try {
       const dados = await this.buscarConsultasPorPeriodo();
       if (Array.isArray(dados)) {
@@ -150,6 +163,9 @@ export class AgendaComponent implements OnInit, OnDestroy {
   async Pesquisar() {
     const busca = this.FormularioAgenda.get('busca')?.value;
     this.FormularioAgenda.reset();
+
+    this.emModoBuscaLocal = true;
+
     try {
       const dados = await this.filtrarDadosPesquisa(busca, this.dataSource);
       if (dados.length > 0) {
@@ -161,6 +177,10 @@ export class AgendaComponent implements OnInit, OnDestroy {
     } catch (error) {
       Swal.fire('Erro', 'Falha ao fazer a busca.', 'error');
       console.error(error);
+    } finally {
+      setTimeout(() => {
+        this.emModoBuscaLocal = false;
+      }, 100);
     }
   }
 
@@ -188,6 +208,7 @@ export class AgendaComponent implements OnInit, OnDestroy {
   }
 
   Recarregar() {
+    this.emModoBuscaLocal = false;
     this.Finalizadas ? this.PesquisarNaTabelaConcluidos() : this.buscarDadosParaTabela();
   }
 
@@ -223,14 +244,20 @@ export class AgendaComponent implements OnInit, OnDestroy {
     }
   }
 
-  Editar(consulta: any) {
-    this.dialog.open(EditarConsultasComponent, {
-      width: '800px',
-      height: 'auto',
-      data: { consulta },
-    });
-    this.dialog.afterAllClosed.subscribe(() => this.buscarDadosParaTabela());
-  }
+Editar(consulta: any) {
+  const dialogRef = this.dialog.open(EditarConsultasComponent, {
+    width: '800px',
+    height: 'auto',
+    data: { consulta },
+  });
+
+
+  dialogRef.afterClosed().subscribe((resultado) => {
+    if (resultado === 'salvo') {
+      this.buscarDadosParaTabela();
+    }
+  });
+}
 
   Concluido(elemento: any) {
     Swal.fire({
@@ -261,8 +288,7 @@ export class AgendaComponent implements OnInit, OnDestroy {
   AlterarStatus(elemento: Consultav2, novoStatus: string) {
     if (novoStatus === elemento.status) { return; }
 
-    // Configurações específicas por status
-    // NOTA: REALIZADA não está aqui pois só pode ser definido pelo médico ao concluir a consulta
+
     const statusConfig: Record<string, any> = {
       'CONFIRMADA': {
         title: 'Confirmar consulta?',
@@ -297,8 +323,7 @@ export class AgendaComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // Se precisa de motivo (CANCELADA), mostra input
-    if (config.requiresMotivo) {
+     if (config.requiresMotivo) {
       Swal.fire({
         title: config.title,
         text: config.text,
@@ -319,7 +344,7 @@ export class AgendaComponent implements OnInit, OnDestroy {
         cancelButtonText: 'Cancelar',
       }).then((result) => {
         if (result.isConfirmed && result.value) {
-          this.executarAlteracaoStatus(elemento.id, novoStatus, result.value);
+          this.executarAlteracaoStatusComFeedback(elemento.id, novoStatus, result.value);
         }
       });
     } else {
@@ -335,13 +360,13 @@ export class AgendaComponent implements OnInit, OnDestroy {
         cancelButtonText: 'Cancelar',
       }).then((result) => {
         if (result.isConfirmed) {
-          this.executarAlteracaoStatus(elemento.id, novoStatus);
+          this.executarAlteracaoStatusComFeedback(elemento.id, novoStatus);
         }
       });
     }
   }
 
-  private executarAlteracaoStatus(id: number, status: string, motivo?: string) {
+  private executarAlteracaoStatus(id: number, status: string, motivo?: string): Observable<Consultav2> {
     const statusLabels: Record<string, string> = {
       'CONFIRMADA': 'Confirmada',
       'CANCELADA': 'Cancelada',
@@ -350,18 +375,32 @@ export class AgendaComponent implements OnInit, OnDestroy {
       'PAGO': 'Paga'
     };
 
-    let apiCall: Observable<Consultav2>;
-
     // Usa o endpoint único do backend
-    apiCall = this.consultaApi.alterarStatusConsulta(id, status, motivo);
+    return this.consultaApi.alterarStatusConsulta(id, status, motivo);
+  }
 
-    apiCall.subscribe({
+  private executarAlteracaoStatusComFeedback(id: number, status: string, motivo?: string): void {
+    this.executarAlteracaoStatus(id, status, motivo).subscribe({
       next: () => {
+        const statusLabels: Record<string, string> = {
+          'CONFIRMADA': 'Confirmada',
+          'CANCELADA': 'Cancelada',
+          'AGENDADA': 'Agendada',
+          'REALIZADA': 'Realizada',
+          'PAGO': 'Paga'
+        };
         Swal.fire(`${statusLabels[status]}!`, `Consulta marcada como ${statusLabels[status].toLowerCase()} com sucesso.`, 'success');
         this.buscarDadosParaTabela();
       },
       error: (err: any) => {
         console.error(err);
+        const statusLabels: Record<string, string> = {
+          'CONFIRMADA': 'Confirmada',
+          'CANCELADA': 'Cancelada',
+          'AGENDADA': 'Agendada',
+          'REALIZADA': 'Realizada',
+          'PAGO': 'Paga'
+        };
         Swal.fire('Erro', `Não foi possível alterar a consulta para ${statusLabels[status].toLowerCase()}.`, 'error');
       },
     });
@@ -595,24 +634,69 @@ export class AgendaComponent implements OnInit, OnDestroy {
     return dados.filter(c => permitidos.includes(c.status));
   }
 
-  private processarDadosCronologia(dados: any[]): void {
+  private processarDadosCronologia(dados: DadosCronologiaBusca | DadosCronologiaAlteracao): void {
     // Mantém o contexto atual (Finalizadas ou Agendadas) escolhido pelo usuário
     const tipo: TipoVisualizacao = this.Finalizadas ? 'REALIZADA' : 'AGENDADA';
-    const dadosFiltrados = this.filtrarConsultasPorTipo(dados, tipo);
 
-    if (dadosFiltrados.length > 0) {
-      // Mostra os dados filtrados do contexto atual
+    // Verifica se é uma alteração específica
+    if (dados && 'alteracao' in dados) {
+      // Processa apenas a alteração específica
+      this.processarAlteracaoEspecifica((dados as DadosCronologiaAlteracao).alteracao);
+      return;
+    }
+
+    // Trata como array de dados normal
+    const dadosArray = dados as DadosCronologiaBusca;
+
+    // Sempre atualiza o dataSource, mesmo que os dados sejam vazios
+    if (dadosArray && Array.isArray(dadosArray) && dadosArray.length > 0) {
+      const dadosFiltrados = this.filtrarConsultasPorTipo(dadosArray, tipo);
       this.dataSource = dadosFiltrados;
     } else {
-      // Se não houver dados no contexto atual, mostra mensagem
+      // Se não houver dados ou for null/undefined, limpa a tabela
       this.dataSource = [];
-      Swal.fire({
-        icon: 'info',
-        title: 'Nenhum resultado',
-        text: `Nenhuma consulta ${this.Finalizadas ? 'finalizada' : 'agendada'} encontrada com os filtros selecionados.`,
-        confirmButtonColor: '#0066CC'
-      });
+
+
+      if (dadosArray && Array.isArray(dadosArray) && dadosArray.length === 0) {
+        Swal.fire({
+          icon: 'info',
+          title: 'Nenhum resultado',
+          text: `Nenhuma consulta ${this.Finalizadas ? 'finalizada' : 'agendada'} encontrada com os filtros selecionados.`,
+          confirmButtonColor: '#0066CC'
+        });
+      }
     }
+  }
+
+  /**
+   * Processa uma alteração específica vinda da Cronologia
+   * Atualiza apenas o registro alterado e recarrega os dados da tabela
+   */
+  private processarAlteracaoEspecifica(alteracao: DadosCronologiaAlteracao['alteracao']): void {
+    // Executa a alteração específica usando o mesmo endpoint do AlterarStatus
+    this.executarAlteracaoStatus(alteracao.id, alteracao.novoStatus, alteracao.motivo)
+      .subscribe({
+        next: () => {
+          // Recarrega os dados da tabela para refletir a alteração
+          this.buscarDadosParaTabela();
+
+          Swal.fire({
+            icon: 'success',
+            title: 'Alteração realizada!',
+            text: `Consulta alterada para ${alteracao.novoStatus} com sucesso.`,
+            confirmButtonColor: '#27ae60'
+          });
+        },
+        error: (error) => {
+          console.error('Erro ao processar alteração específica:', error);
+          Swal.fire({
+            icon: 'error',
+            title: 'Erro na alteração',
+            text: 'Não foi possível realizar a alteração. Tente novamente.',
+            confirmButtonColor: '#dc2626'
+          });
+        }
+      });
   }
 
   // ─────────────────────────────────────────────────────────────────────────────

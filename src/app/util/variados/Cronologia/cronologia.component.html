@@ -26,11 +26,16 @@
         Período
         <span class="filtro-label__opt">opcional</span>
       </label>
-      <div class="date-row">
-        <input type="text" class="filtro-input" formControlName="start" placeholder="DD/MM/AAAA">
-        <div class="date-sep">–</div>
-        <input type="text" class="filtro-input" formControlName="end" placeholder="DD/MM/AAAA">
-      </div>
+      <mat-form-field class="date-field" appearance="outline">
+        <mat-label>Selecione o período</mat-label>
+        <mat-date-range-input [rangePicker]="picker">
+          <input matStartDate formControlName="start" placeholder="Data inicial">
+          <input matEndDate formControlName="end" placeholder="Data final">
+        </mat-date-range-input>
+        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-date-range-picker #picker></mat-date-range-picker>
+        <mat-hint>DD/MM/AAAA – DD/MM/AAAA</mat-hint>
+      </mat-form-field>
     </div>
 
     <!-- Especialidade + Clínico -->
@@ -42,7 +47,7 @@
           Especialidade
         </label>
         <select class="filtro-input filtro-input--full" formControlName="Especialidade" [disabled]="carregandoEspecialidades">
-          <option [value]="null">{{ carregandoEspecialidades ? 'Carregando...' : '— Todas —' }}</option>
+          <option [value]="null">{{ carregandoEspecialidades ? 'Carregando...' : '— Selecione —' }}</option>
           <option *ngFor="let especialidade of especialidades" [value]="especialidade.nome">
             {{ especialidade.nome }}
           </option>
@@ -55,8 +60,8 @@
           Clínico
         </label>
         <select class="filtro-input filtro-input--full" formControlName="NomeMedico">
-          <option [value]="null">— Todos —</option>
-          <option *ngFor="let medico of ListaMedicos" [value]="medico">
+          <option [value]="null">— Selecione —</option>
+          <option *ngFor="let medico of ListaMedicos" [value]="medico.id">
             Dr(a). {{ medico.nome }}
           </option>
         </select>
@@ -90,7 +95,7 @@
         <span class="filtro-label__opt">opcional</span>
       </label>
       <select class="filtro-input filtro-input--full" formControlName="statusPagamento">
-        <option [value]="null">— Todos —</option>
+        <option [value]="null">— Selecione —</option>
         <option *ngFor="let statusPag of statusPagamentoOptions" [value]="statusPag.value">
           {{ statusPag.label }}
         </option>
