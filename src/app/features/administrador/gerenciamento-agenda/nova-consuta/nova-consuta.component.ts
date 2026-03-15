@@ -271,11 +271,8 @@ export class NovaConsultaComponent implements OnInit {
 
   convertToDateObject(timeString: string): Date {
     const [hours, minutes] = timeString.split(':').map(Number);
-    const date = new Date();
-    date.setHours(hours);
-    date.setMinutes(minutes);
-    date.setSeconds(0);
-    date.setMilliseconds(0);
+    // Usa uma data fixa (01/01/2000) para evitar problemas com data/hora atual
+    const date = new Date(2000, 0, 1, hours, minutes, 0, 0);
     return date;
   }
 

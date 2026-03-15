@@ -27,7 +27,7 @@ interface TipoPesquisa {
 
 @Component({
   selector: 'app-cronologia',
-  templateUrl: 'cronologia.component.html',
+  templateUrl: './cronologia.component.html',
   styleUrls: ['./cronologia.component.css'],
 })
 export class CronologiaComponent implements OnInit {
@@ -175,6 +175,12 @@ export class CronologiaComponent implements OnInit {
     }
     
     this.OpcoesStatusConsulta.patchValue({ statusSelecionados });
+  }
+
+  // Método auxiliar para checkbox nativo
+  onCheckboxChange(event: Event, status: string): void {
+    const target = event.target as HTMLInputElement;
+    this.toggleStatusConsulta(status, target.checked);
   }
 
   limparFiltros(): void {

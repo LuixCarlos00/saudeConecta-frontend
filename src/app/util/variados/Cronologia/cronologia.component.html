@@ -1,114 +1,114 @@
-<div class="cronologia-container">
+<div class="filtro-wrapper">
+
   <!-- Header -->
-  <div class="cronologia-header">
-    <div class="header-icon">
-      <i class="fa-solid fa-filter"></i>
+  <div class="filtro-header">
+    <div class="filtro-header__left">
+      <span class="filtro-header__icon">
+        <i class="fa-solid fa-sliders"></i>
+      </span>
+      <span class="filtro-header__title">Filtrar Consultas</span>
     </div>
-    <div class="header-content">
-      <h3>Filtro de Consultas</h3>
-      <p class="tipo-badge" [class.tipo-badge--agendadas]="!tipoPesquisaConcluidas"
-        [class.tipo-badge--finalizadas]="tipoPesquisaConcluidas">
-        <i [class]="tipoPesquisaConcluidas ? 'fa-solid fa-check-circle' : 'fa-solid fa-calendar-check'"></i>
-        {{ tipoPesquisaConcluidas ? 'Finalizadas' : 'Agendadas' }}
-      </p>
+    <span class="tipo-chip"
+          [class.tipo-chip--agendada]="!tipoPesquisaConcluidas"
+          [class.tipo-chip--finalizada]="tipoPesquisaConcluidas">
+      <i [class]="tipoPesquisaConcluidas ? 'fa-solid fa-circle-check' : 'fa-solid fa-calendar-check'"></i>
+      {{ tipoPesquisaConcluidas ? 'Finalizadas' : 'Agendadas' }}
+    </span>
+  </div>
+
+  <!-- Corpo -->
+  <div class="filtro-body">
+
+    <!-- Período -->
+    <div class="filtro-field" [formGroup]="IntervaloDeDatas">
+      <label class="filtro-label">
+        <i class="fa-regular fa-calendar-days"></i>
+        Período
+        <span class="filtro-label__opt">opcional</span>
+      </label>
+      <div class="date-row">
+        <input type="text" class="filtro-input" formControlName="start" placeholder="DD/MM/AAAA">
+        <div class="date-sep">–</div>
+        <input type="text" class="filtro-input" formControlName="end" placeholder="DD/MM/AAAA">
+      </div>
     </div>
-  </div>
 
-  <!-- Intervalo de Datas -->
-  <div class="filter-section" [formGroup]="IntervaloDeDatas">
-    <label class="section-label">
-      <i class="fa-solid fa-calendar-days"></i>
-      Período <span class="optional-label">(opcional)</span>
-    </label>
-    <mat-form-field class="date-field" appearance="outline">
-      <mat-label>Selecione o período</mat-label>
-      <mat-date-range-input [rangePicker]="picker">
-        <input matStartDate formControlName="start" placeholder="Data inicial">
-        <input matEndDate formControlName="end" placeholder="Data final">
-      </mat-date-range-input>
-      <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-      <mat-date-range-picker #picker></mat-date-range-picker>
-      <mat-hint>DD/MM/AAAA – DD/MM/AAAA</mat-hint>
-    </mat-form-field>
-  </div>
+    <!-- Especialidade + Clínico -->
+    <div *ngIf="podeVerFiltrosAvancados" class="filtro-row-2">
 
-  <!-- Especialidade -->
-  <div *ngIf="podeVerFiltrosAvancados" class="filter-section" [formGroup]="OpcoesCategorias">
-    <label class="section-label">
-      <i class="fa-solid fa-stethoscope"></i>
-      Especialidade <span class="optional-label">(opcional)</span>
-    </label>
-    <mat-form-field class="select-field" appearance="outline">
-      <mat-label>
-        {{ carregandoEspecialidades ? 'Carregando especialidades...' : 'Selecione a especialidade' }}
-      </mat-label>
-      <mat-select formControlName="Especialidade" [disabled]="carregandoEspecialidades">
-         <mat-option *ngFor="let especialidade of especialidades" [value]="especialidade.nome">
-          {{ especialidade.nome }}
-        </mat-option>
-      </mat-select>
-    </mat-form-field>
-  </div>
+      <div class="filtro-field" [formGroup]="OpcoesCategorias">
+        <label class="filtro-label">
+          <i class="fa-solid fa-stethoscope"></i>
+          Especialidade
+        </label>
+        <select class="filtro-input filtro-input--full" formControlName="Especialidade" [disabled]="carregandoEspecialidades">
+          <option [value]="null">{{ carregandoEspecialidades ? 'Carregando...' : '— Todas —' }}</option>
+          <option *ngFor="let especialidade of especialidades" [value]="especialidade.nome">
+            {{ especialidade.nome }}
+          </option>
+        </select>
+      </div>
 
-  <!-- Médico -->
-  <div *ngIf="podeVerFiltrosAvancados" class="filter-section" [formGroup]="OpcoesMedicos">
-    <label class="section-label">
-      <i class="fa-solid fa-user-doctor"></i>
-      Clínico <span class="optional-label">(opcional)</span>
-    </label>
-    <mat-form-field class="select-field" appearance="outline">
-      <mat-label>Selecione o clínico</mat-label>
-      <mat-select formControlName="NomeMedico">
+      <div class="filtro-field" [formGroup]="OpcoesMedicos">
+        <label class="filtro-label">
+          <i class="fa-solid fa-user-doctor"></i>
+          Clínico
+        </label>
+        <select class="filtro-input filtro-input--full" formControlName="NomeMedico">
+          <option [value]="null">— Todos —</option>
+          <option *ngFor="let medico of ListaMedicos" [value]="medico">
+            Dr(a). {{ medico.nome }}
+          </option>
+        </select>
+      </div>
 
-        <mat-option *ngFor="let medico of ListaMedicos" [value]="medico">
-          Dr(a). {{medico.nome}}
-        </mat-option>
-      </mat-select>
-    </mat-form-field>
-  </div>
-
-  <!-- Status de Consulta -->
-  <div class="filter-section" [formGroup]="OpcoesStatusConsulta">
-    <label class="section-label">
-      <i class="fa-solid fa-circle-info"></i>
-      Status da Consulta <span class="optional-label">(opcional)</span>
-    </label>
-    <div class="checkbox-group">
-      <mat-checkbox 
-        *ngFor="let status of statusDisponiveis"
-        [value]="status.value"
-        (change)="toggleStatusConsulta(status.value, $event.checked)"
-        class="status-checkbox">
-        {{ status.label }}
-      </mat-checkbox>
     </div>
-  </div>
 
-  <!-- Status de Pagamento (apenas para Finalizadas) -->
-  <div *ngIf="tipoPesquisaConcluidas" class="filter-section" [formGroup]="OpcoesStatusPagamento">
-    <label class="section-label">
-      <i class="fa-solid fa-money-bill"></i>
-      Status de Pagamento <span class="optional-label">(opcional)</span>
-    </label>
-    <mat-form-field class="select-field" appearance="outline">
-      <mat-label>Selecione o status de pagamento</mat-label>
-      <mat-select formControlName="statusPagamento">
-         <mat-option *ngFor="let statusPag of statusPagamentoOptions" [value]="statusPag.value">
+    <!-- Status da Consulta -->
+    <div class="filtro-field" [formGroup]="OpcoesStatusConsulta">
+      <label class="filtro-label">
+        <i class="fa-solid fa-circle-dot"></i>
+        Status da Consulta
+        <span class="filtro-label__opt">opcional</span>
+      </label>
+      <div class="checkbox-grid">
+        <label class="checkbox-item" *ngFor="let status of statusDisponiveis">
+          <input type="checkbox"
+                 [value]="status.value"
+                 (change)="onCheckboxChange($event, status.value)"
+                 style="accent-color: #667eea; width: 13px; height: 13px; cursor: pointer; margin: 0;">
+          <span>{{ status.label }}</span>
+        </label>
+      </div>
+    </div>
+
+    <!-- Status de Pagamento (só Finalizadas) -->
+    <div *ngIf="tipoPesquisaConcluidas" class="filtro-field" [formGroup]="OpcoesStatusPagamento">
+      <label class="filtro-label">
+        <i class="fa-solid fa-circle-dollar-to-slot"></i>
+        Pagamento
+        <span class="filtro-label__opt">opcional</span>
+      </label>
+      <select class="filtro-input filtro-input--full" formControlName="statusPagamento">
+        <option [value]="null">— Todos —</option>
+        <option *ngFor="let statusPag of statusPagamentoOptions" [value]="statusPag.value">
           {{ statusPag.label }}
-        </mat-option>
-      </mat-select>
-    </mat-form-field>
+        </option>
+      </select>
+    </div>
+
   </div>
 
-  <!-- Ações -->
-  <div class="actions-section">
-    <button class="btn btn--secondary" (click)="limparFiltros()">
-      <i class="fa-solid fa-eraser"></i>
+  <!-- Rodapé / Ações -->
+  <div class="filtro-footer">
+    <button class="filtro-btn filtro-btn--ghost" (click)="limparFiltros()" type="button">
+      <i class="fa-solid fa-rotate-left"></i>
       Limpar
     </button>
-    <button class="btn btn--primary" (click)="VerificaTipoDePesquisa()">
+    <button class="filtro-btn filtro-btn--primary" (click)="VerificaTipoDePesquisa()" type="button">
       <i class="fa-solid fa-magnifying-glass"></i>
       Pesquisar
     </button>
   </div>
+
 </div>

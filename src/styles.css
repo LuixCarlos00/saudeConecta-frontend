@@ -655,3 +655,31 @@ body.dark-theme *::-webkit-scrollbar-thumb:hover {
 .mat-mdc-dialog-container .atestado-container {
   margin: -24px;
 }
+
+/* =============================================
+   ESTILOS GLOBAIS DO DIALOG cronologia-dialog
+   ============================================= */
+
+.cronologia-dialog {
+
+  /* Remove padding padrão do mat-dialog */
+  .mat-mdc-dialog-container {
+    padding: 0 !important;
+    border-radius: 14px !important;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15), 0 4px 16px rgba(0, 0, 0, 0.08) !important;
+  }
+
+  .mdc-dialog__surface {
+    border-radius: 14px !important;
+    padding: 0 !important;
+    overflow: hidden;
+  }
+
+  /* Remove scroll interno desnecessário */
+  .mat-mdc-dialog-content {
+    padding: 0 !important;
+    max-height: none !important;
+    overflow: visible !important;
+  }
+}
