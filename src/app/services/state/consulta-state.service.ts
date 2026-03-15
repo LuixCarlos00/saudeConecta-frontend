@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { Consultav2 } from 'src/app/util/variados/interfaces/consulta/consultav2';
 
 @Injectable({
@@ -13,8 +13,8 @@ export class ConsultaStateService {
   private editarDadosSubject = new BehaviorSubject<boolean>(false);
   private concluidoSubject = new BehaviorSubject<boolean>(false);
   private geraPdfSubject = new BehaviorSubject<boolean>(false);
-  private cadastroRealizadoSubject = new BehaviorSubject<Consultav2 | null>(null);
-  private dadosCronologiaSubject = new BehaviorSubject<any>(null);
+  private cadastroRealizadoSubject = new Subject<Consultav2>();
+  private dadosCronologiaSubject = new Subject<any>();
 
   readonly dadosFiltrados$: Observable<Consultav2[]> = this.dadosFiltradosSubject.asObservable();
   readonly recarregarTabela$: Observable<boolean> = this.recarregarTabelaSubject.asObservable();
@@ -22,9 +22,8 @@ export class ConsultaStateService {
   readonly editarDados$: Observable<boolean> = this.editarDadosSubject.asObservable();
   readonly concluido$: Observable<boolean> = this.concluidoSubject.asObservable();
   readonly geraPdf$: Observable<boolean> = this.geraPdfSubject.asObservable();
-  readonly cadastroRealizado$: Observable<Consultav2 | null> = this.cadastroRealizadoSubject.asObservable();
+  readonly cadastroRealizado$: Observable<Consultav2> = this.cadastroRealizadoSubject.asObservable();
   readonly dadosCronologia$: Observable<any> = this.dadosCronologiaSubject.asObservable();
-
   setDadosFiltrados(dados: Consultav2[]): void {
     this.dadosFiltradosSubject.next(dados);
   }
@@ -57,14 +56,13 @@ export class ConsultaStateService {
     this.dadosCronologiaSubject.next(dados);
   }
 
-  limpar(): void {
-    this.dadosFiltradosSubject.next([]);
-    this.recarregarTabelaSubject.next(false);
-    this.deletarDadosSubject.next(false);
-    this.editarDadosSubject.next(false);
-    this.concluidoSubject.next(false);
-    this.geraPdfSubject.next(false);
-    this.cadastroRealizadoSubject.next(null);
-    this.dadosCronologiaSubject.next(null);
-  }
+limpar(): void {
+  this.dadosFiltradosSubject.next([]);
+  this.recarregarTabelaSubject.next(false);
+  this.deletarDadosSubject.next(false);
+  this.editarDadosSubject.next(false);
+  this.concluidoSubject.next(false);
+  this.geraPdfSubject.next(false);
+
+}
 }
