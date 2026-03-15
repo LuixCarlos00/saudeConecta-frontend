@@ -440,8 +440,8 @@ export class AgendaComponent implements OnInit, OnDestroy {
 
   CronogramaDoDia() {
     this.dialog.open(CronologiaComponent, {
-      width: 'auto',
-      panelClass: 'cronologia-dialog',
+      //width: 'auto',
+      //panelClass: 'cronologia-dialog',
       data: { Pesquisa: this.Finalizadas },
     });
   }
