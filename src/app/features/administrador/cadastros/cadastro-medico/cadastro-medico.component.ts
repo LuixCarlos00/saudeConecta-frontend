@@ -13,6 +13,22 @@ import { cpfValidator } from 'src/app/util/validators/cpf-form.validator';
 import { CpfValidator } from 'src/app/util/validators/cpf.validator';
 import { logradouro } from 'src/app/util/variados/interfaces/endereco/logradouro';
 import { EspecialidadeApiService, EspecialidadeResponse } from 'src/app/services/api/especialidade-api.service';
+import { getFieldError } from 'src/app/util/validators/field-errors';
+import {
+  nomeCompletoValidator,
+  dataNascimentoValidator,
+  rgValidator,
+  registroConselhoValidator,
+  telefoneValidator,
+  emailValidator,
+  cepValidator,
+  textoBrValidator,
+  nacionalidadeValidator,
+  numeroEnderecoValidator,
+  tempoConsultaValidator,
+  formacaoValidator,
+} from 'src/app/util/validators/form-validators';
+
 
 @Component({
   selector: 'app-cadastro-medico',
@@ -30,7 +46,7 @@ export class CadastroMedicoComponent implements OnInit, OnDestroy {
   isLoadingEspecialidades = false;
   mostrarModalNovaEspecialidade = false;
   novaEspecialidadeNome = '';
-
+  getFieldError = getFieldError;
 
 
   logradouro: logradouro = {
@@ -55,35 +71,27 @@ export class CadastroMedicoComponent implements OnInit, OnDestroy {
     private especialidadeService: EspecialidadeApiService
   ) { }
 
+
   ngOnInit(): void {
     this.FormularioMedico = this.form.group({
-      nome: ['', Validators.required],
+      nome: ['', [Validators.required, nomeCompletoValidator()]],
       sexo: ['', Validators.required],
-      dataNascimento: ['', Validators.required],
+      dataNascimento: ['', [Validators.required, dataNascimentoValidator(18, 100)]],
       cpf: ['', [Validators.required, cpfValidator()]],
-      rg: [''],
-      registroConselho: ['', Validators.required],
+      rg: ['', rgValidator()],
+      registroConselho: ['', [Validators.required, registroConselhoValidator()]],
       especialidade: ['', Validators.required],
-      telefone: [''],
-      email: ['', [Validators.required, Validators.email]],
-      formacao: [''],
-      instituicao: [''],
-      tempoConsultaMinutos: [30],
-      tipoProfissional: ['MEDICO', Validators.required]
+      telefone: ['', telefoneValidator()],
+      email: ['', [Validators.required, emailValidator()]],
+      formacao: ['', formacaoValidator()],
+      instituicao: ['', formacaoValidator()],       // mesma lógica
+      tempoConsultaMinutos: [30, tempoConsultaValidator()],
+      tipoProfissional: ['MEDICO', Validators.required],
     });
 
-    this.FormularioEndereco = this.form.group({
-      nacionalidade: [''],
-      uf: ['', [Validators.required, Validators.maxLength(2)]],
-      cep: ['', Validators.required],
-      rua: ['', Validators.required],
-      municipio: ['', Validators.required],
-      bairro: ['', Validators.required],
-      numero: ['', Validators.required],
-      complemento: [''],
-    });
 
-    // Adicionar listener para formatar CPF
+
+    // Formatar CPF ao digitar
     this.FormularioMedico.get('cpf')?.valueChanges.subscribe(value => {
       if (value && value.length <= 14) {
         const formatted = CpfValidator.format(value);
@@ -91,31 +99,42 @@ export class CadastroMedicoComponent implements OnInit, OnDestroy {
           this.FormularioMedico.get('cpf')?.setValue(formatted, { emitEvent: false });
         }
       }
-    });
-
-    // Adicionar listener para validar no blur (quando sai do campo)
-    this.FormularioMedico.get('cpf')?.valueChanges.subscribe(() => {
-      // Força a validação quando o valor muda
       this.FormularioMedico.get('cpf')?.updateValueAndValidity({ onlySelf: true, emitEvent: false });
     });
 
-    // Adicionar listener para formatar e buscar CEP
+    // Quando tipoProfissional muda, revalida o registroConselho (CRM ↔ CRO)
+    this.FormularioMedico.get('tipoProfissional')?.valueChanges.subscribe(() => {
+      this.FormularioMedico.get('registroConselho')?.updateValueAndValidity();
+    });
+
+    // Formatar e buscar CEP
     this.FormularioEndereco.get('cep')?.valueChanges.subscribe(value => {
       if (value && value.length <= 9) {
         const formatted = this.cepApiService.formatarCep(value);
         if (formatted !== value) {
           this.FormularioEndereco.get('cep')?.setValue(formatted, { emitEvent: false });
         }
-
-        // Busca endereço quando CEP está completo
         if (this.cepApiService.limparCep(value).length === 8) {
           this.buscarEnderecoPorCep(this.cepApiService.limparCep(value));
         }
       }
     });
 
+    // Formatar telefone ao digitar: (00) 00000-0000
+    this.FormularioMedico.get('telefone')?.valueChanges.subscribe(value => {
+      if (!value) return;
+      const digits = value.replace(/\D/g, '').slice(0, 11);
+      let formatted = digits;
+      if (digits.length >= 2) formatted = `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+      if (digits.length >= 7) formatted = `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
+      if (formatted !== value) {
+        this.FormularioMedico.get('telefone')?.setValue(formatted, { emitEvent: false });
+      }
+    });
+
     this.carregarEspecialidades();
   }
+
 
   validateCpfOnBlur() {
     const cpfControl = this.FormularioMedico.get('cpf');
