@@ -522,3 +522,26 @@
   background: #1e293b;
   border-color: #475569;
 }
+
+/* Estado: campo inválido (após toque) */
+.input--error {
+  border-color: #dc3545 !important;
+  background-color: #fff5f5 !important;
+  box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.15) !important;
+}
+
+/* Estado: campo válido (após toque) */
+.input--valid {
+  border-color: #10b981 !important;
+  background-color: #f0fdf4 !important;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.12) !important;
+}
+
+/* Dark theme - validação */
+:host-context(body.dark-theme) .input--error {
+  background-color: #2d1b1b !important;
+}
+
+:host-context(body.dark-theme) .input--valid {
+  background-color: #0f2d1f !important;
+}

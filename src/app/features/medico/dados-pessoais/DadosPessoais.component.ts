@@ -10,6 +10,23 @@ import { Subscription } from 'rxjs';
 import Swal from 'sweetalert2';
 import { EspecialidadeApiService } from "../../../services/api/especialidade-api.service";
 import { ufOptions } from '../../../util/variados/options/options';
+import { getFieldError } from 'src/app/util/validators/field-errors';
+import {
+  nomeCompletoValidator,
+  emailValidator,
+  telefoneValidator,
+  cepValidator,
+  textoBrValidator,
+  nacionalidadeValidator,
+  numeroEnderecoValidator,
+  registroConselhoValidator,
+  rgValidator,
+  tempoConsultaValidator,
+  formacaoValidator,
+  valorMonetarioValidator,
+  cnpjValidator,
+  antiInjectionValidator,
+} from 'src/app/util/validators/form-validators';
 
 @Component({
   selector: 'app-DadosPessoais',
@@ -72,6 +89,7 @@ export class DadosPessoaisComponent implements OnInit, OnDestroy {
   // Propriedades para especialidades
   especialidades: any[] = [];
   isLoadingEspecialidades: boolean = false;
+  getFieldError = getFieldError;
 
   constructor(
     private tokenService: tokenService,
@@ -85,43 +103,43 @@ export class DadosPessoaisComponent implements OnInit, OnDestroy {
   ) {
     // Inicialize sempre com form completo - será reconfigurado no ngOnInit
     this.dadosPessoaisForm = this.fb.group({
-      nome: ['', Validators.required],
+      nome: ['', [Validators.required, nomeCompletoValidator(), antiInjectionValidator()]],
       sexo: ['', Validators.required],
-      registroConselho: ['', Validators.required],
-      conselho: [''],           // CRM / CRO readonly
-      rg: [''],
-      email: ['', [Validators.required, Validators.email]],
+      registroConselho: ['', [Validators.required, registroConselhoValidator()]],
+      conselho: [''],
+      rg: ['', rgValidator()],
+      email: ['', [Validators.required, emailValidator()]],
       dataNascimento: ['', Validators.required],
       cpf: ['', Validators.required],
       especialidade: ['', Validators.required],
-      telefone: [''],
-      tempoConsultaMinutos: ['', Validators.required],
-      valorConsulta: [''],
-      formacao: [''],
-      instituicao: [''],
+      telefone: ['', telefoneValidator()],
+      tempoConsultaMinutos: ['', [Validators.required, tempoConsultaValidator()]],
+      valorConsulta: ['', valorMonetarioValidator()],
+      formacao: ['', formacaoValidator()],
+      instituicao: ['', formacaoValidator()],
       status: [''],
       tipoProfissional: [''],
       cargo: [''],
     });
 
     this.organizacaoForm = this.fb.group({
-      nomeClinica: ['', Validators.required],
-      razaoSocial: [''],
+      nomeClinica: ['', [Validators.required, textoBrValidator(3, 100), antiInjectionValidator()]],
+      razaoSocial: ['', [textoBrValidator(3, 150), antiInjectionValidator()]],
       cnpj: [{value: '', disabled: true}],
       tipoClinica: ['', Validators.required],
-      emailClinica: ['', [Validators.required, Validators.email]],
-      telefone: [''],
+      emailClinica: ['', [Validators.required, emailValidator()]],
+      telefone: ['', telefoneValidator()],
     });
 
     this.enderecoForm = this.fb.group({
-      rua: ['', Validators.required],
-      numero: ['', Validators.required],
-      complemento: [''],
-      bairro: ['', Validators.required],
-      cep: ['', Validators.required],
-      municipio: ['', Validators.required],
+      rua: ['', [Validators.required, textoBrValidator(), antiInjectionValidator()]],
+      numero: ['', [Validators.required, numeroEnderecoValidator()]],
+      complemento: ['', antiInjectionValidator()],
+      bairro: ['', [Validators.required, textoBrValidator(), antiInjectionValidator()]],
+      cep: ['', [Validators.required, cepValidator()]],
+      municipio: ['', [Validators.required, textoBrValidator(), antiInjectionValidator()]],
       uf: ['', Validators.required],
-      nacionalidade: [''],
+      nacionalidade: ['', nacionalidadeValidator()],
     });
 
     this.tokenService.decodificaToken();
@@ -239,16 +257,16 @@ export class DadosPessoaisComponent implements OnInit, OnDestroy {
   private configurarFormPorTipo(): void {
     if (this.isAdmin) {
       this.dadosPessoaisForm = this.fb.group({
-        nome: ['', Validators.required],
+        nome: ['', [Validators.required, nomeCompletoValidator(), antiInjectionValidator()]],
         cargo: [''],
-        email: ['', [Validators.required, Validators.email]],
+        email: ['', [Validators.required, emailValidator()]],
       });
     } else if (this.isSecretaria) {
       this.dadosPessoaisForm = this.fb.group({
-        nome: ['', Validators.required],
+        nome: ['', [Validators.required, nomeCompletoValidator(), antiInjectionValidator()]],
         cpf: [{value: '', disabled: true}],
-        email: ['', [Validators.required, Validators.email]],
-        telefone: [''],
+        email: ['', [Validators.required, emailValidator()]],
+        telefone: ['', telefoneValidator()],
       });
     }
     // Profissional mantém o form original (já inicializado no construtor)
@@ -516,16 +534,11 @@ export class DadosPessoaisComponent implements OnInit, OnDestroy {
 
   getCampoErro(campo: string): string {
     const control = this.dadosPessoaisForm?.get(campo) ||
-      this.dadosPessoaisForm?.get(campo) ||
-      this.enderecoForm.get(campo);
+      this.enderecoForm?.get(campo) ||
+      this.organizacaoForm?.get(campo);
 
-    if (control?.hasError('required')) {
-      return 'Este campo é obrigatório';
-    }
-    if (control?.hasError('email')) {
-      return 'E-mail inválido';
-    }
-    return '';
+    if (!control || !control.errors) return '';
+    return getFieldError(control.errors);
   }
 
   ngOnDestroy(): void {

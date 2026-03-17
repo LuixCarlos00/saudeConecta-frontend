@@ -12,6 +12,7 @@ import { SecretariaApiService } from 'src/app/services/api/secretaria-api.servic
 import { ufOptions } from 'src/app/util/variados/options/options';
 import { EspecialidadeApiService, EspecialidadeResponse } from 'src/app/services/api/especialidade-api.service';
 import { ControleAcessoApiService } from 'src/app/services/api/controle-acesso-api.service';
+import { dataNascimentoValidator } from 'src/app/util/validators/form-validators';
 
 export interface DialogData {
   usuario: UsuarioUnificado;
@@ -76,7 +77,7 @@ export class VisualizarEditarUsuarioComponent implements OnInit {
           nome: ['', [Validators.required, Validators.maxLength(100)]],
           cpf: [{ value: '', disabled: true }],          // readonly
           sexo: ['', [Validators.required]],              // obrigatório
-          dataNascimento: ['', [Validators.required]],              // obrigatório
+          dataNascimento: ['', [Validators.required, dataNascimentoValidator(0, 120)]],              // obrigatório
           rg: ['', [Validators.maxLength(12)]],         // opcional
           email: ['', [Validators.required, Validators.email, Validators.maxLength(100)]],
           telefone: ['', [Validators.maxLength(20)]],         // opcional

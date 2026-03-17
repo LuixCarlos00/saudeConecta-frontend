@@ -64,6 +64,21 @@ export function getFieldError(errors: Record<string, any> | null | undefined): s
         tempoMinimo: '❌ Tempo mínimo de consulta é 5 minutos.',
         tempoMaximo: '❌ Tempo máximo de consulta é 180 minutos.',
 
+        // CNPJ
+        cnpjInvalido: '❌ CNPJ inválido — verifique os dígitos.',
+        cnpjTamanhoInvalido: '❌ CNPJ deve ter 14 dígitos. Ex: 00.000.000/0001-00.',
+
+        // Anti-injection / Sanitização
+        conteudoPerigoso: '❌ Conteúdo contém caracteres ou padrões não permitidos.',
+
+        // Valor monetário
+        valorInvalido: '❌ Valor inválido — informe um número válido.',
+        valorNegativo: '❌ O valor não pode ser negativo.',
+        valorMaximo: '❌ Valor muito alto — máximo R$ 99.999,99.',
+
+        // Nacionalidade
+        nacionalidadeInvalida: '❌ Nacionalidade inválida — use apenas letras. Ex: Brasileiro(a).',
+
         // Tamanho genérico
         maxlength: '❌ Limite de caracteres excedido.',
         minlength: '❌ Mínimo de caracteres não atingido.',

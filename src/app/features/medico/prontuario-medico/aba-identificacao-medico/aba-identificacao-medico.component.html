@@ -1,0 +1,123 @@
+<div class="identificacao-container">
+
+  <!-- ── Dados Cadastrais ── -->
+  <div class="pep-section">
+    <div class="pep-section__header">
+      <h3 class="pep-section__title">
+        <i class="fa-solid fa-user"></i> Dados Cadastrais do Paciente
+      </h3>
+    </div>
+    <div class="pep-section__body">
+      <div *ngIf="pacienteLoading" style="text-align:center;padding:20px;">
+        <i class="fa-solid fa-spinner fa-spin"></i> Carregando dados do paciente...
+      </div>
+      <div *ngIf="!pacienteLoading && dadosPaciente">
+        <div class="form-grid--3">
+          <div class="form-group">
+            <label class="form-label"><i class="fa-solid fa-user"></i> Nome Completo</label>
+            <input class="form-input" [value]="dadosPaciente?.nome || '-'" disabled />
+          </div>
+          <div class="form-group">
+            <label class="form-label"><i class="fa-solid fa-id-card"></i> CPF</label>
+            <input class="form-input" [value]="dadosPaciente?.cpf || '-'" disabled />
+          </div>
+          <div class="form-group">
+            <label class="form-label"><i class="fa-solid fa-id-badge"></i> RG</label>
+            <input class="form-input" [value]="dadosPaciente?.rg || '-'" disabled />
+          </div>
+        </div>
+        <div class="form-grid--3" style="margin-top:16px;">
+          <div class="form-group">
+            <label class="form-label"><i class="fa-solid fa-calendar"></i> Data de Nascimento</label>
+            <input class="form-input" [value]="dadosPaciente?.dataNascimento || '-'" disabled />
+          </div>
+          <div class="form-group">
+            <label class="form-label"><i class="fa-solid fa-venus-mars"></i> Sexo</label>
+            <input class="form-input" [value]="getSexoLabel(dadosPaciente?.sexo)" disabled />
+          </div>
+          <div class="form-group">
+            <label class="form-label"><i class="fa-solid fa-phone"></i> Telefone</label>
+            <input class="form-input" [value]="dadosPaciente?.telefone || '-'" disabled />
+          </div>
+        </div>
+        <div class="form-grid--3" style="margin-top:16px;">
+          <div class="form-group">
+            <label class="form-label"><i class="fa-solid fa-envelope"></i> Email</label>
+            <input class="form-input" [value]="dadosPaciente?.email || '-'" disabled />
+          </div>
+          <div class="form-group">
+            <label class="form-label"><i class="fa-solid fa-circle-info"></i> Status</label>
+            <input class="form-input" [value]="dadosPaciente?.status || '-'" disabled />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Endereço ── -->
+  <div class="pep-section" *ngIf="dadosPaciente?.endereco">
+    <div class="pep-section__header">
+      <h3 class="pep-section__title">
+        <i class="fa-solid fa-location-dot"></i> Endereço
+      </h3>
+    </div>
+    <div class="pep-section__body">
+      <div class="form-grid--3">
+        <div class="form-group">
+          <label class="form-label">Logradouro</label>
+          <input class="form-input" [value]="dadosPaciente?.endereco?.rua || '-'" disabled />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Número</label>
+          <input class="form-input" [value]="dadosPaciente?.endereco?.numero || '-'" disabled />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Bairro</label>
+          <input class="form-input" [value]="dadosPaciente?.endereco?.bairro || '-'" disabled />
+        </div>
+      </div>
+      <div class="form-grid--3" style="margin-top:16px;">
+        <div class="form-group">
+          <label class="form-label">Cidade</label>
+          <input class="form-input" [value]="dadosPaciente?.endereco?.municipio || '-'" disabled />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Estado</label>
+          <input class="form-input" [value]="dadosPaciente?.endereco?.uf || '-'" disabled />
+        </div>
+        <div class="form-group">
+          <label class="form-label">CEP</label>
+          <input class="form-input" [value]="dadosPaciente?.endereco?.cep || '-'" disabled />
+        </div>
+      </div>
+      <div class="form-grid--3" style="margin-top:16px;">
+        <div class="form-group" *ngIf="dadosPaciente?.endereco?.complemento">
+          <label class="form-label">Complemento</label>
+          <input class="form-input" [value]="dadosPaciente?.endereco?.complemento || '-'" disabled />
+        </div>
+        <div class="form-group" *ngIf="dadosPaciente?.endereco?.nacionalidade">
+          <label class="form-label">Nacionalidade</label>
+          <input class="form-input" [value]="dadosPaciente?.endereco?.nacionalidade || '-'" disabled />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Informações Complementares ── -->
+  <div class="pep-section">
+    <div class="pep-section__header">
+      <h3 class="pep-section__title">
+        <i class="fa-solid fa-user-shield"></i> Informações Complementares
+      </h3>
+    </div>
+    <div class="pep-section__body">
+      <div class="form-grid--2">
+        <div class="form-group">
+          <label class="form-label"><i class="fa-solid fa-user-shield"></i> Responsável (se menor)</label>
+          <input class="form-input" [(ngModel)]="responsavel" placeholder="Nome do responsável legal" />
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

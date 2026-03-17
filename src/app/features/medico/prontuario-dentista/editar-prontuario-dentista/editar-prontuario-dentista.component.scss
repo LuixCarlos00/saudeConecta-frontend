@@ -9,6 +9,36 @@
   border-radius: 0px;
 }
 
+// Estilos para inputs readonly
+.form-input.readonly {
+  background-color: #f8f9fa;
+  border-color: #dee2e6;
+  color: #6c757d;
+  cursor: not-allowed;
+  
+  &:focus {
+    outline: none;
+    border-color: #dee2e6;
+    box-shadow: none;
+  }
+}
+
+// Mensagens de ajuda
+.form-help {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.75rem;
+  
+  &.text-warning {
+    color: #856404;
+    font-weight: 500;
+  }
+  
+  i {
+    margin-right: 4px;
+  }
+}
+
 .editar-prontuario-header {
   display: flex;
   align-items: center;

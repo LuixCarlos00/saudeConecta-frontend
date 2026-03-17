@@ -9,6 +9,19 @@ import { FiltroStateService } from 'src/app/services/state/filtro-state.service'
 import { CepApiService } from 'src/app/services/api/cep-api.service';
 import { cpfValidator } from 'src/app/util/validators/cpf-form.validator';
 import { CpfValidator } from 'src/app/util/validators/cpf.validator';
+import { getFieldError } from 'src/app/util/validators/field-errors';
+import {
+  nomeCompletoValidator,
+  dataNascimentoPacienteValidator,
+  rgValidator,
+  telefoneValidator,
+  emailValidator,
+  cepValidator,
+  textoBrValidator,
+  nacionalidadeValidator,
+  numeroEnderecoValidator,
+  antiInjectionValidator,
+} from 'src/app/util/validators/form-validators';
 
 @Component({
   selector: 'app-cadastro-paciente',
@@ -22,6 +35,7 @@ export class CadastroPacienteComponent implements OnInit, OnDestroy {
   FormularioEndereco!: FormGroup;
   ufOptions = ufOptions;
   isLoading = false;
+  getFieldError = getFieldError;
 
   constructor(
     private form: FormBuilder,
@@ -33,24 +47,24 @@ export class CadastroPacienteComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.FormularioPaciente = this.form.group({
-      nome: ['', Validators.required],
+      nome: ['', [Validators.required, nomeCompletoValidator(), antiInjectionValidator()]],
       sexo: ['', Validators.required],
-      dataNascimento: ['', Validators.required],
+      dataNascimento: ['', [Validators.required, dataNascimentoPacienteValidator()]],
       cpf: ['', [Validators.required, cpfValidator()]],
-      rg: [''],
-      telefone: [''],
-      email: ['', [Validators.required, Validators.email]],
+      rg: ['', rgValidator()],
+      telefone: ['', telefoneValidator()],
+      email: ['', [Validators.required, emailValidator()]],
     });
 
     this.FormularioEndereco = this.form.group({
-      nacionalidade: [''],
-      uf: ['', Validators.maxLength(2)],
-      cep: ['', Validators.required],
-      rua: ['', Validators.required],
-      municipio: ['', Validators.required],
-      bairro: ['', Validators.required],
-      numero: ['', Validators.required],
-      complemento: [''],
+      nacionalidade: ['', nacionalidadeValidator()],
+      uf: ['', [Validators.required, Validators.maxLength(2)]],
+      cep: ['', [Validators.required, cepValidator()]],
+      rua: ['', [Validators.required, textoBrValidator(), antiInjectionValidator()]],
+      municipio: ['', [Validators.required, textoBrValidator(), antiInjectionValidator()]],
+      bairro: ['', [Validators.required, textoBrValidator(), antiInjectionValidator()]],
+      numero: ['', [Validators.required, numeroEnderecoValidator()]],
+      complemento: ['', antiInjectionValidator()],
     });
 
     // Adicionar listener para formatar CPF
@@ -155,11 +169,14 @@ export class CadastroPacienteComponent implements OnInit, OnDestroy {
 
 
   cadastra() {
+    this.FormularioPaciente.markAllAsTouched();
+    this.FormularioEndereco.markAllAsTouched();
+
     if (!this.FormularioEndereco.valid || !this.FormularioPaciente.valid) {
       Swal.fire({
         icon: 'warning',
         title: 'Formulário incompleto',
-        text: 'Por favor, preencha todos os campos obrigatórios, incluindo o CPF.',
+        text: 'Por favor, preencha todos os campos obrigatórios corretamente.',
       });
       return;
     }

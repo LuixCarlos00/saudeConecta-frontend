@@ -4,8 +4,6 @@ import { Observable } from 'rxjs';
 import { Prontuario } from 'src/app/util/variados/interfaces/Prontuario/Prontuario';
 import { environment } from 'src/environments/environment';
 
-
-
 @Injectable({
   providedIn: 'root'
 })
@@ -15,9 +13,7 @@ export class ProntuarioApiService {
 
   constructor(private http: HttpClient) { }
 
-
-
-  cadastrarProntuarioMedico(prontuario: Prontuario): Observable<Prontuario> {
+  cadastrarProntuarioMedico(prontuario: any): Observable<Prontuario> {
     return this.http.post<Prontuario>(`${this.apiUrl}/cadastrarProntuarioMedico`, prontuario);
   }
 
@@ -25,8 +21,15 @@ export class ProntuarioApiService {
     return this.http.get<Prontuario>(`${this.apiUrl}/buscarId/${id}`);
   }
 
-  buscarProntuarioById(id: number) {
-    return this.http.get<Prontuario>(`${this.apiUrl}/buscarProntuarioById/${id}`);
+  buscarProntuarioById(consultaId: number): Observable<Prontuario> {
+    return this.http.get<Prontuario>(`${this.apiUrl}/buscarProntuarioById/${consultaId}`);
   }
 
+  buscarPorPaciente(pacienteId: number): Observable<Prontuario[]> {
+    return this.http.get<Prontuario[]>(`${this.apiUrl}/paciente/${pacienteId}`);
+  }
+
+  buscarPorProfissional(profissionalId: number): Observable<Prontuario[]> {
+    return this.http.get<Prontuario[]>(`${this.apiUrl}/profissional/${profissionalId}`);
+  }
 }

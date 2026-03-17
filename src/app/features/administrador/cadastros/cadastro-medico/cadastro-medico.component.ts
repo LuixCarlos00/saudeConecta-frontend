@@ -27,6 +27,7 @@ import {
   numeroEnderecoValidator,
   tempoConsultaValidator,
   formacaoValidator,
+  antiInjectionValidator,
 } from 'src/app/util/validators/form-validators';
 
 
@@ -74,9 +75,9 @@ export class CadastroMedicoComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.FormularioMedico = this.form.group({
-      nome: ['', [Validators.required, nomeCompletoValidator()]],
+      nome: ['', [Validators.required, nomeCompletoValidator(), antiInjectionValidator()]],
       sexo: ['', Validators.required],
-      dataNascimento: ['', [Validators.required, dataNascimentoValidator(18, 100)]],
+      dataNascimento: ['', [Validators.required, dataNascimentoValidator()]],
       cpf: ['', [Validators.required, cpfValidator()]],
       rg: ['', rgValidator()],
       registroConselho: ['', [Validators.required, registroConselhoValidator()]],
@@ -84,12 +85,21 @@ export class CadastroMedicoComponent implements OnInit, OnDestroy {
       telefone: ['', telefoneValidator()],
       email: ['', [Validators.required, emailValidator()]],
       formacao: ['', formacaoValidator()],
-      instituicao: ['', formacaoValidator()],       // mesma lógica
+      instituicao: ['', formacaoValidator()],
       tempoConsultaMinutos: [30, tempoConsultaValidator()],
       tipoProfissional: ['MEDICO', Validators.required],
     });
 
-
+    this.FormularioEndereco = this.form.group({
+      nacionalidade: ['', nacionalidadeValidator()],
+      uf: ['', [Validators.required, Validators.maxLength(2)]],
+      cep: ['', [Validators.required, cepValidator()]],
+      municipio: ['', [Validators.required, textoBrValidator(), antiInjectionValidator()]],
+      bairro: ['', [Validators.required, textoBrValidator(), antiInjectionValidator()]],
+      rua: ['', [Validators.required, textoBrValidator(), antiInjectionValidator()]],
+      numero: ['', [Validators.required, numeroEnderecoValidator()]],
+      complemento: ['', antiInjectionValidator()],
+    });
 
     // Formatar CPF ao digitar
     this.FormularioMedico.get('cpf')?.valueChanges.subscribe(value => {
@@ -274,11 +284,14 @@ export class CadastroMedicoComponent implements OnInit, OnDestroy {
   }
 
   cadastra() {
+    this.FormularioMedico.markAllAsTouched();
+    this.FormularioEndereco.markAllAsTouched();
+
     if (!this.FormularioEndereco.valid || !this.FormularioMedico.valid) {
       Swal.fire({
         icon: 'warning',
         title: 'Formulário incompleto',
-        text: 'Por favor, preencha todos os campos obrigatórios, incluindo o CPF.',
+        text: 'Por favor, preencha todos os campos obrigatórios corretamente.',
       });
       return;
     }

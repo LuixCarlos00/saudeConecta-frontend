@@ -245,15 +245,23 @@
             <!-- Tempo de Consulta -->
             <div class="cadastro-field">
               <label class="cadastro-field__label">Tempo de Consulta (minutos)</label>
-              <input type="number" class="cadastro-field__input" formControlName="tempoConsultaMinutos"
-                placeholder="Ex: 30" min="5" max="180"
+              <select class="cadastro-field__input" formControlName="tempoConsultaMinutos"
                 [class.input--error]="FormularioMedico.get('tempoConsultaMinutos')?.invalid && FormularioMedico.get('tempoConsultaMinutos')?.touched"
                 [class.input--valid]="FormularioMedico.get('tempoConsultaMinutos')?.valid && FormularioMedico.get('tempoConsultaMinutos')?.touched">
+                <option value="" disabled>Selecione</option>
+                <option value="10">10 min</option>
+                <option value="15">15 min</option>
+                <option value="20">20 min</option>
+                <option value="25">25 min</option>
+                <option value="30">30 min</option>
+                <option value="40">40 min</option>
+                <option value="45">45 min</option>
+                <option value="60">60 min</option>
+              </select>
               <div class="cadastro-field__error"
                 *ngIf="FormularioMedico.get('tempoConsultaMinutos')?.invalid && FormularioMedico.get('tempoConsultaMinutos')?.touched">
                 {{ getFieldError(FormularioMedico.get('tempoConsultaMinutos')?.errors) }}
               </div>
-              <div class="cadastro-field__hint">Entre 5 e 180 minutos.</div>
             </div>
 
           </form>

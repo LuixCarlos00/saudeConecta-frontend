@@ -7,6 +7,18 @@ import Swal from 'sweetalert2';
 import { AdministradorApiService } from 'src/app/services/api/administrador-api.service';
 import { FiltroStateService } from 'src/app/services/state/filtro-state.service';
 import { CpfValidator } from 'src/app/util/validators/cpf.validator';
+import { cpfValidator } from 'src/app/util/validators/cpf-form.validator';
+import { getFieldError } from 'src/app/util/validators/field-errors';
+import {
+  nomeCompletoValidator,
+  emailValidator,
+  telefoneValidator,
+  cepValidator,
+  textoBrValidator,
+  numeroEnderecoValidator,
+  cnpjValidator,
+  antiInjectionValidator,
+} from 'src/app/util/validators/form-validators';
 
 @Component({
   selector: 'app-cadastro-admin-org',
@@ -19,6 +31,7 @@ export class CadastroAdminOrgComponent implements OnInit, OnDestroy {
   formulario!: FormGroup;
   isLoading = false;
   isBuscandoCep = false;
+  getFieldError = getFieldError;
 
   readonly tiposClinica = [
     { value: 'CLINICA_MEDICA', label: 'Clínica Médica' },
@@ -51,25 +64,25 @@ export class CadastroAdminOrgComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.formulario = this.fb.group({
-      nome:         ['', Validators.required],
-      cpf:          ['', [Validators.required, Validators.minLength(11)]],
+      nome:         ['', [Validators.required, nomeCompletoValidator(), antiInjectionValidator()]],
+      cpf:          ['', [Validators.required, cpfValidator()]],
       cargo:        ['', Validators.required],
-      email:        ['', [Validators.required, Validators.email]],
+      email:        ['', [Validators.required, emailValidator()]],
 
-      nomeClinica:  ['', Validators.required],
-      razaoSocial:  ['', Validators.required],
-      cnpj:         ['', [Validators.required, Validators.minLength(14)]],
+      nomeClinica:  ['', [Validators.required, textoBrValidator(3, 100), antiInjectionValidator()]],
+      razaoSocial:  ['', [Validators.required, textoBrValidator(3, 150), antiInjectionValidator()]],
+      cnpj:         ['', [Validators.required, cnpjValidator()]],
       tipoClinica:  ['', Validators.required],
-      emailClinica: ['', [Validators.required, Validators.email]],
-      telefone:     ['',Validators.required],
+      emailClinica: ['', [Validators.required, emailValidator()]],
+      telefone:     ['', [Validators.required, telefoneValidator()]],
 
-      cep:          ['', Validators.required],
+      cep:          ['', [Validators.required, cepValidator()]],
       uf:           ['', Validators.required],
-      municipio:    ['', Validators.required],
-      bairro:       ['',Validators.required],
-      rua:          ['', Validators.required],
-      numero:       ['', Validators.required],
-      complemento:  [''],
+      municipio:    ['', [Validators.required, textoBrValidator(2, 100), antiInjectionValidator()]],
+      bairro:       ['', [Validators.required, textoBrValidator(2, 100), antiInjectionValidator()]],
+      rua:          ['', [Validators.required, textoBrValidator(2, 200), antiInjectionValidator()]],
+      numero:       ['', [Validators.required, numeroEnderecoValidator()]],
+      complemento:  ['', antiInjectionValidator()],
     });
 
     this.formulario.get('cpf')?.valueChanges.subscribe(value => {

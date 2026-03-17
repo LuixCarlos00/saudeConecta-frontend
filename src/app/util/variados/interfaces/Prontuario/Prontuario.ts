@@ -120,6 +120,105 @@ export interface Prontuario {
   solicitacaoExameTexto?: string;
 
   // =============================================================================
+  // IDENTIFICAÇÃO DO PACIENTE
+  // =============================================================================
+
+  /** Responsável (se menor de idade) */
+  responsavel?: string;
+
+  /** Data de início do tratamento */
+  inicioTratamento?: string;
+
+  /** Data de término do tratamento */
+  terminoTratamento?: string;
+
+  /** Motivo de interrupção do tratamento */
+  interrupcao?: string;
+
+  // =============================================================================
+  // SINAIS VITAIS (CAMPO ADICIONAL)
+  // =============================================================================
+
+  /** Pulso (ex: "80 bpm") */
+  pulso?: string;
+
+  // =============================================================================
+  // EXAME EXTRABUCAL
+  // =============================================================================
+
+  /** Edema */
+  edema?: string;
+
+  /** Fácies */
+  facies?: string;
+
+  /** Linfonodos */
+  linfonodos?: string;
+
+  // =============================================================================
+  // EXAME INTRABUCAL
+  // =============================================================================
+
+  /** Lábios */
+  labios?: string;
+
+  /** Mucosas */
+  mucosas?: string;
+
+  /** Soalho bucal */
+  soalhoBucal?: string;
+
+  /** Palato */
+  palato?: string;
+
+  /** Orofaringe */
+  orofaringe?: string;
+
+  /** Língua */
+  lingua?: string;
+
+  /** Gengiva */
+  gengiva?: string;
+
+  /** Hábitos nocivos */
+  habitosNocivos?: string;
+
+  /** Portador de aparelho */
+  portadorAparelho?: string;
+
+  /** Outros achados do exame */
+  exameOutros?: string;
+
+  // =============================================================================
+  // EXAME CLÍNICO ESTRUTURADO
+  // =============================================================================
+
+  /** Higiene bucal */
+  higieneBucal?: string;
+
+  /** Condição gengival */
+  condicaoGengival?: string;
+
+  /** Análise oclusal */
+  oclusal?: string;
+
+  /** ATM */
+  atm?: string;
+
+  // =============================================================================
+  // DIAGNÓSTICO E TRATAMENTO
+  // =============================================================================
+
+  /** Orientações ao paciente */
+  orientacoes?: string;
+
+  /** Plano de tratamento */
+  planoTratamento?: string;
+
+  /** Procedimentos realizados */
+  procedimentos?: string;
+
+  // =============================================================================
   // CONTROLE E FINALIZAÇÃO
   // =============================================================================
 
