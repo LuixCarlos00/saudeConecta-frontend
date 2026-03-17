@@ -19,8 +19,8 @@
   </header>
 
   <!-- Banner de Inadimplência -->
-  <!-- Banner de cobrança pendente (gerada automaticamente dia 1º do mês) -->
-  <div class="banner-cobranca-pendente" *ngIf="cobrancaPendente && !assinaturaInadimplente">
+  <!-- Banner de cobrança pendente (gerada automaticamente dia 1º do mês) - Apenas AdminOrg -->
+  <div class="banner-cobranca-pendente" *ngIf="cobrancaPendente && !assinaturaInadimplente && ControleAcessoService.isAdmin()">
     <div class="banner-cobranca-pendente__icon">
       <i class="fa-solid fa-receipt"></i>
     </div>
@@ -46,8 +46,8 @@
     </button>
   </div>
 
-  <!-- Banner de inadimplência (prioridade sobre cobrança pendente) -->
-  <div class="banner-inadimplencia" *ngIf="assinaturaInadimplente">
+  <!-- Banner de inadimplência (prioridade sobre cobrança pendente) - Apenas AdminOrg -->
+  <div class="banner-inadimplencia" *ngIf="assinaturaInadimplente && ControleAcessoService.isAdmin()">
     <div class="banner-inadimplencia__icon">
       <i class="fa-solid fa-triangle-exclamation"></i>
     </div>

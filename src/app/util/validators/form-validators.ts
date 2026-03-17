@@ -29,6 +29,14 @@ const REGEX_TELEFONE = /^\(\d{2}\)\s\d{4,5}-\d{4}$/;
 /** Nacionalidade: letras PT-BR + parênteses para M/F */
 const REGEX_NACIONALIDADE = /^[a-zA-ZÀ-ÿ\u00C0-\u017E\s()\-]+$/;
 
+/** CNPJ: 00.000.000/0001-00 ou apenas dígitos */
+const REGEX_CNPJ_FORMATADO = /^\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}$/;
+
+/** Padrões perigosos: SQL injection e XSS */
+const REGEX_SQL_INJECTION = /('|--|;|\bDROP\b|\bSELECT\b|\bINSERT\b|\bDELETE\b|\bUPDATE\b|\bUNION\b|\bEXEC\b|\bOR\b\s+\d+=\d+|\bAND\b\s+\d+=\d+)/i;
+const REGEX_XSS = /(<script|<\/script|javascript:|on\w+=|<iframe|<object|<embed|<form)/i;
+const REGEX_HTML_TAGS = /<[^>]*>/;
+
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 /** Verifica se o valor possui caracteres de idiomas não-latinos (bloqueia entradas sem sentido) */
@@ -46,6 +54,29 @@ function pareceSpamDeCaracteres(valor: string): boolean {
   // Sequência do teclado (qwerty, asdf, 1234)
   const sequencias = ['qwerty', 'asdfgh', 'zxcvbn', '123456', 'abcdef'];
   return sequencias.some(seq => semEspacos.toLowerCase().includes(seq));
+}
+
+/**
+ * Verifica se o texto contém padrões de SQL Injection ou XSS
+ * @param valor Texto a ser verificado
+ * @returns true se contém padrões perigosos
+ */
+function contemInjection(valor: string): boolean {
+  return REGEX_SQL_INJECTION.test(valor) || REGEX_XSS.test(valor) || REGEX_HTML_TAGS.test(valor);
+}
+
+/**
+ * Sanitiza um texto removendo caracteres perigosos
+ * Uso: chamar antes de enviar dados ao backend
+ * @param valor Texto a ser sanitizado
+ * @returns Texto limpo
+ */
+export function sanitizar(valor: string): string {
+  if (!valor) return '';
+  return valor
+    .replace(REGEX_HTML_TAGS, '')
+    .replace(/[<>"'`;]/g, '')
+    .trim();
 }
 
 // ─── Validators ───────────────────────────────────────────────────────────────
@@ -301,6 +332,94 @@ export function formacaoValidator(): ValidatorFn {
     if (valor.length < 3) return { textoMinLength: { min: 3, atual: valor.length } };
     if (valor.length > 120) return { textoMaxLength: { max: 120, atual: valor.length } };
     if (pareceSpamDeCaracteres(valor)) return { textoInvalido: true };
+
+    return null;
+  };
+}
+
+/**
+ * Valida CNPJ brasileiro (dígitos verificadores)
+ */
+export function cnpjValidator(): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors | null => {
+    const valor: string = control.value?.trim() ?? '';
+    if (!valor) return null;
+
+    const cnpjLimpo = valor.replace(/[^\d]/g, '');
+    if (cnpjLimpo.length !== 14) return { cnpjTamanhoInvalido: true };
+    if (/^(\d)\1{13}$/.test(cnpjLimpo)) return { cnpjInvalido: true };
+
+    const pesos1 = [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
+    const pesos2 = [6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
+
+    let soma = 0;
+    for (let i = 0; i < 12; i++) soma += parseInt(cnpjLimpo[i]) * pesos1[i];
+    let resto = soma % 11;
+    const digito1 = resto < 2 ? 0 : 11 - resto;
+    if (parseInt(cnpjLimpo[12]) !== digito1) return { cnpjInvalido: true };
+
+    soma = 0;
+    for (let i = 0; i < 13; i++) soma += parseInt(cnpjLimpo[i]) * pesos2[i];
+    resto = soma % 11;
+    const digito2 = resto < 2 ? 0 : 11 - resto;
+    if (parseInt(cnpjLimpo[13]) !== digito2) return { cnpjInvalido: true };
+
+    return null;
+  };
+}
+
+/**
+ * Valida data de nascimento para paciente:
+ * - Não pode ser no futuro
+ * - Idade entre 0 e 120 anos
+ */
+export function dataNascimentoPacienteValidator(): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors | null => {
+    const valor = control.value;
+    if (!valor) return null;
+
+    const data = new Date(valor);
+    if (isNaN(data.getTime())) return { dataInvalida: true };
+
+    const hoje = new Date();
+    hoje.setHours(0, 0, 0, 0);
+
+    if (data >= hoje) return { dataFutura: true };
+
+    const idadeMs = hoje.getTime() - data.getTime();
+    const idade = Math.floor(idadeMs / (1000 * 60 * 60 * 24 * 365.25));
+    if (idade > 120) return { idadeMaxima: { max: 120 } };
+
+    return null;
+  };
+}
+
+/**
+ * Validator anti-injection: rejeita SQL injection e XSS em qualquer campo de texto
+ */
+export function antiInjectionValidator(): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors | null => {
+    const valor: string = control.value?.trim() ?? '';
+    if (!valor) return null;
+
+    if (contemInjection(valor)) return { conteudoPerigoso: true };
+
+    return null;
+  };
+}
+
+/**
+ * Valida valor monetário: número positivo com até 2 casas decimais
+ */
+export function valorMonetarioValidator(): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors | null => {
+    const valor = control.value;
+    if (valor === null || valor === undefined || valor === '') return null;
+
+    const num = Number(valor);
+    if (isNaN(num)) return { valorInvalido: true };
+    if (num < 0) return { valorNegativo: true };
+    if (num > 99999.99) return { valorMaximo: true };
 
     return null;
   };

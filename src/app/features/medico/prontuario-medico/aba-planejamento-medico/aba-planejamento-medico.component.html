@@ -25,7 +25,7 @@
         <div class="form-group">
           <label class="form-label">Procedimento</label>
           <input class="form-input" type="text" [(ngModel)]="novoPlanejamento.procedimentoRealizado"
-            placeholder="Nome do procedimento" 
+            placeholder="Nome do procedimento"
             [readonly]="editandoProcedimentoExistente"
             [class.readonly]="editandoProcedimentoExistente" />
           <small *ngIf="editandoProcedimentoExistente" class="form-help text-warning">
@@ -34,8 +34,8 @@
         </div>
         <div class="form-group">
           <label class="form-label">Valor (R$)</label>
-          <input class="form-input" type="number" [(ngModel)]="novoPlanejamento.valor" 
-            placeholder="0.00" 
+          <input class="form-input" type="number" [(ngModel)]="novoPlanejamento.valor"
+            placeholder="0.00"
             [readonly]="editandoProcedimentoExistente"
             [class.readonly]="editandoProcedimentoExistente" />
           <small *ngIf="editandoProcedimentoExistente" class="form-help text-warning">
@@ -66,7 +66,7 @@
         <div class="form-group">
           <label class="form-label">Nome do Procedimento</label>
           <input class="form-input" type="text" [(ngModel)]="novoProcedimentoPadrao.nomeProcedimento"
-            placeholder="Ex: Limpeza, Restauração, Canal..." />
+            placeholder="Ex: Consulta, Retorno, Exame..." />
         </div>
         <div class="form-group">
           <label class="form-label">Valor Padrão (R$)</label>

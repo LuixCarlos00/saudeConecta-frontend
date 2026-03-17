@@ -7,14 +7,14 @@ import { PlanejamentoTerapeuticoApiService } from 'src/app/services/api/planejam
 import { ErrorHandlerService } from 'src/app/core/services/error-handler.service';
 
 @Component({
-  selector: 'app-aba-planejamento',
+  selector: 'app-aba-planejamento-medico',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: './aba-planejamento.component.html',
-  styleUrl: '../prontuario-dentista.component.scss',
+  templateUrl: './aba-planejamento-medico.component.html',
+  styleUrl: '../prontuario-shared.scss',
   host: { style: 'display: block; width: 100%;' },
 })
-export class AbaPlanejamentoComponent implements OnChanges, OnDestroy {
+export class AbaPlanejamentoMedicoComponent implements OnChanges, OnDestroy {
 
   @Input() profissionalId: number | undefined;
   @Input() consultaId: number | undefined;
@@ -64,23 +64,21 @@ export class AbaPlanejamentoComponent implements OnChanges, OnDestroy {
     const id = Number(event.target.value);
     const proc = this.procedimentosPadrao.find(p => p.id === id);
     if (proc) {
-      // Verificar se este procedimento já existe nos planejamentos
-      const procedimentoExistente = this.planejamentos.find(p => 
+      const procedimentoExistente = this.planejamentos.find(p =>
         p.procedimentoRealizado === proc.nomeProcedimento && !p._local
       );
-      
+
       if (procedimentoExistente) {
         this.errorHandler.showError('Este procedimento já está cadastrado no planejamento e não pode ser duplicado.');
-        event.target.value = ''; // Limpa select
+        event.target.value = '';
         return;
       }
-      
+
       this.novoPlanejamento.procedimentoRealizado = proc.nomeProcedimento;
       this.novoPlanejamento.valor = proc.valorPadrao || 0;
       this.editandoProcedimentoExistente = true;
       this.procedimentoOriginal = proc;
     } else {
-      // Select vazio - limpar edição
       this.editandoProcedimentoExistente = false;
       this.procedimentoOriginal = null;
     }
@@ -90,8 +88,7 @@ export class AbaPlanejamentoComponent implements OnChanges, OnDestroy {
     this.novoPlanejamento = { procedimentoRealizado: '', valor: 0, dataProcedimento: '' };
     this.editandoProcedimentoExistente = false;
     this.procedimentoOriginal = null;
-    
-    // Limpa select
+
     const selectElement = document.querySelector('select.form-select') as HTMLSelectElement;
     if (selectElement) {
       selectElement.value = '';
@@ -104,7 +101,7 @@ export class AbaPlanejamentoComponent implements OnChanges, OnDestroy {
       return;
     }
     const payload = {
-      prontuarioDentistaId: null as any,
+      prontuarioId: null as any,
       consultaId: this.consultaId,
       pacienteId: this.pacienteId,
       dataProcedimento: this.novoPlanejamento.dataProcedimento || new Date().toISOString().split('T')[0],
@@ -116,7 +113,6 @@ export class AbaPlanejamentoComponent implements OnChanges, OnDestroy {
       statusAssinatura: 'PENDENTE',
       _local: true
     });
-    // Limpar estado de edição
     this.novoPlanejamento = { procedimentoRealizado: '', valor: 0, dataProcedimento: '' };
     this.editandoProcedimentoExistente = false;
     this.procedimentoOriginal = null;

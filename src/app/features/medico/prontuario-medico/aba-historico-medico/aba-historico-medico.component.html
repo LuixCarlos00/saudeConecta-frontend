@@ -1,0 +1,130 @@
+<section class="pep-section">
+  <div class="pep-section__header">
+    <h2 class="pep-section__title">
+      <i class="fa-solid fa-clock-rotate-left"></i>
+      Histórico do Paciente
+    </h2>
+  </div>
+  <div class="pep-section__body">
+
+    <!-- Loading -->
+    <div *ngIf="historicoLoading" style="padding: 32px; text-align: center; color: #64748b;">
+      <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
+      <p style="margin-top: 12px;">Carregando histórico do paciente...</p>
+    </div>
+
+    <!-- Sem histórico -->
+    <div class="dente-placeholder"
+      *ngIf="historicoCarregado && historicoProntuarios.length === 0 && !historicoLoading">
+      <div class="dente-placeholder__icon">
+        <i class="fa-solid fa-folder-open"></i>
+      </div>
+      <p class="dente-placeholder__text">
+        Nenhum registro anterior encontrado para este paciente.
+      </p>
+    </div>
+
+    <!-- Lista de prontuários anteriores -->
+    <div *ngIf="historicoCarregado && historicoProntuarios.length > 0 && !historicoLoading">
+      <div *ngFor="let pront of historicoProntuarios; let i = index" class="historico-registro"
+        style="background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 20px; margin-bottom: 16px;">
+
+        <div
+          style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid #f1f5f9;">
+          <h3 style="margin: 0; font-size: 1rem; color: #1e293b;">
+            <i class="fa-solid fa-file-medical" style="color: #3b82f6; margin-right: 6px;"></i>
+            Consulta #{{ pront.consulta?.id || pront.codigoProntuario }} — {{ pront.dataFinalizado }}
+          </h3>
+          <span class="badge badge--info" style="font-size: 0.78rem;">
+            {{ pront.tempoDuracao || '—' }}
+          </span>
+        </div>
+
+        <div class="historico-texto" style="font-size: 0.92rem; line-height: 1.7; color: #334155;">
+
+          <!-- Sinais Vitais -->
+          <div *ngIf="pront.pressao || pront.pulso || pront.temperatura || pront.peso || pront.altura" style="margin-bottom: 10px;">
+            <strong style="color: #0f172a;"><i class="fa-solid fa-heart-pulse"
+                style="color: #ef4444; margin-right: 4px;"></i> Sinais Vitais:</strong>
+            <span style="margin-left: 4px;">
+              <span *ngIf="pront.pressao">PA: {{ pront.pressao }}. </span>
+              <span *ngIf="pront.pulso">Pulso: {{ pront.pulso }}. </span>
+              <span *ngIf="pront.temperatura">Temp: {{ pront.temperatura }}. </span>
+              <span *ngIf="pront.peso">Peso: {{ pront.peso }}. </span>
+              <span *ngIf="pront.altura">Altura: {{ pront.altura }}. </span>
+              <span *ngIf="pront.saturacao">SpO2: {{ pront.saturacao }}. </span>
+              <span *ngIf="pront.hemoglobina">Hb: {{ pront.hemoglobina }}. </span>
+            </span>
+          </div>
+
+          <!-- Queixa Principal -->
+          <div *ngIf="pront.queixaPrincipal" style="margin-bottom: 10px;">
+            <strong style="color: #0f172a;"><i class="fa-solid fa-comment-medical"
+                style="color: #ef4444; margin-right: 4px;"></i> Queixa Principal:</strong>
+            <span style="margin-left: 4px;">{{ pront.queixaPrincipal }}</span>
+          </div>
+
+          <!-- Anamnese -->
+          <div *ngIf="pront.anamnese" style="margin-bottom: 10px;">
+            <strong style="color: #0f172a;"><i class="fa-solid fa-notes-medical"
+                style="color: #8b5cf6; margin-right: 4px;"></i> Anamnese:</strong>
+            <span style="margin-left: 4px;">{{ pront.anamnese }}</span>
+          </div>
+
+          <!-- Observações -->
+          <div *ngIf="pront.observacao" style="margin-bottom: 10px;">
+            <strong style="color: #0f172a;"><i class="fa-solid fa-note-sticky"
+                style="color: #f59e0b; margin-right: 4px;"></i> Observações:</strong>
+            <span style="margin-left: 4px;">{{ pront.observacao }}</span>
+          </div>
+
+          <!-- Diagnóstico -->
+          <div *ngIf="pront.diagnostico" style="margin-bottom: 10px;">
+            <strong style="color: #0f172a;"><i class="fa-solid fa-stethoscope"
+                style="color: #6366f1; margin-right: 4px;"></i> Diagnóstico:</strong>
+            <span style="margin-left: 4px;">{{ pront.diagnostico }}</span>
+          </div>
+
+          <!-- Conduta -->
+          <div *ngIf="pront.conduta" style="margin-bottom: 10px;">
+            <strong style="color: #0f172a;"><i class="fa-solid fa-clipboard-check"
+                style="color: #10b981; margin-right: 4px;"></i> Conduta:</strong>
+            <span style="margin-left: 4px;">{{ pront.conduta }}</span>
+          </div>
+
+          <!-- Plano de Tratamento -->
+          <div *ngIf="pront.planoTratamento" style="margin-bottom: 10px;">
+            <strong style="color: #0f172a;"><i class="fa-solid fa-list-check"
+                style="color: #0ea5e9; margin-right: 4px;"></i> Plano de Tratamento:</strong>
+            <span style="margin-left: 4px;">{{ pront.planoTratamento }}</span>
+          </div>
+
+          <!-- Prescrição -->
+          <div *ngIf="pront.prescricao" style="margin-bottom: 10px;">
+            <strong style="color: #0f172a;"><i class="fa-solid fa-prescription-bottle-medical"
+                style="color: #ec4899; margin-right: 4px;"></i> Prescrição:</strong>
+            <span style="margin-left: 4px;">{{ pront.prescricao }}</span>
+          </div>
+
+          <!-- Orientações -->
+          <div *ngIf="pront.orientacoes" style="margin-bottom: 10px;">
+            <strong style="color: #0f172a;"><i class="fa-solid fa-circle-info"
+                style="color: #0891b2; margin-right: 4px;"></i> Orientações:</strong>
+            <span style="margin-left: 4px;">{{ pront.orientacoes }}</span>
+          </div>
+
+          <!-- Profissional -->
+          <div *ngIf="pront.profissional?.nome" style="margin-bottom: 10px;">
+            <strong style="color: #0f172a;"><i class="fa-solid fa-user-doctor"
+                style="color: #64748b; margin-right: 4px;"></i> Profissional:</strong>
+            <span style="margin-left: 4px;">{{ pront.profissional?.nome }}
+              <span *ngIf="pront.profissional?.conselho"> — {{ pront.profissional?.conselho }}</span>
+            </span>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>

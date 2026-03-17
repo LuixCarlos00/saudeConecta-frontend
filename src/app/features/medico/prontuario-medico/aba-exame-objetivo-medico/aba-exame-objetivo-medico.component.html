@@ -1,0 +1,122 @@
+<div class="exame-objetivo-container">
+
+  <!-- ── Sub-abas ── -->
+  <div class="sub-tabs">
+    <button class="sub-tab" [class.sub-tab--active]="exameSubTab === 0" (click)="exameSubTab = 0">
+      <i class="fa-solid fa-heart-pulse"></i> Sinais Vitais
+    </button>
+    <button class="sub-tab" [class.sub-tab--active]="exameSubTab === 1" (click)="exameSubTab = 1">
+      <i class="fa-solid fa-notes-medical"></i> Anamnese
+    </button>
+    <button class="sub-tab" [class.sub-tab--active]="exameSubTab === 2" (click)="exameSubTab = 2">
+      <i class="fa-solid fa-clipboard-check"></i> Diagnóstico e Tratamento
+    </button>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════
+       SUB-ABA 0 — SINAIS VITAIS
+  ══════════════════════════════════════════════════ -->
+  <div class="pep-section" *ngIf="exameSubTab === 0">
+    <div class="pep-section__header">
+      <h3 class="pep-section__title"><i class="fa-solid fa-heart-pulse"></i> Sinais Vitais</h3>
+    </div>
+    <div class="pep-section__body">
+      <div class="form-grid--3">
+        <div class="form-group">
+          <label class="form-label">Pressão Arterial</label>
+          <input class="form-input" [(ngModel)]="pressao" placeholder="Ex: 120/80 mmHg" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">PA Sistólica</label>
+          <input class="form-input" [(ngModel)]="frequenciaArterialSistolica" placeholder="Ex: 120" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">PA Diastólica</label>
+          <input class="form-input" [(ngModel)]="frequenciaArterialDiastolica" placeholder="Ex: 80" />
+        </div>
+      </div>
+      <div class="form-grid--3" style="margin-top:16px;">
+        <div class="form-group">
+          <label class="form-label">Freq. Respiratória</label>
+          <input class="form-input" [(ngModel)]="frequenciaRespiratoria" placeholder="Ex: 16 irpm" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Pulso</label>
+          <input class="form-input" [(ngModel)]="pulso" placeholder="Ex: 80 bpm" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Temperatura</label>
+          <input class="form-input" [(ngModel)]="temperatura" placeholder="Ex: 36.5 °C" />
+        </div>
+      </div>
+      <div class="form-grid--3" style="margin-top:16px;">
+        <div class="form-group">
+          <label class="form-label">Peso</label>
+          <input class="form-input" [(ngModel)]="peso" placeholder="Ex: 70.5 kg" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Altura</label>
+          <input class="form-input" [(ngModel)]="altura" placeholder="Ex: 1.75 m" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Saturação (SpO2)</label>
+          <input class="form-input" [(ngModel)]="saturacao" placeholder="Ex: 98%" />
+        </div>
+      </div>
+      <div class="form-grid--3" style="margin-top:16px;">
+        <div class="form-group">
+          <label class="form-label">Hemoglobina</label>
+          <input class="form-input" [(ngModel)]="hemoglobina" placeholder="Ex: 14.5 g/dL" />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════
+       SUB-ABA 1 — ANAMNESE
+  ══════════════════════════════════════════════════ -->
+  <div class="pep-section" *ngIf="exameSubTab === 1">
+    <div class="pep-section__header">
+      <h3 class="pep-section__title"><i class="fa-solid fa-notes-medical"></i> Anamnese</h3>
+    </div>
+    <div class="pep-section__body">
+      <div class="form-group">
+        <label class="form-label">Queixa Principal</label>
+        <textarea class="form-input form-textarea" [(ngModel)]="queixaPrincipal" rows="3"
+          placeholder="Queixa principal do paciente..."></textarea>
+      </div>
+      <div class="form-group" style="margin-top:16px;">
+        <label class="form-label">Anamnese / Histórico Clínico</label>
+        <textarea class="form-input form-textarea" [(ngModel)]="anamnese" rows="6"
+          placeholder="Histórico clínico detalhado..."></textarea>
+      </div>
+      <div class="form-group" style="margin-top:16px;">
+        <label class="form-label">Observações</label>
+        <textarea class="form-input form-textarea" [(ngModel)]="observacao" rows="3"
+          placeholder="Observações adicionais..."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════
+       SUB-ABA 2 — DIAGNÓSTICO E TRATAMENTO
+  ══════════════════════════════════════════════════ -->
+  <div class="pep-section" *ngIf="exameSubTab === 2">
+    <div class="pep-section__header">
+      <h3 class="pep-section__title"><i class="fa-solid fa-clipboard-check"></i> Diagnóstico e Tratamento</h3>
+    </div>
+    <div class="pep-section__body">
+      <div class="form-group">
+        <label class="form-label">Diagnóstico</label>
+        <textarea class="form-input form-textarea" [(ngModel)]="diagnostico" rows="4"
+          placeholder="Diagnóstico clínico..."></textarea>
+      </div>
+      <div class="form-group" style="margin-top:16px;">
+        <label class="form-label">Orientações ao Paciente</label>
+        <textarea class="form-input form-textarea" [(ngModel)]="orientacoes" rows="3"
+          placeholder="Orientações e recomendações ao paciente..."></textarea>
+      </div>
+    </div>
+  </div>
+
+</div>
