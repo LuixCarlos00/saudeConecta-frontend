@@ -5,6 +5,8 @@ import { Subject, takeUntil } from 'rxjs';
 import { ProcedimentoPadraoApiService } from 'src/app/services/api/procedimento-padrao-api.service';
 import { PlanejamentoTerapeuticoApiService } from 'src/app/services/api/planejamento-terapeutico-api.service';
 import { ErrorHandlerService } from 'src/app/core/services/error-handler.service';
+import { ProntuarioApiService } from 'src/app/services/api/prontuario-api.service';
+import { Prontuario, PlanejamentoTerapeutico } from 'src/app/util/variados/interfaces/Prontuario/Prontuario';
 
 @Component({
   selector: 'app-aba-planejamento-medico',
@@ -33,12 +35,16 @@ export class AbaPlanejamentoMedicoComponent implements OnChanges, OnDestroy {
   constructor(
     private procedimentoPadraoApi: ProcedimentoPadraoApiService,
     private planejamentoApi: PlanejamentoTerapeuticoApiService,
+    private prontuarioApi: ProntuarioApiService,
     private errorHandler: ErrorHandlerService
   ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['profissionalId'] && this.profissionalId) {
       this.carregarProcedimentosPadrao(this.profissionalId);
+    }
+    if (changes['consultaId'] && this.consultaId) {
+      this.carregarPlanejamentosExistentes();
     }
   }
 
@@ -57,6 +63,31 @@ export class AbaPlanejamentoMedicoComponent implements OnChanges, OnDestroy {
       .subscribe({
         next: (lista) => this.procedimentosPadrao = lista,
         error: () => this.procedimentosPadrao = []
+      });
+  }
+
+  private carregarPlanejamentosExistentes(): void {
+    if (!this.consultaId) return;
+    
+    this.prontuarioApi.buscarProntuarioById(this.consultaId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (prontuario: Prontuario) => {
+          if (prontuario?.planejamentos) {
+            this.planejamentos = prontuario.planejamentos.map((p: PlanejamentoTerapeutico) => ({
+              id: p.id,
+              dataProcedimento: p.dataProcedimento || '',
+              procedimentoRealizado: p.procedimentoRealizado || '',
+              valor: p.valor || 0,
+              statusAssinatura: p.statusAssinatura || 'PENDENTE',
+              _local: false,
+            }));
+          }
+        },
+        error: () => {
+          // Se não encontrar prontuário, mantém o array vazio para novos planejamentos
+          this.planejamentos = [];
+        }
       });
   }
 
@@ -154,9 +185,9 @@ export class AbaPlanejamentoMedicoComponent implements OnChanges, OnDestroy {
    * Preenche os planejamentos com dados existentes (modo edição).
    * @param dados Objeto com o array de planejamentos do prontuário
    */
-  setDados(dados: any): void {
+  setDados(dados: { planejamentos?: PlanejamentoTerapeutico[] }): void {
     if (!dados?.planejamentos) return;
-    this.planejamentos = (dados.planejamentos as any[]).map(p => ({
+    this.planejamentos = dados.planejamentos.map(p => ({
       id: p.id,
       dataProcedimento: p.dataProcedimento || '',
       procedimentoRealizado: p.procedimentoRealizado || '',
@@ -173,7 +204,6 @@ export class AbaPlanejamentoMedicoComponent implements OnChanges, OnDestroy {
     const today = new Date().toISOString().split('T')[0];
     return {
       planejamentos: this.planejamentos
-        .filter(p => p._local)
         .map(p => ({
           dataProcedimento: p.dataProcedimento || today,
           procedimentoRealizado: p.procedimentoRealizado,

@@ -17,6 +17,16 @@ export class ProntuarioApiService {
     return this.http.post<Prontuario>(`${this.apiUrl}/cadastrarProntuarioMedico`, prontuario);
   }
 
+  cadastrarProntuarioMedicoComPlanejamentos(dados: { prontuario: any, planejamentos: any[] }): Observable<Prontuario> {
+    return this.http.post<Prontuario>(`${this.apiUrl}/cadastrarProntuarioMedicoComPlanejamentos`, dados);
+  }
+
+
+
+  atualizarProntuarioMedico(id: number, prontuario: any): Observable<Prontuario> {
+    return this.http.put<Prontuario>(`${this.apiUrl}/atualizarProntuarioMedico/${id}`, prontuario);
+  }
+
   buscarPorId(id: number): Observable<Prontuario> {
     return this.http.get<Prontuario>(`${this.apiUrl}/buscarId/${id}`);
   }

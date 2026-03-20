@@ -234,6 +234,33 @@ export interface Prontuario {
 
   /** Informações da consulta associada */
   consulta?: ConsultaResponse;
+
+  /** Lista de planejamentos terapêuticos */
+  planejamentos?: PlanejamentoTerapeutico[];
+}
+
+/**
+ * Interface para Planejamento Terapêutico
+ * Representa um planejamento terapêutico do backend
+ */
+export interface PlanejamentoTerapeutico {
+  /** ID do planejamento */
+  id?: number;
+
+  /** Data do procedimento */
+  dataProcedimento?: string;
+
+  /** Procedimento realizado */
+  procedimentoRealizado?: string;
+
+  /** Valor do procedimento */
+  valor?: number;
+
+  /** Status da assinatura */
+  statusAssinatura?: string;
+
+  /** Flag para indicar se é local (não salvo no backend) */
+  _local?: boolean;
 }
 
 /**
