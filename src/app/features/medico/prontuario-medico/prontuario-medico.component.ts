@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -31,7 +31,7 @@ import { AbaPlanejamentoMedicoComponent } from './aba-planejamento-medico/aba-pl
   templateUrl: './prontuario-medico.component.html',
   styleUrl: './prontuario-medico.component.scss'
 })
-export class ProntuarioMedicoComponent implements OnInit, OnDestroy {
+export class ProntuarioMedicoComponent implements OnInit, OnDestroy, AfterViewInit {
 
   // =========================================================================
   // VIEW CHILDREN — referências aos sub-componentes para colher dados
@@ -70,7 +70,29 @@ export class ProntuarioMedicoComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe(consulta => {
         this.Consulta = consulta;
+        // Preencher observações da consulta no campo observações do prontuário
+        this.preencherObservacoesConsulta(consulta);
       });
+  }
+
+  ngAfterViewInit(): void {
+    // Garantir que as observações sejam preenchidas após a inicialização dos componentes filhos
+    if (this.Consulta && this.Consulta.observacoes) {
+      this.preencherObservacoesConsulta(this.Consulta);
+    }
+  }
+
+  private preencherObservacoesConsulta(consulta: Consultav2): void {
+    if (consulta && consulta.observacoes) {
+      // Usar setTimeout para garantir que o componente filho esteja totalmente inicializado
+      setTimeout(() => {
+        if (this.abaExameObjetivo) {
+          this.abaExameObjetivo.observacao = consulta.observacoes || '';
+        } else {
+          console.warn('AbaExameObjetivo não está disponível (médico)');
+        }
+      }, 100);
+    }
   }
 
   ngOnDestroy(): void {
@@ -133,6 +155,7 @@ export class ProntuarioMedicoComponent implements OnInit, OnDestroy {
       consulta: this.Consulta.id,
     };
 
+    console.log('Payload completo:', payload);
     this.finalizarProntuario(payload);
   }
 
