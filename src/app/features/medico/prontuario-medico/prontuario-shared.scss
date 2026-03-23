@@ -1106,6 +1106,163 @@ $t: 0.15s ease;
   }
 }
 
+// ── IA Resumo ─────────────────────────────────────────────
+.ia-resumo-painel {
+  background: var(--color-background-secondary);
+  border: 0.5px solid var(--color-border-tertiary);
+  border-radius: var(--border-radius-lg);
+  padding: 14px 16px;
+  margin-bottom: 20px;
+}
+
+.ia-loading {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 13px; color: var(--color-text-secondary); padding: 12px 0;
+}
+
+.ia-tabs {
+  display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 14px;
+}
+
+.ia-tab {
+  font-size: 12px; padding: 5px 12px;
+  border-radius: var(--border-radius-md);
+  border: 0.5px solid var(--color-border-secondary);
+  background: transparent; color: var(--color-text-secondary); cursor: pointer;
+  &--active {
+    background: var(--color-background-primary);
+    color: var(--color-text-primary);
+    border-color: var(--color-border-primary);
+    font-weight: 500;
+  }
+  &--action { margin-left: auto; }
+}
+
+.ia-panel { }
+
+.ia-metrics {
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-bottom: 14px;
+}
+
+.ia-metric {
+  background: var(--color-background-primary); border-radius: var(--border-radius-md);
+  padding: 10px 12px; border: 0.5px solid var(--color-border-tertiary);
+  &__label { font-size: 11px; color: var(--color-text-secondary); display: block; margin-bottom: 3px; }
+  &__val { font-size: 18px; font-weight: 500; display: block; }
+  &__sub { font-size: 11px; color: var(--color-text-tertiary); display: block; margin-top: 1px; }
+}
+
+.ia-row {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 12px; font-size: 12px; color: var(--color-text-secondary);
+}
+
+.ia-label { font-size: 12px; color: var(--color-text-secondary); }
+
+.ia-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 12px; font-weight: 500; padding: 4px 10px; border-radius: 99px;
+  &--alta { background: #FCEBEB; color: #A32D2D; }
+  &--moderada { background: #FAEEDA; color: #854F0B; }
+  &--baixa { background: #EAF3DE; color: #3B6D11; }
+}
+
+.ia-dot {
+  width: 7px; height: 7px; border-radius: 50%; display: inline-block;
+  &--alta { background: #E24B4A; }
+  &--moderada { background: #EF9F27; }
+  &--baixa { background: #639922; }
+}
+
+.ia-secao {
+  margin-bottom: 12px;
+  &__label { font-size: 11px; font-weight: 500; color: var(--color-text-secondary); margin-bottom: 7px; text-transform: uppercase; letter-spacing: .04em; }
+}
+
+.ia-chips { display: flex; flex-wrap: wrap; gap: 4px; }
+
+.ia-chip {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 12px; padding: 3px 9px; border-radius: 99px;
+  em { font-style: normal; opacity: .7; }
+  &--danger { background: #FCEBEB; color: #A32D2D; }
+  &--warn { background: #FAEEDA; color: #854F0B; }
+  &--info { background: #E6F1FB; color: #185FA5; }
+  &--ok { background: #EAF3DE; color: #3B6D11; }
+  &--muted { background: var(--color-background-primary); color: var(--color-text-secondary); border: 0.5px solid var(--color-border-tertiary); }
+}
+
+.ia-barra-wrap { margin-bottom: 8px; }
+.ia-barra-label { display: flex; justify-content: space-between; font-size: 11px; color: var(--color-text-secondary); margin-bottom: 4px; }
+.ia-barra { height: 5px; border-radius: 3px; background: var(--color-border-tertiary); }
+.ia-barra-fill { height: 100%; border-radius: 3px; background: #378ADD; transition: width .4s; }
+.ia-barra-fill--muted { background: #B4B2A9; }
+.ia-tendencia { font-size: 12px; color: var(--color-text-secondary); margin-top: 6px; display: flex; align-items: center; gap: 6px; }
+
+.ia-vitais-grid {
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 0;
+  border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); overflow: hidden;
+}
+.ia-vital-item {
+  display: flex; flex-direction: column; padding: 9px 12px;
+  border-bottom: 0.5px solid var(--color-border-tertiary);
+  border-right: 0.5px solid var(--color-border-tertiary);
+  &:nth-child(even) { border-right: none; }
+  &__label { font-size: 11px; color: var(--color-text-secondary); margin-bottom: 3px; }
+  &__val { font-size: 13px; font-weight: 500; }
+}
+.ia-val--danger { color: #A32D2D; }
+.ia-val--ok { color: #3B6D11; }
+
+.ia-timeline {
+  position: relative; padding-left: 20px;
+  &::before { content: ''; position: absolute; left: 6px; top: 6px; bottom: 6px; width: 1.5px; background: var(--color-border-tertiary); }
+}
+.ia-titem {
+  position: relative; margin-bottom: 14px;
+  &__dot { position: absolute; left: -15px; top: 4px; width: 8px; height: 8px; border-radius: 50%; background: #378ADD; border: 2px solid var(--color-background-secondary); }
+  &__data { font-size: 11px; color: var(--color-text-tertiary); margin-bottom: 2px; }
+  &__texto { font-size: 12px; color: var(--color-text-primary); margin-bottom: 4px; }
+  &__tags { display: flex; flex-wrap: wrap; gap: 4px; }
+}
+
+.ia-rec {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 10px 0; border-bottom: 0.5px solid var(--color-border-tertiary);
+  &:last-child { border: none; }
+  &__icone {
+    width: 22px; height: 22px; border-radius: var(--border-radius-md); flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; font-size: 11px;
+    &--alta { background: #FCEBEB; color: #A32D2D; }
+    &--media { background: #FAEEDA; color: #854F0B; }
+    &--baixa { background: #EAF3DE; color: #3B6D11; }
+  }
+  &__titulo { font-size: 12px; font-weight: 500; margin-bottom: 3px; }
+  &__desc { font-size: 11px; color: var(--color-text-secondary); line-height: 1.5; }
+}
+
+.ia-vazio { font-size: 12px; color: var(--color-text-tertiary); padding: 12px 0; }
+
+// ── Histórico registros ──
+.historico-registro {
+  background: var(--color-background-primary);
+  border: 0.5px solid var(--color-border-tertiary);
+  border-radius: var(--border-radius-lg); padding: 14px 16px; margin-bottom: 12px;
+  &__header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 10px; padding-bottom: 8px; border-bottom: 0.5px solid var(--color-border-tertiary);
+    h3 { font-size: 13px; font-weight: 500; margin: 0; }
+  }
+  &__corpo { }
+}
+
+.historico-campo {
+  font-size: 12px; line-height: 1.6; color: var(--color-text-primary);
+  margin-bottom: 6px;
+  strong { color: var(--color-text-primary); font-weight: 500; }
+  &--muted { color: var(--color-text-secondary); }
+}
+
 // =============================================================================
 // CARDS GRID — Layout da aba TUSS e CID
 // =============================================================================

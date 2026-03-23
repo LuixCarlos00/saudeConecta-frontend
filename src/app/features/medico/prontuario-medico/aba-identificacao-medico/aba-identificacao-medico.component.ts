@@ -19,7 +19,33 @@ export class AbaIdentificacaoMedicoComponent implements OnChanges, OnDestroy {
   dadosPaciente: any = null;
   pacienteLoading = false;
 
+  // Dados do prontuário
   responsavel = '';
+  peso = '';
+  altura = '';
+  temperatura = '';
+  saturacao = '';
+  pressao = '';
+  frequenciaRespiratoria = '';
+  frequenciaArterialSistolica = '';
+  frequenciaArterialDiastolica = '';
+  hemoglobina = '';
+  pulso = '';
+  dataNascimento = '';
+  queixaPrincipal = '';
+  anamnese = '';
+  observacao = '';
+  diagnostico = '';
+  modeloPrescricao = '';
+  tituloPrescricao = '';
+  dataPrescricao = '';
+  prescricao = '';
+  tempoDuracao = '';
+  exameOutros = '';
+  orientacoes = '';
+  tussTexto = '';
+  cidTexto = '';
+  solicitacaoExameTexto = '';
 
   private readonly destroy$ = new Subject<void>();
 

@@ -84,8 +84,10 @@ export class AbaPlanejamentoMedicoComponent implements OnChanges, OnDestroy {
             }));
           }
         },
-        error: () => {
-          // Se não encontrar prontuário, mantém o array vazio para novos planejamentos
+        error: (error) => {
+          // Se não encontrar prontuário (404) ou outros erros, mantém o array vazio para novos planejamentos
+          // Isso é normal ao iniciar uma nova consulta antes de criar o prontuário
+          console.log('Prontuário não encontrado (novo atendimento) - iniciando com planejamentos vazios');
           this.planejamentos = [];
         }
       });

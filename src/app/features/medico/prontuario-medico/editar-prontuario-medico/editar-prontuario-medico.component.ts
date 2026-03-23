@@ -136,38 +136,44 @@ export class EditarProntuarioMedicoComponent implements OnInit, OnDestroy, After
   /**
    * Executa o salvamento do prontuário no backend.
    */
-  private executarSalvamento(): void {
-    this.salvando = true;
+ private executarSalvamento(): void {
+   this.salvando = true;
 
-    const dadosIdentificacao = this.abaIdentificacao?.getDados() || {};
-    const dadosExame = this.abaExameObjetivo?.getDados() || {};
-    const dadosCodigos = this.abaCodigosTussCid?.getDados() || {};
-    const dadosPlanejamento = this.abaPlanejamento?.getDados() || {};
+   const dadosIdentificacao = this.abaIdentificacao?.getDados() || {};
+   const dadosExame = this.abaExameObjetivo?.getDados() || {};
+   const dadosCodigos = this.abaCodigosTussCid?.getDados() || {};
+   const dadosPlanejamento = this.abaPlanejamento?.getDados() || {};
 
-    const payload: any = {
-      ...dadosIdentificacao,
-      ...dadosExame,
-      ...dadosCodigos,
-      ...dadosPlanejamento,
-      codigoMedico: this.consulta.profissionalId,
-      consulta: this.consulta.id,
-    };
+   // Injeta pacienteId nos planejamentos (não disponível dentro da aba no modo edição)
+   const planejamentosComPaciente = (dadosPlanejamento.planejamentos || []).map(
+     (p: any) => ({ ...p, pacienteId: this.consulta.pacienteId })
+   );
 
-    this.prontuarioApi.atualizarProntuarioMedico(this.prontuarioId!, payload)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: () => {
-          this.salvando = false;
-          this.errorHandler.showSuccessToast('Prontuário atualizado com sucesso');
-          this.dialogRef.close(true);
-        },
-        error: (err) => {
-          console.error('Erro ao atualizar prontuário:', err);
-          this.errorHandler.showError('Erro ao salvar alterações do prontuário');
-          this.salvando = false;
-        }
-      });
-  }
+   const payload: any = {
+     ...dadosIdentificacao,
+     ...dadosExame,
+     ...dadosCodigos,
+     planejamentos: planejamentosComPaciente,
+     codigoMedico: this.consulta.profissionalId,
+     consulta: this.consulta.id,
+     dataFinalizado: new Date().toISOString().split('T')[0],
+   };
+
+   this.prontuarioApi.atualizarProntuarioMedico(this.prontuarioId!, payload)
+     .pipe(takeUntil(this.destroy$))
+     .subscribe({
+       next: () => {
+         this.salvando = false;
+         this.errorHandler.showSuccessToast('Prontuário atualizado com sucesso');
+         this.dialogRef.close(true);
+       },
+       error: (err) => {
+         console.error('Erro ao atualizar prontuário:', err);
+         this.errorHandler.showError('Erro ao salvar alterações do prontuário');
+         this.salvando = false;
+       }
+     });
+ }
 
   /**
    * Fecha o dialog sem salvar.
