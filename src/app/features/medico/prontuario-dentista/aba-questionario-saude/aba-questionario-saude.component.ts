@@ -5,8 +5,7 @@ import { ProntuarioDentistaApiService } from 'src/app/services/api/prontuario-de
 
 @Component({
   selector: 'app-aba-questionario-saude',
-  standalone: true,
-  imports: [CommonModule],
+  
   templateUrl: './aba-questionario-saude.component.html',
   styleUrl: '../prontuario-dentista.component.scss',
   host: { style: 'display: block; width: 100%;' },

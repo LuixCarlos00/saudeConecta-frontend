@@ -7,9 +7,7 @@ import { Cid_codigo_internaciona_doecas } from 'src/app/util/variados/options/ci
 
 @Component({
   selector: 'app-aba-codigos-tuss-cid-medico',
-  standalone: true,
-  imports: [CommonModule, FormsModule],
-  templateUrl: './aba-codigos-tuss-cid-medico.component.html',
+   templateUrl: './aba-codigos-tuss-cid-medico.component.html',
   styleUrl: '../prontuario-shared.scss',
   host: { style: 'display: block; width: 100%;' },
 })

@@ -6,8 +6,7 @@ import { PacienteApiService } from 'src/app/services/api/paciente-api.service';
 
 @Component({
   selector: 'app-aba-identificacao-medico',
-  standalone: true,
-  imports: [CommonModule, FormsModule],
+ 
   templateUrl: './aba-identificacao-medico.component.html',
   styleUrl: '../prontuario-shared.scss',
   host: { style: 'display: block; width: 100%;' },

@@ -94,21 +94,26 @@
       <span>Identificação</span>
     </button>
     <button class="pep-tab" [class.pep-tab--active]="selectedTabIndex === 1" (click)="selectedTabIndex = 1">
-      <i class="fa-solid fa-stethoscope"></i>
-      <span>Exame Objetivo</span>
+      <i class="fa-solid fa-clipboard-question"></i>
+      <span>Questionário de Saúde</span>
     </button>
     <button class="pep-tab" [class.pep-tab--active]="selectedTabIndex === 2" (click)="selectedTabIndex = 2">
-      <i class="fa-solid fa-list-check"></i>
-      <span>Planejamento</span>
-    </button>
-    <button class="pep-tab" [class.pep-tab--active]="selectedTabIndex === 3" (click)="selectedTabIndex = 3">
-      <i class="fa-solid fa-barcode"></i>
-      <span>TUSS / CID</span>
-    </button>
-    <button class="pep-tab" [class.pep-tab--active]="selectedTabIndex === 4" (click)="selectedTabIndex = 4">
       <i class="fa-solid fa-clock-rotate-left"></i>
       <span>Histórico</span>
     </button>
+    <button class="pep-tab" [class.pep-tab--active]="selectedTabIndex === 3" (click)="selectedTabIndex = 3">
+      <i class="fa-solid fa-stethoscope"></i>
+      <span>Exame Objetivo</span>
+    </button>
+    <button class="pep-tab" [class.pep-tab--active]="selectedTabIndex === 4" (click)="selectedTabIndex = 4">
+      <i class="fa-solid fa-list-check"></i>
+      <span>Planejamento</span>
+    </button>
+    <button class="pep-tab" [class.pep-tab--active]="selectedTabIndex === 5" (click)="selectedTabIndex = 5">
+      <i class="fa-solid fa-barcode"></i>
+      <span>TUSS / CID</span>
+    </button>
+
   </nav>
 
   <!-- ════════════════════════════════════════════════════════════════════════ -->
@@ -125,14 +130,26 @@
       </app-aba-identificacao-medico>
     </div>
 
-    <!-- ABA 1 — Exame Objetivo -->
-    <div [hidden]="selectedTabIndex !== 1">
+    <!-- ABA 1 — Questionário de Saúde -->
+    <app-aba-questionario-saude
+      *ngIf="selectedTabIndex === 1"
+      [consultaId]="Consulta?.id">
+    </app-aba-questionario-saude>
+
+    <!-- ABA 2 — Histórico do Paciente -->
+    <app-aba-historico-medico
+      *ngIf="selectedTabIndex === 2"
+      [pacienteId]="Consulta?.pacienteId">
+    </app-aba-historico-medico>
+
+    <!-- ABA 3 — Exame Objetivo -->
+    <div [hidden]="selectedTabIndex !== 3">
       <app-aba-exame-objetivo-medico>
       </app-aba-exame-objetivo-medico>
     </div>
 
-    <!-- ABA 2 — Planejamento Terapêutico -->
-    <div [hidden]="selectedTabIndex !== 2">
+    <!-- ABA 4 — Planejamento Terapêutico -->
+    <div [hidden]="selectedTabIndex !== 4">
       <app-aba-planejamento-medico
         [profissionalId]="Consulta?.profissionalId"
         [consultaId]="Consulta?.id"
@@ -140,17 +157,11 @@
       </app-aba-planejamento-medico>
     </div>
 
-    <!-- ABA 3 — Códigos TUSS / CID -->
-    <div [hidden]="selectedTabIndex !== 3">
+    <!-- ABA 5 — Códigos TUSS / CID -->
+    <div [hidden]="selectedTabIndex !== 5">
       <app-aba-codigos-tuss-cid-medico>
       </app-aba-codigos-tuss-cid-medico>
     </div>
-
-    <!-- ABA 4 — Histórico do Paciente -->
-    <app-aba-historico-medico
-      *ngIf="selectedTabIndex === 4"
-      [pacienteId]="Consulta?.pacienteId">
-    </app-aba-historico-medico>
 
   </main>
 
@@ -176,6 +187,18 @@
           <div class="progress-step" [class.progress-step--completed]="selectedTabIndex >= 2">
             <i class="fa-solid fa-check"></i>
           </div>
+          <div class="progress-line" [class.progress-line--active]="selectedTabIndex >= 3"></div>
+          <div class="progress-step" [class.progress-step--completed]="selectedTabIndex >= 3">
+            <i class="fa-solid fa-check"></i>
+          </div>
+          <div class="progress-line" [class.progress-line--active]="selectedTabIndex >= 4"></div>
+          <div class="progress-step" [class.progress-step--completed]="selectedTabIndex >= 4">
+            <i class="fa-solid fa-check"></i>
+          </div>
+          <div class="progress-line" [class.progress-line--active]="selectedTabIndex >= 5"></div>
+          <div class="progress-step" [class.progress-step--completed]="selectedTabIndex >= 5">
+            <i class="fa-solid fa-check"></i>
+          </div>
         </div>
       </div>
     </div>
@@ -191,14 +214,42 @@
         <span>Anterior</span>
       </button>
       <button class="btn btn--primary"
-        *ngIf="selectedTabIndex < 3"
-        (click)="selectedTabIndex = selectedTabIndex + 1"
+        *ngIf="selectedTabIndex === 0"
+        (click)="selectedTabIndex = 1"
+        [disabled]="FinalizarConsulta">
+        <span>Próximo</span>
+        <i class="fa-solid fa-arrow-right"></i>
+      </button>
+      <button class="btn btn--primary"
+        *ngIf="selectedTabIndex === 1"
+        (click)="selectedTabIndex = 2"
+        [disabled]="FinalizarConsulta">
+        <span>Próximo</span>
+        <i class="fa-solid fa-arrow-right"></i>
+      </button>
+      <button class="btn btn--primary"
+        *ngIf="selectedTabIndex === 2"
+        (click)="selectedTabIndex = 3"
+        [disabled]="FinalizarConsulta">
+        <span>Próximo</span>
+        <i class="fa-solid fa-arrow-right"></i>
+      </button>
+      <button class="btn btn--primary"
+        *ngIf="selectedTabIndex === 3"
+        (click)="selectedTabIndex = 4"
+        [disabled]="FinalizarConsulta">
+        <span>Próximo</span>
+        <i class="fa-solid fa-arrow-right"></i>
+      </button>
+      <button class="btn btn--primary"
+        *ngIf="selectedTabIndex === 4"
+        (click)="selectedTabIndex = 5"
         [disabled]="FinalizarConsulta">
         <span>Próximo</span>
         <i class="fa-solid fa-arrow-right"></i>
       </button>
       <button class="btn btn--success"
-        *ngIf="selectedTabIndex === 3"
+        *ngIf="selectedTabIndex === 5"
         (click)="finalizar()"
         [disabled]="FinalizarConsulta">
         <i class="fa-solid fa-check-circle"></i>

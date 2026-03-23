@@ -1,16 +1,16 @@
 <section class="pep-section">
-  <div class="pep-section__header">
-    <h2 class="pep-section__title">
-      <i class="fa-solid fa-clock-rotate-left"></i>
-      Histórico do Paciente
-    </h2>
-    <div class="pep-section__actions" *ngIf="historicoCarregado && historicoProntuarios.length > 0">
-      <button class="btn btn--primary btn--sm" (click)="toggleResumo()" [disabled]="gerandoResumo">
-        <i class="fa-solid fa-microchip" [class.fa-spin]="gerandoResumo"></i>
-        {{ gerandoResumo ? 'Analisando...' : (exibirResumo ? 'Ocultar resumo' : 'Resumo rápido') }}
-      </button>
-    </div>
-  </div>
+  <!-- <div class="pep-section__header">
+     <h2 class="pep-section__title">
+       <i class="fa-solid fa-clock-rotate-left"></i>
+       Histórico do Paciente
+     </h2>
+     <div class="pep-section__actions" *ngIf="historicoCarregado && historicoProntuarios.length > 0">
+       <button class="btn btn&#45;&#45;primary btn&#45;&#45;sm" (click)="toggleResumo()" [disabled]="gerandoResumo">
+         <i class="fa-solid fa-microchip" [class.fa-spin]="gerandoResumo"></i>
+         {{ gerandoResumo ? 'Analisando...' : (exibirResumo ? 'Ocultar resumo' : 'Resumo rápido') }}
+       </button>
+     </div>
+   </div>-->
 
   <div class="pep-section__body">
 

@@ -10,8 +10,7 @@ import { Prontuario, PlanejamentoTerapeutico } from 'src/app/util/variados/inter
 
 @Component({
   selector: 'app-aba-planejamento-medico',
-  standalone: true,
-  imports: [CommonModule, FormsModule],
+ 
   templateUrl: './aba-planejamento-medico.component.html',
   styleUrl: '../prontuario-shared.scss',
   host: { style: 'display: block; width: 100%;' },

@@ -91,8 +91,8 @@
 
             <div class="cadastro-field">
               <label class="cadastro-field__label">Telefone</label>
-              <input type="text" class="cadastro-field__input" formControlName="telefone" placeholder="(00) 00000-0000"
-                maxlength="15"
+              <input type="text" class="cadastro-field__input" formControlName="telefone" placeholder="11999999999"
+                maxlength="11" inputmode="numeric" pattern="[0-9]*" autocomplete="tel"
                 [class.input--error]="FormularioPaciente.get('telefone')?.invalid && FormularioPaciente.get('telefone')?.touched"
                 [class.input--valid]="FormularioPaciente.get('telefone')?.valid && FormularioPaciente.get('telefone')?.dirty">
               <div *ngIf="FormularioPaciente.get('telefone')?.invalid && FormularioPaciente.get('telefone')?.touched" class="cadastro-field__error">

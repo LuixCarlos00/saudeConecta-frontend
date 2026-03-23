@@ -7,8 +7,7 @@ import { Cid_codigo_internaciona_doecas } from 'src/app/util/variados/options/ci
 
 @Component({
   selector: 'app-aba-codigos-tuss-cid',
-  standalone: true,
-  imports: [CommonModule, FormsModule],
+ 
   templateUrl: './aba-codigos-tuss-cid.component.html',
   styleUrl: '../prontuario-dentista.component.scss',
   host: { style: 'display: block; width: 100%;' },

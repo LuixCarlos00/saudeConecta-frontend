@@ -16,15 +16,7 @@ import { AbaPlanejamentoComponent } from '../aba-planejamento/aba-planejamento.c
 
 @Component({
   selector: 'app-editar-prontuario-dentista',
-  standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    AbaIdentificacaoComponent,
-    AbaExameObjetivoComponent,
-    AbaCodigosTussCidComponent,
-    AbaPlanejamentoComponent,
-  ],
+ 
   templateUrl: './editar-prontuario-dentista.component.html',
   styleUrl: './editar-prontuario-dentista.component.scss',
 })

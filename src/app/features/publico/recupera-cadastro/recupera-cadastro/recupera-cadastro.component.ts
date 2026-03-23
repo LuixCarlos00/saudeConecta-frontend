@@ -2,8 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthApiService } from 'src/app/services/api/auth-api.service';
-import { tokenService } from 'src/app/util/Token/Token.service';
-import Swal from 'sweetalert2';
+ import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-recupera-cadastro',

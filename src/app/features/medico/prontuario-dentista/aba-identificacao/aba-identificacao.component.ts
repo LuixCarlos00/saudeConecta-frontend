@@ -6,8 +6,7 @@ import { PacienteApiService } from 'src/app/services/api/paciente-api.service';
 
 @Component({
   selector: 'app-aba-identificacao',
-  standalone: true,
-  imports: [CommonModule, FormsModule],
+ 
   templateUrl: './aba-identificacao.component.html',
   styleUrl: '../prontuario-dentista.component.scss',
   host: { style: 'display: block; width: 100%;' },
@@ -20,9 +19,6 @@ export class AbaIdentificacaoComponent implements OnChanges, OnDestroy {
   pacienteLoading = false;
 
   responsavel = '';
-  inicioTratamento = '';
-  terminoTratamento = '';
-  interrupcao = '';
 
   private readonly destroy$ = new Subject<void>();
 
@@ -59,9 +55,6 @@ export class AbaIdentificacaoComponent implements OnChanges, OnDestroy {
   setDados(dados: any): void {
     if (!dados) return;
     this.responsavel = dados.responsavel || '';
-    this.inicioTratamento = dados.inicioTratamento || '';
-    this.terminoTratamento = dados.terminoTratamento || '';
-    this.interrupcao = dados.interrupcao || '';
   }
 
   /**
@@ -70,9 +63,6 @@ export class AbaIdentificacaoComponent implements OnChanges, OnDestroy {
   getDados(): any {
     return {
       responsavel: this.responsavel,
-      inicioTratamento: this.inicioTratamento || null,
-      terminoTratamento: this.terminoTratamento || null,
-      interrupcao: this.interrupcao,
     };
   }
 }

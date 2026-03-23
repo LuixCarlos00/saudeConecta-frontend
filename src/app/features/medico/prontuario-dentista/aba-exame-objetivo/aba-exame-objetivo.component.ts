@@ -26,8 +26,7 @@ export const QUADRANTES: QuadranteConfig[] = [
 
 @Component({
   selector: 'app-aba-exame-objetivo',
-  standalone: true,
-  imports: [CommonModule, FormsModule],
+ 
   templateUrl: './aba-exame-objetivo.component.html',
   styleUrl: '../prontuario-dentista.component.scss',
   host: { style: 'display: block; width: 100%;' },

@@ -8,8 +8,7 @@ import { ErrorHandlerService } from 'src/app/core/services/error-handler.service
 
 @Component({
   selector: 'app-aba-planejamento',
-  standalone: true,
-  imports: [CommonModule, FormsModule],
+ 
   templateUrl: './aba-planejamento.component.html',
   styleUrl: '../prontuario-dentista.component.scss',
   host: { style: 'display: block; width: 100%;' },

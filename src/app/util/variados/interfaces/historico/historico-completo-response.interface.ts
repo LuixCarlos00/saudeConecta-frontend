@@ -62,4 +62,19 @@ export interface HistoricoCompletoResponse {
   // Dados de Controle
   dataFinalizado?: string;
   codigoProntuario?: string;
+
+  // Planejamentos
+  planejamentos?: PlanejamentoResponse[];
+}
+
+export interface PlanejamentoResponse {
+  id?: number;
+  dataProcedimento?: string;
+  procedimento?: string;
+  procedimentoRealizado?: string;
+  valor?: number;
+  statusAssinatura?: string;
+  assinaturaBase64?: string;
+  dataAssinatura?: string;
+  ipOrigem?: string;
 }

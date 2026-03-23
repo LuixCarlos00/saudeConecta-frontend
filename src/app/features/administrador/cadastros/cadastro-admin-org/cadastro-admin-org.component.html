@@ -140,13 +140,13 @@
               <div class="cadastro-field">
                 <label class="cadastro-field__label"><span class="cadastro-field__required">*</span> Telefone</label>
                 <input type="text" class="cadastro-field__input" formControlName="telefone"
-                  placeholder="(00) 00000-0000" maxlength="15"
+                  placeholder="11999999999" maxlength="11" inputmode="numeric" pattern="[0-9]*" autocomplete="tel"
                   [class.input--error]="formulario.get('telefone')?.invalid && formulario.get('telefone')?.touched"
                   [class.input--valid]="formulario.get('telefone')?.valid && formulario.get('telefone')?.touched">
                 <div *ngIf="formulario.get('telefone')?.invalid && formulario.get('telefone')?.touched" class="cadastro-field__error">
                   {{ getFieldError(formulario.get('telefone')?.errors) }}
                 </div>
-                <div class="cadastro-field__hint">Formato: (00) 00000-0000</div>
+                <div class="cadastro-field__hint">Apenas números: DD + número (ex: 11999999999)</div>
               </div>
 
             </div>

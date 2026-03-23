@@ -8,9 +8,7 @@ type AbaResumo = 'visao' | 'vitais' | 'timeline' | 'recomendacoes';
 
 @Component({
   selector: 'app-aba-historico-medico',
-  standalone: true,
-  imports: [CommonModule],
-  templateUrl: './aba-historico-medico.component.html',
+   templateUrl: './aba-historico-medico.component.html',
   styleUrl: '../prontuario-shared.scss',
   host: { style: 'display: block; width: 100%;' },
 })

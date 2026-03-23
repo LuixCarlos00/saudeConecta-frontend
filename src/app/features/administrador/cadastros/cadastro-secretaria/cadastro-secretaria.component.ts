@@ -56,18 +56,6 @@ export class CadastroSecretariaComponent implements OnInit, OnDestroy {
     this.FormularioSecretaria.get('cpf')?.valueChanges.subscribe(() => {
       this.FormularioSecretaria.get('cpf')?.updateValueAndValidity({ onlySelf: true, emitEvent: false });
     });
-
-    // Formatar telefone ao digitar: (00) 00000-0000
-    this.FormularioSecretaria.get('telefone')?.valueChanges.subscribe(value => {
-      if (!value) return;
-      const digits = value.replace(/\D/g, '').slice(0, 11);
-      let formatted = digits;
-      if (digits.length >= 2) formatted = `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
-      if (digits.length >= 7) formatted = `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
-      if (formatted !== value) {
-        this.FormularioSecretaria.get('telefone')?.setValue(formatted, { emitEvent: false });
-      }
-    });
   }
 
   ngOnDestroy(): void {
