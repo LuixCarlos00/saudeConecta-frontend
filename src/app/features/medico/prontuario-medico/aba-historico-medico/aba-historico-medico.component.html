@@ -4,124 +4,293 @@
       <i class="fa-solid fa-clock-rotate-left"></i>
       Histórico do Paciente
     </h2>
+    <div class="pep-section__actions" *ngIf="historicoCarregado && historicoProntuarios.length > 0">
+      <button class="btn btn--primary btn--sm" (click)="toggleResumo()" [disabled]="gerandoResumo">
+        <i class="fa-solid fa-microchip" [class.fa-spin]="gerandoResumo"></i>
+        {{ gerandoResumo ? 'Analisando...' : (exibirResumo ? 'Ocultar resumo' : 'Resumo rápido') }}
+      </button>
+    </div>
   </div>
+
   <div class="pep-section__body">
 
-    <!-- Loading -->
-    <div *ngIf="historicoLoading" style="padding: 32px; text-align: center; color: #64748b;">
+    <!-- ── Painel de resumo IA ── -->
+    <div *ngIf="exibirResumo" class="ia-resumo-painel">
+
+      <!-- Loading -->
+      <div *ngIf="gerandoResumo" class="ia-loading">
+        <i class="fa-solid fa-spinner fa-spin"></i>
+        <span>Analisando {{ historicoProntuarios.length }} consultas...</span>
+      </div>
+
+      <!-- Conteúdo do resumo -->
+      <ng-container *ngIf="!gerandoResumo && resumo">
+
+        <!-- Abas -->
+        <div class="ia-tabs">
+          <button class="ia-tab" [class.ia-tab--active]="abaAtiva === 'visao'" (click)="setAba('visao')">
+            Visão geral
+          </button>
+          <button class="ia-tab" [class.ia-tab--active]="abaAtiva === 'vitais'" (click)="setAba('vitais')">
+            Sinais vitais
+          </button>
+          <button class="ia-tab" [class.ia-tab--active]="abaAtiva === 'timeline'" (click)="setAba('timeline')">
+            Histórico
+          </button>
+          <button class="ia-tab" [class.ia-tab--active]="abaAtiva === 'recomendacoes'" (click)="setAba('recomendacoes')">
+            Recomendações
+          </button>
+          <button class="ia-tab ia-tab--action" (click)="regerarResumo()" title="Regerrar">
+            <i class="fa-solid fa-rotate-right"></i>
+          </button>
+        </div>
+
+        <!-- ABA: Visão geral -->
+        <div *ngIf="abaAtiva === 'visao'" class="ia-panel">
+
+          <div class="ia-metrics">
+            <div class="ia-metric">
+              <span class="ia-metric__label">Consultas</span>
+              <span class="ia-metric__val">{{ resumo.totalConsultas }}</span>
+              <span class="ia-metric__sub">registros encontrados</span>
+            </div>
+            <div class="ia-metric">
+              <span class="ia-metric__label">Acompanhamento</span>
+              <span class="ia-metric__val">{{ resumo.periodo?.meses ?? '—' }}m</span>
+              <span class="ia-metric__sub" *ngIf="resumo.periodo">
+                {{ resumo.periodo.primeira }} — {{ resumo.periodo.ultima }}
+              </span>
+            </div>
+            <div class="ia-metric">
+              <span class="ia-metric__label">Intervalo médio</span>
+              <span class="ia-metric__val">{{ resumo.intervaloDias ?? '—' }}d</span>
+              <span class="ia-metric__sub">entre consultas</span>
+            </div>
+          </div>
+
+          <div class="ia-row">
+            <span class="ia-label">Gravidade geral</span>
+            <span class="ia-badge" [class]="'ia-badge--' + resumo.gravidadeGeral">
+              <span class="ia-dot" [class]="'ia-dot--' + resumo.gravidadeGeral"></span>
+              {{ resumo.gravidadeGeral | titlecase }}
+            </span>
+          </div>
+
+          <div class="ia-secao" *ngIf="resumo.condicoesCronicas.length">
+            <div class="ia-secao__label">Condições identificadas</div>
+            <div class="ia-chips">
+              <span *ngFor="let c of resumo.condicoesCronicas"
+                    class="ia-chip"
+                    [class.ia-chip--danger]="c.urgente"
+                    [class.ia-chip--warn]="!c.urgente && c.frequencia > 1"
+                    [class.ia-chip--muted]="!c.urgente && c.frequencia <= 1">
+                {{ c.nome }} <em *ngIf="c.frequencia > 1">({{ c.frequencia }}x)</em>
+              </span>
+            </div>
+          </div>
+
+          <div class="ia-secao" *ngIf="resumo.alertasClinicos.length">
+            <div class="ia-secao__label">Alertas clínicos</div>
+            <div class="ia-chips">
+              <span *ngFor="let a of resumo.alertasClinicos" class="ia-chip ia-chip--danger">{{ a }}</span>
+            </div>
+          </div>
+
+          <div class="ia-secao" *ngIf="resumo.medicamentos.length">
+            <div class="ia-secao__label">Medicamentos identificados</div>
+            <div class="ia-chips">
+              <span *ngFor="let m of resumo.medicamentos" class="ia-chip ia-chip--info">{{ m }}</span>
+            </div>
+          </div>
+
+          <div class="ia-secao">
+            <div class="ia-secao__label">Frequência de consultas</div>
+            <div class="ia-barra-wrap">
+              <div class="ia-barra-label">
+                <span>Últimos 6 meses</span>
+                <span>{{ resumo.frequencia.recente }} consultas</span>
+              </div>
+              <div class="ia-barra">
+                <div class="ia-barra-fill"
+                     [style.width]="getBarWidth(resumo.frequencia.recente, resumo.totalConsultas)">
+                </div>
+              </div>
+            </div>
+            <div class="ia-barra-wrap">
+              <div class="ia-barra-label">
+                <span>Período anterior</span>
+                <span>{{ resumo.frequencia.anterior }} consultas</span>
+              </div>
+              <div class="ia-barra">
+                <div class="ia-barra-fill ia-barra-fill--muted"
+                     [style.width]="getBarWidth(resumo.frequencia.anterior, resumo.totalConsultas)">
+                </div>
+              </div>
+            </div>
+            <div class="ia-tendencia">
+              <i class="fa-solid"
+                 [class.fa-arrow-trend-up]="resumo.frequencia.tendencia === 'crescente'"
+                 [class.fa-arrow-trend-down]="resumo.frequencia.tendencia === 'decrescente'"
+                 [class.fa-minus]="resumo.frequencia.tendencia === 'estavel'">
+              </i>
+              {{ resumo.frequencia.descricao }}
+            </div>
+          </div>
+        </div>
+
+        <!-- ABA: Sinais vitais -->
+        <div *ngIf="abaAtiva === 'vitais'" class="ia-panel">
+          <ng-container *ngIf="resumo.ultimaConsultaDetalhada as ultima">
+            <div class="ia-secao__label" style="margin-bottom:10px">
+              Última consulta — {{ ultima.data }}
+            </div>
+
+            <div class="ia-vitais-grid">
+              <div class="ia-vital-item" *ngIf="ultima.pressao">
+                <span class="ia-vital-item__label">Pressão arterial</span>
+                <span class="ia-vital-item__val"
+                      [class.ia-val--danger]="resumo.vitaisAnormais.includes('pressao')">
+                  {{ ultima.pressao }} mmHg
+                </span>
+              </div>
+              <div class="ia-vital-item" *ngIf="ultima.pulso">
+                <span class="ia-vital-item__label">Pulso</span>
+                <span class="ia-vital-item__val">{{ ultima.pulso }} bpm</span>
+              </div>
+              <div class="ia-vital-item" *ngIf="ultima.temperatura">
+                <span class="ia-vital-item__label">Temperatura</span>
+                <span class="ia-vital-item__val"
+                      [class.ia-val--danger]="resumo.vitaisAnormais.includes('temperatura')">
+                  {{ ultima.temperatura }}°C
+                </span>
+              </div>
+              <div class="ia-vital-item" *ngIf="ultima.saturacao">
+                <span class="ia-vital-item__label">Saturação SpO₂</span>
+                <span class="ia-vital-item__val"
+                      [class.ia-val--danger]="resumo.vitaisAnormais.includes('saturacao')">
+                  {{ ultima.saturacao }}%
+                </span>
+              </div>
+              <div class="ia-vital-item" *ngIf="ultima.peso">
+                <span class="ia-vital-item__label">Peso</span>
+                <span class="ia-vital-item__val">{{ ultima.peso }} kg</span>
+              </div>
+              <div class="ia-vital-item" *ngIf="ultima.altura">
+                <span class="ia-vital-item__label">Altura</span>
+                <span class="ia-vital-item__val">{{ ultima.altura }} m</span>
+              </div>
+              <ng-container *ngIf="calcularImc(ultima.peso, ultima.altura) as imc">
+                <div class="ia-vital-item">
+                  <span class="ia-vital-item__label">IMC estimado</span>
+                  <span class="ia-vital-item__val"
+                        [class.ia-val--danger]="imc.valor >= 25"
+                        [class.ia-val--ok]="imc.valor < 25">
+                    {{ imc.valor }} — {{ imc.label }}
+                  </span>
+                </div>
+              </ng-container>
+            </div>
+
+            <div class="ia-secao" *ngIf="resumo.vitaisAnormais.length">
+              <div class="ia-secao__label">Parâmetros anormais</div>
+              <div class="ia-chips">
+                <span *ngFor="let v of resumo.vitaisDescricoes" class="ia-chip ia-chip--danger">{{ v }}</span>
+              </div>
+            </div>
+          </ng-container>
+
+          <div *ngIf="!resumo.ultimaConsultaDetalhada" class="ia-vazio">
+            Nenhum sinal vital registrado nas consultas.
+          </div>
+        </div>
+
+        <!-- ABA: Timeline -->
+        <div *ngIf="abaAtiva === 'timeline'" class="ia-panel">
+          <div class="ia-timeline">
+            <div *ngFor="let item of resumo.timeline" class="ia-titem">
+              <div class="ia-titem__dot"></div>
+              <div class="ia-titem__data">{{ item.data }}</div>
+              <div class="ia-titem__texto">{{ item.resumo }}</div>
+              <div class="ia-titem__tags">
+                <span *ngFor="let tag of item.tags" class="ia-chip ia-chip--muted" style="font-size:10px;padding:2px 7px">{{ tag }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ABA: Recomendações -->
+        <div *ngIf="abaAtiva === 'recomendacoes'" class="ia-panel">
+          <div *ngFor="let rec of resumo.recomendacoes" class="ia-rec">
+            <div class="ia-rec__icone" [class]="'ia-rec__icone--' + rec.prioridade">
+              <i class="fa-solid" [class.fa-triangle-exclamation]="rec.prioridade === 'alta'"
+                 [class.fa-circle-info]="rec.prioridade === 'media'"
+                 [class.fa-circle-check]="rec.prioridade === 'baixa'"></i>
+            </div>
+            <div>
+              <div class="ia-rec__titulo">{{ rec.titulo }}</div>
+              <div class="ia-rec__desc">{{ rec.descricao }}</div>
+            </div>
+          </div>
+          <div *ngIf="!resumo.recomendacoes.length" class="ia-vazio">
+            Nenhuma recomendação crítica identificada.
+          </div>
+        </div>
+
+      </ng-container>
+    </div>
+    <!-- fim painel IA -->
+
+    <!-- Loading histórico -->
+    <div *ngIf="historicoLoading" class="ia-loading" style="padding:32px;justify-content:center">
       <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
-      <p style="margin-top: 12px;">Carregando histórico do paciente...</p>
+      <span>Carregando histórico...</span>
     </div>
 
     <!-- Sem histórico -->
     <div class="dente-placeholder"
-      *ngIf="historicoCarregado && historicoProntuarios.length === 0 && !historicoLoading">
-      <div class="dente-placeholder__icon">
-        <i class="fa-solid fa-folder-open"></i>
-      </div>
-      <p class="dente-placeholder__text">
-        Nenhum registro anterior encontrado para este paciente.
-      </p>
+         *ngIf="historicoCarregado && !historicoProntuarios.length && !historicoLoading">
+      <div class="dente-placeholder__icon"><i class="fa-solid fa-folder-open"></i></div>
+      <p class="dente-placeholder__text">Nenhum registro anterior encontrado.</p>
     </div>
 
-    <!-- Lista de prontuários anteriores -->
-    <div *ngIf="historicoCarregado && historicoProntuarios.length > 0 && !historicoLoading">
-      <div *ngFor="let pront of historicoProntuarios; let i = index" class="historico-registro"
-        style="background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 20px; margin-bottom: 16px;">
+    <!-- Lista de prontuários -->
+    <div *ngIf="historicoCarregado && historicoProntuarios.length && !historicoLoading">
+      <div *ngFor="let pront of historicoProntuarios" class="historico-registro">
 
-        <div
-          style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid #f1f5f9;">
-          <h3 style="margin: 0; font-size: 1rem; color: #1e293b;">
-            <i class="fa-solid fa-file-medical" style="color: #3b82f6; margin-right: 6px;"></i>
+        <div class="historico-registro__header">
+          <h3>
+            <i class="fa-solid fa-file-medical" style="color:#3b82f6;margin-right:6px"></i>
             Consulta #{{ pront.consulta?.id || pront.codigoProntuario }} — {{ pront.dataFinalizado }}
           </h3>
-          <span class="badge badge--info" style="font-size: 0.78rem;">
-            {{ pront.tempoDuracao || '—' }}
-          </span>
+          <span class="badge badge--info" style="font-size:.75rem">{{ pront.tempoDuracao || '—' }}</span>
         </div>
 
-        <div class="historico-texto" style="font-size: 0.92rem; line-height: 1.7; color: #334155;">
-
-          <!-- Sinais Vitais -->
-          <div *ngIf="pront.pressao || pront.pulso || pront.temperatura || pront.peso || pront.altura" style="margin-bottom: 10px;">
-            <strong style="color: #0f172a;"><i class="fa-solid fa-heart-pulse"
-                style="color: #ef4444; margin-right: 4px;"></i> Sinais Vitais:</strong>
-            <span style="margin-left: 4px;">
-              <span *ngIf="pront.pressao">PA: {{ pront.pressao }}. </span>
-              <span *ngIf="pront.pulso">Pulso: {{ pront.pulso }}. </span>
-              <span *ngIf="pront.temperatura">Temp: {{ pront.temperatura }}. </span>
-              <span *ngIf="pront.peso">Peso: {{ pront.peso }}. </span>
-              <span *ngIf="pront.altura">Altura: {{ pront.altura }}. </span>
-              <span *ngIf="pront.saturacao">SpO2: {{ pront.saturacao }}. </span>
-              <span *ngIf="pront.hemoglobina">Hb: {{ pront.hemoglobina }}. </span>
-            </span>
+        <div class="historico-registro__corpo">
+          <div *ngIf="pront.pressao || pront.pulso || pront.temperatura || pront.peso" class="historico-campo">
+            <strong><i class="fa-solid fa-heart-pulse" style="color:#ef4444;margin-right:4px"></i>Sinais vitais:</strong>
+            <span *ngIf="pront.pressao">PA: {{ pront.pressao }}. </span>
+            <span *ngIf="pront.pulso">Pulso: {{ pront.pulso }}. </span>
+            <span *ngIf="pront.temperatura">Temp: {{ pront.temperatura }}. </span>
+            <span *ngIf="pront.peso">Peso: {{ pront.peso }} kg. </span>
+            <span *ngIf="pront.saturacao">SpO₂: {{ pront.saturacao }}%.</span>
           </div>
-
-          <!-- Queixa Principal -->
-          <div *ngIf="pront.queixaPrincipal" style="margin-bottom: 10px;">
-            <strong style="color: #0f172a;"><i class="fa-solid fa-comment-medical"
-                style="color: #ef4444; margin-right: 4px;"></i> Queixa Principal:</strong>
-            <span style="margin-left: 4px;">{{ pront.queixaPrincipal }}</span>
+          <div *ngIf="pront.queixaPrincipal" class="historico-campo">
+            <strong>Queixa:</strong> {{ pront.queixaPrincipal }}
           </div>
-
-          <!-- Anamnese -->
-          <div *ngIf="pront.anamnese" style="margin-bottom: 10px;">
-            <strong style="color: #0f172a;"><i class="fa-solid fa-notes-medical"
-                style="color: #8b5cf6; margin-right: 4px;"></i> Anamnese:</strong>
-            <span style="margin-left: 4px;">{{ pront.anamnese }}</span>
+          <div *ngIf="pront.diagnostico" class="historico-campo">
+            <strong>Diagnóstico:</strong> {{ pront.diagnostico }}
           </div>
-
-          <!-- Observações -->
-          <div *ngIf="pront.observacao" style="margin-bottom: 10px;">
-            <strong style="color: #0f172a;"><i class="fa-solid fa-note-sticky"
-                style="color: #f59e0b; margin-right: 4px;"></i> Observações:</strong>
-            <span style="margin-left: 4px;">{{ pront.observacao }}</span>
+          <div *ngIf="pront.prescricao" class="historico-campo">
+            <strong>Prescrição:</strong> {{ pront.prescricao }}
           </div>
-
-          <!-- Diagnóstico -->
-          <div *ngIf="pront.diagnostico" style="margin-bottom: 10px;">
-            <strong style="color: #0f172a;"><i class="fa-solid fa-stethoscope"
-                style="color: #6366f1; margin-right: 4px;"></i> Diagnóstico:</strong>
-            <span style="margin-left: 4px;">{{ pront.diagnostico }}</span>
+          <div *ngIf="pront.orientacoes" class="historico-campo">
+            <strong>Orientações:</strong> {{ pront.orientacoes }}
           </div>
-
-          <!-- Conduta -->
-          <div *ngIf="pront.conduta" style="margin-bottom: 10px;">
-            <strong style="color: #0f172a;"><i class="fa-solid fa-clipboard-check"
-                style="color: #10b981; margin-right: 4px;"></i> Conduta:</strong>
-            <span style="margin-left: 4px;">{{ pront.conduta }}</span>
+          <div *ngIf="pront.profissional?.nome" class="historico-campo historico-campo--muted">
+            <i class="fa-solid fa-user-doctor" style="margin-right:4px"></i>
+            {{ pront.profissional.nome }}
+            <span *ngIf="pront.profissional.conselho"> — {{ pront.profissional.conselho }}</span>
           </div>
-
-          <!-- Plano de Tratamento -->
-          <div *ngIf="pront.planoTratamento" style="margin-bottom: 10px;">
-            <strong style="color: #0f172a;"><i class="fa-solid fa-list-check"
-                style="color: #0ea5e9; margin-right: 4px;"></i> Plano de Tratamento:</strong>
-            <span style="margin-left: 4px;">{{ pront.planoTratamento }}</span>
-          </div>
-
-          <!-- Prescrição -->
-          <div *ngIf="pront.prescricao" style="margin-bottom: 10px;">
-            <strong style="color: #0f172a;"><i class="fa-solid fa-prescription-bottle-medical"
-                style="color: #ec4899; margin-right: 4px;"></i> Prescrição:</strong>
-            <span style="margin-left: 4px;">{{ pront.prescricao }}</span>
-          </div>
-
-          <!-- Orientações -->
-          <div *ngIf="pront.orientacoes" style="margin-bottom: 10px;">
-            <strong style="color: #0f172a;"><i class="fa-solid fa-circle-info"
-                style="color: #0891b2; margin-right: 4px;"></i> Orientações:</strong>
-            <span style="margin-left: 4px;">{{ pront.orientacoes }}</span>
-          </div>
-
-          <!-- Profissional -->
-          <div *ngIf="pront.profissional?.nome" style="margin-bottom: 10px;">
-            <strong style="color: #0f172a;"><i class="fa-solid fa-user-doctor"
-                style="color: #64748b; margin-right: 4px;"></i> Profissional:</strong>
-            <span style="margin-left: 4px;">{{ pront.profissional?.nome }}
-              <span *ngIf="pront.profissional?.conselho"> — {{ pront.profissional?.conselho }}</span>
-            </span>
-          </div>
-
         </div>
       </div>
     </div>

@@ -4,8 +4,234 @@
       <i class="fa-solid fa-clock-rotate-left"></i>
       Histórico do Paciente
     </h2>
+    <div class="pep-section__actions" *ngIf="historicoCarregado && historicoProntuarios.length > 0">
+      <button class="btn btn--primary btn--sm" (click)="toggleResumo()" [disabled]="gerandoResumo">
+        <i class="fa-solid fa-microchip" [class.fa-spin]="gerandoResumo"></i>
+        {{ gerandoResumo ? 'Analisando...' : (exibirResumo ? 'Ocultar resumo' : 'Resumo rápido') }}
+      </button>
+    </div>
   </div>
   <div class="pep-section__body">
+
+    <!-- ── Painel de resumo IA ── -->
+    <div *ngIf="exibirResumo" class="ia-resumo-painel">
+
+      <!-- Loading -->
+      <div *ngIf="gerandoResumo" class="ia-loading">
+        <i class="fa-solid fa-spinner fa-spin"></i>
+        <span>Analisando {{ historicoProntuarios.length }} consultas...</span>
+      </div>
+
+      <!-- Conteúdo do resumo -->
+      <ng-container *ngIf="!gerandoResumo && resumo">
+
+        <!-- Abas -->
+        <div class="ia-tabs">
+          <button class="ia-tab" [class.ia-tab--active]="abaAtiva === 'visao'" (click)="setAba('visao')">
+            Visão geral
+          </button>
+          <button class="ia-tab" [class.ia-tab--active]="abaAtiva === 'vitais'" (click)="setAba('vitais')">
+            Sinais vitais
+          </button>
+          <button class="ia-tab" [class.ia-tab--active]="abaAtiva === 'timeline'" (click)="setAba('timeline')">
+            Histórico
+          </button>
+          <button class="ia-tab" [class.ia-tab--active]="abaAtiva === 'recomendacoes'" (click)="setAba('recomendacoes')">
+            Recomendações
+          </button>
+          <button class="ia-tab ia-tab--action" (click)="regerarResumo()" title="Regerrar">
+            <i class="fa-solid fa-rotate-right"></i>
+          </button>
+        </div>
+
+        <!-- ABA: Visão geral -->
+        <div *ngIf="abaAtiva === 'visao'" class="ia-panel">
+
+          <div class="ia-metrics">
+            <div class="ia-metric">
+              <span class="ia-metric__label">Consultas</span>
+              <span class="ia-metric__val">{{ resumo.totalConsultas }}</span>
+              <span class="ia-metric__sub">registros encontrados</span>
+            </div>
+            <div class="ia-metric">
+              <span class="ia-metric__label">Acompanhamento</span>
+              <span class="ia-metric__val">{{ resumo.periodo?.meses ?? '—' }}m</span>
+              <span class="ia-metric__sub" *ngIf="resumo.periodo">
+                {{ resumo.periodo.primeira }} — {{ resumo.periodo.ultima }}
+              </span>
+            </div>
+            <div class="ia-metric">
+              <span class="ia-metric__label">Intervalo médio</span>
+              <span class="ia-metric__val">{{ resumo.intervaloDias ?? '—' }}d</span>
+              <span class="ia-metric__sub">entre consultas</span>
+            </div>
+          </div>
+
+          <div class="ia-row">
+            <span class="ia-label">Gravidade geral</span>
+            <span class="ia-badge" [class]="'ia-badge--' + resumo.gravidadeGeral">
+              <span class="ia-dot" [class]="'ia-dot--' + resumo.gravidadeGeral"></span>
+              {{ resumo.gravidadeGeral | titlecase }}
+            </span>
+          </div>
+
+          <div class="ia-secao" *ngIf="resumo.condicoesCronicas.length">
+            <div class="ia-secao__label">Condições identificadas</div>
+            <div class="ia-chips">
+              <span *ngFor="let c of resumo.condicoesCronicas"
+                    class="ia-chip"
+                    [class.ia-chip--danger]="c.urgente"
+                    [class.ia-chip--warn]="!c.urgente && c.frequencia > 1"
+                    [class.ia-chip--muted]="!c.urgente && c.frequencia <= 1">
+                {{ c.nome }} <em *ngIf="c.frequencia > 1">({{ c.frequencia }}x)</em>
+              </span>
+            </div>
+          </div>
+
+          <div class="ia-secao" *ngIf="resumo.alertasClinicos.length">
+            <div class="ia-secao__label">Alertas clínicos</div>
+            <div class="ia-chips">
+              <span *ngFor="let a of resumo.alertasClinicos" class="ia-chip ia-chip--danger">{{ a }}</span>
+            </div>
+          </div>
+
+          <div class="ia-secao" *ngIf="resumo.medicamentos.length">
+            <div class="ia-secao__label">Medicamentos identificados</div>
+            <div class="ia-chips">
+              <span *ngFor="let m of resumo.medicamentos" class="ia-chip ia-chip--info">{{ m }}</span>
+            </div>
+          </div>
+
+          <div class="ia-secao">
+            <div class="ia-secao__label">Frequência de consultas</div>
+            <div class="ia-barra-wrap">
+              <div class="ia-barra-label">
+                <span>Últimos 6 meses</span>
+                <span>{{ resumo.frequencia.recente }} consultas</span>
+              </div>
+              <div class="ia-barra">
+                <div class="ia-barra-fill"
+                     [style.width]="getBarWidth(resumo.frequencia.recente, resumo.totalConsultas)">
+                </div>
+              </div>
+            </div>
+            <div class="ia-barra-wrap">
+              <div class="ia-barra-label">
+                <span>Período anterior</span>
+                <span>{{ resumo.frequencia.anterior }} consultas</span>
+              </div>
+              <div class="ia-barra">
+                <div class="ia-barra-fill ia-barra-fill--muted"
+                     [style.width]="getBarWidth(resumo.frequencia.anterior, resumo.totalConsultas)">
+                </div>
+              </div>
+            </div>
+            <div class="ia-tendencia">
+              <i class="fa-solid"
+                 [class.fa-arrow-trend-up]="resumo.frequencia.tendencia === 'crescente'"
+                 [class.fa-arrow-trend-down]="resumo.frequencia.tendencia === 'decrescente'"
+                 [class.fa-minus]="resumo.frequencia.tendencia === 'estavel'">
+              </i>
+              {{ resumo.frequencia.descricao }}
+            </div>
+          </div>
+        </div>
+
+        <!-- ABA: Sinais vitais -->
+        <div *ngIf="abaAtiva === 'vitais'" class="ia-panel">
+          <ng-container *ngIf="resumo.ultimaConsultaDetalhada as ultima">
+            <div class="ia-secao__label" style="margin-bottom:10px">
+              Última consulta — {{ ultima.data }}
+            </div>
+
+            <div class="ia-vitais-grid">
+              <div class="ia-vital-item" *ngIf="ultima.pressao">
+                <span class="ia-vital-item__label">Pressão arterial</span>
+                <span class="ia-vital-item__val"
+                      [class.ia-val--danger]="resumo.vitaisAnormais.includes('pressao')">
+                  {{ ultima.pressao }} mmHg
+                </span>
+              </div>
+              <div class="ia-vital-item" *ngIf="ultima.pulso">
+                <span class="ia-vital-item__label">Pulso</span>
+                <span class="ia-vital-item__val">{{ ultima.pulso }} bpm</span>
+              </div>
+              <div class="ia-vital-item" *ngIf="ultima.temperatura">
+                <span class="ia-vital-item__label">Temperatura</span>
+                <span class="ia-vital-item__val"
+                      [class.ia-val--danger]="resumo.vitaisAnormais.includes('temperatura')">
+                  {{ ultima.temperatura }}°C
+                </span>
+              </div>
+              <div class="ia-vital-item" *ngIf="ultima.saturacao">
+                <span class="ia-vital-item__label">Saturação SpO₂</span>
+                <span class="ia-vital-item__val"
+                      [class.ia-val--danger]="resumo.vitaisAnormais.includes('saturacao')">
+                  {{ ultima.saturacao }}%
+                </span>
+              </div>
+              <div class="ia-vital-item" *ngIf="ultima.peso">
+                <span class="ia-vital-item__label">Peso</span>
+                <span class="ia-vital-item__val">{{ ultima.peso }} kg</span>
+              </div>
+              <div class="ia-vital-item" *ngIf="ultima.altura">
+                <span class="ia-vital-item__label">Altura</span>
+                <span class="ia-vital-item__val">{{ ultima.altura }} m</span>
+              </div>
+            </div>
+
+            <div class="ia-secao" style="margin-top:12px" *ngIf="ultima.peso && ultima.altura">
+              <div class="ia-secao__label">IMC</div>
+              <ng-container *ngIf="calcularImc(ultima.peso, ultima.altura) as imc">
+                <div style="font-size: 18px; font-weight: 500; margin-bottom: 4px;">{{ imc.valor }}</div>
+                <div class="ia-chip"
+                     [class.ia-chip--ok]="imc.label === 'adequado'"
+                     [class.ia-chip--warn]="imc.label !== 'adequado'">
+                  {{ imc.label }}
+                </div>
+              </ng-container>
+            </div>
+          </ng-container>
+        </div>
+
+        <!-- ABA: Timeline -->
+        <div *ngIf="abaAtiva === 'timeline'" class="ia-panel">
+          <div class="ia-timeline">
+            <div *ngFor="let item of resumo.timeline" class="ia-titem">
+              <div class="ia-titem__dot"></div>
+              <div class="ia-titem__data">{{ item.data }}</div>
+              <div class="ia-titem__texto">{{ item.resumo }}</div>
+              <div class="ia-titem__tags">
+                <span *ngFor="let tag of item.tags" class="ia-chip ia-chip--muted">{{ tag }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ABA: Recomendações -->
+        <div *ngIf="abaAtiva === 'recomendacoes'" class="ia-panel">
+          <div *ngIf="resumo.recomendacoes.length; else semRec">
+            <div *ngFor="let rec of resumo.recomendacoes" class="ia-rec">
+              <div class="ia-rec__icone"
+                   [class]="'ia-rec__icone--' + rec.prioridade">
+                <i class="fa-solid"
+                   [class.fa-exclamation-triangle]="rec.prioridade === 'alta'"
+                   [class.fa-exclamation-circle]="rec.prioridade === 'media'"
+                   [class.fa-info-circle]="rec.prioridade === 'baixa'"></i>
+              </div>
+              <div>
+                <div class="ia-rec__titulo">{{ rec.titulo }}</div>
+                <div class="ia-rec__desc">{{ rec.descricao }}</div>
+              </div>
+            </div>
+          </div>
+          <ng-template #semRec>
+            <div class="ia-vazio">Nenhuma recomendação clínica no momento.</div>
+          </ng-template>
+        </div>
+
+      </ng-container>
+    </div>
 
     <!-- Loading -->
     <div *ngIf="historicoLoading" style="padding: 32px; text-align: center; color: #64748b;">

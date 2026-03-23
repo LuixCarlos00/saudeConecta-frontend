@@ -48,29 +48,23 @@
       </button>
     </nav>
 
-    <!-- Conteúdo das Abas -->
-    <div class="pep-tab-content">
+    <!-- Conteúdo das abas -->
+    <div class="editar-prontuario-content">
+      <app-aba-identificacao-medico [style.display]="selectedTabIndex === 0 ? '' : 'none'"
+        [pacienteId]="consulta?.pacienteId">
+      </app-aba-identificacao-medico>
 
-      <!-- Aba 0: Identificação -->
-      <div class="pep-tab-pane" *ngIf="selectedTabIndex === 0">
-        <app-aba-identificacao-medico></app-aba-identificacao-medico>
-      </div>
+      <app-aba-exame-objetivo-medico [style.display]="selectedTabIndex === 1 ? '' : 'none'">
+      </app-aba-exame-objetivo-medico>
 
-      <!-- Aba 1: Exame Objetivo -->
-      <div class="pep-tab-pane" *ngIf="selectedTabIndex === 1">
-        <app-aba-exame-objetivo-medico></app-aba-exame-objetivo-medico>
-      </div>
+      <app-aba-codigos-tuss-cid-medico [style.display]="selectedTabIndex === 2 ? '' : 'none'">
+      </app-aba-codigos-tuss-cid-medico>
 
-      <!-- Aba 2: Códigos TUSS e CID -->
-      <div class="pep-tab-pane" *ngIf="selectedTabIndex === 2">
-        <app-aba-codigos-tuss-cid-medico></app-aba-codigos-tuss-cid-medico>
-      </div>
-
-      <!-- Aba 3: Planejamento Terapêutico -->
-      <div class="pep-tab-pane" *ngIf="selectedTabIndex === 3">
-        <app-aba-planejamento-medico></app-aba-planejamento-medico>
-      </div>
-
+      <app-aba-planejamento-medico [style.display]="selectedTabIndex === 3 ? '' : 'none'"
+        [profissionalId]="consulta?.profissionalId"
+        [consultaId]="consulta?.id"
+        [pacienteId]="consulta?.pacienteId">
+      </app-aba-planejamento-medico>
     </div>
 
     <!-- Ações -->
