@@ -16,15 +16,7 @@ import { AbaPlanejamentoMedicoComponent } from '../aba-planejamento-medico/aba-p
 
 @Component({
   selector: 'app-editar-prontuario-medico',
-  standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    AbaIdentificacaoMedicoComponent,
-    AbaExameObjetivoMedicoComponent,
-    AbaCodigosTussCidMedicoComponent,
-    AbaPlanejamentoMedicoComponent,
-  ],
+ 
   templateUrl: './editar-prontuario-medico.component.html',
   styleUrl: './editar-prontuario-medico.component.scss',
 })

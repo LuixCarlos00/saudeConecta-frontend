@@ -78,7 +78,7 @@ export interface ProntuarioUnificado {
   planoTratamento?: string;
   procedimentos?: string;
   orientacoes?: string;
-
+ solicitacaoExameTexto?: string;
   // ── Odontograma estruturado ────────────────────────────────────────────────
   dentes?: DenteResponse[];
 

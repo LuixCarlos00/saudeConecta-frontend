@@ -28,14 +28,7 @@ interface MediaTempoConsulta {
 
 @Component({
   selector: 'app-grafico-media-tempo-consulta',
-  standalone: true,
-  imports: [
-    CommonModule, 
-    ReactiveFormsModule,
-    MatDatepickerModule,
-    MatFormFieldModule,
-    MatNativeDateModule
-  ],
+ 
   templateUrl: './grafico-media-tempo-consulta.component.html',
   styleUrl: './grafico-media-tempo-consulta.component.css'
 })

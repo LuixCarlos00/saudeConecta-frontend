@@ -6,11 +6,9 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { LoginModule } from './features/publico/login/login_Module/login.module';
-import { PacienteModule } from './Module/paciente.module';
+import { PublicoModule } from './features/publico/publico.module';
 import { UtilModule } from './util/util/util.module';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { LoginComponent } from './features/publico/login/login.component';
-import { LandingPageComponent } from './features/publico/landing-page/landing-page.component';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatMenuModule } from '@angular/material/menu';
@@ -19,27 +17,25 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { BarraLateraComponent } from './util/variados/barra-Latera/barra-Latera.component';
 import { NgChartsModule } from 'ng2-charts';
-import { QuillModule } from 'ngx-quill';
 import { MatBadgeModule } from '@angular/material/badge';
 import { CoreModule } from './core/core.module';
-import { ConfiguracoesSistemaComponent } from './features/administrador/configuracoes/configuracoes-sistema.component';
-import { SobreComponent } from './features/administrador/sobre/sobre.component';
-import { SuporteComponent } from './features/administrador/suporte/suporte.component';
-import { FilterPipe } from './shared/pipes/filter.pipe';
-import { MensageriaComponent } from './features/administrador/mensageria/mensageria.component';
-import { QuestionarioSaudeComponent } from './features/publico/questionario-saude/questionario-saude.component';
-import { AssinaturaPlanejamentoComponent } from './features/publico/assinatura-planejamento/assinatura-planejamento.component';
+import { AdministradorModule } from './features/administrador/administrador.module';
+import { FeatureModule } from './features/feature.module';
+import { MedicoModule } from './features/medico/medico.module';
 
 registerLocaleData(localePt);
 
 @NgModule({
-  declarations: [AppComponent, LoginComponent, LandingPageComponent, BarraLateraComponent, ConfiguracoesSistemaComponent, SobreComponent, SuporteComponent, FilterPipe, MensageriaComponent, QuestionarioSaudeComponent, AssinaturaPlanejamentoComponent],
+  declarations: [AppComponent, BarraLateraComponent],
   imports: [
     BrowserModule,
-    CoreModule, // DEVE ser importado primeiro para registrar os interceptors
+    CoreModule,  
     AppRoutingModule,
     LoginModule,
-    PacienteModule,
+    PublicoModule,
+    FeatureModule,
+    AdministradorModule,
+    MedicoModule,
     UtilModule,
     MatIconModule,
     MatToolbarModule,

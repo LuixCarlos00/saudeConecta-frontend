@@ -8,8 +8,7 @@ type AbaResumo = 'visao' | 'vitais' | 'timeline' | 'recomendacoes';
 
 @Component({
   selector: 'app-aba-historico',
-  standalone: true,
-  imports: [CommonModule],
+  
   templateUrl: './aba-historico.component.html',
   styleUrl: '../prontuario-dentista.component.scss',
   host: { style: 'display: block; width: 100%;' },

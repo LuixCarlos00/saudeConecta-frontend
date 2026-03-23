@@ -4,9 +4,7 @@ import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-aba-exame-objetivo-medico',
-  standalone: true,
-  imports: [CommonModule, FormsModule],
-  templateUrl: './aba-exame-objetivo-medico.component.html',
+   templateUrl: './aba-exame-objetivo-medico.component.html',
   styleUrl: '../prontuario-shared.scss',
   host: { style: 'display: block; width: 100%;' },
 })

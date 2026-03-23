@@ -23,8 +23,8 @@ const REGEX_RG = /^(\d{2}\.?\d{3}\.?\d{3}-?\d{1,2}|[A-Z]{2}-\d+)$/i;
 /** CEP: 00000-000 */
 const REGEX_CEP = /^\d{5}-\d{3}$/;
 
-/** Telefone brasileiro: (00) 00000-0000 ou (00) 0000-0000 */
-const REGEX_TELEFONE = /^\(\d{2}\)\s\d{4,5}-\d{4}$/;
+/** Telefone brasileiro: apenas números - DD + números (ex: 11999999999 ou 2199999999) */
+const REGEX_TELEFONE = /^\d{10,11}$/;
 
 /** Nacionalidade: letras PT-BR + parênteses para M/F */
 const REGEX_NACIONALIDADE = /^[a-zA-ZÀ-ÿ\u00C0-\u017E\s()\-]+$/;
@@ -239,7 +239,8 @@ export function registroConselhoValidator(): ValidatorFn {
 }
 
 /**
- * Valida telefone brasileiro (opcional): (00) 00000-0000
+ * Valida telefone brasileiro: apenas números DD + números (10 ou 11 dígitos)
+ * Ex: 11999999999 (11 dígitos) ou 2199999999 (10 dígitos)
  */
 export function telefoneValidator(): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {

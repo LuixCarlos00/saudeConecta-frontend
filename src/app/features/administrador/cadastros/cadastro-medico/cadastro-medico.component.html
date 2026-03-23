@@ -106,15 +106,15 @@
             <!-- Telefone -->
             <div class="cadastro-field">
               <label class="cadastro-field__label">Telefone</label>
-              <input type="text" class="cadastro-field__input" formControlName="telefone" placeholder="(00) 00000-0000"
-                maxlength="16"
+              <input type="text" class="cadastro-field__input" formControlName="telefone" placeholder="11999999999"
+                maxlength="11" inputmode="numeric" pattern="[0-9]*" autocomplete="tel"
                 [class.input--error]="FormularioMedico.get('telefone')?.invalid && FormularioMedico.get('telefone')?.touched"
                 [class.input--valid]="FormularioMedico.get('telefone')?.valid && FormularioMedico.get('telefone')?.touched && FormularioMedico.get('telefone')?.value">
               <div class="cadastro-field__error"
                 *ngIf="FormularioMedico.get('telefone')?.invalid && FormularioMedico.get('telefone')?.touched">
                 {{ getFieldError(FormularioMedico.get('telefone')?.errors) }}
               </div>
-              <div class="cadastro-field__hint">Formato: (00) 00000-0000</div>
+              <div class="cadastro-field__hint">Apenas números: DD + número (ex: 11999999999)</div>
             </div>
 
             <!-- Email -->

@@ -20,17 +20,7 @@ import { AbaHistoricoComponent } from './aba-historico/aba-historico.component';
 
 @Component({
   selector: 'app-prontuario-dentista',
-  standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    AbaIdentificacaoComponent,
-    AbaExameObjetivoComponent,
-    AbaPlanejamentoComponent,
-    AbaCodigosTussCidComponent,
-    AbaQuestionarioSaudeComponent,
-    AbaHistoricoComponent,
-  ],
+ 
   templateUrl: './prontuario-dentista.component.html',
   styleUrl: './prontuario-dentista.component.scss',
 })

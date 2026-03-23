@@ -15,19 +15,11 @@ import { AbaExameObjetivoMedicoComponent } from './aba-exame-objetivo-medico/aba
 import { AbaCodigosTussCidMedicoComponent } from './aba-codigos-tuss-cid-medico/aba-codigos-tuss-cid-medico.component';
 import { AbaHistoricoMedicoComponent } from './aba-historico-medico/aba-historico-medico.component';
 import { AbaPlanejamentoMedicoComponent } from './aba-planejamento-medico/aba-planejamento-medico.component';
+import { AbaQuestionarioSaudeComponent } from './aba-questionario-saude/aba-questionario-saude.component';
 
 @Component({
   selector: 'app-prontuario-medico',
-  standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    AbaIdentificacaoMedicoComponent,
-    AbaExameObjetivoMedicoComponent,
-    AbaCodigosTussCidMedicoComponent,
-    AbaPlanejamentoMedicoComponent,
-    AbaHistoricoMedicoComponent,
-  ],
+ 
   templateUrl: './prontuario-medico.component.html',
   styleUrl: './prontuario-medico.component.scss'
 })
