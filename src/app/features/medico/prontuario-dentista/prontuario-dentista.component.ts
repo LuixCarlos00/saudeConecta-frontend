@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -20,21 +20,11 @@ import { AbaHistoricoComponent } from './aba-historico/aba-historico.component';
 
 @Component({
   selector: 'app-prontuario-dentista',
-  standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    AbaIdentificacaoComponent,
-    AbaExameObjetivoComponent,
-    AbaPlanejamentoComponent,
-    AbaCodigosTussCidComponent,
-    AbaQuestionarioSaudeComponent,
-    AbaHistoricoComponent,
-  ],
+ 
   templateUrl: './prontuario-dentista.component.html',
   styleUrl: './prontuario-dentista.component.scss',
 })
-export class ProntuarioDentistaComponent implements OnInit, OnDestroy {
+export class ProntuarioDentistaComponent implements OnInit, OnDestroy, AfterViewInit {
 
   // =========================================================================
   // VIEW CHILDREN — referências aos sub-componentes para colher dados
@@ -73,7 +63,29 @@ export class ProntuarioDentistaComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe(consulta => {
         this.Consulta = consulta;
+        // Preencher observações da consulta no campo observações do prontuário
+        this.preencherObservacoesConsulta(consulta);
       });
+  }
+
+  ngAfterViewInit(): void {
+    // Garantir que as observações sejam preenchidas após a inicialização dos componentes filhos
+    if (this.Consulta && this.Consulta.observacoes) {
+      this.preencherObservacoesConsulta(this.Consulta);
+    }
+  }
+
+  private preencherObservacoesConsulta(consulta: Consultav2): void {
+    if (consulta && consulta.observacoes) {
+      // Usar setTimeout para garantir que o componente filho esteja totalmente inicializado
+      setTimeout(() => {
+        if (this.abaExameObjetivo) {
+          this.abaExameObjetivo.observacao = consulta.observacoes || '';
+        } else {
+          console.warn('AbaExameObjetivo não está disponível');
+        }
+      }, 100);
+    }
   }
 
   ngOnDestroy(): void {

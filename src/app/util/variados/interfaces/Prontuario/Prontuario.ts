@@ -120,6 +120,105 @@ export interface Prontuario {
   solicitacaoExameTexto?: string;
 
   // =============================================================================
+  // IDENTIFICAÇÃO DO PACIENTE
+  // =============================================================================
+
+  /** Responsável (se menor de idade) */
+  responsavel?: string;
+
+  /** Data de início do tratamento */
+  inicioTratamento?: string;
+
+  /** Data de término do tratamento */
+  terminoTratamento?: string;
+
+  /** Motivo de interrupção do tratamento */
+  interrupcao?: string;
+
+  // =============================================================================
+  // SINAIS VITAIS (CAMPO ADICIONAL)
+  // =============================================================================
+
+  /** Pulso (ex: "80 bpm") */
+  pulso?: string;
+
+  // =============================================================================
+  // EXAME EXTRABUCAL
+  // =============================================================================
+
+  /** Edema */
+  edema?: string;
+
+  /** Fácies */
+  facies?: string;
+
+  /** Linfonodos */
+  linfonodos?: string;
+
+  // =============================================================================
+  // EXAME INTRABUCAL
+  // =============================================================================
+
+  /** Lábios */
+  labios?: string;
+
+  /** Mucosas */
+  mucosas?: string;
+
+  /** Soalho bucal */
+  soalhoBucal?: string;
+
+  /** Palato */
+  palato?: string;
+
+  /** Orofaringe */
+  orofaringe?: string;
+
+  /** Língua */
+  lingua?: string;
+
+  /** Gengiva */
+  gengiva?: string;
+
+  /** Hábitos nocivos */
+  habitosNocivos?: string;
+
+  /** Portador de aparelho */
+  portadorAparelho?: string;
+
+  /** Outros achados do exame */
+  exameOutros?: string;
+
+  // =============================================================================
+  // EXAME CLÍNICO ESTRUTURADO
+  // =============================================================================
+
+  /** Higiene bucal */
+  higieneBucal?: string;
+
+  /** Condição gengival */
+  condicaoGengival?: string;
+
+  /** Análise oclusal */
+  oclusal?: string;
+
+  /** ATM */
+  atm?: string;
+
+  // =============================================================================
+  // DIAGNÓSTICO E TRATAMENTO
+  // =============================================================================
+
+  /** Orientações ao paciente */
+  orientacoes?: string;
+
+  /** Plano de tratamento */
+  planoTratamento?: string;
+
+  /** Procedimentos realizados */
+  procedimentos?: string;
+
+  // =============================================================================
   // CONTROLE E FINALIZAÇÃO
   // =============================================================================
 
@@ -135,6 +234,33 @@ export interface Prontuario {
 
   /** Informações da consulta associada */
   consulta?: ConsultaResponse;
+
+  /** Lista de planejamentos terapêuticos */
+  planejamentos?: PlanejamentoTerapeutico[];
+}
+
+/**
+ * Interface para Planejamento Terapêutico
+ * Representa um planejamento terapêutico do backend
+ */
+export interface PlanejamentoTerapeutico {
+  /** ID do planejamento */
+  id?: number;
+
+  /** Data do procedimento */
+  dataProcedimento?: string;
+
+  /** Procedimento realizado */
+  procedimentoRealizado?: string;
+
+  /** Valor do procedimento */
+  valor?: number;
+
+  /** Status da assinatura */
+  statusAssinatura?: string;
+
+  /** Flag para indicar se é local (não salvo no backend) */
+  _local?: boolean;
 }
 
 /**

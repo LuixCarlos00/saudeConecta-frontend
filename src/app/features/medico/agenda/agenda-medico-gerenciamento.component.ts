@@ -1,6 +1,3 @@
-import { ProntuarioDentistaApiService } from './../../../services/api/prontuario-dentista-api.service';
-import { SolicitacaoExamesDentistaComponent } from './../impressoes-dentista/solicitacao-exames-dentista/solicitacao-exames-dentista.component';
-import { RegistroConsultaDentistaComponent } from './../impressoes-dentista/registro-consulta-dentista/registro-consulta-dentista.component';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -8,29 +5,17 @@ import { MatDialog } from '@angular/material/dialog';
 import Swal from 'sweetalert2';
 import { ConsultaApiService } from 'src/app/services/api/consulta-api.service';
 import { ProntuarioStateService } from 'src/app/services/state/prontuario-state.service';
-import { ProntuarioApiService } from 'src/app/services/api/prontuario-api.service';
 import { tokenService } from 'src/app/util/Token/Token.service';
 import { Usuario } from 'src/app/util/variados/interfaces/usuario/usuario';
-import { Tabela } from 'src/app/util/variados/interfaces/tabela/Tabela';
 import { CronologiaComponent } from 'src/app/util/variados/Cronologia/cronologia.component';
 import { ObservacoesComponent } from 'src/app/features/administrador/gerenciamento-agenda/agenda/Observacoes/Observacoes.component';
-import { ImprimirPrescricaoComponent } from '../impressoes/ImprimirPrescricao/ImprimirPrescricao.component';
-import { ImprimirSoliciatacaoDeExamesComponent } from '../impressoes/ImprimirSoliciatacaoDeExames/ImprimirSoliciatacaoDeExames.component';
-import { AtestadoPacienteComponent } from '../impressoes/AtestadoPaciente/AtestadoPaciente.component';
-import { HistoricoCompletoComponent } from '../impressoes/historicoCompleto/historicoCompleto.component';
-import { HistoricoCompletoDentistaComponent } from '../impressoes-dentista/historico-completo-dentista/historico-completo-dentista.component';
-import { ImprimirRegistroComponent } from '../impressoes/ImprimirRegistro/ImprimirRegistro.component';
-import { SelecaoRelatorioComponent } from '../impressoes/selecao-relatorio/selecao-relatorio.component';
-import { Subject, takeUntil } from 'rxjs';
+ 
 import { Consultav2 } from 'src/app/util/variados/interfaces/consulta/consultav2';
-import { Prontuario } from 'src/app/util/variados/interfaces/Prontuario/Prontuario';
-import { PrescricaoDentistaComponent } from '../impressoes-dentista/prescricao-dentista/prescricao-dentista.component';
-import { AtestadoDentistaComponent } from '../impressoes-dentista/atestado-dentista/atestado-dentista.component';
-import { EditarProntuarioDentistaComponent } from '../prontuario-dentista/editar-prontuario-dentista/editar-prontuario-dentista.component';
-import { ComprovantePagamentoDentistaComponent } from '../impressoes-dentista/comprovante-pagamento-dentista/comprovante-pagamento-dentista.component';
-import { QuestionarioSaudeDentistaComponent } from '../impressoes-dentista/questionario-saude-dentista/questionario-saude-dentista.component';
-import { PlanejamentoOdontologicoDentistaComponent } from '../impressoes-dentista/planejamento-odontologico-dentista/planejamento-odontologico-dentista.component';
-
+ import { EditarProntuarioDentistaComponent } from '../prontuario-dentista/editar-prontuario-dentista/editar-prontuario-dentista.component';
+import { EditarProntuarioMedicoComponent } from '../prontuario-medico/editar-prontuario-medico/editar-prontuario-medico.component';
+import { Subject, takeUntil } from 'rxjs';
+import { RelatorioService } from 'src/app/features/relatorio/relatorio.service';
+ 
 type TipoVisualizacao = 'CONFIRMADA' | 'REALIZADA';
 type TipoPeriodo = 'diario' | 'semanal' | 'mensal' | 'anual';
 
@@ -48,7 +33,7 @@ export class AgendaMedicoGerenciamentoComponent implements OnInit, OnDestroy {
   allConsultas: any[] = [];
   displayedColumns: string[] = ['consulta', 'paciente', 'diaSemana', 'data', 'horario', 'Seleciona'];
   Finalizadas = false;
-  clickedRows = new Set<Tabela>();
+  clickedRows = new Set<any>();
   tipoPeriodoSelecionado: TipoPeriodo = 'diario';
   today = new Date();
   private destroy$ = new Subject<void>();
@@ -67,10 +52,9 @@ export class AgendaMedicoGerenciamentoComponent implements OnInit, OnDestroy {
     private formBuilder: FormBuilder,
     private tabelaAgendaMedicoService: ConsultaApiService,
     private prontuarioStateService: ProntuarioStateService,
-    private prontuarioApiService: ProntuarioApiService,
-    private prontuarioDentistaApiService: ProntuarioDentistaApiService,
     public dialog: MatDialog,
-    private tokenService: tokenService
+    private tokenService: tokenService,
+    private relatorioService: RelatorioService
   ) { }
 
   ngOnInit() {
@@ -232,127 +216,53 @@ export class AgendaMedicoGerenciamentoComponent implements OnInit, OnDestroy {
     });
   }
 
+  // ─────────────────────────────────────────────────────────────────────────────
+  // Impressões — delegadas ao RelatorioService centralizado
+  // ─────────────────────────────────────────────────────────────────────────────
   AbrirOpcoesImpressao(element: Consultav2) {
-    const consultaNaoRealizada = (element.status as any) === 'AGENDADA';
-    console.log('AbrirOpcoesImpressao - elemento selecionado:', element);
-
-    const dialogRef = this.dialog.open(SelecaoRelatorioComponent, {
-      maxWidth: 'auto',
-      panelClass: 'selecao-relatorio-dialog',
-      data: { consulta: element, consultaNaoRealizada, isAdmin: false, isProfissional: true },
-    });
-
-    dialogRef.afterClosed().subscribe((opcaoSelecionada: string) => {
-      if (!opcaoSelecionada) { return; }
-
-      // Opção 3 = Histórico Completo (não precisa de prontuário)
-      if (opcaoSelecionada === '3') {
-        this.ImprimirHistoricoCompleto(element);
-        return;
-      }
-
-      if (this.UsuarioLogado.perfil === 'MEDICO') {
-        this.prontuarioApiService.buscarProntuarioById(element.id).subscribe(
-          (dados: Prontuario) => this.abrirDialogMedico(opcaoSelecionada, dados),
-          () => this.exibirErroProntuario()
-        );
-      } else if (this.UsuarioLogado.perfil === 'DENTISTA') {
-        this.prontuarioDentistaApiService.buscarProntuarioDentistaById(element.id).subscribe(
-          (dados: Prontuario) => this.abrirDialogDentista(opcaoSelecionada, dados),
-          () => this.exibirErroProntuario()
-        );
-      }
-    });
-  }
-
-  private abrirDialogMedico(opcao: string, dados: Prontuario) {
-    const dialogWidth = '60%';
-    const dialogHeight = '90%';
-    switch (opcao) {
-      case '1': this.dialog.open(ImprimirSoliciatacaoDeExamesComponent, { width: dialogWidth, height: dialogHeight, data: dados }); break;
-      case '2': this.dialog.open(ImprimirPrescricaoComponent, { width: dialogWidth, height: dialogHeight, data: dados }); break;
-      case '4': this.dialog.open(AtestadoPacienteComponent, { width: dialogWidth, height: dialogHeight, data: dados }); break;
-      case '5': this.dialog.open(ImprimirRegistroComponent, { width: dialogWidth, height: dialogHeight, data: dados }); break;
-    }
-  }
-
-  private abrirDialogDentista(opcao: string, dados: Prontuario) {
-    const dialogWidth = '60%';
-    const dialogHeight = '90%';
-    switch (opcao) {
-      case '1': this.dialog.open(SolicitacaoExamesDentistaComponent, { width: dialogWidth, height: dialogHeight, data: dados }); break;
-      case '2': this.dialog.open(PrescricaoDentistaComponent, { width: dialogWidth, height: dialogHeight, data: dados }); break;
-      case '4': this.dialog.open(AtestadoDentistaComponent, { width: dialogWidth, height: dialogHeight, data: dados }); break;
-      case '5': this.dialog.open(RegistroConsultaDentistaComponent, { width: dialogWidth, height: dialogHeight, data: dados }); break;
-      case '6': this.dialog.open(ComprovantePagamentoDentistaComponent, { width: dialogWidth, height: dialogHeight, data: dados }); break;
-      case '8': this.dialog.open(QuestionarioSaudeDentistaComponent, { width: dialogWidth, height: dialogHeight, data: dados }); break;
-      case '9': this.dialog.open(PlanejamentoOdontologicoDentistaComponent, { width: dialogWidth, height: dialogHeight, data: dados }); break;
-    }
-  }
-
-  private exibirErroProntuario() {
-    Swal.fire({
-      title: 'Prontuário não encontrado',
-      html: `
-        <p>Não foi possível encontrar o prontuário desta consulta.</p>
-        <p style="color: #666; font-size: 14px; margin-top: 10px;">
-          Verifique se a consulta foi realizada e se o prontuário foi preenchido corretamente.
-        </p>
-      `,
-      icon: 'warning',
-      confirmButtonColor: '#0066CC',
-      confirmButtonText: 'Entendi',
-    });
+    this.relatorioService.abrirRelatorioProfissional(element, this.UsuarioLogado.perfil || '');
   }
 
   /**
-   * Abre o dialog de edição do prontuário odontológico.
+   * Abre o dialog de edição do prontuário (médico ou odontológico).
    * @param element Consulta selecionada (finalizada)
    */
   EditarProntuario(element: Consultav2): void {
-    const dialogRef = this.dialog.open(EditarProntuarioDentistaComponent, {
-      width: '90%',
-      maxWidth: '1200px',
-      height: '90%',
-      panelClass: 'editar-prontuario-dialog',
-      data: { consulta: element },
-    });
-
-    dialogRef.afterClosed().subscribe((atualizado: boolean) => {
-      if (atualizado) {
-        this.buscarDadosParaTabela();
-      }
-    });
-  }
-
-  ImprimirHistoricoCompleto(dados: Consultav2) {
-    const dialogConfig = { width: '60%', height: '90%', data: dados };
+    // Escolher o componente correto baseado no perfil do usuário
     if (this.UsuarioLogado.perfil === 'DENTISTA') {
-      this.dialog.open(HistoricoCompletoDentistaComponent, dialogConfig);
+      const dialogRef = this.dialog.open(EditarProntuarioDentistaComponent, {
+        width: '90%',
+        maxWidth: '1200px',
+        height: '90%',
+        panelClass: 'editar-prontuario-dialog',
+        data: { consulta: element },
+      });
+
+      dialogRef.afterClosed().subscribe((atualizado: boolean) => {
+        if (atualizado) {
+          this.buscarDadosParaTabela();
+        }
+      });
     } else {
-      this.dialog.open(HistoricoCompletoComponent, dialogConfig);
+      const dialogRef = this.dialog.open(EditarProntuarioMedicoComponent, {
+        width: '90%',
+        maxWidth: '1200px',
+        height: '90%',
+        panelClass: 'editar-prontuario-dialog',
+        data: { consulta: element },
+      });
+
+      dialogRef.afterClosed().subscribe((atualizado: boolean) => {
+        if (atualizado) {
+          this.buscarDadosParaTabela();
+        }
+      });
     }
   }
 
   private filtrarConsultasPorTipo(dados: any[], tipo: TipoVisualizacao): any[] {
     const statusPermitidos = tipo === 'CONFIRMADA' ? STATUS_AGENDADAS : STATUS_FINALIZADAS;
     return dados.filter((consulta) => statusPermitidos.includes(consulta.status));
-  }
-
-  tratarDadosParaTabela(dados: any[]): Tabela[] {
-    return dados.map((dado) => ({
-      consulta: dado.conCodigoConsulta || dado.conSttCodigoConsulta,
-      medico: dado.conMedico || dado.conSttMedico,
-      paciente: dado.conPaciente || dado.conSttPaciente,
-      diaSemana: dado.conDia_semana || dado.conDiaSemana || dado.conSttDia_semana,
-      data: dado.conData || dado.conSttData,
-      horario: dado.conHorario || dado.conSttHorario,
-      observacao: dado.conObservacoes || dado.conSttObservacao,
-      dadaCriacao: dado.conDataCriacao || dado.conSttDataCriacao,
-      status: dado.conStatus || dado.conSttStatus,
-      adm: dado.conAdm || dado.conSttAdm,
-      formaPagamento: dado.conFormaPagamento || dado.conSttFormaPagamento,
-    }));
   }
 
   filtrandoDadosDoBancoPassadoParametros_Pesquisa(

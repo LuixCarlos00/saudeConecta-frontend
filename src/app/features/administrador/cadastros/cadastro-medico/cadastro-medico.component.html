@@ -1,5 +1,4 @@
 <div class="cadastro-container">
-  <!-- Formulário do Médico -->
   <div class="cadastro-dialog">
     <!-- Header -->
     <header class="cadastro-header cadastro-header--medico">
@@ -16,7 +15,8 @@
 
     <!-- Body -->
     <div class="cadastro-body">
-      <!-- Seção: Dados Pessoais -->
+
+      <!-- ═══ Seção: Dados Pessoais ═══════════════════════════════════════════ -->
       <section class="cadastro-section cadastro-section--open">
         <div class="cadastro-section__header">
           <i class="fa-solid fa-user"></i>
@@ -24,68 +24,120 @@
         </div>
         <div class="cadastro-section__body">
           <form [formGroup]="FormularioMedico" class="cadastro-grid">
+
+            <!-- Nome Completo -->
             <div class="cadastro-field">
               <label class="cadastro-field__label">
                 <span class="cadastro-field__required">*</span> Nome Completo
               </label>
-              <input type="text" class="cadastro-field__input" formControlName="nome"
-                placeholder="Digite o nome completo">
+              <input type="text" class="cadastro-field__input" formControlName="nome" placeholder="Ex: João da Silva"
+                [class.input--error]="FormularioMedico.get('nome')?.invalid && FormularioMedico.get('nome')?.touched"
+                [class.input--valid]="FormularioMedico.get('nome')?.valid && FormularioMedico.get('nome')?.touched">
+              <div class="cadastro-field__error"
+                *ngIf="FormularioMedico.get('nome')?.invalid && FormularioMedico.get('nome')?.touched">
+                {{ getFieldError(FormularioMedico.get('nome')?.errors) }}
+              </div>
+              <div class="cadastro-field__hint">
+                Use apenas letras e acentos do português. Informe nome e sobrenome.
+              </div>
             </div>
 
+            <!-- Sexo -->
             <div class="cadastro-field">
               <label class="cadastro-field__label">
                 <span class="cadastro-field__required">*</span> Sexo
               </label>
-              <select class="cadastro-field__select" formControlName="sexo">
+              <select class="cadastro-field__select" formControlName="sexo"
+                [class.input--error]="FormularioMedico.get('sexo')?.invalid && FormularioMedico.get('sexo')?.touched">
                 <option value="" disabled>Selecione</option>
                 <option value="1">Masculino</option>
                 <option value="2">Feminino</option>
               </select>
+              <div class="cadastro-field__error"
+                *ngIf="FormularioMedico.get('sexo')?.invalid && FormularioMedico.get('sexo')?.touched">
+                ⚠️ Selecione o sexo.
+              </div>
             </div>
 
+            <!-- Data de Nascimento -->
             <div class="cadastro-field">
               <label class="cadastro-field__label">
                 <span class="cadastro-field__required">*</span> Data de Nascimento
               </label>
-              <input type="date" class="cadastro-field__input" formControlName="dataNascimento">
+              <input type="date" class="cadastro-field__input" formControlName="dataNascimento"
+                [class.input--error]="FormularioMedico.get('dataNascimento')?.invalid && FormularioMedico.get('dataNascimento')?.touched"
+                [class.input--valid]="FormularioMedico.get('dataNascimento')?.valid && FormularioMedico.get('dataNascimento')?.touched">
+              <div class="cadastro-field__error"
+                *ngIf="FormularioMedico.get('dataNascimento')?.invalid && FormularioMedico.get('dataNascimento')?.touched">
+                {{ getFieldError(FormularioMedico.get('dataNascimento')?.errors) }}
+              </div>
+              <div class="cadastro-field__hint">O profissional deve ter entre 18 e 100 anos.</div>
             </div>
 
+            <!-- CPF -->
             <div class="cadastro-field">
               <label class="cadastro-field__label">
                 <span class="cadastro-field__required">*</span> CPF (usado como login)
               </label>
               <input type="text" class="cadastro-field__input" formControlName="cpf" placeholder="000.000.000-00"
-                maxlength="14" required (blur)="validateCpfOnBlur()">
-              <div *ngIf="FormularioMedico.get('cpf')?.invalid && FormularioMedico.get('cpf')?.touched"
-                class="cadastro-field__error">
-                <span *ngIf="FormularioMedico.get('cpf')?.errors?.['required']">CPF é obrigatório</span>
-                <span *ngIf="FormularioMedico.get('cpf')?.errors?.['cpfInvalid']">CPF inválido</span>
+                maxlength="14" (blur)="validateCpfOnBlur()"
+                [class.input--error]="FormularioMedico.get('cpf')?.invalid && FormularioMedico.get('cpf')?.touched"
+                [class.input--valid]="FormularioMedico.get('cpf')?.valid && FormularioMedico.get('cpf')?.touched">
+              <div class="cadastro-field__error"
+                *ngIf="FormularioMedico.get('cpf')?.invalid && FormularioMedico.get('cpf')?.touched">
+                {{ getFieldError(FormularioMedico.get('cpf')?.errors) }}
+              </div>
+              <div class="cadastro-field__hint">Formato: 000.000.000-00. Será usado como login do profissional.</div>
+            </div>
+
+            <!-- RG -->
+            <div class="cadastro-field">
+              <label class="cadastro-field__label">RG</label>
+              <input type="text" class="cadastro-field__input" formControlName="rg" placeholder="Ex: 12.345.678-9"
+                maxlength="12"
+                [class.input--error]="FormularioMedico.get('rg')?.invalid && FormularioMedico.get('rg')?.touched"
+                [class.input--valid]="FormularioMedico.get('rg')?.valid && FormularioMedico.get('rg')?.touched && FormularioMedico.get('rg')?.value">
+              <div class="cadastro-field__error"
+                *ngIf="FormularioMedico.get('rg')?.invalid && FormularioMedico.get('rg')?.touched">
+                {{ getFieldError(FormularioMedico.get('rg')?.errors) }}
               </div>
             </div>
 
-            <div class="cadastro-field">
-              <label class="cadastro-field__label">RG</label>
-              <input type="text" class="cadastro-field__input" formControlName="rg" placeholder="00.000.000-0"
-                maxlength="12">
-            </div>
-
+            <!-- Telefone -->
             <div class="cadastro-field">
               <label class="cadastro-field__label">Telefone</label>
-              <input type="text" class="cadastro-field__input" formControlName="telefone" placeholder="(00) 00000-0000"
-                maxlength="17">
+              <input type="text" class="cadastro-field__input" formControlName="telefone" placeholder="11999999999"
+                maxlength="11" inputmode="numeric" pattern="[0-9]*" autocomplete="tel"
+                [class.input--error]="FormularioMedico.get('telefone')?.invalid && FormularioMedico.get('telefone')?.touched"
+                [class.input--valid]="FormularioMedico.get('telefone')?.valid && FormularioMedico.get('telefone')?.touched && FormularioMedico.get('telefone')?.value">
+              <div class="cadastro-field__error"
+                *ngIf="FormularioMedico.get('telefone')?.invalid && FormularioMedico.get('telefone')?.touched">
+                {{ getFieldError(FormularioMedico.get('telefone')?.errors) }}
+              </div>
+              <div class="cadastro-field__hint">Apenas números: DD + número (ex: 11999999999)</div>
             </div>
 
+            <!-- Email -->
             <div class="cadastro-field cadastro-field--full">
               <label class="cadastro-field__label">
                 <span class="cadastro-field__required">*</span> Email
               </label>
-              <input type="email" class="cadastro-field__input" formControlName="email" placeholder="email@exemplo.com">
+              <input type="email" class="cadastro-field__input" formControlName="email" placeholder="email@exemplo.com"
+                [class.input--error]="FormularioMedico.get('email')?.invalid && FormularioMedico.get('email')?.touched"
+                [class.input--valid]="FormularioMedico.get('email')?.valid && FormularioMedico.get('email')?.touched">
+              <div class="cadastro-field__error"
+                *ngIf="FormularioMedico.get('email')?.invalid && FormularioMedico.get('email')?.touched">
+                {{ getFieldError(FormularioMedico.get('email')?.errors) }}
+              </div>
+              <div class="cadastro-field__hint">Use um e-mail válido. As credenciais serão enviadas para este endereço.
+              </div>
             </div>
+
           </form>
         </div>
       </section>
 
-      <!-- Seção: Dados Profissionais -->
+      <!-- ═══ Seção: Dados Profissionais ═══════════════════════════════════════ -->
       <section class="cadastro-section cadastro-section--open">
         <div class="cadastro-section__header">
           <i class="fa-solid fa-stethoscope"></i>
@@ -93,14 +145,15 @@
         </div>
         <div class="cadastro-section__body">
           <form [formGroup]="FormularioMedico" class="cadastro-grid">
+
+            <!-- Tipo Profissional -->
             <div class="cadastro-field cadastro-field--full">
               <label class="cadastro-field__label">
                 <span class="cadastro-field__required">*</span> Tipo Profissional
               </label>
               <div class="cadastro-radio-group">
                 <label class="cadastro-radio">
-                  <input type="radio" name="tipoProfissional" value="MEDICO" formControlName="tipoProfissional"
-                    [checked]="true">
+                  <input type="radio" name="tipoProfissional" value="MEDICO" formControlName="tipoProfissional">
                   <span class="cadastro-radio__checkmark"></span>
                   Clínico
                 </label>
@@ -112,56 +165,110 @@
               </div>
             </div>
 
+            <!-- CRM / CRO (label dinâmico) -->
             <div class="cadastro-field">
               <label class="cadastro-field__label">
-                <span class="cadastro-field__required">*</span> CRM
+                <span class="cadastro-field__required">*</span>
+                {{ FormularioMedico.get('tipoProfissional')?.value === 'DENTISTA' ? 'CRO' : 'CRM' }}
               </label>
-              <input type="text" class="cadastro-field__input" formControlName="registroConselho" placeholder="000000"
-                maxlength="6">
+              <input type="text" class="cadastro-field__input" formControlName="registroConselho"
+                [placeholder]="FormularioMedico.get('tipoProfissional')?.value === 'DENTISTA' ? 'Ex: 12345 (apenas números)' : 'Ex: 123456 (apenas números)'"
+                maxlength="6"
+                [class.input--error]="FormularioMedico.get('registroConselho')?.invalid && FormularioMedico.get('registroConselho')?.touched"
+                [class.input--valid]="FormularioMedico.get('registroConselho')?.valid && FormularioMedico.get('registroConselho')?.touched">
+              <div class="cadastro-field__error"
+                *ngIf="FormularioMedico.get('registroConselho')?.invalid && FormularioMedico.get('registroConselho')?.touched">
+                {{ getFieldError(FormularioMedico.get('registroConselho')?.errors) }}
+              </div>
+              <div class="cadastro-field__hint">
+                Informe apenas os números do
+                {{ FormularioMedico.get('tipoProfissional')?.value === 'DENTISTA' ? 'CRO' : 'CRM' }}
+                (4 a 6 dígitos).
+              </div>
             </div>
 
+            <!-- Especialidade -->
             <div class="cadastro-field">
               <label class="cadastro-field__label">
                 <span class="cadastro-field__required">*</span> Especialidade
               </label>
-              <div style="display: flex; gap: 8px; align-items: center;">
-                <select class="cadastro-field__select" formControlName="especialidade" style="flex: 1;">
-                  <option value="" disabled>
-                    {{ isLoadingEspecialidades ? 'Carregando especialidades...' : 'Selecione a especialidade' }}
-                  </option>
-                  <option *ngFor="let especialidade of especialidades" [value]="especialidade.nome">
-                    {{especialidade.nome}}
-                  </option>
-                </select>
-                <button type="button" class="cadastro-btn cadastro-btn--secondary" 
-                        (click)="abrirModalNovaEspecialidade()"
-                        title="Adicionar nova especialidade"
-                        style="padding: 8px 12px; min-width: auto;">
+              <div style="display: flex; gap: 8px; align-items: flex-start;">
+                <div style="flex: 1;">
+                  <select class="cadastro-field__select" formControlName="especialidade"
+                    [class.input--error]="FormularioMedico.get('especialidade')?.invalid && FormularioMedico.get('especialidade')?.touched">
+                    <option value="" disabled>
+                      {{ isLoadingEspecialidades ? 'Carregando especialidades...' : 'Selecione a especialidade' }}
+                    </option>
+                    <option *ngFor="let especialidade of especialidades" [value]="especialidade.nome">
+                      {{ especialidade.nome }}
+                    </option>
+                  </select>
+                  <div class="cadastro-field__error"
+                    *ngIf="FormularioMedico.get('especialidade')?.invalid && FormularioMedico.get('especialidade')?.touched">
+                    ⚠️ Selecione uma especialidade.
+                  </div>
+                </div>
+                <button type="button" class="cadastro-btn cadastro-btn--secondary"
+                  (click)="abrirModalNovaEspecialidade()" title="Adicionar nova especialidade"
+                  style="padding: 8px 12px; min-width: auto; flex-shrink: 0;">
                   <i class="fa-solid fa-plus"></i>
                 </button>
               </div>
             </div>
+
+            <!-- Formação -->
             <div class="cadastro-field">
               <label class="cadastro-field__label">Formação</label>
-              <input type="text" class="cadastro-field__input" formControlName="formacao" placeholder="Ex: Medicina">
+              <input type="text" class="cadastro-field__input" formControlName="formacao"
+                placeholder="Ex: Medicina, Odontologia"
+                [class.input--error]="FormularioMedico.get('formacao')?.invalid && FormularioMedico.get('formacao')?.touched"
+                [class.input--valid]="FormularioMedico.get('formacao')?.valid && FormularioMedico.get('formacao')?.touched && FormularioMedico.get('formacao')?.value">
+              <div class="cadastro-field__error"
+                *ngIf="FormularioMedico.get('formacao')?.invalid && FormularioMedico.get('formacao')?.touched">
+                {{ getFieldError(FormularioMedico.get('formacao')?.errors) }}
+              </div>
             </div>
 
+            <!-- Instituição -->
             <div class="cadastro-field">
               <label class="cadastro-field__label">Instituição</label>
               <input type="text" class="cadastro-field__input" formControlName="instituicao"
-                placeholder="Ex: Universidade Federal">
+                placeholder="Ex: Universidade Federal de Minas Gerais"
+                [class.input--error]="FormularioMedico.get('instituicao')?.invalid && FormularioMedico.get('instituicao')?.touched"
+                [class.input--valid]="FormularioMedico.get('instituicao')?.valid && FormularioMedico.get('instituicao')?.touched && FormularioMedico.get('instituicao')?.value">
+              <div class="cadastro-field__error"
+                *ngIf="FormularioMedico.get('instituicao')?.invalid && FormularioMedico.get('instituicao')?.touched">
+                {{ getFieldError(FormularioMedico.get('instituicao')?.errors) }}
+              </div>
             </div>
 
+            <!-- Tempo de Consulta -->
             <div class="cadastro-field">
               <label class="cadastro-field__label">Tempo de Consulta (minutos)</label>
-              <input type="number" class="cadastro-field__input" formControlName="tempoConsultaMinutos" placeholder="30"
-                min="5" max="120">
+              <select class="cadastro-field__input" formControlName="tempoConsultaMinutos"
+                [class.input--error]="FormularioMedico.get('tempoConsultaMinutos')?.invalid && FormularioMedico.get('tempoConsultaMinutos')?.touched"
+                [class.input--valid]="FormularioMedico.get('tempoConsultaMinutos')?.valid && FormularioMedico.get('tempoConsultaMinutos')?.touched">
+                <option value="" disabled>Selecione</option>
+                <option value="10">10 min</option>
+                <option value="15">15 min</option>
+                <option value="20">20 min</option>
+                <option value="25">25 min</option>
+                <option value="30">30 min</option>
+                <option value="40">40 min</option>
+                <option value="45">45 min</option>
+                <option value="60">60 min</option>
+              </select>
+              <div class="cadastro-field__error"
+                *ngIf="FormularioMedico.get('tempoConsultaMinutos')?.invalid && FormularioMedico.get('tempoConsultaMinutos')?.touched">
+                {{ getFieldError(FormularioMedico.get('tempoConsultaMinutos')?.errors) }}
+              </div>
             </div>
+
           </form>
         </div>
       </section>
 
-      <!-- Seção: Endereço -->
+      <!-- ═══ Seção: Endereço ═══════════════════════════════════════════════════ -->
       <section class="cadastro-section cadastro-section--open">
         <div class="cadastro-section__header">
           <i class="fa-solid fa-location-dot"></i>
@@ -169,67 +276,124 @@
         </div>
         <div class="cadastro-section__body">
           <form [formGroup]="FormularioEndereco" class="cadastro-grid">
+
+            <!-- Nacionalidade -->
             <div class="cadastro-field">
-              <label class="cadastro-field__label">
-                Nacionalidade
-              </label>
+              <label class="cadastro-field__label">Nacionalidade</label>
               <input type="text" class="cadastro-field__input" formControlName="nacionalidade"
-                placeholder="Brasileiro(a)">
+                placeholder="Ex: Brasileiro(a)"
+                [class.input--error]="FormularioEndereco.get('nacionalidade')?.invalid && FormularioEndereco.get('nacionalidade')?.touched"
+                [class.input--valid]="FormularioEndereco.get('nacionalidade')?.valid && FormularioEndereco.get('nacionalidade')?.touched && FormularioEndereco.get('nacionalidade')?.value">
+              <div class="cadastro-field__error"
+                *ngIf="FormularioEndereco.get('nacionalidade')?.invalid && FormularioEndereco.get('nacionalidade')?.touched">
+                {{ getFieldError(FormularioEndereco.get('nacionalidade')?.errors) }}
+              </div>
             </div>
 
+            <!-- UF -->
             <div class="cadastro-field">
               <label class="cadastro-field__label">
                 <span class="cadastro-field__required">*</span> UF
               </label>
-              <select class="cadastro-field__select" formControlName="uf">
+              <select class="cadastro-field__select" formControlName="uf"
+                [class.input--error]="FormularioEndereco.get('uf')?.invalid && FormularioEndereco.get('uf')?.touched">
                 <option value="" disabled>Selecione</option>
                 <option *ngFor="let ufOption of ufOptions" [value]="ufOption.value">
-                  {{ufOption.label}}
+                  {{ ufOption.label }}
                 </option>
               </select>
+              <div class="cadastro-field__error"
+                *ngIf="FormularioEndereco.get('uf')?.invalid && FormularioEndereco.get('uf')?.touched">
+                ⚠️ Selecione o estado.
+              </div>
             </div>
 
+            <!-- CEP -->
             <div class="cadastro-field">
               <label class="cadastro-field__label">
                 <span class="cadastro-field__required">*</span> CEP
               </label>
               <input type="text" class="cadastro-field__input" formControlName="cep" placeholder="00000-000"
-                maxlength="9">
+                maxlength="9"
+                [class.input--error]="FormularioEndereco.get('cep')?.invalid && FormularioEndereco.get('cep')?.touched"
+                [class.input--valid]="FormularioEndereco.get('cep')?.valid && FormularioEndereco.get('cep')?.touched">
+              <div class="cadastro-field__error"
+                *ngIf="FormularioEndereco.get('cep')?.invalid && FormularioEndereco.get('cep')?.touched">
+                {{ getFieldError(FormularioEndereco.get('cep')?.errors) }}
+              </div>
+              <div class="cadastro-field__hint">Formato: 00000-000. O endereço será preenchido automaticamente.</div>
             </div>
 
+            <!-- Município -->
             <div class="cadastro-field">
               <label class="cadastro-field__label">
                 <span class="cadastro-field__required">*</span> Município
               </label>
-              <input type="text" class="cadastro-field__input" formControlName="municipio" placeholder="Nome da cidade">
+              <input type="text" class="cadastro-field__input" formControlName="municipio" placeholder="Nome da cidade"
+                [class.input--error]="FormularioEndereco.get('municipio')?.invalid && FormularioEndereco.get('municipio')?.touched"
+                [class.input--valid]="FormularioEndereco.get('municipio')?.valid && FormularioEndereco.get('municipio')?.touched">
+              <div class="cadastro-field__error"
+                *ngIf="FormularioEndereco.get('municipio')?.invalid && FormularioEndereco.get('municipio')?.touched">
+                {{ getFieldError(FormularioEndereco.get('municipio')?.errors) }}
+              </div>
             </div>
 
+            <!-- Bairro -->
             <div class="cadastro-field">
               <label class="cadastro-field__label">
                 <span class="cadastro-field__required">*</span> Bairro
               </label>
-              <input type="text" class="cadastro-field__input" formControlName="bairro" placeholder="Nome do bairro">
+              <input type="text" class="cadastro-field__input" formControlName="bairro" placeholder="Nome do bairro"
+                [class.input--error]="FormularioEndereco.get('bairro')?.invalid && FormularioEndereco.get('bairro')?.touched"
+                [class.input--valid]="FormularioEndereco.get('bairro')?.valid && FormularioEndereco.get('bairro')?.touched">
+              <div class="cadastro-field__error"
+                *ngIf="FormularioEndereco.get('bairro')?.invalid && FormularioEndereco.get('bairro')?.touched">
+                {{ getFieldError(FormularioEndereco.get('bairro')?.errors) }}
+              </div>
             </div>
 
+            <!-- Rua -->
             <div class="cadastro-field cadastro-field--full">
               <label class="cadastro-field__label">
                 <span class="cadastro-field__required">*</span> Rua
               </label>
-              <input type="text" class="cadastro-field__input" formControlName="rua" placeholder="Nome da rua">
+              <input type="text" class="cadastro-field__input" formControlName="rua"
+                placeholder="Nome da rua / logradouro"
+                [class.input--error]="FormularioEndereco.get('rua')?.invalid && FormularioEndereco.get('rua')?.touched"
+                [class.input--valid]="FormularioEndereco.get('rua')?.valid && FormularioEndereco.get('rua')?.touched">
+              <div class="cadastro-field__error"
+                *ngIf="FormularioEndereco.get('rua')?.invalid && FormularioEndereco.get('rua')?.touched">
+                {{ getFieldError(FormularioEndereco.get('rua')?.errors) }}
+              </div>
             </div>
 
+            <!-- Número -->
             <div class="cadastro-field">
               <label class="cadastro-field__label">
                 <span class="cadastro-field__required">*</span> Número
               </label>
-              <input type="number" class="cadastro-field__input" formControlName="numero" placeholder="000">
+              <input type="number" class="cadastro-field__input" formControlName="numero" placeholder="Ex: 123"
+                [class.input--error]="FormularioEndereco.get('numero')?.invalid && FormularioEndereco.get('numero')?.touched"
+                [class.input--valid]="FormularioEndereco.get('numero')?.valid && FormularioEndereco.get('numero')?.touched">
+              <div class="cadastro-field__error"
+                *ngIf="FormularioEndereco.get('numero')?.invalid && FormularioEndereco.get('numero')?.touched">
+                {{ getFieldError(FormularioEndereco.get('numero')?.errors) }}
+              </div>
             </div>
 
+            <!-- Complemento -->
             <div class="cadastro-field">
               <label class="cadastro-field__label">Complemento</label>
               <input type="text" class="cadastro-field__input" formControlName="complemento"
-                placeholder="Apto, Bloco, etc.">
+                placeholder="Ex: Apto 201, Bloco B"
+                [class.input--error]="FormularioEndereco.get('complemento')?.invalid && FormularioEndereco.get('complemento')?.touched"
+                [class.input--valid]="FormularioEndereco.get('complemento')?.valid && FormularioEndereco.get('complemento')?.touched && FormularioEndereco.get('complemento')?.value">
+              <div class="cadastro-field__error"
+                *ngIf="FormularioEndereco.get('complemento')?.invalid && FormularioEndereco.get('complemento')?.touched">
+                {{ getFieldError(FormularioEndereco.get('complemento')?.errors) }}
+              </div>
             </div>
+
           </form>
         </div>
       </section>
@@ -244,10 +408,6 @@
       <div class="cadastro-footer__actions">
         <button class="cadastro-btn cadastro-btn--primary"
           [disabled]="!FormularioEndereco.valid || !FormularioMedico.valid || isLoading" (click)="cadastra()">
-          <!--         -->
-
-
-
           <i class="fa-solid" [ngClass]="isLoading ? 'fa-spinner fa-spin' : 'fa-check'"></i>
           {{ isLoading ? 'Cadastrando...' : 'Cadastrar Médico' }}
         </button>
@@ -267,32 +427,22 @@
           <i class="fa-solid fa-times"></i>
         </button>
       </div>
-      
       <div class="modal-body">
         <div class="cadastro-field">
           <label class="cadastro-field__label">
             <span class="cadastro-field__required">*</span> Nome da Especialidade
           </label>
-          <input 
-            type="text" 
-            class="cadastro-field__input" 
-            [(ngModel)]="novaEspecialidadeNome"
-            placeholder="Ex: Cardiologia Pediátrica"
-            maxlength="100"
-            (keyup.enter)="criarNovaEspecialidade()">
+          <input type="text" class="cadastro-field__input" [(ngModel)]="novaEspecialidadeNome"
+            placeholder="Ex: Cardiologia Pediátrica" maxlength="100" (keyup.enter)="criarNovaEspecialidade()">
+          <div class="cadastro-field__hint">Use apenas letras e acentos do português. Ex: Cardiologia Pediátrica.</div>
         </div>
       </div>
-      
       <div class="modal-footer">
         <button type="button" class="cadastro-btn cadastro-btn--secondary" (click)="fecharModalNovaEspecialidade()">
-          <i class="fa-solid fa-times"></i>
-          Cancelar
+          <i class="fa-solid fa-times"></i> Cancelar
         </button>
-        <button 
-          type="button" 
-          class="cadastro-btn cadastro-btn--primary" 
-          [disabled]="!novaEspecialidadeNome || isLoading"
-          (click)="criarNovaEspecialidade()">
+        <button type="button" class="cadastro-btn cadastro-btn--primary"
+          [disabled]="!novaEspecialidadeNome || isLoading" (click)="criarNovaEspecialidade()">
           <i class="fa-solid" [ngClass]="isLoading ? 'fa-spinner fa-spin' : 'fa-check'"></i>
           {{ isLoading ? 'Criando...' : 'Criar Especialidade' }}
         </button>

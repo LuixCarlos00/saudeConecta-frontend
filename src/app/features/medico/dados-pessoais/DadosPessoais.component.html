@@ -260,10 +260,12 @@
                 <label for="nomeClinica">
                   <i class="fa fa-hospital"></i> Nome da Clínica <span class="required">*</span>
                 </label>
-                <input formControlName="nomeClinica" type="text" id="nomeClinica" placeholder="Nome da clínica">
+                <input formControlName="nomeClinica" type="text" id="nomeClinica" placeholder="Nome da clínica"
+                  [class.input--error]="organizacaoForm.get('nomeClinica')?.invalid && organizacaoForm.get('nomeClinica')?.touched"
+                  [class.input--valid]="organizacaoForm.get('nomeClinica')?.valid && organizacaoForm.get('nomeClinica')?.touched">
                 <span class="error-message"
                   *ngIf="organizacaoForm.get('nomeClinica')?.touched && organizacaoForm.get('nomeClinica')?.invalid">
-                  Nome da clínica é obrigatório
+                  {{ getFieldError(organizacaoForm.get('nomeClinica')?.errors) }}
                 </span>
               </div>
 
@@ -271,7 +273,12 @@
                 <label for="razaoSocial">
                   <i class="fa fa-file-contract"></i> Razão Social
                 </label>
-                <input formControlName="razaoSocial" type="text" id="razaoSocial" placeholder="Razão social">
+                <input formControlName="razaoSocial" type="text" id="razaoSocial" placeholder="Razão social"
+                  [class.input--error]="organizacaoForm.get('razaoSocial')?.invalid && organizacaoForm.get('razaoSocial')?.touched">
+                <span class="error-message"
+                  *ngIf="organizacaoForm.get('razaoSocial')?.touched && organizacaoForm.get('razaoSocial')?.invalid">
+                  {{ getFieldError(organizacaoForm.get('razaoSocial')?.errors) }}
+                </span>
               </div>
 
               <div class="form-group">
@@ -292,7 +299,7 @@
                 </select>
                 <span class="error-message"
                   *ngIf="organizacaoForm.get('tipoClinica')?.touched && organizacaoForm.get('tipoClinica')?.invalid">
-                  Tipo é obrigatório
+                  {{ getFieldError(organizacaoForm.get('tipoClinica')?.errors) }}
                 </span>
               </div>
 
@@ -300,10 +307,12 @@
                 <label for="emailClinica">
                   <i class="fa fa-envelope"></i> Email da Clínica <span class="required">*</span>
                 </label>
-                <input formControlName="emailClinica" type="email" id="emailClinica" placeholder="contato@clinica.com">
+                <input formControlName="emailClinica" type="email" id="emailClinica" placeholder="contato@clinica.com"
+                  [class.input--error]="organizacaoForm.get('emailClinica')?.invalid && organizacaoForm.get('emailClinica')?.touched"
+                  [class.input--valid]="organizacaoForm.get('emailClinica')?.valid && organizacaoForm.get('emailClinica')?.touched">
                 <span class="error-message"
                   *ngIf="organizacaoForm.get('emailClinica')?.touched && organizacaoForm.get('emailClinica')?.invalid">
-                  Email da clínica é obrigatório
+                  {{ getFieldError(organizacaoForm.get('emailClinica')?.errors) }}
                 </span>
               </div>
 
@@ -311,7 +320,12 @@
                 <label for="telefoneClinica">
                   <i class="fa fa-phone"></i> Telefone
                 </label>
-                <input formControlName="telefone" type="text" id="telefoneClinica" placeholder="(00) 00000-0000">
+                <input formControlName="telefone" type="text" id="telefoneClinica" placeholder="(00) 00000-0000"
+                  [class.input--error]="organizacaoForm.get('telefone')?.invalid && organizacaoForm.get('telefone')?.touched">
+                <span class="error-message"
+                  *ngIf="organizacaoForm.get('telefone')?.touched && organizacaoForm.get('telefone')?.invalid">
+                  {{ getFieldError(organizacaoForm.get('telefone')?.errors) }}
+                </span>
               </div>
             </div>
           </div>

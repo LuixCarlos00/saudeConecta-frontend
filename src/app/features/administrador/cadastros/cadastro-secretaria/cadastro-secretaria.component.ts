@@ -7,6 +7,13 @@ import { SecretariaApiService } from 'src/app/services/api/secretaria-api.servic
 import { FiltroStateService } from 'src/app/services/state/filtro-state.service';
 import { cpfValidator } from 'src/app/util/validators/cpf-form.validator';
 import { CpfValidator } from 'src/app/util/validators/cpf.validator';
+import { getFieldError } from 'src/app/util/validators/field-errors';
+import {
+  nomeCompletoValidator,
+  telefoneValidator,
+  emailValidator,
+  antiInjectionValidator,
+} from 'src/app/util/validators/form-validators';
 
 @Component({
   selector: 'app-cadastro-secretaria',
@@ -18,6 +25,7 @@ export class CadastroSecretariaComponent implements OnInit, OnDestroy {
   private usuarioSubscription: Subscription | undefined;
   FormularioSecretaria!: FormGroup;
   isLoading = false;
+  getFieldError = getFieldError;
 
   constructor(
     private router: Router,
@@ -28,10 +36,10 @@ export class CadastroSecretariaComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.FormularioSecretaria = this.form.group({
-      nome: ['', Validators.required],
+      nome: ['', [Validators.required, nomeCompletoValidator(), antiInjectionValidator()]],
       cpf: ['', [Validators.required, cpfValidator()]],
-      email: ['', [Validators.required, Validators.email]],
-      telefone: ['', Validators.required],
+      email: ['', [Validators.required, emailValidator()]],
+      telefone: ['', [Validators.required, telefoneValidator()]],
     });
 
     // Adicionar listener para formatar CPF
@@ -46,7 +54,6 @@ export class CadastroSecretariaComponent implements OnInit, OnDestroy {
 
     // Adicionar listener para validar no blur (quando sai do campo)
     this.FormularioSecretaria.get('cpf')?.valueChanges.subscribe(() => {
-      // Força a validação quando o valor muda
       this.FormularioSecretaria.get('cpf')?.updateValueAndValidity({ onlySelf: true, emitEvent: false });
     });
   }
@@ -68,11 +75,13 @@ export class CadastroSecretariaComponent implements OnInit, OnDestroy {
   }
 
   cadastra() {
+    this.FormularioSecretaria.markAllAsTouched();
+
     if (!this.FormularioSecretaria.valid) {
       Swal.fire({
         icon: 'warning',
         title: 'Formulário incompleto',
-        text: 'Por favor, preencha todos os campos obrigatórios.',
+        text: 'Por favor, preencha todos os campos obrigatórios corretamente.',
       });
       return;
     }

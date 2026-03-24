@@ -8,8 +8,7 @@ import { ErrorHandlerService } from 'src/app/core/services/error-handler.service
 
 @Component({
   selector: 'app-aba-planejamento',
-  standalone: true,
-  imports: [CommonModule, FormsModule],
+ 
   templateUrl: './aba-planejamento.component.html',
   styleUrl: '../prontuario-dentista.component.scss',
   host: { style: 'display: block; width: 100%;' },
@@ -25,6 +24,8 @@ export class AbaPlanejamentoComponent implements OnChanges, OnDestroy {
   novoPlanejamento = { procedimentoRealizado: '', valor: 0, dataProcedimento: '' };
   mostrarFormProcedimento = false;
   novoProcedimentoPadrao = { nomeProcedimento: '', valorPadrao: 0 };
+  editandoProcedimentoExistente = false;
+  procedimentoOriginal: any = null;
 
   private readonly destroy$ = new Subject<void>();
 
@@ -62,8 +63,37 @@ export class AbaPlanejamentoComponent implements OnChanges, OnDestroy {
     const id = Number(event.target.value);
     const proc = this.procedimentosPadrao.find(p => p.id === id);
     if (proc) {
+      // Verificar se este procedimento já existe nos planejamentos
+      const procedimentoExistente = this.planejamentos.find(p => 
+        p.procedimentoRealizado === proc.nomeProcedimento && !p._local
+      );
+      
+      if (procedimentoExistente) {
+        this.errorHandler.showError('Este procedimento já está cadastrado no planejamento e não pode ser duplicado.');
+        event.target.value = ''; // Limpa select
+        return;
+      }
+      
       this.novoPlanejamento.procedimentoRealizado = proc.nomeProcedimento;
       this.novoPlanejamento.valor = proc.valorPadrao || 0;
+      this.editandoProcedimentoExistente = true;
+      this.procedimentoOriginal = proc;
+    } else {
+      // Select vazio - limpar edição
+      this.editandoProcedimentoExistente = false;
+      this.procedimentoOriginal = null;
+    }
+  }
+
+  limparSelecaoProcedimento(): void {
+    this.novoPlanejamento = { procedimentoRealizado: '', valor: 0, dataProcedimento: '' };
+    this.editandoProcedimentoExistente = false;
+    this.procedimentoOriginal = null;
+    
+    // Limpa select
+    const selectElement = document.querySelector('select.form-select') as HTMLSelectElement;
+    if (selectElement) {
+      selectElement.value = '';
     }
   }
 
@@ -85,7 +115,10 @@ export class AbaPlanejamentoComponent implements OnChanges, OnDestroy {
       statusAssinatura: 'PENDENTE',
       _local: true
     });
+    // Limpar estado de edição
     this.novoPlanejamento = { procedimentoRealizado: '', valor: 0, dataProcedimento: '' };
+    this.editandoProcedimentoExistente = false;
+    this.procedimentoOriginal = null;
   }
 
   removerPlanejamento(index: number): void {

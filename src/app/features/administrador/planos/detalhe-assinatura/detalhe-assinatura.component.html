@@ -45,10 +45,15 @@
       </mat-card-content>
 
       <mat-card-actions>
-        <button mat-raised-button color="primary" (click)="gerarCobranca()">
+        <button mat-raised-button color="primary"
+                (click)="gerarCobranca()"
+                [disabled]="possuiCobrancaPendente || gerandoCobranca">
           <mat-icon>pix</mat-icon>
-          Gerar Cobrança Pix
+          {{ gerandoCobranca ? 'Gerando...' : 'Gerar Cobrança Pix' }}
         </button>
+        <span *ngIf="possuiCobrancaPendente" class="aviso-pendente">
+          Já existe uma cobrança pendente. Consulte o histórico abaixo.
+        </span>
       </mat-card-actions>
     </mat-card>
 

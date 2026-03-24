@@ -1,0 +1,85 @@
+<div class="editar-prontuario-container">
+
+  <!-- Header -->
+  <div class="editar-prontuario-header">
+    <div class="editar-prontuario-header__left">
+      <i class="fa-solid fa-pen-to-square"></i>
+      <div>
+        <h2 class="editar-prontuario-header__title">Editar Prontuário Médico</h2>
+        <p class="editar-prontuario-header__subtitle" *ngIf="consulta?.pacienteNome">
+          <i class="fa-solid fa-user-injured"></i>
+          {{ consulta.pacienteNome }}
+        </p>
+      </div>
+    </div>
+    <button class="editar-prontuario-close" (click)="fechar()" title="Fechar">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+  </div>
+
+  <!-- Loading -->
+  <div class="editar-prontuario-loading" *ngIf="carregando">
+    <i class="fa-solid fa-spinner fa-spin"></i>
+    <span>Carregando prontuário...</span>
+  </div>
+
+  <!-- Erro -->
+  <div class="editar-prontuario-erro" *ngIf="erro">
+    <i class="fa-solid fa-triangle-exclamation"></i>
+    <span>{{ erro }}</span>
+  </div>
+
+  <!-- Conteúdo -->
+  <div class="editar-prontuario-body" *ngIf="!carregando && !erro">
+
+    <!-- Abas -->
+    <nav class="pep-tabs">
+      <button class="pep-tab" [class.pep-tab--active]="selectedTabIndex === 0" (click)="selectedTabIndex = 0">
+        <i class="fa-solid fa-id-card"></i><span>Identificação</span>
+      </button>
+      <button class="pep-tab" [class.pep-tab--active]="selectedTabIndex === 1" (click)="selectedTabIndex = 1">
+        <i class="fa-solid fa-stethoscope"></i><span>Exame Objetivo</span>
+      </button>
+      <button class="pep-tab" [class.pep-tab--active]="selectedTabIndex === 2" (click)="selectedTabIndex = 2">
+        <i class="fa-solid fa-barcode"></i><span>Códigos TUSS e CID</span>
+      </button>
+      <button class="pep-tab" [class.pep-tab--active]="selectedTabIndex === 3" (click)="selectedTabIndex = 3">
+        <i class="fa-solid fa-clipboard-list"></i><span>Planejamento Terapêutico</span>
+      </button>
+    </nav>
+
+    <!-- Conteúdo das abas -->
+    <div class="editar-prontuario-content">
+      <app-aba-identificacao-medico [style.display]="selectedTabIndex === 0 ? '' : 'none'"
+        [pacienteId]="consulta?.pacienteId">
+      </app-aba-identificacao-medico>
+
+      <app-aba-exame-objetivo-medico [style.display]="selectedTabIndex === 1 ? '' : 'none'">
+      </app-aba-exame-objetivo-medico>
+
+      <app-aba-codigos-tuss-cid-medico [style.display]="selectedTabIndex === 2 ? '' : 'none'">
+      </app-aba-codigos-tuss-cid-medico>
+
+      <app-aba-planejamento-medico [style.display]="selectedTabIndex === 3 ? '' : 'none'"
+        [profissionalId]="consulta?.profissionalId"
+        [consultaId]="consulta?.id"
+        [pacienteId]="consulta?.pacienteId">
+      </app-aba-planejamento-medico>
+    </div>
+
+    <!-- Ações -->
+    <div class="editar-prontuario-actions">
+      <button class="btn btn-secondary" (click)="fechar()" [disabled]="salvando">
+        <i class="fa-solid fa-xmark"></i>
+        Cancelar
+      </button>
+      <button class="btn btn-primary" (click)="salvar()" [disabled]="salvando">
+        <i class="fa-solid fa-save" *ngIf="!salvando"></i>
+        <i class="fa-solid fa-spinner fa-spin" *ngIf="salvando"></i>
+        {{ salvando ? 'Salvando...' : 'Salvar Alterações' }}
+      </button>
+    </div>
+
+  </div>
+
+</div>

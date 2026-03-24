@@ -18,6 +18,7 @@ export class ProntuarioDentistaApiService {
   }
 
   buscarProntuarioDentistaById(consultaId: number): Observable<any> {
+
     return this.http.get<any>(`${this.apiUrl}/consulta/${consultaId}/recente`);
   }
 
