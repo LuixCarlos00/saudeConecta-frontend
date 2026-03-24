@@ -42,13 +42,6 @@ export class DadosPessoaisComponent implements OnInit, OnDestroy {
     sub: '',
   };
 
-  //TODO: Implementar funcionalidade de histórico de alterações dos dados pessoais,
-  // para registrar cada atualização feita pelo usuário, incluindo data e campos alterados.
-  // criar uma tabela de historio de dados pessoais,
-  // onde cada linha representa uma atualização feita pelo usuário,
-  //  mostrando a data da atualização e os campos que foram alterados.
-  //  ao altualizar os dados pessoais, comparar os novos valores com os antigos e registrar
-  //   as mudanças na tabela de histórico.
 
   dadosPessoaisForm: FormGroup;
   organizacaoForm: FormGroup;

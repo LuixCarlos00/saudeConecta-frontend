@@ -23,6 +23,9 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { ReactiveFormsModule } from '@angular/forms';
 
+// Módulo centralizado de Relatórios
+import { RelatorioModule } from 'src/app/features/relatorio/relatorio.module';
+
 // Componentes de Cadastros
 import { CadastroAdmComponent } from './cadastros/cadastro-adm/cadastro-adm.component';
 import { CadastroAdminOrgComponent } from './cadastros/cadastro-admin-org/cadastro-admin-org.component';
@@ -179,6 +182,7 @@ const routes: Routes = [
     MatSelectModule,
     MatDatepickerModule,
     MatNativeDateModule,
+    RelatorioModule,
   
   ],
   exports: [RouterModule]

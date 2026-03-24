@@ -21,7 +21,6 @@ export class ProntuarioDentistaApiService {
 
     return this.http.get<any>(`${this.apiUrl}/consulta/${consultaId}/recente`);
   }
-TODO: tem a visualização no adminitrador, tem que criar a busca para a busca de prontuario de medico
 
   /**
    * Atualiza um prontuário odontológico existente.

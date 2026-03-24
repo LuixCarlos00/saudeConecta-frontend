@@ -1,0 +1,138 @@
+<div class="registro-container">
+  <header class="dialog-header">
+    <div class="header-info">
+      <div class="header-icon"><i class="fa-solid fa-file-lines"></i></div>
+      <div class="header-text">
+        <h2 class="header-title">Registro de Consulta Médica</h2>
+        <p class="header-subtitle">Documento clínico completo</p>
+      </div>
+    </div>
+    <button class="close-btn" mat-dialog-close><i class="fa-solid fa-xmark"></i></button>
+  </header>
+
+  <div class="dialog-body">
+    <div id="pdfContent" class="pdf-content">
+
+      <!-- Cabeçalho -->
+      <div class="pdf-header">
+        <h1 class="pdf-title">REGISTRO DE CONSULTA MÉDICA</h1>
+        <div class="pdf-subtitle">Nº {{ codigoProntuario }}</div>
+      </div>
+
+      <!-- Dados do Paciente -->
+      <div class="section-header"><div class="section-bar"></div><span class="section-title">DADOS DO PACIENTE</span></div>
+      <table class="data-table">
+        <tr>
+          <td class="cell"><strong>Nome:</strong> {{ nomePaciente }}</td>
+          <td class="cell"><strong>CPF:</strong> {{ cpfPaciente }}</td>
+          <td class="cell"><strong>Nasc.:</strong> {{ dataNascimento }}</td>
+        </tr>
+        <tr>
+          <td class="cell"><strong>Email:</strong> {{ emailPaciente }}</td>
+          <td class="cell"><strong>Telefone:</strong> {{ telefonePaciente }}</td>
+          <td class="cell"><strong>Responsável:</strong> {{ responsavel || '-' }}</td>
+        </tr>
+      </table>
+
+      <!-- Dados da Consulta -->
+      <div class="section-header"><div class="section-bar"></div><span class="section-title">DADOS DA CONSULTA</span></div>
+      <table class="data-table">
+        <tr>
+          <td class="cell"><strong>Data:</strong> {{ dataConsulta }}</td>
+          <td class="cell"><strong>Horário:</strong> {{ horarioConsulta }}</td>
+          <td class="cell"><strong>Dia:</strong> {{ diaSemana }}</td>
+          <td class="cell"><strong>Status:</strong> {{ statusConsulta }}</td>
+        </tr>
+      </table>
+
+      <!-- Médico Atendente -->
+      <div class="section-header"><div class="section-bar"></div><span class="section-title">MÉDICO ATENDENTE</span></div>
+      <table class="data-table">
+        <tr>
+          <td class="cell"><strong>Nome:</strong> Dr. {{ nomeMedico }}</td>
+          <td class="cell"><strong>CRM:</strong> {{ crm }}</td>
+          <td class="cell"><strong>Email:</strong> {{ emailMedico }}</td>
+          <td class="cell"><strong>Tel.:</strong> {{ telefoneMedico }}</td>
+        </tr>
+      </table>
+
+      <!-- Sinais Vitais -->
+      <ng-container *ngIf="pressao || pulso || peso || altura || temperatura || saturacao || hemoglobina || frequenciaRespiratoria || frequenciaArterialSistolica || frequenciaArterialDiastolica">
+        <div class="section-header"><div class="section-bar"></div><span class="section-title">SINAIS VITAIS</span></div>
+        <table class="data-table">
+          <tr>
+            <td class="cell" *ngIf="pressao"><strong>PA:</strong> {{ pressao }}</td>
+            <td class="cell" *ngIf="pulso"><strong>Pulso:</strong> {{ pulso }}</td>
+            <td class="cell" *ngIf="peso"><strong>Peso:</strong> {{ peso }}</td>
+            <td class="cell" *ngIf="altura"><strong>Altura:</strong> {{ altura }}</td>
+            <td class="cell" *ngIf="temperatura"><strong>Temp.:</strong> {{ temperatura }}</td>
+            <td class="cell" *ngIf="saturacao"><strong>SpO₂:</strong> {{ saturacao }}</td>
+          </tr>
+          <tr>
+            <td class="cell" *ngIf="hemoglobina"><strong>Hb:</strong> {{ hemoglobina }}</td>
+            <td class="cell" *ngIf="frequenciaRespiratoria"><strong>Fr. Resp.:</strong> {{ frequenciaRespiratoria }}</td>
+            <td class="cell" *ngIf="frequenciaArterialSistolica"><strong>PA Sist.:</strong> {{ frequenciaArterialSistolica }}</td>
+            <td class="cell" *ngIf="frequenciaArterialDiastolica"><strong>PA Diast.:</strong> {{ frequenciaArterialDiastolica }}</td>
+            <td class="cell">&nbsp;</td>
+            <td class="cell">&nbsp;</td>
+          </tr>
+        </table>
+      </ng-container>
+
+      <!-- Queixa / Anamnese / Observações -->
+      <div class="inline-field" *ngIf="queixaPrincipal"><strong>Queixa Principal:</strong> {{ queixaPrincipal }}</div>
+      <div class="inline-field" *ngIf="anamnese"><strong>Anamnese:</strong> {{ anamnese }}</div>
+      <div class="inline-field" *ngIf="observacao"><strong>Observações:</strong> {{ observacao }}</div>
+
+      <!-- Diagnóstico / Prescrição / Orientações -->
+      <div class="inline-field" *ngIf="diagnostico"><strong>Diagnóstico:</strong> {{ diagnostico }}</div>
+      <div class="inline-field" *ngIf="prescricao"><strong>Prescrição Médica:</strong> {{ prescricao }}</div>
+      <div class="inline-field" *ngIf="orientacoes"><strong>Orientações:</strong> {{ orientacoes }}</div>
+
+      <!-- Códigos CID / TUSS -->
+      <ng-container *ngIf="cidTexto || tussTexto || solicitacaoExameTexto">
+        <div class="section-header"><div class="section-bar"></div><span class="section-title">CÓDIGOS CID / TUSS</span></div>
+        <div class="inline-field" *ngIf="cidTexto"><strong>CID:</strong> {{ cidTexto }}</div>
+        <div class="inline-field" *ngIf="tussTexto"><strong>TUSS:</strong> {{ tussTexto }}</div>
+        <div class="inline-field" *ngIf="solicitacaoExameTexto"><strong>Solicitação de Exame:</strong> {{ solicitacaoExameTexto }}</div>
+      </ng-container>
+
+      <!-- Planejamento Terapêutico -->
+      <ng-container *ngIf="planejamentos.length > 0">
+        <div class="section-header"><div class="section-bar"></div><span class="section-title">PLANEJAMENTO TERAPÊUTICO</span></div>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th class="cell cell--header">DATA</th>
+              <th class="cell cell--header">PROCEDIMENTO</th>
+              <th class="cell cell--header">VALOR</th>
+              <th class="cell cell--header">STATUS</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let plan of planejamentos">
+              <td class="cell">{{ plan.dataProcedimento }}</td>
+              <td class="cell">{{ plan.procedimentoRealizado }}</td>
+              <td class="cell">R$ {{ plan.valor?.toFixed(2) || '0.00' }}</td>
+              <td class="cell">{{ plan.statusAssinatura || 'PENDENTE' }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </ng-container>
+
+      <!-- Tempo de Consulta -->
+      <div class="inline-field" *ngIf="tempoDuracao"><strong>Tempo de Consulta:</strong> {{ tempoDuracao }}</div>
+
+      <!-- Rodapé -->
+      <div class="pdf-footer">
+        <div class="footer-date">Emitido em: {{ getDataAtual() }} às {{ getHoraAtual() }}</div>
+        <div class="footer-info">Documento de registro clínico - Confidencial</div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="dialog-footer">
+    <button class="btn btn--secondary" mat-dialog-close><i class="fa-solid fa-xmark"></i> Cancelar</button>
+    <button class="btn btn--primary" (click)="GerarPDF()"><i class="fa-solid fa-file-pdf"></i> Gerar PDF</button>
+  </footer>
+</div>
