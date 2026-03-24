@@ -36,7 +36,7 @@ export class PlanejamentoDentistaComponent implements OnInit {
 
   ngOnInit(): void {
     const p = this.data;
-
+console.log(p);
     // ── Profissional ──
     const prof = p.profissional as any;
     this.nomeDentista = prof?.nome?.trim() || '';

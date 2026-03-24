@@ -117,6 +117,15 @@
 
 mat-card-actions {
   display: flex;
+  align-items: center;
   justify-content: center;
+  gap: 12px;
   padding: 16px;
+  flex-wrap: wrap;
+}
+
+.aviso-pendente {
+  font-size: 0.82rem;
+  color: #f57f17;
+  font-weight: 500;
 }

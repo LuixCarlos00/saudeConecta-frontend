@@ -35,6 +35,10 @@ export class ProntuarioApiService {
     return this.http.get<Prontuario>(`${this.apiUrl}/buscarProntuarioById/${consultaId}`);
   }
 
+  buscarMaisRecentePorConsulta(consultaId: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/consulta/${consultaId}/recente`);
+  }
+
   buscarPorPaciente(pacienteId: number): Observable<Prontuario[]> {
     return this.http.get<Prontuario[]>(`${this.apiUrl}/paciente/${pacienteId}`);
   }

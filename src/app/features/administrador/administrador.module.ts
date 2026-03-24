@@ -54,7 +54,6 @@ import { EditarConsultasComponent } from './gerenciamento-agenda/agenda/Editar-C
 import { TabelaEditarMedicosConsultasComponent } from './gerenciamento-agenda/agenda/Editar-Consultas/tabela-editar-Medicos-Consultas/tabela-editar-Medicos-Consultas.component';
 import { TabelaEditarPacienteConsultasComponent } from './gerenciamento-agenda/agenda/Editar-Consultas/tabela-editar-Paciente-Consultas/tabela-editar-Paciente-Consultas.component';
 import { ObservacoesComponent } from './gerenciamento-agenda/agenda/Observacoes/Observacoes.component';
-import { Template_PDFComponent } from './gerenciamento-agenda/agenda/template_PDF/template_PDF.component';
 import { GerenciamentoComponent } from './gerenciamento-agenda/gerenciamento.component';
 import { NovaConsultaComponent } from './gerenciamento-agenda/nova-consuta/nova-consuta.component';
 import { TabelaDePacientesComponent } from './gerenciamento-agenda/nova-consuta/tabela-de-pacientes/tabela-de-pacientes.component';
@@ -132,7 +131,6 @@ const routes: Routes = [
     TabelaEditarMedicosConsultasComponent,
     TabelaEditarPacienteConsultasComponent,
     ObservacoesComponent,
-    Template_PDFComponent,
     GerenciamentoComponent,
     NovaConsultaComponent,
     TabelaDePacientesComponent,
