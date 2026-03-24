@@ -1,0 +1,222 @@
+/* =============================================================================
+   REGISTRO DE CONSULTA MÉDICA — LAYOUT COMPACTO
+   ============================================================================= */
+
+.registro-container {
+  background: #fff;
+  overflow: hidden;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── HEADER DO DIALOG ──────────────────────────────────────────────────────── */
+.dialog-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  background: #374151;
+  color: white;
+}
+.header-info { display: flex; align-items: center; gap: 10px; }
+.header-icon {
+  width: 32px; height: 32px;
+  background: rgba(255,255,255,0.15);
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px;
+}
+.header-text { flex: 1; }
+.header-title { margin: 0; font-size: 13px; font-weight: bold; color: white; }
+.header-subtitle { margin: 2px 0 0; font-size: 9px; color: rgba(255,255,255,0.7); }
+.close-btn {
+  width: 28px; height: 28px; border: none;
+  background: rgba(255,255,255,0.1); border-radius: 6px;
+  color: white; cursor: pointer; display: flex;
+  align-items: center; justify-content: center; font-size: 13px;
+  transition: background 0.2s;
+}
+.close-btn:hover { background: rgba(255,255,255,0.25); }
+
+/* ── BODY ──────────────────────────────────────────────────────────────────── */
+.dialog-body { flex: 1; overflow-y: auto; padding: 8px; background: #f3f4f6; }
+
+/* ── PDF CONTENT ───────────────────────────────────────────────────────────── */
+.pdf-content {
+  background: white;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  overflow: hidden;
+  font-family: 'Helvetica', Arial, sans-serif;
+}
+
+/* ── CABEÇALHO PDF ─────────────────────────────────────────────────────────── */
+.pdf-header {
+  background: #2c3e50;
+  padding: 6px 12px;
+  text-align: center;
+  color: white;
+}
+.pdf-title {
+  margin: 0;
+  font-size: 12.5px;
+  font-weight: bold;
+  color: white;
+  letter-spacing: 0.8px;
+}
+.pdf-subtitle {
+  margin: 1px 0 0;
+  font-size: 8.5px;
+  color: #cbd5e1;
+}
+
+/* ── SEÇÃO HEADER ──────────────────────────────────────────────────────────── */
+.section-header {
+  display: flex;
+  align-items: center;
+  background: #f8f9fa;
+  height: 16px;
+  padding: 0;
+  border-bottom: 1px solid #d1d5db;
+}
+.section-bar {
+  width: 3px;
+  height: 100%;
+  background: #6b7280;
+  flex-shrink: 0;
+}
+.section-title {
+  font-size: 8.5px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: #374151;
+  margin-left: 6px;
+}
+
+/* ── TABELA DE DADOS ───────────────────────────────────────────────────────── */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: auto;
+}
+.data-table .cell {
+  font-size: 9.5px;
+  color: #1f2937;
+  padding: 2px 6px;
+  border: 1px solid #d1d5db;
+  line-height: 1.3;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+}
+.data-table .cell strong {
+  font-weight: bold;
+  color: #374151;
+}
+.data-table .cell--header {
+  font-size: 8.5px;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: #6b7280;
+  background: #f3f4f6;
+  letter-spacing: 0.3px;
+}
+
+/* ── CAMPOS INLINE (linhas) ────────────────────────────────────────────────── */
+.inline-field {
+  font-size: 9.5px;
+  color: #1f2937;
+  line-height: 1.3;
+  padding: 2px 6px;
+  border: 1px solid #d1d5db;
+  border-top: none;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+}
+.inline-field:first-of-type {
+  border-top: 1px solid #d1d5db;
+}
+.inline-field strong {
+  font-weight: bold;
+  color: #374151;
+}
+
+/* ── RODAPÉ PDF ────────────────────────────────────────────────────────────── */
+.pdf-footer {
+  padding: 4px 8px;
+  border-top: 1px solid #d1d5db;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.footer-date {
+  font-size: 7.5px;
+  color: #9ca3af;
+  font-style: italic;
+}
+.footer-info {
+  font-size: 7.5px;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+/* ── FOOTER DIALOG ─────────────────────────────────────────────────────────── */
+.dialog-footer {
+  padding: 8px 16px;
+  background: #f8f9fa;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border: none;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.btn--primary {
+  background: #374151;
+  color: white;
+}
+.btn--primary:hover {
+  background: #1f2937;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+.btn--secondary {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+.btn--secondary:hover {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+/* ── RESPONSIVIDADE ────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .dialog-header { padding: 8px 12px; }
+  .dialog-body { padding: 6px; }
+  .pdf-title { font-size: 10px; }
+  .section-title { font-size: 6px; }
+  .data-table .cell { font-size: 8.5px; }
+  .inline-field { font-size: 8.5px; }
+}
+
+@media (max-width: 600px) {
+  .dialog-footer { flex-direction: column; }
+  .btn { width: 100%; justify-content: center; }
+}
+
+/* ── IMPRESSÃO ─────────────────────────────────────────────────────────────── */
+@media print {
+  .dialog-header, .dialog-footer { display: none; }
+  .dialog-body { padding: 0; background: white; }
+  .pdf-content { box-shadow: none; }
+}

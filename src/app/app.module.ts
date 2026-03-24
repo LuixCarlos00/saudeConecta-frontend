@@ -22,6 +22,7 @@ import { CoreModule } from './core/core.module';
 import { AdministradorModule } from './features/administrador/administrador.module';
 import { FeatureModule } from './features/feature.module';
 import { MedicoModule } from './features/medico/medico.module';
+import { RelatorioModule } from './features/relatorio/relatorio.module';
 
 registerLocaleData(localePt);
 
@@ -36,6 +37,7 @@ registerLocaleData(localePt);
     FeatureModule,
     AdministradorModule,
     MedicoModule,
+    RelatorioModule,
     UtilModule,
     MatIconModule,
     MatToolbarModule,
