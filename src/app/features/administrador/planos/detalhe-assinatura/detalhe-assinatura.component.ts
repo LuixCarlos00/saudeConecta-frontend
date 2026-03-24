@@ -17,6 +17,7 @@ export class DetalheAssinaturaComponent implements OnInit {
   limites: LimitesPlano | null = null;
   cobrancas: CobrancaTenant[] = [];
   isLoading = true;
+  gerandoCobranca = false;
 
   constructor(
     private assinaturaApiService: AssinaturaApiService,
@@ -62,15 +63,22 @@ export class DetalheAssinaturaComponent implements OnInit {
     });
   }
 
-  gerarCobranca(): void {
-    if (!this.assinatura) return;
+  get possuiCobrancaPendente(): boolean {
+    return this.cobrancas.some(c => c.status === 'PENDENTE');
+  }
 
+  gerarCobranca(): void {
+    if (!this.assinatura || this.gerandoCobranca) return;
+
+    this.gerandoCobranca = true;
     this.cobrancaApiService.gerarCobranca(this.assinatura.id).subscribe({
       next: (cobranca) => {
+        this.gerandoCobranca = false;
         this.abrirModalPix(cobranca);
         this.carregarCobrancas();
       },
       error: (err) => {
+        this.gerandoCobranca = false;
         const msg = err.error?.message || 'Erro ao gerar cobrança';
         this.snackBar.open(msg, 'Fechar', { duration: 5000 });
       }

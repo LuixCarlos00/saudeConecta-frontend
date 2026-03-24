@@ -5,7 +5,7 @@ import localePt from '@angular/common/locales/pt';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import { LoginModule } from './features/publico/login/login_Module/login.module';
+
 import { PublicoModule } from './features/publico/publico.module';
 import { UtilModule } from './util/util/util.module';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -20,7 +20,7 @@ import { NgChartsModule } from 'ng2-charts';
 import { MatBadgeModule } from '@angular/material/badge';
 import { CoreModule } from './core/core.module';
 import { AdministradorModule } from './features/administrador/administrador.module';
-import { FeatureModule } from './features/feature.module';
+
 import { MedicoModule } from './features/medico/medico.module';
 import { RelatorioModule } from './features/relatorio/relatorio.module';
 
@@ -32,9 +32,7 @@ registerLocaleData(localePt);
     BrowserModule,
     CoreModule,  
     AppRoutingModule,
-    LoginModule,
     PublicoModule,
-    FeatureModule,
     AdministradorModule,
     MedicoModule,
     RelatorioModule,

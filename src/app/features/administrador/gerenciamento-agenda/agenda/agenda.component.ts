@@ -1,21 +1,18 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subject, takeUntil, Observable } from 'rxjs';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { Router } from '@angular/router';
 import { ConsultaApiService } from 'src/app/services/api/consulta-api.service';
 import { ConsultaStateService } from 'src/app/services/state/consulta-state.service';
 import { MatDialog } from '@angular/material/dialog';
 import { CronologiaComponent } from 'src/app/util/variados/Cronologia/cronologia.component';
 import Swal from 'sweetalert2';
 import { EditarConsultasComponent } from './Editar-Consultas/Editar-Consultas.component';
-import { Template_PDFComponent } from './template_PDF/template_PDF.component';
 import { ObservacoesComponent } from './Observacoes/Observacoes.component';
-import { Tabela } from 'src/app/util/variados/interfaces/tabela/Tabela';
-import { ProntuarioApiService } from 'src/app/services/api/prontuario-api.service';
- import { Consultav2 } from 'src/app/util/variados/interfaces/consulta/consultav2';
- import { Usuario } from 'src/app/util/variados/interfaces/usuario/usuario';
+import { Consultav2 } from 'src/app/util/variados/interfaces/consulta/consultav2';
+import { Usuario } from 'src/app/util/variados/interfaces/usuario/usuario';
 import { tokenService } from 'src/app/util/Token/Token.service';
 import { ProntuarioDentistaApiService } from 'src/app/services/api/prontuario-dentista-api.service';
+import { ProntuarioApiService } from 'src/app/services/api/prontuario-api.service';
 import { PlanejamentoTerapeuticoApiService } from 'src/app/services/api/planejamento-terapeutico-api.service';
 import { RelatorioService } from 'src/app/features/relatorio/relatorio.service';
     
@@ -46,7 +43,7 @@ export class AgendaComponent implements OnInit, OnDestroy {
   displayedColumns: string[] = ['consulta', 'medico', 'paciente', 'diaSemana', 'data', 'horario', 'status', 'Seleciona'];
   displayedColumnsFinalizadas: string[] = ['consulta', 'medico', 'paciente', 'diaSemana', 'data', 'horario', 'status', 'statusPagamento', 'Seleciona'];
   Finalizadas = false;
-  clickedRows = new Set<Tabela>();
+  clickedRows = new Set<any>();
   planejamentosAssinados = new Set<number>();
   questionariosRespondidos = new Set<number>();
   ValorOpcao: any;
@@ -62,9 +59,9 @@ export class AgendaComponent implements OnInit, OnDestroy {
     private consultaApi: ConsultaApiService,
     public dialog: MatDialog,
     private consultaState: ConsultaStateService,
-    private prontuarioApiService: ProntuarioApiService,
     private tokenService: tokenService,
     private prontuarioDentistaApiService: ProntuarioDentistaApiService,
+    private prontuarioApiService: ProntuarioApiService,
     private planejamentoApi: PlanejamentoTerapeuticoApiService,
     private relatorioService: RelatorioService
   ) { }
@@ -246,31 +243,6 @@ Editar(consulta: any) {
   });
 }
 
-  Concluido(elemento: any) {
-    Swal.fire({
-      title: 'Tem certeza que deseja concluir esse registro?',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#5ccf6c',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Sim, Concluir!',
-    }).then((result) => {
-      if (result.isConfirmed) {
-        this.consultaApi.concluirConsultabyOrg(elemento.id).subscribe(
-          () => {
-            Swal.fire('Concluído', 'Concluído com sucesso', 'success');
-            this.buscarDadosParaTabela();
-          },
-          (error) => {
-            Swal.fire('Erro', 'Erro ao concluir', 'error');
-            console.error(error);
-          }
-        );
-      } else {
-        this.buscarDadosParaTabela();
-      }
-    });
-  }
 
   AlterarStatus(elemento: Consultav2, novoStatus: string) {
     if (novoStatus === elemento.status) { return; }
@@ -405,14 +377,6 @@ Editar(consulta: any) {
   }
 
   /**
-   * Abre o comprovante de pagamento para uma consulta finalizada.
-   * Delegado ao RelatorioService centralizado.
-   */
-  GerarComprovantePagamento(element: Consultav2): void {
-    this.relatorioService.gerarComprovantePagamento(element);
-  }
-
-  /**
    * Retorna o label do status de pagamento para exibição na coluna.
    */
   getLabelStatusPagamento(status: string): string {
@@ -436,26 +400,6 @@ Editar(consulta: any) {
       confirmButtonText: 'Fechar',
       width: '500px'
     });
-  }
-
-  GerarPDF(consulta: Consultav2): void {
-    try {
-      this.dialog.open(Template_PDFComponent, {
-        width: 'auto',
-        height: 'auto',
-        data: consulta,
-        panelClass: 'template-pdf-dialog',
-      });
-    } catch (error) {
-      console.error('GerarPDF - erro ao abrir diálogo:', error);
-      Swal.fire({
-        title: 'Erro',
-        text: 'Não foi possível abrir a tela de geração de PDF. Tente novamente.',
-        icon: 'error',
-        confirmButtonColor: '#0066CC',
-        confirmButtonText: 'OK',
-      });
-    }
   }
 
   CronogramaDoDia() {
@@ -561,11 +505,32 @@ Editar(consulta: any) {
   // ─────────────────────────────────────────────────────────────────────────────
   // Gerar Link do Planejamento Terapêutico
   // ─────────────────────────────────────────────────────────────────────────────
+
+  /**
+   * Busca o prontuário mais recente da consulta de acordo com o tipo de profissional.
+   * Dentista: usa ProntuarioDentistaApiService (retorna campo "codigo")
+   * Médico: usa ProntuarioApiService (retorna campo "codigoProntuario")
+   */
+  private buscarProntuarioMaisRecente(consulta: Consultav2): Observable<any> {
+    const tipo = this.relatorioService.detectarTipoProfissional(consulta);
+    if (tipo === 'DENTISTA') {
+      return this.prontuarioDentistaApiService.buscarProntuarioDentistaById(consulta.id);
+    }
+    return this.prontuarioApiService.buscarMaisRecentePorConsulta(consulta.id);
+  }
+
+  /**
+   * Extrai o ID do prontuário independente do tipo (dentista: "codigo", médico: "codigoProntuario")
+   */
+  private extrairCodigoProntuario(prontuario: any): number | null {
+    return prontuario?.codigo ?? prontuario?.codigoProntuario ?? null;
+  }
+
   private verificarPlanejamentosAssinados(): void {
     const finalizadas = this.dataSource.filter(c => c.status === 'REALIZADA');
     for (const consulta of finalizadas) {
       if (!consulta?.id || this.planejamentosAssinados.has(consulta.id)) continue;
-      this.prontuarioDentistaApiService.buscarProntuarioDentistaById(consulta.id)
+      this.buscarProntuarioMaisRecente(consulta)
         .pipe(takeUntil(this.destroy$))
         .subscribe({
           next: (prontuario: any) => {
@@ -580,11 +545,13 @@ Editar(consulta: any) {
 
   gerarLinkPlanejamento(element: Consultav2): void {
     if (!element?.id) return;
-    this.prontuarioDentistaApiService.buscarProntuarioDentistaById(element.id)
+    const tipoProfissional = this.relatorioService.detectarTipoProfissional(element);
+    this.buscarProntuarioMaisRecente(element)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (prontuario: any) => {
-          if (!prontuario?.codigo) {
+          const codigoProntuario = this.extrairCodigoProntuario(prontuario);
+          if (!codigoProntuario) {
             Swal.fire('Aviso', 'Nenhum prontuário encontrado para esta consulta.', 'warning');
             return;
           }
@@ -594,30 +561,20 @@ Editar(consulta: any) {
             Swal.fire('Aviso', 'Todos os itens do planejamento já foram assinados pelo paciente.', 'info');
             return;
           }
-          this.planejamentoApi.gerarLinkAssinatura(prontuario.codigo)
+          this.planejamentoApi.gerarLinkAssinatura(codigoProntuario, tipoProfissional)
             .pipe(takeUntil(this.destroy$))
             .subscribe({
               next: (resp) => {
                 const baseUrl = window.location.origin;
                 const link = `${baseUrl}/#/assinatura-planejamento/${resp.token}`;
-                navigator.clipboard.writeText(link).then(() => {
-                  Swal.fire({
-                    icon: 'success',
-                    title: 'Link Gerado!',
-                    html: `<p style="font-size:0.9rem;">Link do planejamento copiado para a área de transferência.</p>
-                           <input type="text" value="${link}" readonly
-                             style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px;margin-top:8px;font-size:0.82rem;" />`,
-                    confirmButtonText: 'OK'
-                  });
-                }).catch(() => {
-                  Swal.fire({
-                    icon: 'info',
-                    title: 'Link Gerado',
-                    html: `<p style="font-size:0.9rem;">Copie o link abaixo e envie ao paciente:</p>
-                           <input type="text" value="${link}" readonly
-                             style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px;margin-top:8px;font-size:0.82rem;" />`,
-                    confirmButtonText: 'OK'
-                  });
+                navigator.clipboard.writeText(link).catch(() => {});
+                Swal.fire({
+                  icon: 'success',
+                  title: 'Link Gerado!',
+                  html: `<p style="font-size:0.9rem;">Copie o link abaixo e envie ao paciente:</p>
+                         <input type="text" value="${link}" readonly
+                           style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px;margin-top:8px;font-size:0.82rem;" />`,
+                  confirmButtonText: 'OK'
                 });
               },
               error: () => {
@@ -746,20 +703,5 @@ Editar(consulta: any) {
   private formatarTelefoneWhatsApp(telefone: string): string {
     const numeros = telefone.replace(/\D/g, '');
     return numeros.startsWith('55') ? numeros : '55' + numeros;
-  }
-
-  tratarDadosParaTabela(dados: any[]): Tabela[] {
-    return dados.map((dado) => ({
-      consulta: dado.id,
-      medico: dado.profissionalNome,
-      paciente: dado.pacienteNome,
-      data: dado.dataHora,
-      horario: dado.dataHora,
-      observacao: dado.observacoes,
-      dadaCriacao: dado.createdAt,
-      status: dado.status,
-      adm: dado.conAdm,
-      formaPagamento: dado.formaPagamentoId,
-    }));
   }
 }

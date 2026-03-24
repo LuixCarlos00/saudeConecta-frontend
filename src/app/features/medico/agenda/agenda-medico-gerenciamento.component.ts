@@ -1,15 +1,12 @@
-import { ProntuarioDentistaApiService } from './../../../services/api/prontuario-dentista-api.service';
-  import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import Swal from 'sweetalert2';
 import { ConsultaApiService } from 'src/app/services/api/consulta-api.service';
 import { ProntuarioStateService } from 'src/app/services/state/prontuario-state.service';
-import { ProntuarioApiService } from 'src/app/services/api/prontuario-api.service';
 import { tokenService } from 'src/app/util/Token/Token.service';
 import { Usuario } from 'src/app/util/variados/interfaces/usuario/usuario';
-import { Tabela } from 'src/app/util/variados/interfaces/tabela/Tabela';
 import { CronologiaComponent } from 'src/app/util/variados/Cronologia/cronologia.component';
 import { ObservacoesComponent } from 'src/app/features/administrador/gerenciamento-agenda/agenda/Observacoes/Observacoes.component';
  
@@ -36,7 +33,7 @@ export class AgendaMedicoGerenciamentoComponent implements OnInit, OnDestroy {
   allConsultas: any[] = [];
   displayedColumns: string[] = ['consulta', 'paciente', 'diaSemana', 'data', 'horario', 'Seleciona'];
   Finalizadas = false;
-  clickedRows = new Set<Tabela>();
+  clickedRows = new Set<any>();
   tipoPeriodoSelecionado: TipoPeriodo = 'diario';
   today = new Date();
   private destroy$ = new Subject<void>();
@@ -55,8 +52,6 @@ export class AgendaMedicoGerenciamentoComponent implements OnInit, OnDestroy {
     private formBuilder: FormBuilder,
     private tabelaAgendaMedicoService: ConsultaApiService,
     private prontuarioStateService: ProntuarioStateService,
-    private prontuarioApiService: ProntuarioApiService,
-    private prontuarioDentistaApiService: ProntuarioDentistaApiService,
     public dialog: MatDialog,
     private tokenService: tokenService,
     private relatorioService: RelatorioService
@@ -268,22 +263,6 @@ export class AgendaMedicoGerenciamentoComponent implements OnInit, OnDestroy {
   private filtrarConsultasPorTipo(dados: any[], tipo: TipoVisualizacao): any[] {
     const statusPermitidos = tipo === 'CONFIRMADA' ? STATUS_AGENDADAS : STATUS_FINALIZADAS;
     return dados.filter((consulta) => statusPermitidos.includes(consulta.status));
-  }
-
-  tratarDadosParaTabela(dados: any[]): Tabela[] {
-    return dados.map((dado) => ({
-      consulta: dado.conCodigoConsulta || dado.conSttCodigoConsulta,
-      medico: dado.conMedico || dado.conSttMedico,
-      paciente: dado.conPaciente || dado.conSttPaciente,
-      diaSemana: dado.conDia_semana || dado.conDiaSemana || dado.conSttDia_semana,
-      data: dado.conData || dado.conSttData,
-      horario: dado.conHorario || dado.conSttHorario,
-      observacao: dado.conObservacoes || dado.conSttObservacao,
-      dadaCriacao: dado.conDataCriacao || dado.conSttDataCriacao,
-      status: dado.conStatus || dado.conSttStatus,
-      adm: dado.conAdm || dado.conSttAdm,
-      formaPagamento: dado.conFormaPagamento || dado.conSttFormaPagamento,
-    }));
   }
 
   filtrandoDadosDoBancoPassadoParametros_Pesquisa(
