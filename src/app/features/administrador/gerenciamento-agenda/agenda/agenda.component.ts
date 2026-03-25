@@ -104,6 +104,7 @@ export class AgendaComponent implements OnInit, OnDestroy {
 
      try {
       const dados = await this.buscarConsultasPorPeriodo();
+      console.log(dados,"aaa")
       if (Array.isArray(dados)) {
         const tipo: TipoVisualizacao = this.Finalizadas ? 'REALIZADA' : 'AGENDADA';
         this.dataSource = this.filtrarConsultasPorTipo(dados, tipo);

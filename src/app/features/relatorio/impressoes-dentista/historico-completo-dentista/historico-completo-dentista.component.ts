@@ -39,8 +39,11 @@ export class HistoricoCompletoDentistaComponent implements OnInit {
       if (dados) { this.UsuarioLogado = dados; }
     });
 
+    const profissionalId = this.UsuarioLogado.aud === '[ROLE_Dentista]' ? this.UsuarioLogado.id : undefined;
+console.log('paci,tipo,profi',this.data.pacienteId,'dentista',profissionalId)
+
     this.consultaApiService
-      .BuscandoHistoricoDeConsultasDoPaciente(this.data.pacienteId, 'dentista')
+      .BuscandoHistoricoDeConsultasDoPaciente(this.data.pacienteId, 'dentista', profissionalId)
       .subscribe((data: HistoricoCompletoDentistaResponse[]) => {
         console.log('Histórico dental recebido:', data);
         this.historico = data || [];
@@ -54,12 +57,6 @@ export class HistoricoCompletoDentistaComponent implements OnInit {
             telefone: primeiro.pacienteTelefone,
             id: primeiro.pacienteId,
           };
-        }
-
-        if (this.UsuarioLogado.aud === '[ROLE_Dentista]') {
-          this.historico = this.historico.filter(
-            (item) => item.profissionalId === this.UsuarioLogado.id
-          );
         }
       });
   }

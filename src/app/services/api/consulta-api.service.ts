@@ -157,8 +157,12 @@ export class ConsultaApiService {
     return this.http.post<Consultav2>(`${this.apiUrl}/cadastrarConsultaByOrg`, consultav2);
   }
 
-  BuscandoHistoricoDeConsultasDoPaciente(pacienteId: number, tipo: string = 'medico'): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/BuscandoHistoricoDeConsultasDoPaciente/${pacienteId}?tipo=${tipo}`);
+  BuscandoHistoricoDeConsultasDoPaciente(pacienteId: number, tipo: string = 'medico', profissionalId?: number): Observable<any[]> {
+    let url = `${this.apiUrl}/BuscandoHistoricoDeConsultasDoPaciente/${pacienteId}?tipo=${tipo}`;
+    if (profissionalId) {
+      url += `&profissionalId=${profissionalId}`;
+    }
+    return this.http.get<any[]>(url);
   }
 
   buscarEstatisticasPorMedicoEIntervalo(medicoId: number, dataInicio: string, dataFim: string): Observable<any[]> {
