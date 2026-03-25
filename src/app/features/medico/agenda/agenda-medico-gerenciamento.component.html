@@ -176,7 +176,7 @@
                   </button>
 
                   <!-- Editar Prontuário - Apenas para Finalizadas (Dentista e Médico) -->
-                  <button *ngIf="Finalizadas && (UsuarioLogado.perfil === 'DENTISTA' || UsuarioLogado.perfil === 'MEDICO')"
+                  <button *ngIf="Finalizadas && element.status !== 'PAGO' && (UsuarioLogado.perfil === 'DENTISTA' || UsuarioLogado.perfil === 'MEDICO')"
                     class="hc-action-btn hc-action-btn--warning" title="Editar Prontuário"
                     (click)="EditarProntuario(element)">
                     <i class="fa-solid fa-pen-to-square"></i>

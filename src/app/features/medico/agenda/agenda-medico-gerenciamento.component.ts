@@ -16,11 +16,11 @@ import { EditarProntuarioMedicoComponent } from '../prontuario-medico/editar-pro
 import { Subject, takeUntil } from 'rxjs';
 import { RelatorioService } from 'src/app/features/relatorio/relatorio.service';
  
-type TipoVisualizacao = 'CONFIRMADA' | 'REALIZADA';
+type TipoVisualizacao = 'CONFIRMADA' | 'REALIZADA' | 'PAGO';
 type TipoPeriodo = 'diario' | 'semanal' | 'mensal' | 'anual';
 
 const STATUS_AGENDADAS = ['CONFIRMADA'];
-const STATUS_FINALIZADAS = ['REALIZADA'];
+const STATUS_FINALIZADAS = ['REALIZADA', 'PAGO'];
 
 @Component({
   selector: 'app-agenda-medico-gerenciamento',
@@ -84,7 +84,7 @@ export class AgendaMedicoGerenciamentoComponent implements OnInit, OnDestroy {
       const dados = await this.buscarConsultasPorPeriodo();
       if (Array.isArray(dados)) {
         console.log('Dados brutos recebidos do backend:', dados);
-        const tipoVisualizacao: TipoVisualizacao = this.Finalizadas ? 'REALIZADA' : 'CONFIRMADA';
+        const tipoVisualizacao: TipoVisualizacao = this.Finalizadas ? 'REALIZADA' : 'CONFIRMADA';  // STATUS_FINALIZADAS cobre REALIZADA e PAGO
         const consultasFiltradas = this.filtrarConsultasPorTipo(dados, tipoVisualizacao);
         this.dataSource = [...consultasFiltradas];
         console.log('this.dataSource', this.dataSource);
