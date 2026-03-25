@@ -167,7 +167,7 @@
                <div *ngIf="element.status === 'CANCELADA' && element.motivoCancelamento"
                    style="display: inline-block; cursor: pointer;"
                    [title]="'Clique para ver o motivo do cancelamento'"
-                   (click)="VerMotivoCancelamento(element.motivoCancelamento)">
+                   (click)="VerMotivoCancelamento(element.motivoCancelamento); $event.stopPropagation()">
                 <select
                   class="hc-status-select hc-status-select--cancelada"
                   disabled
@@ -185,7 +185,8 @@
                 [class.hc-status-select--cancelada]="element.status === 'CANCELADA'"
                 [class.hc-status-select--pago]="element.status === 'PAGO'"
                 [attr.disabled]="(element.status === 'CANCELADA' || element.status === 'PAGO') ? true : null"
-                (change)="AlterarStatus(element, $any($event.target).value)">
+                (click)="$event.stopPropagation()"
+                (change)="AlterarStatus(element, $any($event.target).value); $event.stopPropagation()">
                 
                 <!-- Opções para status AGENDADA -->
                 <ng-container *ngIf="element.status === 'AGENDADA'">
@@ -240,7 +241,7 @@
           <ng-container matColumnDef="Seleciona">
             <th mat-header-cell *matHeaderCellDef>Ações</th>
             <td mat-cell *matCellDef="let element">
-              <div class="hc-table__actions">
+              <div class="hc-table__actions" (click)="$event.stopPropagation()">
                 <!-- Observações -->
                 <button *ngIf="element.observacao" class="hc-action-btn hc-action-btn--info" title="Ver Observações"
                   (click)="Observacoes(element.observacao)">
@@ -268,11 +269,7 @@
                   <i class="fa-brands fa-whatsapp"></i>
                 </a>
 
-                <!-- Editar -->
-                <button *ngIf="element.status === 'AGENDADA'" class="hc-action-btn hc-action-btn--warning" title="Editar Consulta"
-                  (click)="Editar(element)">
-                  <i class="fa-solid fa-pen-to-square"></i>
-                </button>
+
 
                 <!-- Imprimir -->
                 <button class="hc-action-btn hc-action-btn--primary" title="Opções de Impressão"
@@ -290,19 +287,13 @@
           </ng-container>
 
           <tr mat-header-row *matHeaderRowDef="Finalizadas ? displayedColumnsFinalizadas : displayedColumns"></tr>
-          <tr mat-row *matRowDef="let row; columns: Finalizadas ? displayedColumnsFinalizadas : displayedColumns;" [class.hc-table__row--completed]="Finalizadas">
+          <tr mat-row *matRowDef="let row; columns: Finalizadas ? displayedColumnsFinalizadas : displayedColumns;" [class.hc-table__row--completed]="Finalizadas"
+            (click)="Editar(row)" style="cursor: pointer;" title="Clique para editar">
           </tr>
         </table>
 
         <!-- Estado Vazio -->
-        <div class="hc-table__empty" *ngIf="dataSource.length === 0">
-          <i class="fa-solid fa-calendar-xmark"></i>
-          <p>Nenhuma consulta encontrada</p>
-          <button class="hc-btn hc-btn--primary" (click)="Recarregar()">
-            <i class="fa-solid fa-rotate-right"></i>
-            Recarregar
-          </button>
-        </div>
+
       </div>
     </div>
   </form>

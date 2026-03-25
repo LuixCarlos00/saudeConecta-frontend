@@ -281,9 +281,8 @@ export class EditarConsultasComponent implements OnInit {
       return;
     }
 
-    // NOVO: Ativar loading
     this.carregandoHorarios = true;
-    this.Hora = []; // Limpar horários durante o carregamento
+    this.Hora = [];
 
     try {
       const horariosOcupados = await this.consultaApi
@@ -292,26 +291,24 @@ export class EditarConsultasComponent implements OnInit {
 
       console.log('Horários ocupados recebidos:', horariosOcupados);
 
-      const horariosOcupadosFormatados = (horariosOcupados || [])
-        .map(horario => horario.substring(0, 5))
-        .filter(horario => {
-          // Não filtrar o horário atual da consulta que está sendo editada
-          const horarioAtual = this.formatarHorario(new Date(this.consulta.dataHora));
-          return horario !== horarioAtual;
-        });
+      // Remove o horário da consulta sendo editada (para que ele apareça como disponível)
+      const horarioAtual = this.formatarHorario(new Date(this.consulta.dataHora));
+      const ocupadosFiltrados = (horariosOcupados || []).filter(
+        horario => horario.substring(0, 5) !== horarioAtual
+      );
 
-      // Restaurar horários base
-      const horariosBase = this.medicoSelecionado?.tempoConsultaMinutos
-        ? this.gerarHorariosDinamicos(this.medicoSelecionado.tempoConsultaMinutos)
-        : [...HoradaConsulta];
+      const novoIntervalo = this.medicoSelecionado?.tempoConsultaMinutos;
 
-      // Filtrar horários ocupados
-      this.Hora = horariosBase.filter(horario => {
-        const horarioFormatado = horario.value.substring(0, 5);
-        return !horariosOcupadosFormatados.includes(horarioFormatado);
-      });
+      if (!novoIntervalo) {
+        // Sem tempo de consulta definido: usa horários padrão e filtra os ocupados
+        const ocupadosFormatados = ocupadosFiltrados.map(h => h.substring(0, 5));
+        this.Hora = [...HoradaConsulta].filter(
+          h => !ocupadosFormatados.includes(h.value.substring(0, 5))
+        );
+      } else {
+        this.gerarHorariosRespeitandoOcupados(novoIntervalo, ocupadosFiltrados);
+      }
 
-      // Verificar se há horários disponíveis
       if (this.Hora.length === 0) {
         Swal.fire({
           icon: 'info',
@@ -330,8 +327,87 @@ export class EditarConsultasComponent implements OnInit {
         confirmButtonColor: '#dc2626'
       });
     } finally {
-      // NOVO: Desativar loading
       this.carregandoHorarios = false;
+    }
+  }
+
+  /**
+   * Gera horários disponíveis respeitando consultas já existentes.
+   *
+   * Identifica grupos contíguos de horários ocupados e gera novos slots
+   * com o novo intervalo nos espaços livres entre eles.
+   * Dentro de cada espaço livre, os slots começam exatamente no início do espaço
+   * (ex.: fim do último bloco ocupado) e avançam com o novo intervalo.
+   *
+   * @param novoIntervalo Novo tempo de consulta em minutos
+   * @param horariosOcupados Lista de horários ocupados no formato "HH:mm:ss" ou "HH:mm"
+   */
+  private gerarHorariosRespeitandoOcupados(novoIntervalo: number, horariosOcupados: string[]): void {
+    const inicioExpediente = 8 * 60;  // 08:00 em minutos
+    const fimExpediente = 18 * 60;    // 18:00 em minutos
+
+    // Se não há horários ocupados, gera normalmente com o novo intervalo
+    if (!horariosOcupados || horariosOcupados.length === 0) {
+      this.Hora = this.gerarHorariosDinamicos(novoIntervalo);
+      return;
+    }
+
+    // Converte horários ocupados para minutos e ordena
+    const ocupadosMinutos = horariosOcupados
+      .map(h => {
+        const partes = h.substring(0, 5).split(':');
+        return parseInt(partes[0]) * 60 + parseInt(partes[1]);
+      })
+      .sort((a, b) => a - b);
+
+    // Deduz o intervalo antigo pela diferença entre horários consecutivos
+    let intervaloAntigo = novoIntervalo;
+    if (ocupadosMinutos.length >= 2) {
+      intervaloAntigo = ocupadosMinutos[1] - ocupadosMinutos[0];
+    }
+
+    // Monta grupos contíguos de horários ocupados
+    const gruposOcupados: { inicio: number; fim: number }[] = [];
+    for (const inicio of ocupadosMinutos) {
+      const fim = inicio + intervaloAntigo;
+      const ultimoGrupo = gruposOcupados[gruposOcupados.length - 1];
+      if (ultimoGrupo && inicio <= ultimoGrupo.fim) {
+        ultimoGrupo.fim = fim > ultimoGrupo.fim ? fim : ultimoGrupo.fim;
+      } else {
+        gruposOcupados.push({ inicio, fim });
+      }
+    }
+
+    // Identifica os espaços livres
+    const espacosLivres: { inicio: number; fim: number }[] = [];
+
+    // Espaço antes do primeiro grupo ocupado
+    if (gruposOcupados[0].inicio > inicioExpediente) {
+      espacosLivres.push({ inicio: inicioExpediente, fim: gruposOcupados[0].inicio });
+    }
+
+    // Espaços entre grupos ocupados
+    for (let i = 0; i < gruposOcupados.length - 1; i++) {
+      espacosLivres.push({ inicio: gruposOcupados[i].fim, fim: gruposOcupados[i + 1].inicio });
+    }
+
+    // Espaço depois do último grupo ocupado
+    const ultimoGrupo = gruposOcupados[gruposOcupados.length - 1];
+    if (ultimoGrupo.fim < fimExpediente) {
+      espacosLivres.push({ inicio: ultimoGrupo.fim, fim: fimExpediente });
+    }
+
+    // Gera slots com o novo intervalo em cada espaço livre
+    this.Hora = [];
+    for (const espaco of espacosLivres) {
+      let atual = espaco.inicio;
+      while (atual + novoIntervalo <= fimExpediente && atual < espaco.fim) {
+        const horas = Math.floor(atual / 60);
+        const minutos = atual % 60;
+        const horarioFormatado = `${this.formatarNumero(horas)}:${this.formatarNumero(minutos)}`;
+        this.Hora.push({ value: horarioFormatado, label: horarioFormatado });
+        atual += novoIntervalo;
+      }
     }
   }
 

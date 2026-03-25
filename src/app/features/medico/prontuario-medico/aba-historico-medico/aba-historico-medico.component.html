@@ -284,7 +284,10 @@
             <strong>Prescrição:</strong> {{ pront.prescricao }}
           </div>
           <div *ngIf="pront.orientacoes" class="historico-campo">
-            <strong>Orientações:</strong> {{ pront.orientacoes }}
+            <strong>Orientações ao Paciente:</strong> {{ pront.orientacoes }}
+          </div>
+          <div *ngIf="pront.observacao" class="historico-campo">
+            <strong>Observações:</strong> {{ pront.observacao }}
           </div>
           <div *ngIf="pront.profissional?.nome" class="historico-campo historico-campo--muted">
             <i class="fa-solid fa-user-doctor" style="margin-right:4px"></i>

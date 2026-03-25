@@ -52,6 +52,7 @@ export class AbaHistoricoMedicoComponent implements OnChanges, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (lista) => {
+            console.log(lista);
           this.historicoProntuarios = lista || [];
           this.historicoCarregado = true;
           this.historicoLoading = false;

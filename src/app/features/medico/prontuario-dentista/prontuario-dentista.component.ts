@@ -42,6 +42,7 @@ export class ProntuarioDentistaComponent implements OnInit, OnDestroy, AfterView
   minutes = 0;
   seconds = 0;
   interval: ReturnType<typeof setInterval> | null = null;
+  isPaused = false;
   Consulta: Consultav2 = {} as Consultav2;
   FinalizarConsulta = false;
 
@@ -173,6 +174,7 @@ export class ProntuarioDentistaComponent implements OnInit, OnDestroy, AfterView
   // TIMER
   // =========================================================================
   startTimer(): void {
+    if (this.interval) return;
     this.interval = setInterval(() => {
       this.timer++;
       this.minutes = Math.floor(this.timer / 60);
@@ -184,5 +186,13 @@ export class ProntuarioDentistaComponent implements OnInit, OnDestroy, AfterView
     if (this.interval) { clearInterval(this.interval); this.interval = null; }
   }
 
-  pausarTempo(): void { this.stopTimer(); }
+  toggleTimer(): void {
+    if (this.isPaused) {
+      this.startTimer();
+      this.isPaused = false;
+    } else {
+      this.stopTimer();
+      this.isPaused = true;
+    }
+  }
 }

@@ -22,13 +22,14 @@ export class AbaQuestionarioSaudeComponent implements OnChanges, OnDestroy {
   questionarioAssinatura = '';
   questionarioDataAssinatura = '';
 
+  private consultaIdCarregado: number | undefined;
   private readonly destroy$ = new Subject<void>();
 
   constructor(private prontuarioApi: ProntuarioApiService,
       private prontuarioDentistaApi: ProntuarioDentistaApiService) {}
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['consultaId'] && this.consultaId) {
+    if (changes['consultaId'] && this.consultaId && this.consultaId !== this.consultaIdCarregado) {
       this.carregarQuestionarioSaude(this.consultaId);
     }
   }
@@ -43,6 +44,7 @@ export class AbaQuestionarioSaudeComponent implements OnChanges, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (resp) => {
+          this.consultaIdCarregado = consultaId;
           this.questionarioRespondido = resp?.respondido || false;
           this.questionarioStatus = resp?.status || '';
           if (resp?.respostasQuestionario) {
