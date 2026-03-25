@@ -40,7 +40,7 @@ export class HistoricoCompletoDentistaComponent implements OnInit {
     });
 
     const profissionalId = this.UsuarioLogado.perfil === 'DENTISTA' ? this.UsuarioLogado.id : undefined;
-
+console.log('busca', this.data.pacienteId, 'dentista', profissionalId)
     this.consultaApiService
       .BuscandoHistoricoDeConsultasDoPaciente(this.data.pacienteId, 'dentista', profissionalId)
       .subscribe((data: HistoricoCompletoDentistaResponse[]) => {
