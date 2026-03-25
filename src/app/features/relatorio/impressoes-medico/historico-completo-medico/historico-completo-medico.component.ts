@@ -41,6 +41,7 @@ export class HistoricoCompletoMedicoComponent implements OnInit {
     });
 
     const profissionalId = this.UsuarioLogado.perfil === 'MEDICO' ? this.UsuarioLogado.id : undefined;
+console.log('busca', this.data.pacienteId, 'medico', profissionalId)
 
     this.consultaApiService.BuscandoHistoricoDeConsultasDoPaciente(
       this.data.pacienteId, 'medico', profissionalId
