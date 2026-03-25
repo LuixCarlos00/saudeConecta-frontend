@@ -261,7 +261,8 @@
                 </button>
 
                 <!-- WhatsApp Individual -->
-                <a class="hc-action-btn hc-action-btn--whatsapp"
+                <a *ngIf="element.status === 'CONFIRMADA'"
+                  class="hc-action-btn hc-action-btn--whatsapp"
                   [class.hc-action-btn--disabled]="!element.pacienteTelefone"
                   [href]="element.pacienteTelefone ? gerarLinkWhatsApp(element) : null"
                   [attr.target]="element.pacienteTelefone ? '_blank' : null"
