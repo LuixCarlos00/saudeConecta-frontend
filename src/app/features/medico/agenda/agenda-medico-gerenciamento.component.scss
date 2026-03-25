@@ -556,7 +556,7 @@
     text-align: center;
     color: $text-muted;
 
-    i {
+    > i {
       font-size: 64px;
       margin-bottom: $spacing-4;
       opacity: 0.3;

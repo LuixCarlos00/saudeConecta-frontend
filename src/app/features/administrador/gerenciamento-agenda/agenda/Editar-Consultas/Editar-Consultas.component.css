@@ -357,6 +357,10 @@ select.invalid {
   padding: 14px 20px;
   border-top: 1px solid #e5e7eb;
   background: #f8fafc;
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
+  flex-shrink: 0;
 }
 
 .btn {
