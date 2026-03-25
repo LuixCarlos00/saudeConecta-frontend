@@ -112,14 +112,7 @@ export class CadastroAdminOrgComponent implements OnInit, OnDestroy {
       }
     });
 
-    this.formulario.get('telefone')?.valueChanges.subscribe(value => {
-      if (value) {
-        const formatted = this.formatarTelefone(value);
-        if (formatted !== value) {
-          this.formulario.get('telefone')?.setValue(formatted, { emitEvent: false });
-        }
-      }
-    });
+
   }
 
   ngOnDestroy(): void {
@@ -202,16 +195,7 @@ export class CadastroAdminOrgComponent implements OnInit, OnDestroy {
     const n = value.replace(/[^\d]/g, '');
     if (n.length <= 5) return n;
     return n.replace(/(\d{5})(\d+)/, '$1-$2');
-  }
-
-  private formatarTelefone(value: string): string {
-    const n = value.replace(/[^\d]/g, '');
-    if (n.length <= 2)  return n;
-    if (n.length <= 6)  return n.replace(/(\d{2})(\d+)/, '($1) $2');
-    if (n.length <= 10) return n.replace(/(\d{2})(\d{4})(\d+)/, '($1) $2-$3');
-    return n.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
-  }
-
+  } 
   private handleHttpError(error: any): void {
     let msg = 'Erro desconhecido ao realizar o cadastro.';
     if (error.status === 409) {
