@@ -1371,6 +1371,11 @@ $t: 0.15s ease;
     background: #fee2e2;
     color: #991b1b;
   }
+
+  &--info {
+    background: $dlt;
+    color: $ddk;
+  }
 }
 
 // =============================================================================
@@ -1617,4 +1622,24 @@ $t: 0.15s ease;
 // Posicionar form-group como relative para o autocomplete absoluto
 .form-group {
   position: relative;
+}
+
+// ── Histórico registros ──
+.historico-registro {
+  background: var(--color-background-primary);
+  border: 0.5px solid var(--color-border-tertiary);
+  border-radius: var(--border-radius-lg); padding: 14px 16px; margin-bottom: 12px;
+  &__header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 10px; padding-bottom: 8px; border-bottom: 0.5px solid var(--color-border-tertiary);
+    h3 { font-size: 13px; font-weight: 500; margin: 0; }
+  }
+  &__corpo { }
+}
+
+.historico-campo {
+  font-size: 12px; line-height: 1.6; color: var(--color-text-primary);
+  margin-bottom: 6px;
+  strong { color: var(--color-text-primary); font-weight: 500; }
+  &--muted { color: var(--color-text-secondary); }
 }
