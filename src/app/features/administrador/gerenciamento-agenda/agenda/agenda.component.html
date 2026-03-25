@@ -288,7 +288,9 @@
 
           <tr mat-header-row *matHeaderRowDef="Finalizadas ? displayedColumnsFinalizadas : displayedColumns"></tr>
           <tr mat-row *matRowDef="let row; columns: Finalizadas ? displayedColumnsFinalizadas : displayedColumns;" [class.hc-table__row--completed]="Finalizadas"
-            (click)="Editar(row)" style="cursor: pointer;" title="Clique para editar">
+            (click)="Editar(row)"
+            [style.cursor]="podeEditar(row) ? 'pointer' : 'default'"
+            [title]="podeEditar(row) ? 'Clique para editar' : ''">
           </tr>
         </table>
 

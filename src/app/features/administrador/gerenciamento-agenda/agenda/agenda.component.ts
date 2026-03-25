@@ -229,7 +229,13 @@ export class AgendaComponent implements OnInit, OnDestroy {
     }
   }
 
+podeEditar(consulta: any): boolean {
+    return consulta?.status === 'AGENDADA';
+  }
+
 Editar(consulta: any) {
+    if (!this.podeEditar(consulta)) { return; }
+
   const dialogRef = this.dialog.open(EditarConsultasComponent, {
     width: '800px',
     height: 'auto',
