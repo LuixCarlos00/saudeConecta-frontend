@@ -282,6 +282,12 @@ export interface ProfissionalResponse {
 
   /** Telefone do profissional */
   telefone?: string;
+
+  /** ID do tipo de profissional */
+  tipoProfissionalId?: number;
+
+  /** Nome do tipo de profissional (ex: MEDICO, DENTISTA) */
+  tipoProfissionalNome?: string;
 }
 
 /**

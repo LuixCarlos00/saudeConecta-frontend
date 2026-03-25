@@ -100,6 +100,7 @@ export class RelatorioComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+      console.log("ngOnInit", this.data)
     this.consultaNaoRealizada = this.data?.consultaNaoRealizada || false;
     this.isAdmin = this.data?.isAdmin || false;
     this.isProfissional = this.data?.isProfissional || false;

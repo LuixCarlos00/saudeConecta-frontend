@@ -77,7 +77,7 @@ export class RelatorioService {
         tipoProfissional: tipoProfissional,
       },
     });
-
+console.log("dialogRef",dialogRef)
     dialogRef.afterClosed().subscribe((opcao: string) => {
       if (!opcao) { return; }
 
@@ -116,7 +116,7 @@ export class RelatorioService {
    */
   abrirRelatorioProfissional(element: Consultav2, perfilUsuario: string): void {
     const consultaNaoRealizada = (element.status as any) === 'AGENDADA';
-
+    console.log("profissonal",element, perfilUsuario)
     const dialogRef = this.dialog.open(RelatorioComponent, {
       maxWidth: 'auto',
       panelClass: 'selecao-relatorio-dialog',
@@ -257,6 +257,8 @@ export class RelatorioService {
       profissionalId: dados.profissional?.id || 0,
       profissionalNome: dados.profissional?.nome || '',
       profissionalConselho: dados.profissional?.conselho || '',
+      tipoProfissionalId: dados.profissional?.tipoProfissionalId ?? null,
+      tipoProfissionalNome: dados.profissional?.tipoProfissionalNome ?? null,
       pacienteId: dados.consulta?.paciente?.id || 0,
       pacienteNome: dados.consulta?.paciente?.nome || dados.consulta?.pacienteNome || '',
       pacienteTelefone: dados.consulta?.paciente?.telefone || null,
@@ -283,31 +285,14 @@ export class RelatorioService {
 
   /**
    * Detecta o tipo de profissional (MEDICO ou DENTISTA) com base na consulta.
-   * Verifica pela especialidade e, como fallback, pelo nome do profissional.
+   * Utiliza o campo tipoProfissionalNome retornado pela API.
    * @param consulta - Dados da consulta
    * @returns 'MEDICO' ou 'DENTISTA'
    */
   detectarTipoProfissional(consulta: Consultav2): string {
-    const especialidade = consulta.especialidadeNome?.toLowerCase() || '';
-    if (
-      especialidade.includes('odontologia') ||
-      especialidade.includes('dentista') ||
-      especialidade.includes('cd') ||
-      especialidade.includes('cro')
-    ) {
-      return 'DENTISTA';
-    }
-
-    const nomeProfissional = consulta.profissionalNome?.toLowerCase() || '';
-    if (
-      nomeProfissional.includes('dentista') ||
-      nomeProfissional.includes('cd') ||
-      nomeProfissional.includes('cro')
-    ) {
-      return 'DENTISTA';
-    }
-
-    return 'MEDICO';
+    return consulta.tipoProfissionalNome?.toUpperCase() === 'DENTISTA'
+      ? 'DENTISTA'
+      : 'MEDICO';
   }
 
   /**

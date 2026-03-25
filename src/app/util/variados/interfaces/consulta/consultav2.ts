@@ -3,6 +3,8 @@ export interface Consultav2 {
   profissionalId: number;
   profissionalNome: string;
   profissionalConselho: string;
+  tipoProfissionalId: number | null;
+  tipoProfissionalNome: string | null;
   pacienteId: number;
   pacienteNome: string;
   pacienteTelefone: string | null;
