@@ -286,6 +286,12 @@
             <span style="margin-left: 4px;">{{ pront.observacao }}</span>
           </div>
 
+          <div *ngIf="pront.orientacoes" style="margin-bottom: 10px;">
+            <strong style="color: #0f172a;"><i class="fa-solid fa-hand-holding-medical"
+                style="color: #0891b2; margin-right: 4px;"></i> Orientações ao Paciente:</strong>
+            <span style="margin-left: 4px;">{{ pront.orientacoes }}</span>
+          </div>
+
           <div
             *ngIf="pront.labios || pront.mucosas || pront.soalhoBucal || pront.palato || pront.orofaringe || pront.lingua || pront.gengiva || pront.higieneBucal || pront.condicaoGengival || pront.oclusal || pront.atm"
             style="margin-bottom: 10px;">

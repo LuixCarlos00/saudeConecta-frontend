@@ -41,6 +41,7 @@ export class ProntuarioMedicoComponent implements OnInit, OnDestroy, AfterViewIn
   minutes = 0;
   seconds = 0;
   interval: ReturnType<typeof setInterval> | null = null;
+  isPaused = false;
   Consulta: Consultav2 = {} as Consultav2;
   FinalizarConsulta = false;
 
@@ -172,6 +173,7 @@ export class ProntuarioMedicoComponent implements OnInit, OnDestroy, AfterViewIn
   // TIMER
   // =========================================================================
   startTimer(): void {
+    if (this.interval) return;
     this.interval = setInterval(() => {
       this.timer++;
       this.minutes = Math.floor(this.timer / 60);
@@ -183,5 +185,13 @@ export class ProntuarioMedicoComponent implements OnInit, OnDestroy, AfterViewIn
     if (this.interval) { clearInterval(this.interval); this.interval = null; }
   }
 
-  pausarTempo(): void { this.stopTimer(); }
+  toggleTimer(): void {
+    if (this.isPaused) {
+      this.startTimer();
+      this.isPaused = false;
+    } else {
+      this.stopTimer();
+      this.isPaused = true;
+    }
+  }
 }

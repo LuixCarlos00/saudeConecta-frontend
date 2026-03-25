@@ -183,8 +183,8 @@
       </div>
     </div>
     <div class="pep-footer__actions">
-      <button class="btn btn--outline" (click)="pausarTempo()" [disabled]="FinalizarConsulta">
-        <i class="fa-solid fa-pause"></i><span>Pausar</span>
+      <button class="btn btn--outline" (click)="toggleTimer()" [disabled]="FinalizarConsulta">
+        <i class="fa-solid" [ngClass]="isPaused ? 'fa-play' : 'fa-pause'"></i><span>{{ isPaused ? 'Retomar' : 'Pausar' }}</span>
       </button>
       <button class="btn btn--secondary" (click)="selectedTabIndex = selectedTabIndex > 0 ? selectedTabIndex - 1 : 0"
         [disabled]="selectedTabIndex === 0 || FinalizarConsulta">
