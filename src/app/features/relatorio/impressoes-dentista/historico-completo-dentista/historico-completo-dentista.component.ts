@@ -39,8 +39,7 @@ export class HistoricoCompletoDentistaComponent implements OnInit {
       if (dados) { this.UsuarioLogado = dados; }
     });
 
-    const profissionalId = this.UsuarioLogado.aud === '[ROLE_Dentista]' ? this.UsuarioLogado.id : undefined;
-console.log('paci,tipo,profi',this.data.pacienteId,'dentista',profissionalId)
+    const profissionalId = this.UsuarioLogado.perfil === 'DENTISTA' ? this.UsuarioLogado.id : undefined;
 
     this.consultaApiService
       .BuscandoHistoricoDeConsultasDoPaciente(this.data.pacienteId, 'dentista', profissionalId)
