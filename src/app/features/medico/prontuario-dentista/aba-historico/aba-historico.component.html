@@ -251,126 +251,46 @@
     </div>
 
     <!-- Lista de prontuários anteriores -->
-    <div *ngIf="historicoCarregado && historicoProntuarios.length > 0 && !historicoLoading">
-      <div *ngFor="let pront of historicoProntuarios; let i = index" class="historico-registro"
-        style="background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 20px; margin-bottom: 16px;">
+    <div *ngIf="historicoCarregado && historicoProntuarios.length && !historicoLoading">
+      <div *ngFor="let pront of historicoProntuarios" class="historico-registro">
 
-        <div
-          style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid #f1f5f9;">
-          <h3 style="margin: 0; font-size: 1rem; color: #1e293b;">
-            <i class="fa-solid fa-file-medical" style="color: #3b82f6; margin-right: 6px;"></i>
-            Consulta #{{ pront.consulta?.id || pront.codigo }} — {{ pront.dataFinalizado }}
+        <div class="historico-registro__header">
+          <h3>
+            <i class="fa-solid fa-file-medical" style="color:#3b82f6;margin-right:6px"></i>
+            Consulta #{{ pront.consulta?.id || pront.codigoProntuario }} — {{ pront.dataFinalizado }}
           </h3>
-          <span class="badge badge--info" style="font-size: 0.78rem;">
-            {{ pront.tempoDuracao || '—' }}
-          </span>
+          <span class="badge badge--info" style="font-size:.75rem">{{ pront.tempoDuracao || '—' }}</span>
         </div>
 
-        <div class="historico-texto" style="font-size: 0.92rem; line-height: 1.7; color: #334155;">
-
-          <div *ngIf="pront.queixaPrincipal" style="margin-bottom: 10px;">
-            <strong style="color: #0f172a;"><i class="fa-solid fa-comment-medical"
-                style="color: #ef4444; margin-right: 4px;"></i> Queixa Principal:</strong>
-            <span style="margin-left: 4px;">{{ pront.queixaPrincipal }}</span>
+        <div class="historico-registro__corpo">
+          <div *ngIf="pront.pressao || pront.pulso || pront.temperatura || pront.peso" class="historico-campo">
+            <strong><i class="fa-solid fa-heart-pulse" style="color:#ef4444;margin-right:4px"></i>Sinais vitais:</strong>
+            <span *ngIf="pront.pressao">PA: {{ pront.pressao }}. </span>
+            <span *ngIf="pront.pulso">Pulso: {{ pront.pulso }}. </span>
+            <span *ngIf="pront.temperatura">Temp: {{ pront.temperatura }}. </span>
+            <span *ngIf="pront.peso">Peso: {{ pront.peso }} kg. </span>
+            <span *ngIf="pront.saturacao">SpO₂: {{ pront.saturacao }}%.</span>
           </div>
-
-          <div *ngIf="pront.anamnese" style="margin-bottom: 10px;">
-            <strong style="color: #0f172a;"><i class="fa-solid fa-clock-rotate-left"
-                style="color: #8b5cf6; margin-right: 4px;"></i> Histórico Odontológico:</strong>
-            <span style="margin-left: 4px;">{{ pront.anamnese }}</span>
+          <div *ngIf="pront.queixaPrincipal" class="historico-campo">
+            <strong>Queixa:</strong> {{ pront.queixaPrincipal }}
           </div>
-
-          <div *ngIf="pront.observacao" style="margin-bottom: 10px;">
-            <strong style="color: #0f172a;"><i class="fa-solid fa-note-sticky"
-                style="color: #f59e0b; margin-right: 4px;"></i> Observações Gerais:</strong>
-            <span style="margin-left: 4px;">{{ pront.observacao }}</span>
+          <div *ngIf="pront.diagnostico" class="historico-campo">
+            <strong>Diagnóstico:</strong> {{ pront.diagnostico }}
           </div>
-
-          <div *ngIf="pront.orientacoes" style="margin-bottom: 10px;">
-            <strong style="color: #0f172a;"><i class="fa-solid fa-hand-holding-medical"
-                style="color: #0891b2; margin-right: 4px;"></i> Orientações ao Paciente:</strong>
-            <span style="margin-left: 4px;">{{ pront.orientacoes }}</span>
+          <div *ngIf="pront.prescricao" class="historico-campo">
+            <strong>Prescrição:</strong> {{ pront.prescricao }}
           </div>
-
-          <div
-            *ngIf="pront.labios || pront.mucosas || pront.soalhoBucal || pront.palato || pront.orofaringe || pront.lingua || pront.gengiva || pront.higieneBucal || pront.condicaoGengival || pront.oclusal || pront.atm"
-            style="margin-bottom: 10px;">
-            <strong style="color: #0f172a;"><i class="fa-solid fa-teeth"
-                style="color: #06b6d4; margin-right: 4px;"></i> Exame Intrabucal:</strong>
-            <span style="margin-left: 4px;">
-              <span *ngIf="pront.higieneBucal"><strong>Higiene Bucal:</strong> {{ pront.higieneBucal }}. </span>
-              <span *ngIf="pront.condicaoGengival"><strong>Condição Gengival:</strong> {{ pront.condicaoGengival }}. </span>
-              <span *ngIf="pront.labios"><strong>Lábios:</strong> {{ pront.labios }}. </span>
-              <span *ngIf="pront.mucosas"><strong>Mucosas:</strong> {{ pront.mucosas }}. </span>
-              <span *ngIf="pront.soalhoBucal"><strong>Soalho Bucal:</strong> {{ pront.soalhoBucal }}. </span>
-              <span *ngIf="pront.palato"><strong>Palato:</strong> {{ pront.palato }}. </span>
-              <span *ngIf="pront.orofaringe"><strong>Orofaringe:</strong> {{ pront.orofaringe }}. </span>
-              <span *ngIf="pront.lingua"><strong>Língua:</strong> {{ pront.lingua }}. </span>
-              <span *ngIf="pront.gengiva"><strong>Gengiva:</strong> {{ pront.gengiva }}. </span>
-              <span *ngIf="pront.oclusal"><strong>Oclusal:</strong> {{ pront.oclusal }}. </span>
-              <span *ngIf="pront.atm"><strong>ATM:</strong> {{ pront.atm }}. </span>
-            </span>
+          <div *ngIf="pront.orientacoes" class="historico-campo">
+            <strong>Orientações ao Paciente:</strong> {{ pront.orientacoes }}
           </div>
-
-          <div *ngIf="pront.dentes && pront.dentes.length > 0" style="margin-bottom: 10px;">
-            <strong style="color: #0f172a;"><i class="fa-solid fa-tooth"
-                style="color: #10b981; margin-right: 4px;"></i> Odontograma:</strong>
-            <span style="margin-left: 4px;">{{ formatarOdontograma(pront.dentes) }}</span>
+          <div *ngIf="pront.observacao" class="historico-campo">
+            <strong>Observações:</strong> {{ pront.observacao }}
           </div>
-
-          <div *ngIf="pront.diagnostico" style="margin-bottom: 10px;">
-            <strong style="color: #0f172a;"><i class="fa-solid fa-stethoscope"
-                style="color: #6366f1; margin-right: 4px;"></i> Diagnóstico:</strong>
-            <span style="margin-left: 4px;">{{ pront.diagnostico }}</span>
+          <div *ngIf="pront.profissional?.nome" class="historico-campo historico-campo--muted">
+            <i class="fa-solid fa-user-doctor" style="margin-right:4px"></i>
+            {{ pront.profissional.nome }}
+            <span *ngIf="pront.profissional.conselho"> — {{ pront.profissional.conselho }}</span>
           </div>
-
-          <!-- Planejamento Terapêutico (tabela resumo) -->
-          <div *ngIf="pront.planejamentos && pront.planejamentos.length > 0" style="margin-bottom: 10px;">
-            <strong style="color: #0f172a;"><i class="fa-solid fa-list-check"
-                style="color: #0ea5e9; margin-right: 4px;"></i> Planejamento Terapêutico:</strong>
-            <div style="margin-top: 8px; overflow-x: auto;">
-              <table class="data-table" style="font-size: 0.85rem; width: 100%;">
-                <thead>
-                  <tr>
-                    <th style="padding: 6px 10px;">Data</th>
-                    <th style="padding: 6px 10px;">Procedimento</th>
-                    <th style="padding: 6px 10px;">Valor</th>
-                    <th style="padding: 6px 10px;">Assinatura</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr *ngFor="let plan of pront.planejamentos">
-                    <td style="padding: 6px 10px;">{{ plan.dataProcedimento }}</td>
-                    <td style="padding: 6px 10px;">{{ plan.procedimentoRealizado }}</td>
-                    <td style="padding: 6px 10px;">R$ {{ plan.valor | number:'1.2-2' }}</td>
-                    <td style="padding: 6px 10px;">
-                      <span class="badge"
-                        [class.badge--success]="plan.statusAssinatura === 'ASSINADO'"
-                        [class.badge--warning]="plan.statusAssinatura === 'PENDENTE'">
-                        {{ plan.statusAssinatura }}
-                      </span>
-                    </td>
-                  </tr>
-                </tbody>
-                <tfoot>
-                  <tr>
-                    <td colspan="2" style="padding: 6px 10px;"><strong>Total</strong></td>
-                    <td colspan="2" style="padding: 6px 10px;">
-                      <strong>R$ {{ calcularTotalPlanejamentos(pront.planejamentos) | number:'1.2-2' }}</strong>
-                    </td>
-                  </tr>
-                </tfoot>
-              </table>
-            </div>
-          </div>
-
-          <!-- Plano de Tratamento texto (fallback se não houver planejamentos) -->
-          <div *ngIf="pront.planoTratamento && (!pront.planejamentos || pront.planejamentos.length === 0)" style="margin-bottom: 10px;">
-            <strong style="color: #0f172a;"><i class="fa-solid fa-list-check"
-                style="color: #0ea5e9; margin-right: 4px;"></i> Plano de Tratamento:</strong>
-            <span style="margin-left: 4px;">{{ pront.planoTratamento }}</span>
-          </div>
-
         </div>
       </div>
     </div>

@@ -40,8 +40,8 @@ export class HistoricoCompletoMedicoComponent implements OnInit {
       }
     });
 
-    const profissionalId = this.UsuarioLogado.aud === '[ROLE_Medico]' ? this.UsuarioLogado.id : undefined;
-console.log('paci,tipo,profi',this.data.pacienteId,'medico',profissionalId)
+    const profissionalId = this.UsuarioLogado.perfil === 'MEDICO' ? this.UsuarioLogado.id : undefined;
+
     this.consultaApiService.BuscandoHistoricoDeConsultasDoPaciente(
       this.data.pacienteId, 'medico', profissionalId
     ).subscribe((data: HistoricoCompletoResponse[]) => {
