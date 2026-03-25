@@ -40,8 +40,10 @@ export class HistoricoCompletoMedicoComponent implements OnInit {
       }
     });
 
+    const profissionalId = this.UsuarioLogado.aud === '[ROLE_Medico]' ? this.UsuarioLogado.id : undefined;
+console.log('paci,tipo,profi',this.data.pacienteId,'medico',profissionalId)
     this.consultaApiService.BuscandoHistoricoDeConsultasDoPaciente(
-      this.data.pacienteId
+      this.data.pacienteId, 'medico', profissionalId
     ).subscribe((data: HistoricoCompletoResponse[]) => {
       console.log('Histórico recebido:', data);
 
@@ -58,13 +60,6 @@ export class HistoricoCompletoMedicoComponent implements OnInit {
           telefone: primeiro.pacienteTelefone,
           id: primeiro.pacienteId
         };
-      }
-
-      // Filtrar por médico se necessário
-      if (this.UsuarioLogado.aud === '[ROLE_Medico]') {
-        this.historico = this.historico.filter((item) => {
-          return item.profissionalId === this.UsuarioLogado.id;
-        });
       }
     });
   }
