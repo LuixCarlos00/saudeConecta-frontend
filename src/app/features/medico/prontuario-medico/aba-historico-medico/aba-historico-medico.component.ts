@@ -46,13 +46,14 @@ export class AbaHistoricoMedicoComponent implements OnChanges, OnDestroy {
   }
 
   private carregarHistorico(pacienteId: number): void {
+    if (this.historicoCarregado && this.historicoProntuarios.length > 0) return;
+
     this.historicoLoading = true;
     this.resumo = null;
     this.exibirResumo = false;
 
     const profissionalId = this.tokenSvc.obterUsuarioId() ?? undefined;
-       console.log("pacienteId, 'dentista', profissionalId",pacienteId, 'medico', profissionalId)
-
+    console.log("pacienteId, 'dentista', profissionalId",pacienteId, 'medico', profissionalId)
     this.consultaApi.BuscandoHistoricoDeConsultasDoPaciente(pacienteId, 'medico', profissionalId)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
