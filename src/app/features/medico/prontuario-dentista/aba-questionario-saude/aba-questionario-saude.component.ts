@@ -38,6 +38,8 @@ export class AbaQuestionarioSaudeComponent implements OnChanges, OnDestroy {
   }
 
   private carregarQuestionarioSaude(consultaId: number): void {
+    if (this.questionarioCarregado && this.consultaIdCarregado === consultaId) return;
+
     this.consultaIdCarregado = consultaId;
     this.prontuarioDentistaApi.buscarQuestionarioSaude(consultaId)
       .pipe(takeUntil(this.destroy$))
