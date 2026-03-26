@@ -47,6 +47,8 @@ export class AbaHistoricoComponent implements OnChanges, OnDestroy {
   }
 
   private carregarHistoricoPaciente(pacienteId: number): void {
+    if (this.historicoCarregado && this.historicoProntuarios.length > 0) return;
+
     this.historicoLoading = true;
     this.resumo = null;
     this.exibirResumo = false;
@@ -57,7 +59,6 @@ export class AbaHistoricoComponent implements OnChanges, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (lista) => {
-            console.log('lista',lista)
           this.historicoProntuarios = lista || [];
           this.historicoCarregado = true;
           this.historicoLoading = false;
