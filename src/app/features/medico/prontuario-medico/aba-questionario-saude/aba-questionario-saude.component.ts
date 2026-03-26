@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, SimpleChanges, OnDestroy } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Subject, takeUntil } from 'rxjs';
 import { ProntuarioApiService } from 'src/app/services/api/prontuario-api.service';
@@ -12,7 +12,7 @@ import { ProntuarioDentistaApiService } from 'src/app/services/api/prontuario-de
   styleUrl: '../prontuario-medico.component.scss',
   host: { style: 'display: block; width: 100%;' },
 })
-export class AbaQuestionarioSaudeComponent implements OnChanges, OnDestroy {
+export class AbaQuestionarioSaudeComponent implements OnInit, OnDestroy {
 
   @Input() consultaId: number | undefined;
 
@@ -23,14 +23,13 @@ export class AbaQuestionarioSaudeComponent implements OnChanges, OnDestroy {
   questionarioDataAssinatura = '';
   questionarioCarregado = false;
 
-  private consultaIdCarregado: number | undefined;
   private readonly destroy$ = new Subject<void>();
 
   constructor(private prontuarioApi: ProntuarioApiService,
       private prontuarioDentistaApi: ProntuarioDentistaApiService) {}
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['consultaId'] && this.consultaId && this.consultaId !== this.consultaIdCarregado && !this.questionarioCarregado) {
+  ngOnInit(): void {
+    if (this.consultaId && !this.questionarioCarregado) {
       this.carregarQuestionarioSaude(this.consultaId);
     }
   }
@@ -41,9 +40,7 @@ export class AbaQuestionarioSaudeComponent implements OnChanges, OnDestroy {
   }
 
   private carregarQuestionarioSaude(consultaId: number): void {
-    if (this.questionarioCarregado && this.consultaIdCarregado === consultaId) return;
-
-    this.consultaIdCarregado = consultaId;
+    if (this.questionarioCarregado) return;
     this.prontuarioDentistaApi.buscarQuestionarioSaude(consultaId)
       .pipe(takeUntil(this.destroy$))
       .subscribe({

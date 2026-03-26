@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, SimpleChanges, OnDestroy } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Subject, takeUntil } from 'rxjs';
 import { ConsultaApiService } from 'src/app/services/api/consulta-api.service';
@@ -13,7 +13,7 @@ type AbaResumo = 'visao' | 'vitais' | 'timeline' | 'recomendacoes';
   styleUrl: '../prontuario-shared.scss',
   host: { style: 'display: block; width: 100%;' },
 })
-export class AbaHistoricoMedicoComponent implements OnChanges, OnDestroy {
+export class AbaHistoricoMedicoComponent implements OnInit, OnDestroy {
 
   @Input() pacienteId: number | undefined;
 
@@ -34,8 +34,8 @@ export class AbaHistoricoMedicoComponent implements OnChanges, OnDestroy {
     private tokenSvc: tokenService
   ) {}
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['pacienteId'] && this.pacienteId && !this.historicoCarregado) {
+  ngOnInit(): void {
+    if (this.pacienteId && !this.historicoCarregado) {
       this.carregarHistorico(this.pacienteId);
     }
   }
@@ -46,7 +46,7 @@ export class AbaHistoricoMedicoComponent implements OnChanges, OnDestroy {
   }
 
   private carregarHistorico(pacienteId: number): void {
-    if (this.historicoCarregado && this.historicoProntuarios.length > 0) return;
+    if (this.historicoCarregado) return;
 
     this.historicoLoading = true;
     this.resumo = null;

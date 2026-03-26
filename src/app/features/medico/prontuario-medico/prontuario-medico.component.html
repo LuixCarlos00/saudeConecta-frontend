@@ -132,13 +132,13 @@
 
     <!-- ABA 1 — Questionário de Saúde -->
     <app-aba-questionario-saude
-      *ngIf="selectedTabIndex === 1"
+      [style.display]="selectedTabIndex === 1 ? '' : 'none'"
       [consultaId]="Consulta?.id">
     </app-aba-questionario-saude>
 
     <!-- ABA 2 — Histórico do Paciente -->
     <app-aba-historico-medico
-      *ngIf="selectedTabIndex === 2"
+      [style.display]="selectedTabIndex === 2 ? '' : 'none'"
       [pacienteId]="Consulta?.pacienteId">
     </app-aba-historico-medico>
 
