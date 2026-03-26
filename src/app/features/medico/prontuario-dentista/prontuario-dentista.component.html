@@ -116,14 +116,14 @@
     <!-- ══════════════════════════════════════════════════
          ABA 1 — QUESTIONÁRIO DE SAÚDE
     ══════════════════════════════════════════════════ -->
-    <app-aba-questionario-saude *ngIf="selectedTabIndex === 1"
+    <app-aba-questionario-saude [style.display]="selectedTabIndex === 1 ? '' : 'none'"
       [consultaId]="Consulta?.id">
     </app-aba-questionario-saude>
 
     <!-- ══════════════════════════════════════════════════
          ABA 2 — HISTÓRICO DO PACIENTE
     ══════════════════════════════════════════════════ -->
-    <app-aba-historico *ngIf="selectedTabIndex === 2"
+    <app-aba-historico [style.display]="selectedTabIndex === 2 ? '' : 'none'"
       [pacienteId]="Consulta?.pacienteId">
     </app-aba-historico>
 
