@@ -52,10 +52,12 @@ export class AbaHistoricoComponent implements OnChanges, OnDestroy {
     this.exibirResumo = false;
 
     const profissionalId = this.tokenSvc.obterUsuarioId() ?? undefined;
+    console.log("pacienteId, 'dentista', profissionalId",pacienteId, 'dentista', profissionalId)
     this.consultaApi.BuscandoHistoricoDeConsultasDoPaciente(pacienteId, 'dentista', profissionalId)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (lista) => {
+            console.log('lista',lista)
           this.historicoProntuarios = lista || [];
           this.historicoCarregado = true;
           this.historicoLoading = false;
