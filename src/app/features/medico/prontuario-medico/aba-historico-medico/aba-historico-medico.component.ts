@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Subject, takeUntil } from 'rxjs';
 import { ConsultaApiService } from 'src/app/services/api/consulta-api.service';
 import { IALocalService, ResumoClinico } from 'src/app/services/ia-local.service';
+import { tokenService } from 'src/app/util/Token/Token.service';
 
 type AbaResumo = 'visao' | 'vitais' | 'timeline' | 'recomendacoes';
 
@@ -29,11 +30,12 @@ export class AbaHistoricoMedicoComponent implements OnChanges, OnDestroy {
 
   constructor(
     private consultaApi: ConsultaApiService,
-    private iaLocal: IALocalService
+    private iaLocal: IALocalService,
+    private tokenSvc: tokenService
   ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['pacienteId'] && this.pacienteId) {
+    if (changes['pacienteId'] && this.pacienteId && !this.historicoCarregado) {
       this.carregarHistorico(this.pacienteId);
     }
   }
@@ -48,11 +50,11 @@ export class AbaHistoricoMedicoComponent implements OnChanges, OnDestroy {
     this.resumo = null;
     this.exibirResumo = false;
 
-    this.consultaApi.BuscandoHistoricoDeConsultasDoPaciente(pacienteId, 'medico')
+    const profissionalId = this.tokenSvc.obterUsuarioId() ?? undefined;
+    this.consultaApi.BuscandoHistoricoDeConsultasDoPaciente(pacienteId, 'medico', profissionalId)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (lista) => {
-            console.log(lista);
           this.historicoProntuarios = lista || [];
           this.historicoCarregado = true;
           this.historicoLoading = false;

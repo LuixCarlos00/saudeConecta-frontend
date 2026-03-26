@@ -233,6 +233,10 @@
       </ng-container>
     </div>
 
+
+
+
+
     <!-- Loading -->
     <div *ngIf="historicoLoading" style="padding: 32px; text-align: center; color: #64748b;">
       <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
@@ -257,9 +261,9 @@
         <div class="historico-registro__header">
           <h3>
             <i class="fa-solid fa-file-medical" style="color:#3b82f6;margin-right:6px"></i>
-            Consulta #{{ pront.consulta?.id || pront.codigoProntuario }} — {{ pront.dataFinalizado }}
+            Consulta #{{ pront.consultaId || pront.codigoProntuario }} — {{ pront.dataFinalizadoDentista || (pront.dataHora | date:'dd/MM/yyyy') }}
           </h3>
-          <span class="badge badge--info" style="font-size:.75rem">{{ pront.tempoDuracao || '—' }}</span>
+          <span class="badge badge--info" style="font-size:.75rem">{{ pront.tempoDuracao || (pront.duracaoMinutos ? pront.duracaoMinutos + ' min' : '—') }}</span>
         </div>
 
         <div class="historico-registro__corpo">
