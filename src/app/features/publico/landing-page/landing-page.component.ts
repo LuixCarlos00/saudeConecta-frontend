@@ -127,41 +127,56 @@ export class LandingPageComponent implements OnInit {
     {
       nome: 'Starter',
       preco: 149,
-      descricao: 'Ideal para consultórios individuais',
+      descricao: 'Ideal para consultórios e profissionais autônomos',
+      limites: {
+        adminOrg: 1,
+        profissionais: 2,
+        secretarias: 1
+      },
       recursos: [
-        'Até 2 profissionais',
-        'Agendamento online',
-        'Cadastro de pacientes',
-        'Prontuário eletrônico',
-        'Suporte por e-mail'
-      ],
+        'Agendamento online completo',
+        'Prontuário médico e odontológico',
+        'Odontograma digital',
+        'Cadastro ilimitado de pacientes',
+        'Dashboard com gráficos',
+        'Geração de PDF (receitas e exames)',
+        'Notificações por e-mail',      ],
       destaque: false
     },
     {
       nome: 'Profissional',
-      preco: 299,
+      preco: 279,
       descricao: 'Perfeito para clínicas em crescimento',
+      limites: {
+        adminOrg: 2,
+        profissionais: 8,
+        secretarias: 4
+      },
       recursos: [
-        'Até 10 profissionais',
-        'Todas as funções do Starter',
-        'Relatórios avançados',
-        'Notificações SMS',
-        'Suporte prioritário',
-        'Integração com laboratórios'
+        'Tudo do plano Starter',
+        'Relatórios e métricas avançadas',
+        'Mensageria com rastreio de falhas',
+        'Link direto ao WhatsApp do paciente',
+        'Suporte prioritário por e-mail (24h)'
       ],
       destaque: true
     },
     {
-      nome: 'Enterprise',
-      preco: 599,
-      descricao: 'Para grandes centros médicos',
+      nome: 'Business',
+      preco: 549,
+      descricao: 'Para clínicas de médio e grande porte',
+      limites: {
+        adminOrg: 5,
+        profissionais: 20,
+        secretarias: 10
+      },
       recursos: [
+        'Tudo do plano Profissional',
         'Profissionais ilimitados',
-        'Todas as funções anteriores',
-        'API personalizada',
+        'Secretárias ilimitadas',
         'Gerente de conta dedicado',
-        'Treinamento presencial',
-        'SLA garantido'
+        'Treinamento da equipe incluso',
+        'Suporte prioritário por e-mail (12h)'
       ],
       destaque: false
     }
