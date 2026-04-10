@@ -126,7 +126,7 @@ export class LandingPageComponent implements OnInit {
   planos = [
     {
       nome: 'Starter',
-      preco: 249,
+      preco: 149,
       descricao: 'Ideal para consultórios e profissionais autônomos',
       limites: {
         adminOrg: 1,
@@ -145,7 +145,7 @@ export class LandingPageComponent implements OnInit {
     },
     {
       nome: 'Profissional',
-      preco: 449,
+      preco: 279,
       descricao: 'Perfeito para clínicas em crescimento',
       limites: {
         adminOrg: 2,
@@ -163,12 +163,12 @@ export class LandingPageComponent implements OnInit {
     },
     {
       nome: 'Business',
-      preco: 699,
+      preco: 549,
       descricao: 'Para clínicas de médio e grande porte',
       limites: {
         adminOrg: 5,
-        profissionais: 0,
-        secretarias: 0
+        profissionais: 20,
+        secretarias: 10
       },
       recursos: [
         'Tudo do plano Profissional',
