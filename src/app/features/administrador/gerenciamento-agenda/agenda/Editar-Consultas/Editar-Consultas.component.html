@@ -1,111 +1,116 @@
 <div class="edit-dialog" [formGroup]="FormGroupConsulta">
-  <!-- Header -->
+
+  <!-- ── Header ── -->
   <div class="edit-dialog__header">
-    <h2>Editar Consulta</h2>
-    <span class="edit-dialog__id">Registro #{{consulta.id}}</span>
+    <div class="edit-dialog__header-left">
+      <i class="fa-solid fa-pen-to-square"></i>
+      <h2>Editar Consulta</h2>
+      <span class="edit-dialog__id">#{{ consulta.id }}</span>
+    </div>
     <button class="edit-dialog__close" (click)="onNoClick()" type="button">
       <i class="fa-solid fa-xmark"></i>
     </button>
   </div>
 
-  <!-- Content -->
+  <!-- ── Conteúdo ── -->
   <div class="edit-dialog__content">
-    <!-- Seção Paciente -->
+
+    <!-- Paciente -->
     <section class="edit-section">
       <div class="edit-section__header">
-        <i class="fa-solid fa-user"></i>
+        <span class="edit-section__icon azul"><i class="fa-solid fa-hospital-user"></i></span>
         <h3>Paciente</h3>
       </div>
 
       <div class="search-row">
         <div class="search-input-group">
-          <input type="text" formControlName="PesquisaPaciente" placeholder="Buscar paciente..."
-            (keyup.enter)="PesquisarPacientes()">
+          <input class="field-input" type="text" formControlName="PesquisaPaciente"
+            placeholder="Buscar paciente..." (keyup.enter)="PesquisarPacientes()">
           <button class="btn-search" type="button" (click)="PesquisarPacientes()">
-            <i class="fa-solid fa-search"></i>
+            <i class="fa-solid fa-magnifying-glass"></i> Buscar
           </button>
-        </div>
-        <div class="filter-options">
-          <label><input formControlName="FiltroPesquisaPaciente" type="radio" [value]="1"> Nome</label>
-          <label><input formControlName="FiltroPesquisaPaciente" type="radio" [value]="2"> CPF</label>
-          <label><input formControlName="FiltroPesquisaPaciente" type="radio" [value]="3"> RG</label>
-          <label><input formControlName="FiltroPesquisaPaciente" type="radio" [value]="4"> Telefone</label>
-          <label><input formControlName="FiltroPesquisaPaciente" type="radio" [value]="5"> Todos</label>
         </div>
       </div>
 
-      <app-tabela-editar-Paciente-Consultas *ngIf="showResultadoPaciente" [dadosPaciente]="dadosPacientePassandoTabela"
-        (fechar)="fecharTabelaPacinte()" (selecionaPaciente)="PacienteSelecionado($event)">
+      <div class="filter-options">
+        <label><input formControlName="FiltroPesquisaPaciente" type="radio" [value]="1"> Nome</label>
+        <label><input formControlName="FiltroPesquisaPaciente" type="radio" [value]="2"> CPF</label>
+        <label><input formControlName="FiltroPesquisaPaciente" type="radio" [value]="3"> RG</label>
+        <label><input formControlName="FiltroPesquisaPaciente" type="radio" [value]="4"> Telefone</label>
+        <label><input formControlName="FiltroPesquisaPaciente" type="radio" [value]="5"> Todos</label>
+      </div>
+
+      <app-tabela-editar-Paciente-Consultas *ngIf="showResultadoPaciente"
+        [dadosPaciente]="dadosPacientePassandoTabela"
+        (fechar)="fecharTabelaPacinte()"
+        (selecionaPaciente)="PacienteSelecionado($event)">
       </app-tabela-editar-Paciente-Consultas>
 
       <div class="info-card" *ngIf="pacienteSelecionado">
-        <div class="info-card__avatar">
-          <i class="fa-solid fa-user"></i>
-        </div>
+        <div class="info-card__avatar"><i class="fa-solid fa-user"></i></div>
         <div class="info-card__details">
-          <span class="info-card__name">{{pacienteSelecionado.nome}}</span>
+          <span class="info-card__name">{{ pacienteSelecionado.nome }}</span>
           <div class="info-card__row">
-            <span><strong>CPF:</strong> {{pacienteSelecionado.cpf}}</span>
-            <span><strong>RG:</strong> {{pacienteSelecionado.rg}}</span>
-          </div>
-          <div class="info-card__row">
-            <span><strong>Email:</strong> {{pacienteSelecionado.email}}</span>
-            <span><strong>Telefone:</strong> {{pacienteSelecionado.telefone}}</span>
+            <span><strong>CPF:</strong> {{ pacienteSelecionado.cpf }}</span>
+            <span><strong>RG:</strong> {{ pacienteSelecionado.rg }}</span>
+            <span><strong>Telefone:</strong> {{ pacienteSelecionado.telefone }}</span>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Seção Médico -->
+    <hr class="edit-divider">
+
+    <!-- Clínico -->
     <section class="edit-section">
       <div class="edit-section__header">
-        <i class="fa-solid fa-user-doctor"></i>
+        <span class="edit-section__icon verde"><i class="fa-solid fa-user-doctor"></i></span>
         <h3>Clínico</h3>
       </div>
 
       <div class="search-row">
         <div class="search-input-group">
-          <input type="text" formControlName="PesquisaMedico" placeholder="Buscar Clínico..."
-            (keyup.enter)="PesquisarMedicosFiltro()">
+          <input class="field-input" type="text" formControlName="PesquisaMedico"
+            placeholder="Buscar clínico..." (keyup.enter)="PesquisarMedicosFiltro()">
           <button class="btn-search" type="button" (click)="PesquisarMedicosFiltro()">
-            <i class="fa-solid fa-search"></i>
+            <i class="fa-solid fa-magnifying-glass"></i> Buscar
           </button>
-        </div>
-        <div class="filter-options">
-          <label><input formControlName="FiltroPesquisaMedico" type="radio" [value]="1"> Nome</label>
-          <label><input formControlName="FiltroPesquisaMedico" type="radio" [value]="2"> CRM</label>
-          <label><input formControlName="FiltroPesquisaMedico" type="radio" [value]="3"> Cidade</label>
-          <label><input formControlName="FiltroPesquisaMedico" type="radio" [value]="4"> Especialidade</label>
-          <label><input formControlName="FiltroPesquisaMedico" type="radio" [value]="5"> Todos</label>
         </div>
       </div>
 
-      <app-tabela-editar-Medicos-Consultas *ngIf="showResultadoMedico" [dadosMedicos]="dadosMedicoPassandoTabela"
-        (fechar)="fecharTabelaMedicos()" (selecionaMedico)="MedicoSelecionado($event)">
+      <div class="filter-options">
+        <label><input formControlName="FiltroPesquisaMedico" type="radio" [value]="1"> Nome</label>
+        <label><input formControlName="FiltroPesquisaMedico" type="radio" [value]="2"> CRM</label>
+        <label><input formControlName="FiltroPesquisaMedico" type="radio" [value]="3"> Cidade</label>
+        <label><input formControlName="FiltroPesquisaMedico" type="radio" [value]="4"> Especialidade</label>
+        <label><input formControlName="FiltroPesquisaMedico" type="radio" [value]="5"> Todos</label>
+      </div>
+
+      <app-tabela-editar-Medicos-Consultas *ngIf="showResultadoMedico"
+        [dadosMedicos]="dadosMedicoPassandoTabela"
+        (fechar)="fecharTabelaMedicos()"
+        (selecionaMedico)="MedicoSelecionado($event)">
       </app-tabela-editar-Medicos-Consultas>
 
       <div class="info-card" *ngIf="medicoSelecionado">
-        <div class="info-card__avatar info-card__avatar--doctor">
-          <i class="fa-solid fa-user-doctor"></i>
-        </div>
+        <div class="info-card__avatar info-card__avatar--doctor"><i class="fa-solid fa-user-doctor"></i></div>
         <div class="info-card__details">
-          <span class="info-card__name">{{medicoSelecionado.nome}}</span>
+          <span class="info-card__name">{{ medicoSelecionado.nome }}</span>
           <div class="info-card__row">
-            <span><strong>CRM:</strong> {{medicoSelecionado.registroConselho}}</span>
-            <span><strong>Especialidade:</strong> {{getEspecialidade(medicoSelecionado.especialidades)}}</span>
-          </div>
-          <div class="info-card__row">
-            <span><strong>Email:</strong> {{medicoSelecionado.email}}</span>
-            <span><strong>Telefone:</strong> {{medicoSelecionado.telefone}}</span>
+            <span><strong>CRM:</strong> {{ medicoSelecionado.registroConselho }}</span>
+            <span><strong>Especialidade:</strong> {{ getEspecialidade(medicoSelecionado.especialidades) }}</span>
+            <span><strong>Telefone:</strong> {{ medicoSelecionado.telefone }}</span>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Seção Data/Hora -->
+    <hr class="edit-divider">
+
+    <!-- Agendamento + Valor -->
     <section class="edit-section">
       <div class="edit-section__header">
-        <i class="fa-solid fa-calendar"></i>
+        <span class="edit-section__icon amber"><i class="fa-solid fa-calendar-day"></i></span>
         <h3>Agendamento</h3>
       </div>
 
@@ -124,7 +129,7 @@
           <select formControlName="horario"
             [class.invalid]="FormGroupConsulta.get('horario')?.invalid && FormGroupConsulta.get('horario')?.touched">
             <option value="">Selecione um horário</option>
-            <option *ngFor="let time of Hora" [value]="time.value">{{time.label}}</option>
+            <option *ngFor="let time of Hora" [value]="time.value">{{ time.label }}</option>
           </select>
           <span class="error-message"
             *ngIf="FormGroupConsulta.get('horario')?.invalid && FormGroupConsulta.get('horario')?.touched">
@@ -134,10 +139,12 @@
       </div>
     </section>
 
-    <!-- NOVA SEÇÃO: Valor da Consulta -->
+    <hr class="edit-divider">
+
+    <!-- Valor -->
     <section class="edit-section">
       <div class="edit-section__header">
-        <i class="fa-solid fa-dollar-sign"></i>
+        <span class="edit-section__icon roxo"><i class="fa-solid fa-circle-dollar-to-slot"></i></span>
         <h3>Valor da Consulta</h3>
       </div>
 
@@ -156,17 +163,19 @@
       </div>
     </section>
 
-    <!-- Seção Pagamento -->
+    <hr class="edit-divider">
+
+    <!-- Pagamento -->
     <section class="edit-section">
       <div class="edit-section__header">
-        <i class="fa-solid fa-credit-card"></i>
-        <h3>Pagamento</h3>
+        <span class="edit-section__icon cinza"><i class="fa-solid fa-credit-card"></i></span>
+        <h3>Forma de Pagamento</h3>
       </div>
 
       <div class="payment-options">
         <label class="payment-option">
           <input formControlName="formaPagamento" type="radio" [value]="1">
-          <i class="fa-solid fa-money-bill"></i>
+          <i class="fa-solid fa-money-bill-wave"></i>
           <span>Dinheiro</span>
         </label>
         <label class="payment-option">
@@ -201,22 +210,25 @@
       </span>
     </section>
 
-    <!-- Seção Observação -->
+    <hr class="edit-divider">
+
+    <!-- Observações -->
     <section class="edit-section">
       <div class="edit-section__header">
-        <i class="fa-solid fa-note-sticky"></i>
+        <span class="edit-section__icon cinza"><i class="fa-solid fa-note-sticky"></i></span>
         <h3>Observações</h3>
       </div>
-
       <textarea formControlName="observacao" placeholder="Adicione observações sobre a consulta..." rows="3"></textarea>
     </section>
+
   </div>
 
-  <!-- Footer -->
+  <!-- ── Footer ── -->
   <div class="edit-dialog__footer">
     <button class="btn btn--cancel" type="button" (click)="onNoClick()">Cancelar</button>
     <button class="btn btn--save" type="button" (click)="Salvar()" [disabled]="FormGroupConsulta.invalid">
-      <i class="fa-solid fa-check"></i> Salvar
+      <i class="fa-solid fa-check"></i> Salvar alterações
     </button>
   </div>
+
 </div>

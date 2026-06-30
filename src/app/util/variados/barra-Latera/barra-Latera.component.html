@@ -97,6 +97,16 @@
         </button>
       </li>
 
+      <!-- Agenda Calendário - Médico, Secretaria e Admin -->
+      <li class="nav-item"
+        *ngIf="ControleAcessoService.podeVerMenuMinhaAgenda() || ControleAcessoService.podeVerMenuAgenda()"
+        [class.active]="activeRoute === 'AgendaCalendario'">
+        <button class="nav-link" (click)="navigateTo('AgendaCalendario')" title="Agenda Calendário">
+          <i class="fa-solid fa-calendar-days nav-icon"></i>
+          <span class="nav-text">Agenda Calendário</span>
+        </button>
+      </li>
+
 
       <!-- ========== MENU COMUM ========== -->
 
