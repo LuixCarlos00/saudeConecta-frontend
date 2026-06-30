@@ -84,6 +84,7 @@ export class BarraLateraComponent implements OnInit, OnDestroy {
       '/Gerenciamento-Usuarios': 'Usuarios',
       '/trocaSenha': 'trocar_senha',
       '/Agenda-Medico': 'AgendaMedico',
+      '/agenda-calendario': 'AgendaCalendario',
       '/mensageria': 'Mensageria',
       '/gerenciar-planos': 'GerenciarPlanos',
       '/minha-assinatura': 'MinhaAssinatura'
@@ -166,6 +167,7 @@ export class BarraLateraComponent implements OnInit, OnDestroy {
       'suporte': 'suporte',
       'sobre': 'sobre',
       'AgendaMedico': 'Agenda-Medico',
+      'AgendaCalendario': 'agenda-calendario',
       'startconsulta': 'startconsulta',
       'Mensageria': 'mensageria',
       'GerenciarPlanos': 'gerenciar-planos',

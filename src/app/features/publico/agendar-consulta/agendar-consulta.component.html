@@ -3,10 +3,11 @@
   <!-- ===== TOPO ===== -->
   <div class="modal-top">
     <div class="modal-top-left">
-      <i class="fa-solid fa-calendar-plus"></i>
-      <span class="modal-titulo">Agendar Consulta</span>
+      <i [class]="modoEdicao ? 'fa-solid fa-pen-to-square' : 'fa-solid fa-calendar-plus'"></i>
+      <span class="modal-titulo">{{ modoEdicao ? 'Editar Consulta' : 'Agendar Consulta' }}</span>
+      <span class="modal-id-pill" *ngIf="modoEdicao && consultaOriginal">#{{ consultaOriginal.id }}</span>
     </div>
-    <button class="modal-close" mat-dialog-close>
+    <button class="modal-close" (click)="fechar()" type="button">
       <i class="fa-solid fa-xmark"></i>
     </button>
   </div>
@@ -16,16 +17,16 @@
 
     <!-- NAV LATERAL -->
     <nav class="modal-nav">
-      <button class="nav-item" [class.active]="secaoVisivel === 'clinico'"   (click)="irParaSecao('clinico')">
+      <button class="nav-item" [class.active]="secaoVisivel === 'clinico'"     (click)="irParaSecao('clinico')">
         <span class="nav-dot"></span> Clínico
       </button>
-      <button class="nav-item" [class.active]="secaoVisivel === 'paciente'"  (click)="irParaSecao('paciente')">
+      <button class="nav-item" [class.active]="secaoVisivel === 'paciente'"    (click)="irParaSecao('paciente')">
         <span class="nav-dot"></span> Paciente
       </button>
-      <button class="nav-item" [class.active]="secaoVisivel === 'detalhes'"  (click)="irParaSecao('detalhes')">
+      <button class="nav-item" [class.active]="secaoVisivel === 'detalhes'"    (click)="irParaSecao('detalhes')">
         <span class="nav-dot"></span> Data e Hora
       </button>
-      <button class="nav-item" [class.active]="secaoVisivel === 'pagamento'" (click)="irParaSecao('pagamento')">
+      <button class="nav-item" [class.active]="secaoVisivel === 'pagamento'"   (click)="irParaSecao('pagamento')">
         <span class="nav-dot"></span> Pagamento
       </button>
       <button class="nav-item" [class.active]="secaoVisivel === 'observacoes'" (click)="irParaSecao('observacoes')">
@@ -33,15 +34,15 @@
       </button>
     </nav>
 
-    <!-- ÁREA SCROLLÁVEL COM TODAS AS SEÇÕES -->
+    <!-- ÁREA SCROLLÁVEL -->
     <div class="modal-scroll-body" #scrollArea (scroll)="onScroll($event)">
 
       <!-- ── SEÇÃO: CLÍNICO ── -->
       <div class="secao" id="sec-clinico" [formGroup]="FormularioMedicos">
-      <div class="secao-header">
-        <span class="secao-icone azul"><i class="fa-solid fa-user-doctor"></i></span>
-        <h2 class="secao-titulo">Clínico</h2>
-      </div>
+        <div class="secao-header">
+          <span class="secao-icone azul"><i class="fa-solid fa-user-doctor"></i></span>
+          <h2 class="secao-titulo">Clínico</h2>
+        </div>
 
         <div class="form-grid-2">
           <div class="field-group field-group--full">
@@ -54,12 +55,11 @@
               <label class="filter-chip"><input type="radio" formControlName="OptionsFindMedicos" [value]="5"><span>Todos</span></label>
             </div>
           </div>
-
           <div class="field-group field-group--full">
             <label class="field-label">Buscar clínico</label>
             <div class="search-row">
               <input class="field-input" type="text" placeholder="Digite para pesquisar..." formControlName="PesquisaMedicos">
-              <button class="btn-buscar" (click)="Pesquisar('medico')">
+              <button class="btn-buscar" type="button" (click)="Pesquisar('medico')">
                 <i class="fa-solid fa-magnifying-glass"></i> Buscar
               </button>
             </div>
@@ -86,10 +86,10 @@
 
       <!-- ── SEÇÃO: PACIENTE ── -->
       <div class="secao" id="sec-paciente" [formGroup]="FormularioPaciente">
-      <div class="secao-header">
-        <span class="secao-icone verde"><i class="fa-solid fa-hospital-user"></i></span>
-        <h2 class="secao-titulo">Paciente</h2>
-      </div>
+        <div class="secao-header">
+          <span class="secao-icone verde"><i class="fa-solid fa-hospital-user"></i></span>
+          <h2 class="secao-titulo">Paciente</h2>
+        </div>
 
         <div class="form-grid-2">
           <div class="field-group field-group--full">
@@ -103,12 +103,11 @@
               <label class="filter-chip fp"><input type="radio" (click)="AdicionarPaciente()" [value]="6"><span>+ Criar</span></label>
             </div>
           </div>
-
           <div class="field-group field-group--full">
             <label class="field-label">Buscar paciente</label>
             <div class="search-row">
               <input class="field-input" type="text" placeholder="Digite para pesquisar..." formControlName="PesquisaPaciente">
-              <button class="btn-buscar btn-buscar--verde" (click)="Pesquisar('paciente')">
+              <button class="btn-buscar btn-buscar--verde" type="button" (click)="Pesquisar('paciente')">
                 <i class="fa-solid fa-magnifying-glass"></i> Buscar
               </button>
             </div>
@@ -209,10 +208,10 @@
 
   <!-- ===== RODAPÉ FIXO ===== -->
   <div class="modal-footer">
-    <button class="btn-cancelar" mat-dialog-close>Cancelar</button>
-    <button class="btn-confirmar" (click)="marcarConsulta()">
-      <i class="fa-solid fa-calendar-check"></i>
-      Confirmar Agendamento
+    <button class="btn-cancelar" type="button" (click)="fechar()">Cancelar</button>
+    <button class="btn-confirmar" type="button" (click)="confirmar()">
+      <i [class]="modoEdicao ? 'fa-solid fa-check' : 'fa-solid fa-calendar-check'"></i>
+      {{ modoEdicao ? 'Salvar Alterações' : 'Confirmar Agendamento' }}
     </button>
   </div>
 

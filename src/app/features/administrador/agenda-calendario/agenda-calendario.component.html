@@ -1,0 +1,536 @@
+<div class="calendario-page">
+
+  <!-- ===== HEADER ===== -->
+  <div class="calendario-header">
+    <div class="header-left">
+      <h2 class="titulo-pagina">
+        <i class="fa-solid fa-calendar-days"></i>
+        Agenda
+      </h2>
+      <span class="subtitulo">{{ tituloAtual }}</span>
+    </div>
+
+    <div class="header-controls">
+      <!-- Navegação -->
+      <div class="nav-controls">
+        <button class="btn-nav btn-hoje" (click)="irParaHoje()">Hoje</button>
+        <button class="btn-nav btn-arrow" (click)="irParaAnterior()" title="Anterior">
+          <i class="fa-solid fa-chevron-left"></i>
+        </button>
+        <button class="btn-nav btn-arrow" (click)="irParaProximo()" title="Próximo">
+          <i class="fa-solid fa-chevron-right"></i>
+        </button>
+      </div>
+
+      <!-- Tipo de Visualização -->
+      <div class="view-switcher">
+        <button
+          class="btn-view"
+          [class.active]="tipoVisualizacao === 'mes'"
+          (click)="mudarVisualizacao('mes')">
+          <i class="fa-solid fa-table-cells-large"></i>
+          Mês
+        </button>
+        <button
+          class="btn-view"
+          [class.active]="tipoVisualizacao === 'semana'"
+          (click)="mudarVisualizacao('semana')">
+          <i class="fa-solid fa-table-columns"></i>
+          Semana
+        </button>
+        <button
+          class="btn-view"
+          [class.active]="tipoVisualizacao === 'dia'"
+          (click)="mudarVisualizacao('dia')">
+          <i class="fa-regular fa-calendar-check"></i>
+          Dia
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== CORPO ===== -->
+  <div class="calendario-body">
+
+    <!-- ===== PAINEL LATERAL ===== -->
+    <aside class="filtros-panel">
+
+      <!-- ── Sempre visível: Nova Consulta + mini-calendário ── -->
+      <div class="painel-fixo">
+
+        <button class="btn-nova-consulta" (click)="abrirNovaConsulta($event)">
+          <i class="fa-solid fa-plus"></i>
+          Nova Consulta
+        </button>
+
+        <div class="mini-calendar-wrapper">
+          <mat-calendar
+            [selected]="dataSelecionada"
+            (selectedChange)="selecionarDia({ data: $event })">
+          </mat-calendar>
+        </div>
+
+      </div>
+
+      <hr class="divider">
+
+      <!-- ── Cabeçalho dos filtros com toggle ── -->
+      <div class="filtros-panel-header" (click)="filtrosRecolhidos = !filtrosRecolhidos">
+        <span class="filtros-panel-titulo">
+          <i class="fa-solid fa-sliders"></i> Filtros
+        </span>
+        <button class="filtros-toggle-btn" [title]="filtrosRecolhidos ? 'Expandir' : 'Recolher'">
+          <i class="fa-solid"
+             [class.fa-chevron-up]="!filtrosRecolhidos"
+             [class.fa-chevron-down]="filtrosRecolhidos"></i>
+        </button>
+      </div>
+
+      <!-- ── Filtros retráteis ── -->
+      <div class="filtros-conteudo" [class.filtros-conteudo--recolhido]="filtrosRecolhidos">
+
+        <!-- Tipo -->
+        <div class="filtro-grupo">
+          <label class="filtro-label"><i class="fa-solid fa-layer-group"></i> Tipo</label>
+          <div class="filtro-toggle-group">
+            <button class="filtro-toggle-btn" [class.active]="!filtroFinalizadas" (click)="definirTipoConsulta(false)">
+              <i class="fa-solid fa-calendar-check"></i> Agendadas
+            </button>
+            <button class="filtro-toggle-btn" [class.active]="filtroFinalizadas" (click)="definirTipoConsulta(true)">
+              <i class="fa-solid fa-clipboard-check"></i> Finalizadas
+            </button>
+          </div>
+        </div>
+
+        <!-- Busca por paciente -->
+        <div class="filtro-grupo">
+          <label class="filtro-label"><i class="fa-solid fa-magnifying-glass"></i> Buscar paciente</label>
+          <div class="filtro-search-row">
+            <input class="filtro-input" type="text" placeholder="Nome do paciente..."
+              [(ngModel)]="filtroBusca" (keyup.enter)="aplicarFiltros()">
+            <button class="filtro-search-btn" (click)="aplicarFiltros()" title="Buscar">
+              <i class="fa-solid fa-search"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Especialidade -->
+        <div class="filtro-grupo" *ngIf="podeVerTodosProfissionais()">
+          <label class="filtro-label"><i class="fa-solid fa-stethoscope"></i> Especialidade</label>
+          <select class="filtro-select" [(ngModel)]="filtroEspecialidade" (change)="aplicarFiltros()">
+            <option value="">— Todas —</option>
+            <option *ngFor="let e of especialidadesDisponiveis" [value]="e">{{ e }}</option>
+          </select>
+        </div>
+
+        <!-- Clínico -->
+        <div class="filtro-grupo" *ngIf="podeVerTodosProfissionais()">
+          <label class="filtro-label"><i class="fa-solid fa-user-doctor"></i> Clínico</label>
+          <select class="filtro-select" [(ngModel)]="filtroProfissional" (change)="aplicarFiltros()">
+            <option value="">— Todos —</option>
+            <option *ngFor="let p of profissionaisDisponiveis" [value]="p.id">{{ p.nome }}</option>
+          </select>
+        </div>
+
+        <!-- Status -->
+        <div class="filtro-grupo">
+          <label class="filtro-label"><i class="fa-solid fa-circle-dot"></i> Status</label>
+          <div class="filtro-checkbox-grid">
+            <label class="filtro-checkbox-item" *ngFor="let s of legendaAtual">
+              <input type="checkbox"
+                [checked]="filtroStatusSelecionados.includes(s.value)"
+                (change)="toggleStatus(s.value)">
+              <span class="filtro-checkbox-dot" [ngClass]="s.cor"></span>
+              <span>{{ s.label }}</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Ações -->
+        <div class="filtro-acoes">
+          <button class="filtro-btn-ghost" (click)="limparFiltros()">
+            <i class="fa-solid fa-rotate-left"></i> Limpar
+          </button>
+          <button class="filtro-btn-primary" (click)="aplicarFiltros()">
+            <i class="fa-solid fa-filter"></i> Aplicar
+          </button>
+        </div>
+
+      </div><!-- /filtros-conteudo -->
+
+      <hr class="divider">
+
+      <!-- ── Sempre visível: Legenda dinâmica por tipo ── -->
+      <div class="legenda painel-legenda">
+        <h4 class="legenda-titulo">Legenda</h4>
+        <div class="legenda-item" *ngFor="let s of legendaAtual">
+          <span class="legenda-cor" [ngClass]="s.cor"></span>
+          <span>{{ s.label }}</span>
+        </div>
+      </div>
+
+    </aside>
+
+    <!-- ===== CALENDÁRIO PRINCIPAL ===== -->
+    <div class="calendario-main">
+
+      <!-- Loading -->
+      <div class="overlay-loading" *ngIf="carregando">
+        <i class="fa-solid fa-spinner fa-spin"></i>
+        <span>Carregando...</span>
+      </div>
+
+      <!-- ====== VISUALIZAÇÃO MÊS ====== -->
+      <div class="view-mes" *ngIf="tipoVisualizacao === 'mes'">
+        <!-- Cabeçalho dos dias da semana -->
+        <div class="grade-mes-header">
+          <div class="dia-semana-header" *ngFor="let dia of DIAS_SEMANA_NOMES">{{ dia }}</div>
+        </div>
+        <!-- Grade dos dias -->
+        <div class="grade-mes">
+          <div
+            *ngFor="let dia of diasCalendario"
+            class="celula-dia"
+            [class.outro-mes]="!dia.mesAtual"
+            [class.hoje]="dia.hoje"
+            [class.tem-consultas]="dia.consultas.length > 0"
+            (click)="selecionarDia(dia)">
+
+            <div class="celula-header">
+              <span class="numero-dia">{{ dia.data.getDate() }}</span>
+              <span class="badge-count" *ngIf="dia.consultas.length > 0">{{ dia.consultas.length }}</span>
+            </div>
+
+            <div class="eventos-lista">
+              <div
+                *ngFor="let c of dia.consultas.slice(0, 3)"
+                class="evento-chip"
+                [class]="getStatusClass(c.status)"
+                (click)="abrirPopover(c, $event)"
+                [title]="c.pacienteNome">
+                <span class="evento-hora">{{ getHorario(c.dataHora) }}</span>
+                <span class="evento-nome">{{ c.pacienteNome }}</span>
+              </div>
+              <div class="mais-eventos" *ngIf="dia.consultas.length > 3">
+                +{{ dia.consultas.length - 3 }} mais
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ====== VISUALIZAÇÃO SEMANA ====== -->
+      <div class="view-semana" *ngIf="tipoVisualizacao === 'semana'">
+        <div class="grade-semana-header">
+          <div class="col-hora-header"></div>
+          <div
+            *ngFor="let dia of diasSemana"
+            class="dia-semana-col-header"
+            [class.hoje]="dia.hoje"
+            (click)="selecionarDia(dia)">
+            <span class="dia-nome">{{ DIAS_SEMANA_NOMES[dia.data.getDay()] }}</span>
+            <span class="dia-numero" [class.hoje-numero]="dia.hoje">{{ dia.data.getDate() }}</span>
+          </div>
+        </div>
+
+        <div class="grade-semana-corpo">
+          <!-- Coluna de horas -->
+          <div class="col-horas">
+            <div class="slot-hora" *ngFor="let h of horasDia">{{ h.label }}</div>
+          </div>
+          <!-- Colunas dos dias -->
+          <div *ngFor="let dia of diasSemana" class="col-dia-semana" [class.hoje]="dia.hoje">
+            <div class="slot-evento-semana" *ngFor="let c of dia.consultas"
+              [class]="'evento-card ' + getStatusClass(c.status)"
+              (click)="abrirPopover(c, $event)">
+              <div class="evento-hora-semana">{{ getHorario(c.dataHora) }}</div>
+              <div class="evento-nome-semana">{{ c.pacienteNome }}</div>
+              <div class="evento-prof-semana" *ngIf="podeVerTodosProfissionais()">{{ c.profissionalNome }}</div>
+            </div>
+            <div class="sem-consultas-semana" *ngIf="dia.consultas.length === 0"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ====== VISUALIZAÇÃO DIA ====== -->
+      <div class="view-dia" *ngIf="tipoVisualizacao === 'dia'">
+        <div class="dia-titulo">
+          <span class="dia-nome-completo">
+            {{ DIAS_SEMANA_NOMES[dataAtual.getDay()] }},
+            {{ dataAtual.getDate() }} de {{ MESES_NOMES[dataAtual.getMonth()] }}
+          </span>
+          <span class="total-consultas">{{ horasDia | totalConsultasDia }} consultas</span>
+        </div>
+
+        <div class="grade-dia">
+          <div class="slot-dia" *ngFor="let hora of horasDia">
+            <div class="hora-label">{{ hora.label }}</div>
+            <div class="hora-eventos">
+              <div
+                *ngFor="let c of hora.consultas"
+                class="evento-card-dia"
+                [class]="getStatusClass(c.status)"
+                (click)="abrirPopover(c, $event)">
+                <div class="evento-dia-header">
+                  <span class="evento-hora-dia">{{ getHorario(c.dataHora) }}</span>
+                  <span class="evento-status-badge">{{ STATUS_LABELS[c.status] }}</span>
+                </div>
+                <div class="evento-paciente">
+                  <i class="fa-solid fa-user"></i> {{ c.pacienteNome }}
+                </div>
+                <div class="evento-especialidade">
+                  <i class="fa-solid fa-stethoscope"></i> {{ c.especialidadeNome }}
+                </div>
+                <div class="evento-medico" *ngIf="podeVerTodosProfissionais()">
+                  <i class="fa-solid fa-user-doctor"></i> {{ c.profissionalNome }}
+                </div>
+              </div>
+              <div class="hora-vazia" *ngIf="hora.consultas.length === 0"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ===== DRAWER LATERAL DIREITO ===== -->
+  <div class="drawer-overlay" *ngIf="popoverAberto && consultaSelecionada" (click)="fecharPopover()"></div>
+
+  <aside class="drawer-panel" [class.drawer-aberto]="popoverAberto && consultaSelecionada" *ngIf="consultaSelecionada">
+
+    <!-- ── BLOCO 1: Header — paciente + status ── -->
+    <div class="drw-header">
+      <div class="drw-header-meta">
+        <span class="drw-consulta-id">Consulta #{{ consultaSelecionada.id }}</span>
+        <span class="drw-status-pill" [class]="'drw-status-pill--' + getStatusClass(consultaSelecionada.status)">
+          <i class="fa-solid fa-circle-check" *ngIf="consultaSelecionada.status === 'CONFIRMADA'"></i>
+          <i class="fa-solid fa-calendar-check" *ngIf="consultaSelecionada.status === 'AGENDADA'"></i>
+          <i class="fa-solid fa-circle-check" *ngIf="consultaSelecionada.status === 'REALIZADA'"></i>
+          <i class="fa-solid fa-hand-holding-dollar" *ngIf="consultaSelecionada.status === 'PAGO'"></i>
+          <i class="fa-solid fa-ban" *ngIf="consultaSelecionada.status === 'CANCELADA'"></i>
+          {{ STATUS_LABELS[consultaSelecionada.status] }}
+        </span>
+      </div>
+      <div class="drw-paciente-row">
+        <div class="drw-avatar">{{ consultaSelecionada.pacienteNome | slice:0:2 | uppercase }}</div>
+        <div class="drw-paciente-info">
+          <p class="drw-paciente-nome">{{ consultaSelecionada.pacienteNome }}</p>
+          <p class="drw-paciente-tel" *ngIf="consultaSelecionada.pacienteTelefone">
+            <i class="fa-solid fa-phone"></i> {{ consultaSelecionada.pacienteTelefone }}
+          </p>
+        </div>
+        <button class="drw-fechar-btn" (click)="fecharPopover()" title="Fechar">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- ── BLOCO 2: Data e hora ── -->
+    <div class="drw-datetime">
+      <div class="drw-datetime-icon">
+        <i class="fa-solid fa-calendar-days"></i>
+      </div>
+      <div>
+        <p class="drw-datetime-date">
+          {{ consultaSelecionada.dataHora | date:'EEEE, dd \'de\' MMMM' : '' : 'pt-BR' | titlecase }}
+        </p>
+        <p class="drw-datetime-time">
+          {{ getHorario(consultaSelecionada.dataHora) }}
+          <ng-container *ngIf="getHorario(consultaSelecionada.dataHoraFim)">
+            &ndash; {{ getHorario(consultaSelecionada.dataHoraFim) }}
+          </ng-container>
+          <ng-container *ngIf="consultaSelecionada.duracaoMinutos">
+            &middot; {{ consultaSelecionada.duracaoMinutos }} min
+          </ng-container>
+        </p>
+      </div>
+    </div>
+
+    <!-- ── Corpo scrollável ── -->
+    <div class="drawer-corpo">
+
+      <!-- ── BLOCO 3: Grid clínico + pagamento ── -->
+      <div class="drw-grid-2">
+
+        <!-- Clínico -->
+        <div class="drw-mini-card" *ngIf="podeVerTodosProfissionais()">
+          <p class="drw-mini-label"><i class="fa-solid fa-stethoscope"></i> Clínico</p>
+          <p class="drw-mini-value">{{ consultaSelecionada.profissionalNome }}</p>
+          <p class="drw-mini-sub">{{ consultaSelecionada.especialidadeNome }}</p>
+        </div>
+
+        <!-- Especialidade (sem ver profissional) -->
+        <div class="drw-mini-card" *ngIf="!podeVerTodosProfissionais()">
+          <p class="drw-mini-label"><i class="fa-solid fa-stethoscope"></i> Especialidade</p>
+          <p class="drw-mini-value">{{ consultaSelecionada.especialidadeNome }}</p>
+          <p class="drw-mini-sub">{{ consultaSelecionada.duracaoMinutos }} min</p>
+        </div>
+
+        <!-- Pagamento -->
+        <div class="drw-mini-card">
+          <p class="drw-mini-label"><i class="fa-solid fa-credit-card"></i> Pagamento</p>
+          <p class="drw-mini-value">{{ consultaSelecionada.formaPagamentoNome || '—' }}</p>
+          <p class="drw-mini-sub">R$ {{ consultaSelecionada.valor | number:'1.2-2' }}</p>
+        </div>
+
+      </div>
+
+      <!-- ── BLOCO 4: Stepper de fluxo ── -->
+      <div class="drw-section">
+        <p class="drw-section-label">Fluxo da consulta</p>
+        <div class="drw-stepper">
+
+          <div class="drw-step" [class.drw-step--done]="isStatusDone('AGENDADA', consultaSelecionada.status)"
+                                [class.drw-step--active]="consultaSelecionada.status === 'AGENDADA'">
+            <div class="drw-step-dot">
+              <i class="fa-solid fa-check" *ngIf="isStatusDone('AGENDADA', consultaSelecionada.status)"></i>
+            </div>
+            <span>Agendada</span>
+          </div>
+
+          <div class="drw-step-line" [class.drw-step-line--done]="isStatusDone('CONFIRMADA', consultaSelecionada.status)"></div>
+
+          <div class="drw-step" [class.drw-step--done]="isStatusDone('CONFIRMADA', consultaSelecionada.status)"
+                                [class.drw-step--active]="consultaSelecionada.status === 'CONFIRMADA'">
+            <div class="drw-step-dot">
+              <i class="fa-solid fa-check" *ngIf="isStatusDone('CONFIRMADA', consultaSelecionada.status)"></i>
+            </div>
+            <span>Confirmada</span>
+          </div>
+
+          <div class="drw-step-line" [class.drw-step-line--done]="isStatusDone('REALIZADA', consultaSelecionada.status)"></div>
+
+          <div class="drw-step" [class.drw-step--done]="isStatusDone('REALIZADA', consultaSelecionada.status)"
+                                [class.drw-step--active]="consultaSelecionada.status === 'REALIZADA'">
+            <div class="drw-step-dot">
+              <i class="fa-solid fa-check" *ngIf="isStatusDone('REALIZADA', consultaSelecionada.status)"></i>
+            </div>
+            <span>Realizada</span>
+          </div>
+
+          <div class="drw-step-line" [class.drw-step-line--done]="consultaSelecionada.status === 'PAGO'"></div>
+
+          <div class="drw-step" [class.drw-step--active]="consultaSelecionada.status === 'PAGO'"
+                                [class.drw-step--done]="consultaSelecionada.status === 'PAGO'">
+            <div class="drw-step-dot">
+              <i class="fa-solid fa-check" *ngIf="consultaSelecionada.status === 'PAGO'"></i>
+            </div>
+            <span>Paga</span>
+          </div>
+
+        </div>
+
+        <!-- Cancelada -->
+        <div class="drw-cancelada-badge" *ngIf="consultaSelecionada.status === 'CANCELADA'">
+          <i class="fa-solid fa-ban"></i>
+          Consulta cancelada
+          <span *ngIf="consultaSelecionada.motivoCancelamento">— {{ consultaSelecionada.motivoCancelamento }}</span>
+        </div>
+      </div>
+
+      <!-- ── BLOCO 5: Observações ── -->
+      <div class="drw-section" *ngIf="consultaSelecionada.observacoes">
+        <p class="drw-section-label">Observações</p>
+        <p class="drw-obs-text">{{ consultaSelecionada.observacoes }}</p>
+      </div>
+
+      <!-- ── BLOCO 6: Alterar status ── -->
+      <div class="drw-section" *ngIf="consultaSelecionada.status !== 'CANCELADA' && consultaSelecionada.status !== 'PAGO'">
+        <label class="drw-section-label" for="drw-status-sel">Alterar status</label>
+
+        <ng-container *ngIf="consultaSelecionada.status === 'AGENDADA'">
+          <select id="drw-status-sel" class="drw-select"
+            (change)="alterarStatusDrawer($any($event.target).value); $any($event.target).value = ''">
+            <option value="">Agendada (atual)</option>
+            <option value="CONFIRMADA">Confirmar</option>
+            <option value="CANCELADA">Cancelar</option>
+          </select>
+        </ng-container>
+
+        <ng-container *ngIf="consultaSelecionada.status === 'CONFIRMADA'">
+          <select id="drw-status-sel" class="drw-select"
+            (change)="alterarStatusDrawer($any($event.target).value); $any($event.target).value = ''">
+            <option value="">Confirmada (atual)</option>
+            <option value="AGENDADA">Voltar para Agendada</option>
+            <option value="REALIZADA">Marcar como Realizada</option>
+            <option value="CANCELADA">Cancelar</option>
+          </select>
+        </ng-container>
+
+        <ng-container *ngIf="consultaSelecionada.status === 'REALIZADA'">
+          <select id="drw-status-sel" class="drw-select"
+            (change)="alterarStatusDrawer($any($event.target).value); $any($event.target).value = ''">
+            <option value="">Realizada (atual)</option>
+            <option value="PAGO">Marcar como Pago</option>
+          </select>
+        </ng-container>
+      </div>
+
+      <!-- ── BLOCO 7: Ações rápidas ── -->
+      <div class="drw-section">
+        <p class="drw-section-label">Ações rápidas</p>
+        <div class="drw-acoes-grid">
+
+          <!-- Questionário — CONFIRMADA e não respondido -->
+          <button class="drw-acao-btn"
+                  *ngIf="consultaSelecionada.status === 'CONFIRMADA' && !questionariosRespondidos.has(consultaSelecionada.id)"
+                  (click)="gerarLinkQuestionarioDrawer()"
+                  title="Gerar Link do Questionário de Saúde">
+            <i class="fa-solid fa-clipboard-list"></i>
+            <span>Questionário</span>
+          </button>
+
+          <!-- Planejamento — REALIZADA e não assinado -->
+          <button class="drw-acao-btn"
+                  *ngIf="consultaSelecionada.status === 'REALIZADA' && !planejamentosAssinados.has(consultaSelecionada.id)"
+                  (click)="gerarLinkPlanejamentoDrawer()"
+                  title="Gerar Link de Planejamento Terapêutico">
+            <i class="fa-solid fa-file-signature"></i>
+            <span>Planejamento</span>
+          </button>
+
+          <!-- WhatsApp — CONFIRMADA com telefone -->
+          <a class="drw-acao-btn drw-acao-btn--whatsapp"
+             *ngIf="consultaSelecionada.status === 'CONFIRMADA' && consultaSelecionada.pacienteTelefone"
+             [href]="gerarWhatsAppDrawer()"
+             target="_blank"
+             title="Enviar WhatsApp">
+            <i class="fa-brands fa-whatsapp"></i>
+            <span>WhatsApp</span>
+          </a>
+
+          <!-- Imprimir — sempre -->
+          <button class="drw-acao-btn"
+                  (click)="abrirImpressaoDrawer()"
+                  title="Imprimir">
+            <i class="fa-solid fa-print"></i>
+            <span>Imprimir</span>
+          </button>
+
+          <!-- Editar — AGENDADA ou CONFIRMADA -->
+          <button class="drw-acao-btn"
+                  *ngIf="consultaSelecionada.status === 'AGENDADA' || consultaSelecionada.status === 'CONFIRMADA'"
+                  (click)="abrirEdicao()"
+                  title="Editar Consulta">
+            <i class="fa-solid fa-pen-to-square"></i>
+            <span>Editar</span>
+          </button>
+
+          <!-- Excluir — AGENDADA ou CONFIRMADA -->
+          <button class="drw-acao-btn drw-acao-btn--danger"
+                  *ngIf="consultaSelecionada.status === 'AGENDADA' || consultaSelecionada.status === 'CONFIRMADA'"
+                  (click)="deletarConsultaDrawer()"
+                  title="Excluir Consulta">
+            <i class="fa-solid fa-trash"></i>
+            <span>Excluir</span>
+          </button>
+
+        </div>
+      </div>
+
+    </div><!-- /drawer-corpo -->
+
+  </aside>
+
+</div>

@@ -2,7 +2,9 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Routes } from '@angular/router';
 import { SharedModule } from 'src/app/shared/shared.module';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 
 // Módulo centralizado de Relatórios
 import { RelatorioModule } from 'src/app/features/relatorio/relatorio.module';
@@ -78,6 +80,9 @@ const routes: Routes = [
     SharedModule,
     RouterModule.forChild(routes),
     FormsModule,
+    ReactiveFormsModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
     RelatorioModule,
   ],
   exports: [RouterModule]

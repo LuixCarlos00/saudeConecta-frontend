@@ -639,6 +639,31 @@ body.dark-theme *::-webkit-scrollbar-thumb:hover {
    DIALOGS CUSTOMIZADOS
    ============================================ */
 
+/* Dialog Nova Consulta — layout único scrollável */
+.dialog-nova-consulta .mat-mdc-dialog-container {
+  padding: 0 !important;
+  border-radius: 10px !important;
+  overflow: hidden;
+  max-height: 90vh !important;
+}
+
+.dialog-nova-consulta .mdc-dialog__surface {
+  border-radius: 10px !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  max-height: 90vh !important;
+}
+
+.dialog-nova-consulta .mat-mdc-dialog-content {
+  padding: 0 !important;
+  max-height: none !important;
+  overflow: hidden !important;
+}
+
+.dialog-nova-consulta .cdk-overlay-pane {
+  max-width: 96vw !important;
+}
+
 /* Dialog de Seleção de Relatório */
 .selecao-relatorio-dialog .mat-mdc-dialog-container {
   padding: 0 !important;

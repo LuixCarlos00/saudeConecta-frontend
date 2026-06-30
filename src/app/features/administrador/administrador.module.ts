@@ -21,7 +21,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 // Módulo centralizado de Relatórios
 import { RelatorioModule } from 'src/app/features/relatorio/relatorio.module';
@@ -46,6 +46,11 @@ import { GraficoConsultasPorStatusComponent } from './dashboard/grafico-consulta
 import { GraficoMediaTempoConsultaComponent } from './dashboard/grafico-media-tempo-consulta/grafico-media-tempo-consulta.component';
 import { GraficoQntConsultasDiaAnteriorComponent } from './dashboard/grafico-qnt-consultas-dia-anterior/grafico-qnt-consultas-dia-anterior.component';
 import { GraficoSaldoComponent } from './dashboard/grafico-saldo/grafico-saldo.component';
+
+// Componentes de Agenda Calendário
+import { AgendaCalendarioComponent } from './agenda-calendario/agenda-calendario.component';
+import { TotalConsultasDiaPipe } from './agenda-calendario/total-consultas-dia.pipe';
+import { AgendarConsultaComponent } from 'src/app/features/publico/agendar-consulta/agendar-consulta.component';
 
 // Componentes de Gerenciamento de Agenda
 import { AgendaComponent } from './gerenciamento-agenda/agenda/agenda.component';
@@ -124,6 +129,11 @@ const routes: Routes = [
     GraficoQntConsultasDiaAnteriorComponent,
     GraficoSaldoComponent,
     
+    // Componentes de Agenda Calendário
+    AgendaCalendarioComponent,
+    TotalConsultasDiaPipe,
+    AgendarConsultaComponent,
+
     // Componentes de Gerenciamento de Agenda
     AgendaComponent,
     AvisosLembretesComponent,
@@ -164,6 +174,7 @@ const routes: Routes = [
     CommonModule,
     SharedModule,
     RouterModule.forChild(routes),
+    FormsModule,
     ReactiveFormsModule,
     MatCardModule,
     MatButtonModule,

@@ -1,0 +1,1389 @@
+// ============================================================
+// Agenda Calendário — inspirado no estilo Projuris
+// ============================================================
+
+$primary:    #2563eb;
+$primary-dk: #1d4ed8;
+$surface:    #ffffff;
+$bg:         #f1f5f9;
+$border:     #e2e8f0;
+$text:       #1e293b;
+$text-muted: #64748b;
+$radius:     10px;
+$shadow:     0 2px 12px rgba(0,0,0,.08);
+
+// ── Status colors ──────────────────────────────────────────
+$status: (
+  agendada:   #f97316,
+  confirmada: #06b6d4,
+  realizada:  #059669,
+  cancelada:  #ef4444,
+  pago:       #4f46e5,
+  faltou:     #f59e0b,
+  remarcada:  #a855f7,
+);
+
+@each $name, $color in $status {
+  .status-#{$name} {
+    background-color: rgba($color, .15);
+    border-left: 3px solid $color;
+    color: darken($color, 15%);
+  }
+  .legenda-cor.status-#{$name} {
+    background-color: $color;
+  }
+  .popover-header.status-#{$name} {
+    background-color: rgba($color, .12);
+    border-bottom: 2px solid $color;
+  }
+}
+
+// ── Page ──────────────────────────────────────────────────
+.calendario-page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: $bg;
+  font-family: 'Segoe UI', sans-serif;
+  color: $text;
+  overflow: hidden;
+  position: relative;
+}
+
+// ── Header ────────────────────────────────────────────────
+.calendario-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  background: $surface;
+  border-bottom: 1px solid $border;
+  box-shadow: $shadow;
+  flex-shrink: 0;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.titulo-pagina {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: $primary;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  i { font-size: 1.1rem; }
+}
+
+.subtitulo {
+  font-size: 1rem;
+  font-weight: 600;
+  color: $text;
+}
+
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+// Navegação
+.nav-controls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.btn-nav {
+  border: 1px solid $border;
+  background: $surface;
+  color: $text;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all .15s;
+
+  &:hover { background: $bg; }
+
+  &.btn-hoje {
+    padding: 6px 14px;
+    font-weight: 600;
+  }
+
+  &.btn-arrow {
+    padding: 6px 10px;
+    font-size: 0.8rem;
+  }
+}
+
+// View switcher
+.view-switcher {
+  display: flex;
+  background: $bg;
+  border-radius: 8px;
+  padding: 3px;
+  gap: 2px;
+}
+
+.btn-view {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border: none;
+  background: transparent;
+  border-radius: 6px;
+  color: $text-muted;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all .15s;
+
+  i { font-size: 0.8rem; }
+
+  &.active {
+    background: $surface;
+    color: $primary;
+    font-weight: 600;
+    box-shadow: 0 1px 4px rgba(0,0,0,.1);
+  }
+
+  &:hover:not(.active) { background: darken($bg, 4%); }
+}
+
+// Botão Nova Consulta (no painel lateral)
+.btn-nova-consulta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 11px 16px;
+  background: $primary;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.3px;
+  transition: background .15s, box-shadow .15s, transform .1s;
+  box-shadow: 0 3px 10px rgba(37, 99, 235, 0.35);
+  margin-bottom: 16px;
+
+  i { font-size: 0.85rem; }
+
+  &:hover {
+    background: $primary-dk;
+    box-shadow: 0 5px 16px rgba(37, 99, 235, 0.45);
+    transform: translateY(-1px);
+  }
+  &:active { transform: translateY(0); }
+}
+
+// ── Body ──────────────────────────────────────────────────
+.calendario-body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+// ── Painel Lateral ────────────────────────────────────────
+.filtros-panel {
+  width: 260px;
+  min-width: 260px;
+  background: $surface;
+  border-right: 1px solid $border;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+
+// Bloco fixo: Nova Consulta + mini-calendário
+.painel-fixo {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px 16px 0;
+  flex-shrink: 0;
+}
+
+// Legenda sempre visível no rodapé do painel
+.painel-legenda {
+  padding: 0 16px 16px;
+  flex-shrink: 0;
+}
+
+// Filtros retráteis com animação max-height
+.filtros-conteudo {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px 16px;
+  overflow: hidden;
+  max-height: 1000px;
+  opacity: 1;
+  transition: max-height .32s cubic-bezier(.4, 0, .2, 1),
+              padding .3s ease,
+              opacity .25s ease;
+
+  &--recolhido {
+    max-height: 0 !important;
+    padding-top: 0;
+    padding-bottom: 0;
+    opacity: 0;
+  }
+}
+
+// ── Cabeçalho dos filtros (clicável) ─────────────────────
+.filtros-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  cursor: pointer;
+  user-select: none;
+  flex-shrink: 0;
+  background: $bg;
+  border-top: 1px solid $border;
+  border-bottom: 1px solid $border;
+  transition: background .15s;
+
+  &:hover { background: darken($bg, 3%); }
+}
+
+.filtros-panel-titulo {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: $text-muted;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.filtros-toggle-btn {
+  background: none;
+  border: none;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: $text-muted;
+  font-size: 0.75rem;
+  pointer-events: none;
+  cursor: pointer;
+}
+
+.filtros-titulo {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: $text-muted;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+}
+
+.mini-calendar-wrapper {
+  ::ng-deep {
+    .mat-calendar { font-size: 0.75rem; }
+    .mat-calendar-header { padding: 4px 0; }
+    .mat-calendar-content { padding: 0; }
+    .mat-calendar-table { width: 100%; }
+  }
+}
+
+.divider { border: none; border-top: 1px solid $border; margin: 4px 0; }
+
+.filtro-grupo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.filtro-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: $text-muted;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  i { font-size: 0.7rem; }
+}
+
+.filtro-select {
+  border: 1px solid $border;
+  border-radius: 6px;
+  padding: 6px 8px;
+  font-size: 0.82rem;
+  color: $text;
+  background: $bg;
+  cursor: pointer;
+  outline: none;
+  &:focus { border-color: $primary; }
+}
+
+.legenda { display: flex; flex-direction: column; gap: 6px; }
+.legenda-titulo {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: $text-muted;
+  text-transform: uppercase;
+  margin: 0 0 4px;
+}
+.legenda-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  color: $text;
+}
+.legenda-cor {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+// ── Toggle Agendadas / Finalizadas ────────────────────────
+.filtro-toggle-group {
+  display: flex;
+  gap: 4px;
+}
+
+.filtro-toggle-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 6px 8px;
+  background: $bg;
+  border: 1px solid $border;
+  border-radius: 6px;
+  font-size: 0.73rem;
+  font-weight: 500;
+  color: $text-muted;
+  cursor: pointer;
+  transition: all .15s;
+  white-space: nowrap;
+
+  i { font-size: 0.65rem; }
+
+  &:hover { background: lighten($primary, 45%); border-color: $primary; color: $primary; }
+
+  &.active {
+    background: $primary;
+    border-color: $primary;
+    color: #fff;
+    font-weight: 600;
+  }
+}
+
+// ── Search Row ────────────────────────────────────────────
+.filtro-search-row {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.filtro-input {
+  flex: 1;
+  padding: 6px 8px;
+  border: 1px solid $border;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  color: $text;
+  background: $bg;
+  outline: none;
+  min-width: 0;
+
+  &:focus { border-color: $primary; }
+}
+
+.filtro-search-btn {
+  padding: 6px 10px;
+  background: $primary;
+  border: none;
+  border-radius: 6px;
+  color: #fff;
+  cursor: pointer;
+  font-size: 0.8rem;
+  flex-shrink: 0;
+  transition: background .15s;
+
+  &:hover { background: darken($primary, 10%); }
+}
+
+// ── Checkbox Grid de Status ───────────────────────────────
+.filtro-checkbox-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.filtro-checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  color: $text;
+
+  input[type="checkbox"] {
+    width: 13px;
+    height: 13px;
+    accent-color: $primary;
+    cursor: pointer;
+    margin: 0;
+    flex-shrink: 0;
+  }
+}
+
+.filtro-checkbox-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  flex-shrink: 0;
+
+  @each $name, $color in $status {
+    &.status-#{$name} { background-color: $color; }
+  }
+}
+
+// ── Botões de Ação ────────────────────────────────────────
+.filtro-acoes {
+  display: flex;
+  gap: 6px;
+}
+
+.filtro-btn-ghost {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 7px 10px;
+  background: none;
+  border: 1px solid $border;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: $text-muted;
+  cursor: pointer;
+  transition: all .15s;
+
+  &:hover { background: $bg; border-color: darken($border, 10%); }
+}
+
+.filtro-btn-primary {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 7px 10px;
+  background: $primary;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #fff;
+  cursor: pointer;
+  transition: background .15s;
+
+  &:hover { background: darken($primary, 10%); }
+}
+
+// ── Calendário Principal ──────────────────────────────────
+.calendario-main {
+  flex: 1;
+  overflow: auto;
+  padding: 16px;
+  position: relative;
+}
+
+.overlay-loading {
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,.7);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  z-index: 10;
+  font-size: 1rem;
+  color: $primary;
+  i { font-size: 2rem; }
+}
+
+// ─────────────────────────────────────────────────────────
+// VISUALIZAÇÃO MÊS
+// ─────────────────────────────────────────────────────────
+.grade-mes-header {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 1px;
+  margin-bottom: 4px;
+}
+
+.dia-semana-header {
+  text-align: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: $text-muted;
+  padding: 6px 0;
+  text-transform: uppercase;
+}
+
+.grade-mes {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.celula-dia {
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: $radius;
+  min-height: 100px;
+  padding: 6px;
+  cursor: pointer;
+  transition: all .15s;
+  overflow: hidden;
+
+  &:hover { border-color: $primary; box-shadow: 0 0 0 2px rgba($primary,.1); }
+
+  &.outro-mes {
+    background: $bg;
+    opacity: .6;
+    .numero-dia { color: $text-muted; }
+  }
+
+  &.hoje {
+    border-color: $primary;
+    .numero-dia {
+      background: $primary;
+      color: #fff;
+    }
+  }
+
+  &.tem-consultas { border-left: 3px solid $primary; }
+}
+
+.celula-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.numero-dia {
+  font-size: 0.85rem;
+  font-weight: 600;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: $text;
+}
+
+.badge-count {
+  font-size: 0.7rem;
+  background: $primary;
+  color: #fff;
+  border-radius: 10px;
+  padding: 1px 6px;
+  font-weight: 600;
+}
+
+.eventos-lista { display: flex; flex-direction: column; gap: 2px; }
+
+.evento-chip {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.72rem;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: filter .1s;
+
+  &:hover { filter: brightness(.9); }
+
+  .evento-hora { font-weight: 700; flex-shrink: 0; }
+  .evento-nome { overflow: hidden; text-overflow: ellipsis; }
+}
+
+.mais-eventos {
+  font-size: 0.72rem;
+  color: $primary;
+  font-weight: 600;
+  padding: 1px 4px;
+  cursor: pointer;
+}
+
+// ─────────────────────────────────────────────────────────
+// VISUALIZAÇÃO SEMANA
+// ─────────────────────────────────────────────────────────
+.grade-semana-header {
+  display: grid;
+  grid-template-columns: 60px repeat(7, 1fr);
+  border-bottom: 2px solid $border;
+  background: $surface;
+  border-radius: $radius $radius 0 0;
+  overflow: hidden;
+}
+
+.col-hora-header { padding: 10px; }
+
+.dia-semana-col-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px 4px;
+  cursor: pointer;
+  border-left: 1px solid $border;
+  transition: background .15s;
+
+  &:hover { background: $bg; }
+  &.hoje { background: rgba($primary,.05); }
+
+  .dia-nome {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: $text-muted;
+    text-transform: uppercase;
+  }
+
+  .dia-numero {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: $text;
+
+    &.hoje-numero {
+      background: $primary;
+      color: #fff;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+    }
+  }
+}
+
+.grade-semana-corpo {
+  display: grid;
+  grid-template-columns: 60px repeat(7, 1fr);
+  background: $surface;
+  border-radius: 0 0 $radius $radius;
+  overflow: hidden;
+  border: 1px solid $border;
+  border-top: none;
+  min-height: 400px;
+}
+
+.col-horas { border-right: 1px solid $border; }
+
+.slot-hora {
+  height: 64px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 4px;
+  font-size: 0.72rem;
+  color: $text-muted;
+  border-bottom: 1px solid $border;
+}
+
+.col-dia-semana {
+  border-left: 1px solid $border;
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-height: 400px;
+  background: $surface;
+
+  &.hoje { background: rgba($primary,.02); }
+}
+
+.evento-card {
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: filter .1s;
+
+  &:hover { filter: brightness(.92); }
+}
+
+.slot-evento-semana {
+  @extend .evento-card;
+  .evento-hora-semana { font-weight: 700; font-size: 0.72rem; }
+  .evento-nome-semana { font-weight: 600; }
+  .evento-prof-semana { font-size: 0.7rem; opacity: .8; }
+}
+
+.sem-consultas-semana { flex: 1; }
+
+// ─────────────────────────────────────────────────────────
+// VISUALIZAÇÃO DIA
+// ─────────────────────────────────────────────────────────
+.dia-titulo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: $surface;
+  border-radius: $radius;
+  margin-bottom: 12px;
+  border: 1px solid $border;
+
+  .dia-nome-completo {
+    font-size: 1rem;
+    font-weight: 700;
+    color: $text;
+  }
+
+  .total-consultas {
+    font-size: 0.82rem;
+    color: $primary;
+    font-weight: 600;
+    background: rgba($primary,.08);
+    padding: 4px 10px;
+    border-radius: 20px;
+  }
+}
+
+.grade-dia {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.slot-dia {
+  display: grid;
+  grid-template-columns: 60px 1fr;
+  min-height: 60px;
+  border: 1px solid $border;
+  border-radius: $radius;
+  background: $surface;
+  overflow: hidden;
+}
+
+.hora-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: $bg;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: $text-muted;
+  border-right: 1px solid $border;
+  padding: 0 8px;
+}
+
+.hora-eventos {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 6px;
+}
+
+.hora-vazia { min-height: 40px; }
+
+.evento-card-dia {
+  border-radius: 6px;
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: filter .1s;
+
+  &:hover { filter: brightness(.92); }
+}
+
+.evento-dia-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.evento-hora-dia {
+  font-weight: 700;
+  font-size: 0.82rem;
+}
+
+.evento-status-badge {
+  font-size: 0.7rem;
+  font-weight: 600;
+  background: rgba(0,0,0,.08);
+  padding: 2px 6px;
+  border-radius: 10px;
+}
+
+.evento-paciente,
+.evento-especialidade,
+.evento-medico {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  margin-top: 2px;
+  i { font-size: 0.72rem; opacity: .7; }
+}
+
+// ─────────────────────────────────────────────────────────
+// DRAWER LATERAL DIREITO
+// ─────────────────────────────────────────────────────────
+
+// Overlay escuro que cobre apenas a área fora do drawer
+.drawer-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: clamp(380px, 45%, 680px);
+  background: rgba(0, 0, 0, .52);
+  z-index: 1100;
+  animation: fadeIn .2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+// Painel lateral
+.drawer-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 45%;
+  min-width: 380px;
+  max-width: 680px;
+  height: 100vh;
+  background: #fff;
+  z-index: 1200;
+  display: flex;
+  flex-direction: column;
+  box-shadow: -6px 0 32px rgba(0, 0, 0, .22);
+  transform: translateX(100%);
+  transition: transform .28s cubic-bezier(.4, 0, .2, 1);
+  font-family: 'Segoe UI', system-ui, sans-serif;
+}
+
+.drawer-panel.drawer-aberto {
+  transform: translateX(0);
+}
+
+// ══════════════════════════════════════════════════════════
+//  DRAWER — novo design drw-*
+// ══════════════════════════════════════════════════════════
+
+// ── BLOCO 1: Header ───────────────────────────────────────
+.drw-header {
+  padding: 16px 18px 14px;
+  border-bottom: 1px solid #e5eaf0;
+  flex-shrink: 0;
+  background: #fff;
+}
+
+.drw-header-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.drw-consulta-id {
+  font-size: 0.72rem;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+// ── Pills de status ───────────────────────────────────────
+.drw-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.73rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 999px;
+
+  i { font-size: 0.8rem; }
+
+  &--status-agendada   { background: #dbeafe; color: #1d4ed8; }
+  &--status-confirmada { background: #dcfce7; color: #15803d; }
+  &--status-realizada  { background: #d1fae5; color: #0f766e; }
+  &--status-pago       { background: #ede9fe; color: #6d28d9; }
+  &--status-cancelada  { background: #fee2e2; color: #b91c1c; }
+  &--status-faltou     { background: #fef9c3; color: #a16207; }
+  &--status-remarcada  { background: #ffedd5; color: #c2410c; }
+}
+
+// ── Linha paciente ────────────────────────────────────────
+.drw-paciente-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.drw-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #eff6ff;
+  color: #2563eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.88rem;
+  flex-shrink: 0;
+}
+
+.drw-paciente-info {
+  flex: 1;
+  min-width: 0;
+
+  p { margin: 0; }
+}
+
+.drw-paciente-nome {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.drw-paciente-tel {
+  font-size: 0.78rem;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 2px !important;
+
+  i { font-size: 0.7rem; }
+}
+
+.drw-fechar-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #94a3b8;
+  font-size: 1rem;
+  padding: 6px 8px;
+  border-radius: 6px;
+  transition: background .15s, color .15s;
+  flex-shrink: 0;
+
+  &:hover { background: #f1f5f9; color: #475569; }
+}
+
+// ── BLOCO 2: Data e hora ──────────────────────────────────
+.drw-datetime {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  border-bottom: 1px solid #e5eaf0;
+  flex-shrink: 0;
+  background: #fff;
+}
+
+.drw-datetime-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  i { font-size: 1rem; color: #64748b; }
+}
+
+.drw-datetime-date {
+  font-size: 0.87rem;
+  font-weight: 600;
+  color: #0f172a;
+  margin: 0;
+}
+
+.drw-datetime-time {
+  font-size: 0.78rem;
+  color: #64748b;
+  margin: 2px 0 0;
+}
+
+// ── Corpo scrollável ──────────────────────────────────────
+.drawer-corpo {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  scrollbar-width: thin;
+  scrollbar-color: #d1d9e0 transparent;
+
+  &::-webkit-scrollbar       { width: 5px; }
+  &::-webkit-scrollbar-thumb { background: #d1d9e0; border-radius: 4px; }
+}
+
+// ── BLOCO 3: Grid clínico + pagamento ─────────────────────
+.drw-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  padding: 14px 0;
+  border-bottom: 1px solid #e5eaf0;
+}
+
+.drw-mini-card {
+  background: #f8fafc;
+  border-radius: 10px;
+  padding: 12px;
+
+  p { margin: 0; }
+}
+
+.drw-mini-label {
+  font-size: 0.7rem;
+  color: #94a3b8;
+  margin-bottom: 6px !important;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  i { font-size: 0.75rem; }
+}
+
+.drw-mini-value {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #0f172a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.drw-mini-sub {
+  font-size: 0.73rem;
+  color: #64748b;
+  margin-top: 2px !important;
+}
+
+// ── Seções genéricas ──────────────────────────────────────
+.drw-section {
+  padding: 14px 0;
+  border-bottom: 1px solid #e5eaf0;
+
+  &:last-child { border-bottom: none; }
+}
+
+.drw-section-label {
+  font-size: 0.72rem;
+  color: #94a3b8;
+  margin: 0 0 10px;
+  font-weight: 500;
+}
+
+// ── BLOCO 4: Stepper ──────────────────────────────────────
+
+// Duração base de cada segmento (dot + linha)
+// Sequência: dot1 → linha1 → dot2 → linha2 → dot3 → linha3 → dot4
+// Cada etapa dura 220ms, linha dura 280ms
+$seg: 220ms;
+$lin: 280ms;
+
+// dot1 começa em 0
+$t1: 0ms;
+// linha1 começa depois que dot1 termina
+$t-l1: $t1 + $seg;
+// dot2 começa depois que linha1 termina
+$t2: $t-l1 + $lin;
+// linha2
+$t-l2: $t2 + $seg;
+// dot3
+$t3: $t-l2 + $lin;
+// linha3
+$t-l3: $t3 + $seg;
+// dot4
+$t4: $t-l3 + $lin;
+// pulso do dot ativo começa após ele aparecer
+$pulse-delay: $seg * 0.8;
+
+@keyframes dotAppear {
+  0%   { transform: scale(0);    opacity: 0; }
+  60%  { transform: scale(1.2);  opacity: 1; }
+  100% { transform: scale(1);    opacity: 1; }
+}
+
+@keyframes lineFill {
+  0%   { transform: scaleX(0); }
+  100% { transform: scaleX(1); }
+}
+
+@keyframes checkPop {
+  0%   { transform: scale(0); opacity: 0; }
+  70%  { transform: scale(1.3); }
+  100% { transform: scale(1);   opacity: 1; }
+}
+
+@keyframes dotPulse {
+  0%, 100% { box-shadow: 0 0 0 0   rgba(37,99,235,.5); }
+  50%       { box-shadow: 0 0 0 7px rgba(37,99,235,.0); }
+}
+
+.drw-stepper {
+  display: flex;
+  align-items: center;
+}
+
+.drw-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  flex: 1;
+
+  span {
+    font-size: 0.68rem;
+    color: #94a3b8;
+    white-space: nowrap;
+  }
+
+  &--active span { font-weight: 700; color: #0f172a; }
+  &--done   span { color: #64748b; }
+}
+
+.drw-step-dot {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #f1f5f9;
+  border: 1.5px solid #d1d9e0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  // base: aparece imediatamente sem animar (steps futuros)
+  opacity: 1;
+
+  i { font-size: 0.65rem; display: none; }
+
+  // ── Step concluído ──
+  .drw-step--done & {
+    background: #dcfce7;
+    border-color: #86efac;
+    animation: dotAppear $seg cubic-bezier(.34,1.56,.64,1) both;
+
+    i {
+      display: block;
+      color: #15803d;
+      animation: checkPop 200ms ease-out both;
+    }
+  }
+
+  // ── Step ativo ──
+  .drw-step--active & {
+    background: #2563eb;
+    border-color: #2563eb;
+    animation: dotAppear $seg cubic-bezier(.34,1.56,.64,1) both,
+               dotPulse 1.8s ease-in-out infinite;
+  }
+}
+
+// ── Delays sequenciais: dot1 → linha1 → dot2 → linha2 → dot3 → linha3 → dot4 ──
+// nth-child conta: step(1) linha(2) step(3) linha(4) step(5) linha(6) step(7)
+
+.drw-step:nth-child(1) .drw-step-dot {
+  animation-delay: #{$t1}, #{$t1 + $pulse-delay};
+}
+.drw-step:nth-child(3) .drw-step-dot {
+  animation-delay: #{$t2}, #{$t2 + $pulse-delay};
+}
+.drw-step:nth-child(5) .drw-step-dot {
+  animation-delay: #{$t3}, #{$t3 + $pulse-delay};
+}
+.drw-step:nth-child(7) .drw-step-dot {
+  animation-delay: #{$t4}, #{$t4 + $pulse-delay};
+}
+
+// ── Check icons com delay alinhado ao dot pai ──
+.drw-step:nth-child(1) .drw-step-dot i { animation-delay: #{$t1 + $seg * 0.5}; }
+.drw-step:nth-child(3) .drw-step-dot i { animation-delay: #{$t2 + $seg * 0.5}; }
+.drw-step:nth-child(5) .drw-step-dot i { animation-delay: #{$t3 + $seg * 0.5}; }
+.drw-step:nth-child(7) .drw-step-dot i { animation-delay: #{$t4 + $seg * 0.5}; }
+
+// ── Linhas ──
+.drw-step-line {
+  height: 2px;
+  flex: 1;
+  background: #e5eaf0;
+  margin-bottom: 18px;
+  position: relative;
+  overflow: hidden;
+
+  &--done::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, #86efac, #4ade80);
+    transform-origin: left center;
+    animation: lineFill $lin ease-in-out both;
+  }
+}
+
+// Linha 1 começa após dot1
+.drw-step-line:nth-child(2).drw-step-line--done::after  { animation-delay: #{$t-l1}; }
+// Linha 2 começa após dot2
+.drw-step-line:nth-child(4).drw-step-line--done::after  { animation-delay: #{$t-l2}; }
+// Linha 3 começa após dot3
+.drw-step-line:nth-child(6).drw-step-line--done::after  { animation-delay: #{$t-l3}; }
+
+.drw-cancelada-badge {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 12px;
+  padding: 8px 12px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  color: #b91c1c;
+  font-weight: 500;
+  animation: dotAppear .4s cubic-bezier(.34,1.56,.64,1) both;
+
+  i { font-size: 0.85rem; }
+  span { color: #7f1d1d; font-weight: 400; }
+}
+
+// ── BLOCO 5: Observações ──────────────────────────────────
+.drw-obs-text {
+  font-size: 0.83rem;
+  color: #334155;
+  line-height: 1.6;
+  background: #f8fafc;
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin: 0;
+}
+
+// ── BLOCO 6: Select de status ─────────────────────────────
+.drw-select {
+  width: 100%;
+  padding: 9px 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #1e293b;
+  background: #f8fafc;
+  cursor: pointer;
+  outline: none;
+  transition: border-color .15s, box-shadow .15s;
+
+  &:focus {
+    border-color: $primary;
+    box-shadow: 0 0 0 3px rgba(37,99,235,.10);
+    background: #fff;
+  }
+  &:disabled { opacity: .55; cursor: not-allowed; }
+}
+
+// ── BLOCO 7: Ações rápidas ────────────────────────────────
+.drw-acoes-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.drw-acao-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 4px;
+  border-radius: 10px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid #e5eaf0;
+  background: #f8fafc;
+  color: #475569;
+  text-decoration: none;
+  transition: background .15s, border-color .15s, color .15s, transform .12s;
+
+  i { font-size: 1.1rem; color: #64748b; transition: color .15s; }
+
+  &:hover {
+    background: #f1f5f9;
+    border-color: #d1d9e0;
+    transform: translateY(-1px);
+  }
+
+  &--whatsapp {
+    border-color: #bbf7d0;
+    color: #15803d;
+    i { color: #22c55e; }
+    &:hover { background: #f0fdf4; }
+  }
+
+  &--danger {
+    border-color: #fecaca;
+    color: #dc2626;
+    i { color: #ef4444; }
+    &:hover { background: #fef2f2; }
+  }
+}
+
+// Responsivo: drawer vira 80% em telas menores
+@media (max-width: 900px) {
+  .drawer-panel { width: 80%; }
+}
+
+// ─────────────────────────────────────────────────────────
+// RESPONSIVO
+// ─────────────────────────────────────────────────────────
+@media (max-width: 900px) {
+  .filtros-panel {
+    display: none; // collapsa em mobile — pode implementar drawer depois
+  }
+}
+
+@media (max-width: 600px) {
+  .calendario-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .header-controls { width: 100%; justify-content: space-between; }
+}
