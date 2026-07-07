@@ -1,9 +1,11 @@
 import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { Subject, takeUntil, take, filter, Observable } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
+import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
 import { ConsultaApiService } from 'src/app/services/api/consulta-api.service';
 import { ConsultaStateService } from 'src/app/services/state/consulta-state.service';
+import { ProntuarioStateService } from 'src/app/services/state/prontuario-state.service';
 import { tokenService } from 'src/app/util/Token/Token.service';
 import { ControleAcessoApiService } from 'src/app/services/api/controle-acesso-api.service';
 import { Consultav2, StatusConsulta } from 'src/app/util/variados/interfaces/consulta/consultav2';
@@ -112,6 +114,7 @@ export class AgendaCalendarioComponent implements OnInit, OnDestroy {
   constructor(
     private consultaService: ConsultaApiService,
     private consultaState: ConsultaStateService,
+    private prontuarioState: ProntuarioStateService,
     private tokenService: tokenService,
     public controleAcesso: ControleAcessoApiService,
     private dialog: MatDialog,
@@ -120,6 +123,7 @@ export class AgendaCalendarioComponent implements OnInit, OnDestroy {
     private prontuarioDentistaApiService: ProntuarioDentistaApiService,
     private prontuarioApiService: ProntuarioApiService,
     private planejamentoApi: PlanejamentoTerapeuticoApiService,
+    private router: Router,
   ) {}
 
   ngOnInit(): void {
@@ -160,11 +164,12 @@ export class AgendaCalendarioComponent implements OnInit, OnDestroy {
     this.carregando = true;
     this.cdr.markForCheck();
 
+    const dataRef = this.formatarDataParaApi(this.dataAtual);
     const request$ = this.tipoVisualizacao === 'dia'
-      ? this.consultaService.buscarDoDiaAtual()
+      ? this.consultaService.buscarDoDiaAtual(dataRef)
       : this.tipoVisualizacao === 'semana'
-        ? this.consultaService.buscarDaSemanaAtual()
-        : this.consultaService.buscarDoMesAtual();
+        ? this.consultaService.buscarDaSemanaAtual(dataRef)
+        : this.consultaService.buscarDoMesAtual(dataRef);
     request$.pipe(take(1), takeUntil(this.destroy$))
       .subscribe({
         next: (consultas) => {
@@ -344,12 +349,26 @@ export class AgendaCalendarioComponent implements OnInit, OnDestroy {
 
   private getInicioMes(): string {
     const d = new Date(this.dataAtual.getFullYear(), this.dataAtual.getMonth(), 1);
-    return d.toISOString().split('T')[0];
+    return this.formatarDataParaApi(d);
   }
 
   private getFimMes(): string {
     const d = new Date(this.dataAtual.getFullYear(), this.dataAtual.getMonth() + 1, 0);
-    return d.toISOString().split('T')[0];
+    return this.formatarDataParaApi(d);
+  }
+
+  /**
+   * Formata uma data local no padrão YYYY-MM-DD, sem sofrer o deslocamento
+   * de fuso horário que `toISOString()` (baseado em UTC) causaria.
+   *
+   * @param data Data a ser formatada
+   * @returns Data no formato YYYY-MM-DD
+   */
+  private formatarDataParaApi(data: Date): string {
+    const ano = data.getFullYear();
+    const mes = (data.getMonth() + 1).toString().padStart(2, '0');
+    const dia = data.getDate().toString().padStart(2, '0');
+    return `${ano}-${mes}-${dia}`;
   }
 
   // ========== NAVEGAÇÃO ==========
@@ -384,8 +403,7 @@ export class AgendaCalendarioComponent implements OnInit, OnDestroy {
       this.dataAtual.setDate(this.dataAtual.getDate() - 1);
     }
     this.atualizarTitulo();
-    this.gerarCalendario();
-    this.cdr.markForCheck();
+    this.carregarConsultas();
   }
 
   irParaProximo(): void {
@@ -399,8 +417,7 @@ export class AgendaCalendarioComponent implements OnInit, OnDestroy {
       this.dataAtual.setDate(this.dataAtual.getDate() + 1);
     }
     this.atualizarTitulo();
-    this.gerarCalendario();
-    this.cdr.markForCheck();
+    this.carregarConsultas();
   }
 
   mudarVisualizacao(tipo: TipoVisualizacao): void {
@@ -551,7 +568,75 @@ export class AgendaCalendarioComponent implements OnInit, OnDestroy {
 
   abrirImpressaoDrawer(): void {
     if (!this.consultaSelecionada) return;
-    this.relatorioService.abrirRelatorioAdmin(this.consultaSelecionada);
+    const consulta = this.consultaSelecionada;
+    this.fecharPopover();
+    setTimeout(() => {
+      this.relatorioService.abrirRelatorioAdmin(consulta);
+    }, 100);
+  }
+
+  iniciarConsultaDrawer(): void {
+    if (!this.consultaSelecionada) return;
+
+    const element = this.consultaSelecionada;
+    const dataFormatada = element.dataHora
+      ? new Date(element.dataHora).toLocaleDateString('pt-BR')
+      : 'Não informada';
+    const horarioFormatado = element.dataHora
+      ? new Date(element.dataHora).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+      : 'Não informado';
+
+    // Fechar o drawer antes de abrir o SweetAlert para evitar conflito de z-index
+    this.fecharPopover();
+
+    setTimeout(() => {
+      Swal.fire({
+        title: 'Iniciar Atendimento',
+        html: `
+          <div style="text-align: left; padding: 10px;">
+            <p style="margin-bottom: 15px; color: #666;">
+              <i class="fa-solid fa-user" style="margin-right: 8px; color: #5ccf6c;"></i>
+              <strong>Paciente:</strong> ${element.pacienteNome || 'Não informado'}
+            </p>
+            <p style="margin-bottom: 15px; color: #666;">
+              <i class="fa-solid fa-calendar" style="margin-right: 8px; color: #5ccf6c;"></i>
+              <strong>Data:</strong> ${dataFormatada}
+            </p>
+            <p style="margin-bottom: 15px; color: #666;">
+              <i class="fa-solid fa-clock" style="margin-right: 8px; color: #5ccf6c;"></i>
+              <strong>Horário:</strong> ${horarioFormatado}
+            </p>
+          </div>
+          <p style="margin-top: 20px; font-size: 14px; color: #888;">
+            Deseja iniciar o atendimento deste paciente?
+          </p>
+        `,
+        showCancelButton: true,
+        confirmButtonColor: '#5ccf6c',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: '<i class="fa-solid fa-stethoscope"></i> Iniciar Atendimento',
+        cancelButtonText: '<i class="fa-solid fa-times"></i> Cancelar',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          Swal.fire({
+            title: 'Iniciando consulta...',
+            html: 'Aguarde enquanto preparamos o prontuário.',
+            allowOutsideClick: false,
+            showConfirmButton: false,
+            timer: 1500,
+            timerProgressBar: true,
+            didOpen: () => { Swal.showLoading(); },
+          }).then(() => {
+            this.prontuarioState.changeConsulta(element);
+            if (this.UsuarioLogado.perfil === 'MEDICO') {
+              this.router.navigate(['startconsulta']);
+            } else if (this.UsuarioLogado.perfil === 'DENTISTA') {
+              this.router.navigate(['startconsulta-dentista']);
+            }
+          });
+        }
+      });
+    }, 300);
   }
 
   gerarWhatsAppDrawer(): string {

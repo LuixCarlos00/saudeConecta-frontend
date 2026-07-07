@@ -40,16 +40,13 @@ export class HistoricoCompletoMedicoComponent implements OnInit {
       }
     });
 
-    const profissionalId = this.UsuarioLogado.perfil === 'MEDICO' ? this.UsuarioLogado.id : undefined;
-console.log('busca', this.data.pacienteId, 'medico', profissionalId)
-
     this.consultaApiService.BuscandoHistoricoDeConsultasDoPaciente(
-      this.data.pacienteId, 'medico', profissionalId
-    ).subscribe((data: HistoricoCompletoResponse[]) => {
+      this.data.pacienteId
+    ).subscribe((data: any[]) => {
       console.log('Histórico recebido:', data);
 
-      // Backend retorna array direto com todos os dados incluindo prontuários
-      this.historico = data || [];
+      // Backend já filtra por perfil (Admin: todos | Profissional: apenas seus registros médicos)
+      this.historico = (data || []).filter(item => item.tipoProntuario?.toUpperCase() !== 'DENTISTA');
 
       // Extrair informações do paciente do primeiro registro
       if (this.historico.length > 0) {
