@@ -6,11 +6,13 @@ import { FormsModule } from '@angular/forms';
 // Componente seletor de relatório
 import { RelatorioComponent } from './relatorio.component';
 
+// Componente comum — Histórico Completo (médico + dentista)
+import { HistoricoCompletoComponent } from './impressoes-comuns/historico-completo/historico-completo.component';
+
 // Componentes de Impressão - Dentista
 import { AtestadoDentistaComponent } from './impressoes-dentista/atestado-dentista/atestado-dentista.component';
 import { ComprovantePagamentoDentistaComponent } from './impressoes-dentista/comprovante-pagamento-dentista/comprovante-pagamento-dentista.component';
 import { ExamesDentistaComponent } from './impressoes-dentista/exames-dentista/exames-dentista.component';
-import { HistoricoCompletoDentistaComponent } from './impressoes-dentista/historico-completo-dentista/historico-completo-dentista.component';
 import { PlanejamentoDentistaComponent } from './impressoes-dentista/planejamento-dentista/planejamento-dentista.component';
 import { PrescricaoDentistaComponent } from './impressoes-dentista/prescricao-dentista/prescricao-dentista.component';
 import { QuestionarioSaudeDentistaComponent } from './impressoes-dentista/questionario-saude-dentista/questionario-saude-dentista.component';
@@ -20,7 +22,6 @@ import { RegistroConsultaDentistaComponent } from './impressoes-dentista/registr
 import { AtestadoMedicoComponent } from './impressoes-medico/atestado-medico/AtestadoMedico.component';
 import { ComprovantePagamentoMedicoComponent } from './impressoes-medico/comprovante-pagamento-medico/comprovante-pagamento-medico.component';
 import { ExamesMedicosComponent } from './impressoes-medico/exames-medicos/exames-medicos.component';
-import { HistoricoCompletoMedicoComponent } from './impressoes-medico/historico-completo-medico/historico-completo-medico.component';
 import { PlanejamentoMedicoComponent } from './impressoes-medico/planejamento-medico/planejamento-medico.component';
 import { PrescricaoMedicoComponent } from './impressoes-medico/prescricao-medico/prescricao-medico.component';
 import { QuestionarioSaudeMedicoComponent } from './impressoes-medico/questionario-saude-medico/questionario-saude-medico.component';
@@ -40,11 +41,13 @@ import { RegistroConsulataMedicoComponent } from './impressoes-medico/registro-c
     // Seletor de relatório
     RelatorioComponent,
 
+    // Comum
+    HistoricoCompletoComponent,
+
     // Impressões Dentista
     AtestadoDentistaComponent,
     ComprovantePagamentoDentistaComponent,
     ExamesDentistaComponent,
-    HistoricoCompletoDentistaComponent,
     PlanejamentoDentistaComponent,
     PrescricaoDentistaComponent,
     QuestionarioSaudeDentistaComponent,
@@ -54,7 +57,6 @@ import { RegistroConsulataMedicoComponent } from './impressoes-medico/registro-c
     AtestadoMedicoComponent,
     ComprovantePagamentoMedicoComponent,
     ExamesMedicosComponent,
-    HistoricoCompletoMedicoComponent,
     PlanejamentoMedicoComponent,
     PrescricaoMedicoComponent,
     QuestionarioSaudeMedicoComponent,

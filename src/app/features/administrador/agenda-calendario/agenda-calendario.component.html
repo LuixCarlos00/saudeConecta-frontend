@@ -58,7 +58,7 @@
       <!-- ── Sempre visível: Nova Consulta + mini-calendário ── -->
       <div class="painel-fixo">
 
-        <button class="btn-nova-consulta" (click)="abrirNovaConsulta($event)">
+        <button class="btn-nova-consulta" *ngIf="controleAcesso.isAdmin() || controleAcesso.isRecepcionista()" (click)="abrirNovaConsulta($event)">
           <i class="fa-solid fa-plus"></i>
           Nova Consulta
         </button>
@@ -436,7 +436,7 @@
       </div>
 
       <!-- ── BLOCO 6: Alterar status ── -->
-      <div class="drw-section" *ngIf="consultaSelecionada.status !== 'CANCELADA' && consultaSelecionada.status !== 'PAGO'">
+      <div class="drw-section" *ngIf="consultaSelecionada.status !== 'CANCELADA' && consultaSelecionada.status !== 'PAGO' && (controleAcesso.isAdmin() || controleAcesso.isRecepcionista())">
         <label class="drw-section-label" for="drw-status-sel">Alterar status</label>
 
         <ng-container *ngIf="consultaSelecionada.status === 'AGENDADA'">
@@ -471,6 +471,15 @@
       <div class="drw-section">
         <p class="drw-section-label">Ações rápidas</p>
         <div class="drw-acoes-grid">
+
+          <!-- Iniciar Consulta — CONFIRMADA e apenas para médicos e dentistas -->
+          <button class="drw-acao-btn drw-acao-btn--success"
+                  *ngIf="consultaSelecionada.status === 'CONFIRMADA' && (UsuarioLogado.perfil === 'MEDICO' || UsuarioLogado.perfil === 'DENTISTA')"
+                  (click)="iniciarConsultaDrawer()"
+                  title="Iniciar Consulta">
+            <i class="fa-solid fa-stethoscope"></i>
+            <span>Iniciar</span>
+          </button>
 
           <!-- Questionário — CONFIRMADA e não respondido -->
           <button class="drw-acao-btn"
@@ -510,7 +519,7 @@
 
           <!-- Editar — AGENDADA ou CONFIRMADA -->
           <button class="drw-acao-btn"
-                  *ngIf="consultaSelecionada.status === 'AGENDADA' || consultaSelecionada.status === 'CONFIRMADA'"
+                  *ngIf="(consultaSelecionada.status === 'AGENDADA' || consultaSelecionada.status === 'CONFIRMADA') && controleAcesso.isAdmin()"
                   (click)="abrirEdicao()"
                   title="Editar Consulta">
             <i class="fa-solid fa-pen-to-square"></i>

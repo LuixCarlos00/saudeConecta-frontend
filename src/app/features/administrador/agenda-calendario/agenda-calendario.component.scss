@@ -1351,6 +1351,17 @@ $pulse-delay: $seg * 0.8;
     transform: translateY(-1px);
   }
 
+  &--success {
+    border-color: #bbf7d0;
+    color: #15803d;
+    background: #f0fdf4;
+    i { color: #22c55e; }
+    &:hover {
+      background: #dcfce7;
+      border-color: #86efac;
+    }
+  }
+
   &--whatsapp {
     border-color: #bbf7d0;
     color: #15803d;
