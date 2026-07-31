@@ -37,6 +37,7 @@ import { DadosPessoaisComponent } from './features/medico/dados-pessoais/DadosPe
 import { ProntuarioMedicoComponent } from './features/medico/prontuario-medico/prontuario-medico.component';
 import { ProntuarioComponent } from './features/medico/prontuario/prontuario.component';
 import { AgendaMedicoGerenciamentoComponent } from './features/medico/agenda/agenda-medico-gerenciamento.component';
+import { AgendaCalendarioComponent } from './features/administrador/agenda-calendario/agenda-calendario.component';
 import { ProntuarioDentistaComponent } from './features/medico/prontuario-dentista/prontuario-dentista.component';
 import { QuestionarioSaudeComponent } from './features/publico/questionario-saude/questionario-saude.component';
 import { AssinaturaPlanejamentoComponent } from './features/publico/assinatura-planejamento/assinatura-planejamento.component';
@@ -82,6 +83,7 @@ const routes: Routes = [
   { path: 'startconsulta-dentista', component: ProntuarioDentistaComponent, canActivate: [AuthGuard, RoleGuard, ProntuarioGuard], data: { roles: [Role.DOCTOR] } },
   { path: 'Prontuario', component: ProntuarioComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: [Role.DOCTOR] } },
   { path: 'Agenda-Medico', component: AgendaMedicoGerenciamentoComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: [Role.DOCTOR] } },
+  { path: 'agenda-calendario', component: AgendaCalendarioComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: [Role.ADMIN, Role.DOCTOR, Role.SECRETARY] } },
 
   // ========== ROTA 404 ==========
   { path: '**', pathMatch: 'full', component: NotFoudComponent },

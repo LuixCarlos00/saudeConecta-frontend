@@ -1,7 +1,8 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Consultav2 } from 'src/app/util/variados/interfaces/consulta/consultav2';
+import { HistoricoCompletoPacienteResponse } from 'src/app/util/variados/interfaces/historico/historico-completo-paciente-response.interface';
 import { environment } from 'src/environments/environment';
 import { EstatisticasDashboardAdminOrg } from './dashboard-api.service';
 
@@ -133,12 +134,16 @@ export class ConsultaApiService {
     return this.http.post<Consultav2>(`${this.apiUrl}/cadastrarConsultaByOrg`, consultav2);
   }
 
-  BuscandoHistoricoDeConsultasDoPaciente(pacienteId: number, tipo: string = 'medico', profissionalId?: number): Observable<any[]> {
-    let url = `${this.apiUrl}/BuscandoHistoricoDeConsultasDoPaciente/${pacienteId}?tipo=${tipo}`;
-    if (profissionalId) {
-      url += `&profissionalId=${profissionalId}`;
-    }
-    return this.http.get<any[]>(url);
+  /**
+   * Busca o histórico completo de consultas de um paciente.
+   * O backend aplica as regras de acesso automaticamente com base no token JWT:
+   * - Administrador: histórico combinado (médico + odontológico) de todos os profissionais.
+   * - Profissional (médico/dentista): apenas os registros dos quais ele é o autor.
+   */
+  BuscandoHistoricoDeConsultasDoPaciente(pacienteId: number): Observable<HistoricoCompletoPacienteResponse[]> {
+    return this.http.get<HistoricoCompletoPacienteResponse[]>(
+      `${this.apiUrl}/BuscandoHistoricoDeConsultasDoPaciente/${pacienteId}`
+    );
   }
 
   BuscandoConsultasPorMedicoEmIntervaloDeDatas(dataInicio: string, dataFim: string, medicoId: number): Observable<any[]> {
@@ -163,16 +168,43 @@ export class ConsultaApiService {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 
-  buscarDoDiaAtual(): Observable<Consultav2[]> {
-    return this.http.get<Consultav2[]>(`${this.apiUrl}/hoje`);
+  /**
+   * Busca as consultas do dia informado (ou do dia atual, se `data` não for informado).
+   *
+   * @param data Data de referência no formato YYYY-MM-DD (opcional)
+   */
+  buscarDoDiaAtual(data?: string): Observable<Consultav2[]> {
+    let params = new HttpParams();
+    if (data) {
+      params = params.set('data', data);
+    }
+    return this.http.get<Consultav2[]>(`${this.apiUrl}/hoje`, { params });
   }
 
-  buscarDaSemanaAtual(): Observable<Consultav2[]> {
-    return this.http.get<Consultav2[]>(`${this.apiUrl}/semana-atual`);
+  /**
+   * Busca as consultas da semana que contém a data informada (ou a semana atual, se `data` não for informado).
+   *
+   * @param data Data de referência no formato YYYY-MM-DD (opcional)
+   */
+  buscarDaSemanaAtual(data?: string): Observable<Consultav2[]> {
+    let params = new HttpParams();
+    if (data) {
+      params = params.set('data', data);
+    }
+    return this.http.get<Consultav2[]>(`${this.apiUrl}/semana-atual`, { params });
   }
 
-  buscarDoMesAtual(): Observable<Consultav2[]> {
-    return this.http.get<Consultav2[]>(`${this.apiUrl}/mes-atual`);
+  /**
+   * Busca as consultas do mês que contém a data informada (ou o mês atual, se `data` não for informado).
+   *
+   * @param data Data de referência no formato YYYY-MM-DD (opcional)
+   */
+  buscarDoMesAtual(data?: string): Observable<Consultav2[]> {
+    let params = new HttpParams();
+    if (data) {
+      params = params.set('data', data);
+    }
+    return this.http.get<Consultav2[]>(`${this.apiUrl}/mes-atual`, { params });
   }
 
   buscarDoAnoAtual(): Observable<Consultav2[]> {

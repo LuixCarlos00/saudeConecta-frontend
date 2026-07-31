@@ -39,13 +39,12 @@ export class HistoricoCompletoDentistaComponent implements OnInit {
       if (dados) { this.UsuarioLogado = dados; }
     });
 
-    const profissionalId = this.UsuarioLogado.perfil === 'DENTISTA' ? this.UsuarioLogado.id : undefined;
-console.log('busca', this.data.pacienteId, 'dentista', profissionalId)
     this.consultaApiService
-      .BuscandoHistoricoDeConsultasDoPaciente(this.data.pacienteId, 'dentista', profissionalId)
-      .subscribe((data: HistoricoCompletoDentistaResponse[]) => {
+      .BuscandoHistoricoDeConsultasDoPaciente(this.data.pacienteId)
+      .subscribe((data: any[]) => {
         console.log('Histórico dental recebido:', data);
-        this.historico = data || [];
+        // Backend já filtra por perfil (Admin: todos | Profissional: apenas seus registros odontológicos)
+        this.historico = (data || []).filter(item => item.tipoProntuario?.toUpperCase() !== 'MEDICO');
 
         if (this.historico.length > 0) {
           const primeiro = this.historico[0];

@@ -21,7 +21,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { NgChartsModule } from 'ng2-charts';
 
 // Módulo centralizado de Relatórios
 import { RelatorioModule } from 'src/app/features/relatorio/relatorio.module';
@@ -40,12 +41,12 @@ import { ConfiguracoesSistemaComponent } from './configuracoes/configuracoes-sis
 
 // Componentes de Dashboard
 import { DashboardComponent } from './dashboard/dashboard.component';
-import { GraficoAgendamentosDiasSemanasMesComponent } from './dashboard/grafico-agendamentos-dias-semanas-mes/grafico-agendamentos-dias-semanas-mes.component';
-import { GraficoCategoriaMedicosComponent } from './dashboard/grafico-categoria-medicos/grafico-categoria-medicos.component';
-import { GraficoConsultasPorStatusComponent } from './dashboard/grafico-consultas-por-status/grafico-consultas-por-status.component';
-import { GraficoMediaTempoConsultaComponent } from './dashboard/grafico-media-tempo-consulta/grafico-media-tempo-consulta.component';
-import { GraficoQntConsultasDiaAnteriorComponent } from './dashboard/grafico-qnt-consultas-dia-anterior/grafico-qnt-consultas-dia-anterior.component';
-import { GraficoSaldoComponent } from './dashboard/grafico-saldo/grafico-saldo.component';
+import { GraficosPrincipaisDashboardComponent } from './dashboard/graficos-principais-dashboard/graficos-principais-dashboard.component';
+
+// Componentes de Agenda Calendário
+import { AgendaCalendarioComponent } from './agenda-calendario/agenda-calendario.component';
+import { TotalConsultasDiaPipe } from './agenda-calendario/total-consultas-dia.pipe';
+import { AgendarConsultaComponent } from 'src/app/features/publico/agendar-consulta/agendar-consulta.component';
 
 // Componentes de Gerenciamento de Agenda
 import { AgendaComponent } from './gerenciamento-agenda/agenda/agenda.component';
@@ -117,13 +118,13 @@ const routes: Routes = [
     
     // Componentes de Dashboard
     DashboardComponent,
-    GraficoAgendamentosDiasSemanasMesComponent,
-    GraficoCategoriaMedicosComponent,
-    GraficoConsultasPorStatusComponent,
-    GraficoMediaTempoConsultaComponent,
-    GraficoQntConsultasDiaAnteriorComponent,
-    GraficoSaldoComponent,
+    GraficosPrincipaisDashboardComponent,
     
+    // Componentes de Agenda Calendário
+    AgendaCalendarioComponent,
+    TotalConsultasDiaPipe,
+    AgendarConsultaComponent,
+
     // Componentes de Gerenciamento de Agenda
     AgendaComponent,
     AvisosLembretesComponent,
@@ -164,6 +165,7 @@ const routes: Routes = [
     CommonModule,
     SharedModule,
     RouterModule.forChild(routes),
+    FormsModule,
     ReactiveFormsModule,
     MatCardModule,
     MatButtonModule,
@@ -181,7 +183,7 @@ const routes: Routes = [
     MatDatepickerModule,
     MatNativeDateModule,
     RelatorioModule,
-  
+    NgChartsModule,
   ],
   exports: [RouterModule]
 })

@@ -11,11 +11,13 @@ import { Prontuario } from 'src/app/util/variados/interfaces/Prontuario/Prontuar
 
 import { RelatorioComponent } from './relatorio.component';
 
+// Componente comum — Histórico Completo (médico + dentista combinados)
+import { HistoricoCompletoComponent } from './impressoes-comuns/historico-completo/historico-completo.component';
+
 // Impressões Médico
 import { AtestadoMedicoComponent } from './impressoes-medico/atestado-medico/AtestadoMedico.component';
 import { ComprovantePagamentoMedicoComponent } from './impressoes-medico/comprovante-pagamento-medico/comprovante-pagamento-medico.component';
 import { ExamesMedicosComponent } from './impressoes-medico/exames-medicos/exames-medicos.component';
-import { HistoricoCompletoMedicoComponent } from './impressoes-medico/historico-completo-medico/historico-completo-medico.component';
 import { PlanejamentoMedicoComponent } from './impressoes-medico/planejamento-medico/planejamento-medico.component';
 import { PrescricaoMedicoComponent } from './impressoes-medico/prescricao-medico/prescricao-medico.component';
 import { QuestionarioSaudeMedicoComponent } from './impressoes-medico/questionario-saude-medico/questionario-saude-medico.component';
@@ -25,7 +27,6 @@ import { RegistroConsulataMedicoComponent } from './impressoes-medico/registro-c
 import { AtestadoDentistaComponent } from './impressoes-dentista/atestado-dentista/atestado-dentista.component';
 import { ComprovantePagamentoDentistaComponent } from './impressoes-dentista/comprovante-pagamento-dentista/comprovante-pagamento-dentista.component';
 import { ExamesDentistaComponent } from './impressoes-dentista/exames-dentista/exames-dentista.component';
-import { HistoricoCompletoDentistaComponent } from './impressoes-dentista/historico-completo-dentista/historico-completo-dentista.component';
 import { PlanejamentoDentistaComponent } from './impressoes-dentista/planejamento-dentista/planejamento-dentista.component';
 import { PrescricaoDentistaComponent } from './impressoes-dentista/prescricao-dentista/prescricao-dentista.component';
 import { QuestionarioSaudeDentistaComponent } from './impressoes-dentista/questionario-saude-dentista/questionario-saude-dentista.component';
@@ -77,12 +78,12 @@ export class RelatorioService {
         tipoProfissional: tipoProfissional,
       },
     });
-console.log("dialogRef",dialogRef)
+
     dialogRef.afterClosed().subscribe((opcao: string) => {
       if (!opcao) { return; }
 
       if (opcao === '3') {
-        this.imprimirHistoricoCompletoAdmin(element);
+        this.abrirHistoricoCompleto(element);
         return;
       }
 
@@ -116,7 +117,6 @@ console.log("dialogRef",dialogRef)
    */
   abrirRelatorioProfissional(element: Consultav2, perfilUsuario: string): void {
     const consultaNaoRealizada = (element.status as any) === 'AGENDADA';
-    console.log("profissonal",element, perfilUsuario)
     const dialogRef = this.dialog.open(RelatorioComponent, {
       maxWidth: 'auto',
       panelClass: 'selecao-relatorio-dialog',
@@ -134,7 +134,7 @@ console.log("dialogRef",dialogRef)
 
       // Histórico Completo não precisa de prontuário
       if (opcaoSelecionada === '3') {
-        this.imprimirHistoricoCompletoProfissional(element, perfilUsuario);
+        this.abrirHistoricoCompleto(element);
         return;
       }
 
@@ -200,31 +200,18 @@ console.log("dialogRef",dialogRef)
   // ─────────────────────────────────────────────────────────────────────────────
 
   /**
-   * Imprime histórico completo no contexto admin.
-   * Tenta prontuário médico primeiro; se não existir, abre o de dentista.
-   * @param dados - Dados da consulta
+   * Abre o histórico completo do paciente (médico + odontológico).
+   * O backend aplica as regras de acesso conforme o token JWT do usuário logado:
+   * - Administrador: histórico combinado de todos os profissionais.
+   * - Profissional (médico/dentista): apenas os registros dos quais ele é o autor.
+   * @param dados - Dados da consulta (fornece o pacienteId)
    */
-  private imprimirHistoricoCompletoAdmin(dados: Consultav2): void {
-    const dialogConfig = { width: this.DIALOG_WIDTH, height: this.DIALOG_HEIGHT, data: dados };
-    this.prontuarioApiService.buscarProntuarioById(dados.id).subscribe(
-      () => this.dialog.open(HistoricoCompletoMedicoComponent, dialogConfig),
-      () => this.dialog.open(HistoricoCompletoDentistaComponent, dialogConfig)
-    );
-  }
-
-  /**
-   * Imprime histórico completo no contexto profissional.
-   * Abre diretamente o componente correto baseado no perfil.
-   * @param dados - Dados da consulta
-   * @param perfilUsuario - 'MEDICO' ou 'DENTISTA'
-   */
-  private imprimirHistoricoCompletoProfissional(dados: Consultav2, perfilUsuario: string): void {
-    const dialogConfig = { width: this.DIALOG_WIDTH, height: this.DIALOG_HEIGHT, data: dados };
-    if (perfilUsuario === 'DENTISTA') {
-      this.dialog.open(HistoricoCompletoDentistaComponent, dialogConfig);
-    } else {
-      this.dialog.open(HistoricoCompletoMedicoComponent, dialogConfig);
-    }
+  private abrirHistoricoCompleto(dados: Consultav2): void {
+    this.dialog.open(HistoricoCompletoComponent, {
+      width: this.DIALOG_WIDTH,
+      height: this.DIALOG_HEIGHT,
+      data: dados,
+    });
   }
 
   // ─────────────────────────────────────────────────────────────────────────────

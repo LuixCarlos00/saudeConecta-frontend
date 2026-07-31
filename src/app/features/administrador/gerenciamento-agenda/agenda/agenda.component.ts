@@ -48,6 +48,7 @@ export class AgendaComponent implements OnInit, OnDestroy {
   questionariosRespondidos = new Set<number>();
   ValorOpcao: any;
   tipoPeriodoSelecionado: TipoPeriodo = 'diario';
+  dataAtual: Date = new Date();
   private destroy$ = new Subject<void>();
   private emModoBuscaLocal = false; // Flag para controlar modo de busca
 
@@ -135,13 +136,28 @@ export class AgendaComponent implements OnInit, OnDestroy {
     this.buscarDadosParaTabela();
   }
 
+  /**
+   * Formata uma data local no padrão YYYY-MM-DD, sem sofrer o deslocamento
+   * de fuso horário que `toISOString()` (baseado em UTC) causaria.
+   *
+   * @param data Data a ser formatada
+   * @returns Data no formato YYYY-MM-DD
+   */
+  private formatarDataParaApi(data: Date): string {
+    const ano = data.getFullYear();
+    const mes = (data.getMonth() + 1).toString().padStart(2, '0');
+    const dia = data.getDate().toString().padStart(2, '0');
+    return `${ano}-${mes}-${dia}`;
+  }
+
   private async buscarConsultasPorPeriodo(): Promise<any[] | undefined> {
+    const dataRef = this.formatarDataParaApi(this.dataAtual);
     switch (this.tipoPeriodoSelecionado) {
-      case 'diario': return this.consultaApi.buscarDoDiaAtual().toPromise();
-      case 'semanal': return this.consultaApi.buscarDaSemanaAtual().toPromise();
-      case 'mensal': return this.consultaApi.buscarDoMesAtual().toPromise();
+      case 'diario': return this.consultaApi.buscarDoDiaAtual(dataRef).toPromise();
+      case 'semanal': return this.consultaApi.buscarDaSemanaAtual(dataRef).toPromise();
+      case 'mensal': return this.consultaApi.buscarDoMesAtual(dataRef).toPromise();
       case 'anual': return this.consultaApi.buscarDoAnoAtual().toPromise();
-      default: return this.consultaApi.buscarDoDiaAtual().toPromise();
+      default: return this.consultaApi.buscarDoDiaAtual(dataRef).toPromise();
     }
   }
 

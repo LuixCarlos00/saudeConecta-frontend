@@ -1,6 +1,6 @@
 import { ProfissionalApiService } from '../../../../services/api/profissional-api.service';
 import { Paciente } from 'src/app/util/variados/interfaces/paciente/paciente';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
@@ -80,6 +80,31 @@ export class NovaConsultaComponent implements OnInit {
   Hora = HoradaConsulta;
   horariosDisponiveis: string[] = [];
   DataSelecionada: any;
+  secaoVisivel: string = 'clinico';
+
+  @ViewChild('scrollArea') scrollAreaRef!: ElementRef<HTMLElement>;
+
+  irParaSecao(id: string): void {
+    this.secaoVisivel = id;
+    const el = document.getElementById('sec-' + id);
+    if (el && this.scrollAreaRef) {
+      this.scrollAreaRef.nativeElement.scrollTo({
+        top: el.offsetTop - 16,
+        behavior: 'smooth'
+      });
+    }
+  }
+
+  onScroll(event: Event): void {
+    const container = event.target as HTMLElement;
+    const secoes = ['clinico', 'paciente', 'detalhes', 'pagamento', 'observacoes'];
+    for (const id of secoes) {
+      const el = document.getElementById('sec-' + id);
+      if (el && el.offsetTop - 32 <= container.scrollTop + 1) {
+        this.secaoVisivel = id;
+      }
+    }
+  }
 
   constructor(
     private router: Router,
