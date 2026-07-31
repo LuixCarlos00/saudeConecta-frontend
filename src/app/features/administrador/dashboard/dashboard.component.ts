@@ -5,7 +5,7 @@ import { ControleAcessoApiService } from 'src/app/services/api/controle-acesso-a
 import { AssinaturaApiService } from 'src/app/services/api/assinatura-api.service';
 import { CobrancaApiService } from 'src/app/services/api/cobranca-api.service';
 import { AssinaturaTenant, CobrancaTenant } from 'src/app/util/variados/interfaces/planos/PlanoAssinatura';
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, HostListener, ElementRef, ViewChild } from '@angular/core';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { Router } from '@angular/router';
 import { ThemeService } from 'src/app/services/theme/theme.service';
@@ -28,7 +28,7 @@ import { ConfiguracaoGraficoDashboard, TipoGraficoDashboard, TipoCardDashboard }
     ])
   ]
 })
-export class DashboardComponent implements OnInit, OnDestroy {
+export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   today = new Date();
   isDarkMode = false;
   private themeSubscription?: Subscription;
@@ -54,7 +54,15 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   // Carrossel de cards
   carrosselOffset: number = 0;
-  readonly CARDS_POR_PAGINA = 5;
+  cardsPorPagina: number = 5;
+  // Largura MÍNIMA aceitável por card antes de reduzir a quantidade por página.
+  // Os cards crescem (flex) para preencher o espaço disponível, então isso
+  // define apenas o ponto em que um card ficaria pequeno demais.
+  private readonly CARD_MIN_WIDTH = 90;
+  private readonly CARD_GAP = 12;
+  private resizeTimeout: any;
+
+  @ViewChild('cardsGrid') cardsGridRef?: ElementRef<HTMLElement>;
 
   // Status da assinatura (banner de inadimplência)
   assinaturaInadimplente = false;
@@ -64,6 +72,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
   // Cobrança pendente (banner de pagamento)
   cobrancaPendente: CobrancaTenant | null = null;
   diasRestantesPagamento: number = 0;
+
+  // Controle do dropdown de notificações (sino)
+  mostrarNotificacaoCobranca = false;
 
   // Expor enums para o template
   TipoGraficoDashboard = TipoGraficoDashboard;
@@ -90,8 +101,20 @@ export class DashboardComponent implements OnInit, OnDestroy {
     private configuracaoCardService: ConfiguracaoCardService,
     private dashboardApiService: DashboardApiService,
     private assinaturaApiService: AssinaturaApiService,
-    private cobrancaApiService: CobrancaApiService
+    private cobrancaApiService: CobrancaApiService,
+    private elementRef: ElementRef
   ) { }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    if (!this.mostrarNotificacaoCobranca) {
+      return;
+    }
+    const clicouDentro = this.elementRef.nativeElement.querySelector('.notification-bell-wrapper')?.contains(event.target as Node);
+    if (!clicouDentro) {
+      this.mostrarNotificacaoCobranca = false;
+    }
+  }
 
   ngOnInit(): void {
     this.themeSubscription = this.themeService.currentTheme$.subscribe(
@@ -103,8 +126,39 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.verificarStatusAssinatura();
   }
 
+  ngAfterViewInit(): void {
+    this.calcularCardsPorPagina();
+  }
+
   ngOnDestroy(): void {
     this.themeSubscription?.unsubscribe();
+    clearTimeout(this.resizeTimeout);
+  }
+
+  @HostListener('window:resize')
+  onWindowResize(): void {
+    clearTimeout(this.resizeTimeout);
+    this.resizeTimeout = setTimeout(() => this.calcularCardsPorPagina(), 150);
+  }
+
+  private calcularCardsPorPagina(): void {
+    const grid = this.cardsGridRef?.nativeElement;
+    const larguraDisponivel = grid?.clientWidth || window.innerWidth;
+    const qtdCalculada = Math.max(
+      1,
+      Math.floor((larguraDisponivel + this.CARD_GAP) / (this.CARD_MIN_WIDTH + this.CARD_GAP))
+    );
+    const novoValor = this.cardsVisiveis.length
+      ? Math.min(qtdCalculada, this.cardsVisiveis.length)
+      : qtdCalculada;
+
+    if (this.cardsPorPagina !== novoValor) {
+      this.cardsPorPagina = novoValor;
+    }
+
+    if (this.carrosselOffset + this.cardsPorPagina > this.cardsVisiveis.length) {
+      this.carrosselOffset = Math.max(0, this.cardsVisiveis.length - this.cardsPorPagina);
+    }
   }
 
   private carregarEstatisticas(): void {
@@ -244,6 +298,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.router.navigate([rota]);
   }
 
+  toggleNotificacaoCobranca(): void {
+    this.mostrarNotificacaoCobranca = !this.mostrarNotificacaoCobranca;
+  }
+
+  fecharNotificacaoCobranca(): void {
+    this.mostrarNotificacaoCobranca = false;
+  }
+
   private carregarConfiguracoesGraficos(): void {
     this.carregandoConfiguracoes = true;
     this.configuracaoGraficoService.listarGraficosAtivos().subscribe({
@@ -273,11 +335,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   get cardsNaPagina() {
-    return this.cardsVisiveis.slice(this.carrosselOffset, this.carrosselOffset + this.CARDS_POR_PAGINA);
+    return this.cardsVisiveis.slice(this.carrosselOffset, this.carrosselOffset + this.cardsPorPagina);
   }
 
   get podePrev(): boolean { return this.carrosselOffset > 0; }
-  get podeNext(): boolean { return this.carrosselOffset + this.CARDS_POR_PAGINA < this.cardsVisiveis.length; }
+  get podeNext(): boolean { return this.carrosselOffset + this.cardsPorPagina < this.cardsVisiveis.length; }
 
   minVal(a: number, b: number): number { return Math.min(a, b); }
 
@@ -319,12 +381,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
           this.cardsAtivos.set(config.tipoCard as TipoCardDashboard, true)
         );
         this.carregandoCards = false;
+        setTimeout(() => this.calcularCardsPorPagina());
       },
       error: () => {
         Object.values(TipoCardDashboard).forEach(tipo =>
           this.cardsAtivos.set(tipo as TipoCardDashboard, true)
         );
         this.carregandoCards = false;
+        setTimeout(() => this.calcularCardsPorPagina());
       },
     });
   }

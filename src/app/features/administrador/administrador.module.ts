@@ -22,6 +22,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { NgChartsModule } from 'ng2-charts';
 
 // Módulo centralizado de Relatórios
 import { RelatorioModule } from 'src/app/features/relatorio/relatorio.module';
@@ -40,12 +41,7 @@ import { ConfiguracoesSistemaComponent } from './configuracoes/configuracoes-sis
 
 // Componentes de Dashboard
 import { DashboardComponent } from './dashboard/dashboard.component';
-import { GraficoAgendamentosDiasSemanasMesComponent } from './dashboard/grafico-agendamentos-dias-semanas-mes/grafico-agendamentos-dias-semanas-mes.component';
-import { GraficoCategoriaMedicosComponent } from './dashboard/grafico-categoria-medicos/grafico-categoria-medicos.component';
-import { GraficoConsultasPorStatusComponent } from './dashboard/grafico-consultas-por-status/grafico-consultas-por-status.component';
-import { GraficoMediaTempoConsultaComponent } from './dashboard/grafico-media-tempo-consulta/grafico-media-tempo-consulta.component';
-import { GraficoQntConsultasDiaAnteriorComponent } from './dashboard/grafico-qnt-consultas-dia-anterior/grafico-qnt-consultas-dia-anterior.component';
-import { GraficoSaldoComponent } from './dashboard/grafico-saldo/grafico-saldo.component';
+import { GraficosPrincipaisDashboardComponent } from './dashboard/graficos-principais-dashboard/graficos-principais-dashboard.component';
 
 // Componentes de Agenda Calendário
 import { AgendaCalendarioComponent } from './agenda-calendario/agenda-calendario.component';
@@ -122,12 +118,7 @@ const routes: Routes = [
     
     // Componentes de Dashboard
     DashboardComponent,
-    GraficoAgendamentosDiasSemanasMesComponent,
-    GraficoCategoriaMedicosComponent,
-    GraficoConsultasPorStatusComponent,
-    GraficoMediaTempoConsultaComponent,
-    GraficoQntConsultasDiaAnteriorComponent,
-    GraficoSaldoComponent,
+    GraficosPrincipaisDashboardComponent,
     
     // Componentes de Agenda Calendário
     AgendaCalendarioComponent,
@@ -192,7 +183,7 @@ const routes: Routes = [
     MatDatepickerModule,
     MatNativeDateModule,
     RelatorioModule,
-  
+    NgChartsModule,
   ],
   exports: [RouterModule]
 })
