@@ -109,7 +109,7 @@ $card-colors: (
 .stats-carousel {
   display: flex;
   flex-direction: column;
-  gap: $spacing-3;
+  gap: $spacing-2;
 
   // ── Header da seção ────────────────────────────────────────────────────
   &__header {
@@ -119,33 +119,33 @@ $card-colors: (
   }
 
   &__title {
-    font-size: $text-base;
+    font-size: $text-xs;
     font-weight: $font-semibold;
     color: $text-secondary;
     display: flex;
     align-items: center;
-    gap: $spacing-2;
+    gap: $spacing-1;
 
-    i { color: $primary-blue; }
+    i { color: $primary-blue; font-size: $text-xs; }
   }
 
   &__controls {
     display: flex;
     align-items: center;
-    gap: $spacing-2;
+    gap: $spacing-1;
   }
 
   &__counter {
-    font-size: $text-sm;
+    font-size: 10px;
     color: $text-secondary;
-    min-width: 60px;
+    min-width: 44px;
     text-align: right;
   }
 
   &__btn {
-    width: 32px;
-    height: 32px;
-    border-radius: $radius-md;
+    width: 20px;
+    height: 20px;
+    border-radius: $radius-sm;
     border: 1px solid $border-light;
     background: $bg-card;
     color: $text-secondary;
@@ -154,7 +154,7 @@ $card-colors: (
     justify-content: center;
     cursor: pointer;
     transition: all 0.2s;
-    font-size: $text-sm;
+    font-size: 10px;
 
     &:hover:not(:disabled) {
       background: $primary-blue;
@@ -172,7 +172,8 @@ $card-colors: (
   &__grid {
     display: flex;
     flex-wrap: nowrap;
-    gap: $spacing-4;
+    align-items: stretch;
+    gap: $spacing-3;
 
     .sc-card {
       flex: 1 1 0;
@@ -183,7 +184,8 @@ $card-colors: (
       flex-wrap: wrap;
 
       .sc-card {
-        flex: 1 1 calc(50% - #{$spacing-4});
+        flex: 1 1 calc(50% - #{$spacing-3});
+        max-width: calc(50% - #{$spacing-3});
       }
     }
 
@@ -193,22 +195,28 @@ $card-colors: (
       .sc-card {
         flex: unset;
         width: 100%;
+        max-width: 100%;
       }
     }
   }
 }
 
 // ── Card de estatística ────────────────────────────────────────────────────────
+// Cada card é seu próprio container de consulta (CSS Container Query),
+// permitindo que ícone/valor/label escalem de acordo com a largura real
+// do card renderizado (que varia conforme a quantidade de cards por página).
 .sc-card {
+  container-type: inline-size;
   position: relative;
   background: $bg-card;
-  border-radius: $radius-xl;
+  border-radius: $radius-sm;
   border: 1px solid $border-light;
   box-shadow: $shadow-sm;
-  padding: $spacing-5;
+  padding: clamp(4px, 8cqw, 12px) clamp(6px, 10cqw, 16px);
+  min-width: 70px;
   display: flex;
   align-items: center;
-  gap: $spacing-4;
+  gap: clamp(4px, 6cqw, 10px);
   overflow: hidden;
   transition: transform 0.2s, box-shadow 0.2s;
 
@@ -222,20 +230,20 @@ $card-colors: (
     position: absolute;
     top: 0;
     left: 0;
-    width: 4px;
+    width: 2px;
     height: 100%;
-    border-radius: $radius-xl 0 0 $radius-xl;
+    border-radius: $radius-sm 0 0 $radius-sm;
   }
 
   // ── Ícone ────────────────────────────────────────────────────────────────
   &__icon {
-    width: 52px;
-    height: 52px;
-    border-radius: $radius-lg;
+    width: clamp(18px, 22cqw, 40px);
+    height: clamp(18px, 22cqw, 40px);
+    border-radius: $radius-sm;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: $text-2xl;
+    font-size: clamp(9px, 11cqw, 18px);
     flex-shrink: 0;
   }
 
@@ -248,7 +256,7 @@ $card-colors: (
   }
 
   &__value {
-    font-size: $text-3xl;
+    font-size: clamp(11px, 13cqw, 20px);
     font-weight: $font-bold;
     color: $text-primary;
     line-height: 1;
@@ -256,9 +264,9 @@ $card-colors: (
   }
 
   &__label {
-    font-size: $text-sm;
+    font-size: clamp(7px, 7.5cqw, 11px);
     color: $text-secondary;
-    margin-top: $spacing-1;
+    margin-top: 1px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -267,9 +275,9 @@ $card-colors: (
   // ── Skeleton de carregamento ────────────────────────────────────────────
   &__skeleton {
     display: inline-block;
-    width: 48px;
-    height: 28px;
-    border-radius: $radius-md;
+    width: clamp(18px, 22cqw, 40px);
+    height: clamp(10px, 11cqw, 18px);
+    border-radius: $radius-sm;
     background: linear-gradient(90deg, $border-light 25%, $bg-secondary 50%, $border-light 75%);
     background-size: 200% 100%;
     animation: shimmer 1.4s infinite;
@@ -401,13 +409,8 @@ $card-colors: (
     height: auto;
     min-height: 380px;
     display: block;
-   // padding: $spacing-4;
 
-    // Componentes de gráfico
-    app-grafico-qnt-consultas-dia-anterior,
-    app-grafico-agendamentos-dias-semanas-mes,
-    app-grafico-saldo,
-    app-grafico-categoria-medicos {
+    app-graficos-principais-dashboard {
       display: block;
       width: 100%;
     }
@@ -961,6 +964,158 @@ $card-colors: (
 }
 
 // =============================================================================
+// SINO DE NOTIFICAÇÃO (COBRANÇA PENDENTE)
+// =============================================================================
+
+.notification-bell-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  margin-left: 2px;
+}
+
+.notification-bell {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  background: transparent;
+  border: none;
+  border-radius: 50%;
+  color: $text-secondary;
+  font-size: 12px;
+  padding: 0;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, transform 0.15s;
+
+  &:hover {
+    background: rgba($primary-blue, 0.1);
+    color: $primary-blue;
+  }
+
+  &:active {
+    transform: translateY(1px);
+  }
+
+  &--active {
+    color: #d32f2f;
+    animation: bellShake 2.5s ease-in-out infinite;
+
+    &:hover {
+      background: rgba(211, 47, 47, 0.12);
+      color: #d32f2f;
+    }
+  }
+
+  &__dot {
+    position: absolute;
+    top: 1px;
+    right: 1px;
+    width: 6px;
+    height: 6px;
+    background: #d32f2f;
+    border: 1.5px solid $bg-card;
+    border-radius: 50%;
+  }
+}
+
+@keyframes bellShake {
+  0%, 85%, 100% {
+    transform: rotate(0deg);
+  }
+  87% {
+    transform: rotate(-12deg);
+  }
+  89% {
+    transform: rotate(10deg);
+  }
+  91% {
+    transform: rotate(-8deg);
+  }
+  93% {
+    transform: rotate(6deg);
+  }
+  95% {
+    transform: rotate(0deg);
+  }
+}
+
+.notification-dropdown {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  width: 320px;
+  max-width: 90vw;
+  z-index: 100;
+  text-transform: none;
+  font-style: normal;
+  animation: dropdownFadeIn 0.2s ease-out;
+
+  @include mobile {
+    width: 280px;
+    right: -60px;
+  }
+
+  .banner-cobranca-pendente {
+    margin-bottom: 0;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    padding: 14px 16px;
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.16);
+
+    &__icon {
+      width: 32px;
+      height: 32px;
+      font-size: 15px;
+      flex-shrink: 0;
+    }
+
+    &__content {
+      width: 100%;
+      flex: none;
+
+      strong {
+        font-size: 12.5px;
+      }
+
+      p {
+        width: 100%;
+        font-size: 11.5px;
+        line-height: 1.5;
+        white-space: normal;
+        word-break: normal;
+        overflow-wrap: normal;
+      }
+    }
+
+    &__prazo {
+      font-size: 11px;
+    }
+
+    &__action {
+      width: 100%;
+      justify-content: center;
+      padding: 8px 16px;
+      font-size: 12.5px;
+    }
+  }
+}
+
+@keyframes dropdownFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// =============================================================================
 // BANNER DE COBRANÇA PENDENTE
 // =============================================================================
 
@@ -1000,7 +1155,7 @@ $card-colors: (
     flex: 1;
     color: #0d47a1;
 
-    strong {
+    > strong {
       font-size: 15px;
       color: #1565c0;
       display: block;
@@ -1011,6 +1166,12 @@ $card-colors: (
       margin: 0;
       font-size: 13px;
       line-height: 1.5;
+
+      strong {
+        display: inline;
+        font-size: inherit;
+        color: inherit;
+      }
     }
   }
 

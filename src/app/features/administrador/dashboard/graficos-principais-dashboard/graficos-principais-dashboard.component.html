@@ -1,0 +1,357 @@
+<!-- Grid genérico de gráficos principais. Novos gráficos podem ser -->
+<!-- adicionados via projeção de conteúdo (ng-content) sem alterar este componente. -->
+<div class="graficos-principais-grid">
+
+  <!-- ======================================================================= -->
+  <!-- GRÁFICO: CONSULTAS POR PERÍODO -->
+  <!-- ======================================================================= -->
+  <div class="grafico-item chart-container" *ngIf="exibirConsultasPorPeriodo">
+    <!-- Filtros de Período Padronizados -->
+    <div class="chart-filters-wrapper">
+      <div class="filter-header">
+        <span class="filter-title">
+          <i class="fa-solid fa-filter"></i>
+          Consultas - Filtrar por Período
+        </span>
+        <div class="quick-filters-inline">
+          <button
+                  class="quick-filter-btn quick-filter-btn--small"
+                  [class.quick-filter-btn--active]="diaSelecionadoConsultas === 1"
+                  (click)="diaSelecionadoConsultas = 1; atualizarGraficoConsultas()">
+              7 dias
+          </button>
+          <button
+                  class="quick-filter-btn quick-filter-btn--small"
+                  [class.quick-filter-btn--active]="diaSelecionadoConsultas === 2"
+                  (click)="diaSelecionadoConsultas = 2; atualizarGraficoConsultas()">
+              30 dias
+          </button>
+          <button
+                  class="quick-filter-btn quick-filter-btn--small"
+                  [class.quick-filter-btn--active]="diaSelecionadoConsultas === 3"
+                  (click)="diaSelecionadoConsultas = 3; atualizarGraficoConsultas()">
+              60 dias
+          </button>
+        </div>
+      </div>
+
+      <!-- Período Personalizado Abaixo -->
+      <mat-form-field appearance="fill" class="custom-period-field">
+        <mat-label>
+          <i class="fa-solid fa-calendar-range"></i>
+        </mat-label>
+        <mat-date-range-input [rangePicker]="pickerConsultas" [formGroup]="IntervaloDeDatasConsultas">
+          <input matStartDate formControlName="start" placeholder="Data inicial">
+          <input matEndDate formControlName="end" placeholder="Data final" (dateChange)="atualizarGraficoConsultasPersonalizado()">
+        </mat-date-range-input>
+        <mat-datepicker-toggle matIconSuffix [for]="pickerConsultas"></mat-datepicker-toggle>
+        <mat-date-range-picker #pickerConsultas></mat-date-range-picker>
+      </mat-form-field>
+    </div>
+
+    <!-- Loading State -->
+    <div class="chart-loading" *ngIf="isLoadingConsultas">
+      <i class="fa-solid fa-spinner fa-spin"></i>
+      <span>Carregando dados...</span>
+    </div>
+
+    <!-- Error State -->
+    <div class="chart-error" *ngIf="hasErrorConsultas && !isLoadingConsultas">
+      <i class="fa-solid fa-exclamation-triangle"></i>
+      <span>{{ errorMessageConsultas }}</span>
+      <button class="retry-btn" (click)="atualizarGraficoConsultas()">
+        <i class="fa-solid fa-rotate-right"></i>
+        Tentar novamente
+      </button>
+    </div>
+
+    <!-- Empty State -->
+    <div class="chart-empty" *ngIf="!isLoadingConsultas && !hasErrorConsultas && TodasConsultas.length === 0">
+      <i class="fa-solid fa-chart-bar"></i>
+      <span>Nenhuma consulta encontrada no período</span>
+    </div>
+
+    <!-- Gráfico -->
+    <div class="chart-wrapper" [class.chart-wrapper--hidden]="isLoadingConsultas || hasErrorConsultas || TodasConsultas.length === 0">
+      <canvas #canvasConsultas></canvas>
+    </div>
+  </div>
+
+  <!-- ======================================================================= -->
+  <!-- GRÁFICO: AGENDAMENTOS POR DIA/SEMANA/MÊS -->
+  <!-- ======================================================================= -->
+  <div class="grafico-item chart-container" *ngIf="exibirAgendamentos">
+    <!-- Filtros de Período Padronizados -->
+    <div class="chart-filters-wrapper">
+      <div class="filter-header">
+        <span class="filter-title">
+          <i class="fa-solid fa-filter"></i>
+          Agendamentos - Filtrar por Período
+        </span>
+        <div class="quick-filters-inline">
+          <button
+                  class="quick-filter-btn quick-filter-btn--small"
+                  [class.quick-filter-btn--active]="diaSelecionadoAgendamentos === 1"
+                  (click)="diaSelecionadoAgendamentos = 1; atualizarGraficoAgendamentos()">
+              7 dias
+          </button>
+          <button
+                  class="quick-filter-btn quick-filter-btn--small"
+                  [class.quick-filter-btn--active]="diaSelecionadoAgendamentos === 2"
+                  (click)="diaSelecionadoAgendamentos = 2; atualizarGraficoAgendamentos()">
+              30 dias
+          </button>
+          <button
+                  class="quick-filter-btn quick-filter-btn--small"
+                  [class.quick-filter-btn--active]="diaSelecionadoAgendamentos === 3"
+                  (click)="diaSelecionadoAgendamentos = 3; atualizarGraficoAgendamentos()">
+              60 dias
+          </button>
+        </div>
+      </div>
+
+      <!-- Período Personalizado Abaixo -->
+      <mat-form-field appearance="fill" class="custom-period-field">
+        <mat-label>
+          <i class="fa-solid fa-calendar-range"></i>
+        </mat-label>
+        <mat-date-range-input [rangePicker]="pickerAgendamentos" [formGroup]="IntervaloDeDatasAgendamentos">
+          <input matStartDate formControlName="start" placeholder="Data inicial">
+          <input matEndDate formControlName="end" placeholder="Data final" (dateChange)="atualizarGraficoAgendamentosPersonalizado()">
+        </mat-date-range-input>
+        <mat-datepicker-toggle matIconSuffix [for]="pickerAgendamentos"></mat-datepicker-toggle>
+        <mat-date-range-picker #pickerAgendamentos></mat-date-range-picker>
+      </mat-form-field>
+    </div>
+
+    <!-- Loading State -->
+    <div class="chart-loading" *ngIf="isLoadingAgendamentos">
+      <i class="fa-solid fa-spinner fa-spin"></i>
+      <span>Carregando dados...</span>
+    </div>
+
+    <!-- Error State -->
+    <div class="chart-error" *ngIf="hasErrorAgendamentos && !isLoadingAgendamentos">
+      <i class="fa-solid fa-exclamation-triangle"></i>
+      <span>{{ errorMessageAgendamentos }}</span>
+      <button class="retry-btn" (click)="atualizarGraficoAgendamentos()">
+        <i class="fa-solid fa-rotate-right"></i>
+        Tentar novamente
+      </button>
+    </div>
+
+    <!-- Empty State -->
+    <div class="chart-empty" *ngIf="!isLoadingAgendamentos && !hasErrorAgendamentos && TodasAgendamentos.length === 0">
+      <i class="fa-solid fa-calendar-xmark"></i>
+      <span>Nenhum agendamento encontrado no período</span>
+    </div>
+
+    <!-- Gráfico -->
+    <div class="chart-wrapper" [class.chart-wrapper--hidden]="isLoadingAgendamentos || hasErrorAgendamentos || TodasAgendamentos.length === 0">
+      <canvas #canvasAgendamentos></canvas>
+    </div>
+  </div>
+
+  <!-- ======================================================================= -->
+  <!-- GRÁFICO: SALDO FINANCEIRO -->
+  <!-- ======================================================================= -->
+  <div class="grafico-item saldo-container" *ngIf="exibirSaldoFinanceiro">
+    <!-- Filtros -->
+    <div class="saldo-filtros">
+      <button class="saldo-filtro-btn"
+              [class.active]="periodoSelecionadoSaldo === PeriodoFiltroSaldo.ESTE_MES"
+              (click)="onPeriodoChangeSaldo(PeriodoFiltroSaldo.ESTE_MES)">Este Mês</button>
+      <button class="saldo-filtro-btn"
+              [class.active]="periodoSelecionadoSaldo === PeriodoFiltroSaldo.ULTIMOS_3_MESES"
+              (click)="onPeriodoChangeSaldo(PeriodoFiltroSaldo.ULTIMOS_3_MESES)">3 Meses</button>
+      <button class="saldo-filtro-btn"
+              [class.active]="periodoSelecionadoSaldo === PeriodoFiltroSaldo.ULTIMOS_6_MESES"
+              (click)="onPeriodoChangeSaldo(PeriodoFiltroSaldo.ULTIMOS_6_MESES)">6 Meses</button>
+      <button class="saldo-filtro-btn"
+              [class.active]="periodoSelecionadoSaldo === PeriodoFiltroSaldo.ESTE_ANO"
+              (click)="onPeriodoChangeSaldo(PeriodoFiltroSaldo.ESTE_ANO)">Este Ano</button>
+    </div>
+
+    <!-- Resumo -->
+    <div class="saldo-resumo" *ngIf="dadosSaldo && !isLoadingSaldo">
+      <div class="saldo-resumo-item consultas">
+        <span class="saldo-resumo-label">Consultas</span>
+        <span class="saldo-resumo-valor">{{ formatarMoedaSaldo(dadosSaldo.totalConsultas) }}</span>
+        <span class="saldo-resumo-qtd">{{ dadosSaldo.quantidadeConsultas }} realizadas</span>
+      </div>
+      <div class="saldo-resumo-item procedimentos">
+        <span class="saldo-resumo-label">Procedimentos</span>
+        <span class="saldo-resumo-valor">{{ formatarMoedaSaldo(dadosSaldo.totalProcedimentos) }}</span>
+        <span class="saldo-resumo-qtd">{{ dadosSaldo.quantidadeProcedimentos }} realizados</span>
+      </div>
+      <div class="saldo-resumo-item total">
+        <span class="saldo-resumo-label">Total Geral</span>
+        <span class="saldo-resumo-valor">{{ formatarMoedaSaldo(dadosSaldo.totalGeral) }}</span>
+      </div>
+    </div>
+
+    <!-- Loading -->
+    <div class="saldo-loading" *ngIf="isLoadingSaldo">
+      <i class="fa-solid fa-spinner fa-spin"></i> Carregando...
+    </div>
+
+    <!-- Erro -->
+    <div class="saldo-erro" *ngIf="hasErrorSaldo && !isLoadingSaldo">
+      <i class="fa-solid fa-triangle-exclamation"></i> Não foi possível carregar os dados financeiros.
+    </div>
+
+    <!-- Gráfico -->
+    <div class="saldo-chart-wrapper" [style.display]="isLoadingSaldo || hasErrorSaldo ? 'none' : 'block'">
+      <canvas #canvasSaldo></canvas>
+    </div>
+  </div>
+
+  <!-- ======================================================================= -->
+  <!-- GRÁFICO: CLÍNICOS POR ESPECIALIDADE -->
+  <!-- ======================================================================= -->
+  <div class="grafico-item especialidade-container" *ngIf="exibirMedicosPorEspecialidade">
+    <!-- Resumo -->
+    <div class="especialidade-resumo" *ngIf="!isLoadingCategoria && !hasErrorCategoria && totalClinicos > 0">
+      <span class="especialidade-resumo-total">{{ totalClinicos }}</span>
+      <span class="especialidade-resumo-label">clínicos em {{ especialidadesCategoria.length }} especialidade{{ especialidadesCategoria.length !== 1 ? 's' : '' }}</span>
+    </div>
+
+    <!-- Loading -->
+    <div class="especialidade-status" *ngIf="isLoadingCategoria">
+      <i class="fa-solid fa-spinner fa-spin"></i> Carregando...
+    </div>
+
+    <!-- Erro -->
+    <div class="especialidade-status especialidade-status--erro" *ngIf="hasErrorCategoria && !isLoadingCategoria">
+      <i class="fa-solid fa-triangle-exclamation"></i> Não foi possível carregar os dados.
+    </div>
+
+    <!-- Gráfico de barras horizontais -->
+    <div class="especialidade-chart-wrapper" [style.display]="isLoadingCategoria || hasErrorCategoria || especialidadesCategoria.length === 0 ? 'none' : 'block'">
+      <canvas #canvasCategoriaMedicos></canvas>
+    </div>
+
+    <!-- Vazio -->
+    <div class="especialidade-status" *ngIf="!isLoadingCategoria && !hasErrorCategoria && especialidadesCategoria.length === 0">
+      <i class="fa-solid fa-user-doctor"></i> Nenhum clínico cadastrado
+    </div>
+  </div>
+
+  <!-- ======================================================================= -->
+  <!-- GRÁFICO: MÉDIA DE TEMPO DE CONSULTA -->
+  <!-- ======================================================================= -->
+  <div class="grafico-item grafico-container" *ngIf="exibirMediaTempoConsulta">
+    <!-- Filtros de Período Padronizados -->
+    <div class="chart-filters-wrapper">
+      <div class="filter-header">
+        <span class="filter-title">
+          <i class="fa-solid fa-filter"></i>
+          Média de Tempo - Filtrar por Período
+        </span>
+        <div class="quick-filters-inline">
+          <button
+                  class="quick-filter-btn quick-filter-btn--small"
+                  [class.quick-filter-btn--active]="diaSelecionadoMediaTempo === 1"
+                  (click)="diaSelecionadoMediaTempo = 1; atualizarGraficoMediaTempo()">
+              7 dias
+          </button>
+          <button
+                  class="quick-filter-btn quick-filter-btn--small"
+                  [class.quick-filter-btn--active]="diaSelecionadoMediaTempo === 2"
+                  (click)="diaSelecionadoMediaTempo = 2; atualizarGraficoMediaTempo()">
+              30 dias
+          </button>
+          <button
+                  class="quick-filter-btn quick-filter-btn--small"
+                  [class.quick-filter-btn--active]="diaSelecionadoMediaTempo === 3"
+                  (click)="diaSelecionadoMediaTempo = 3; atualizarGraficoMediaTempo()">
+              60 dias
+          </button>
+        </div>
+      </div>
+
+      <!-- Período Personalizado Abaixo -->
+      <mat-form-field appearance="fill" class="custom-period-field" hideRequiredMarker>
+        <mat-label>
+          <i class="fa-solid fa-calendar-range"></i>
+        </mat-label>
+        <mat-date-range-input [rangePicker]="pickerMediaTempo" [formGroup]="IntervaloDeDatasMediaTempo">
+          <input matStartDate formControlName="start" placeholder="Data inicial">
+          <input matEndDate formControlName="end" placeholder="Data final" (dateChange)="atualizarGraficoPersonalizadoMediaTempo()">
+        </mat-date-range-input>
+        <mat-datepicker-toggle matIconSuffix [for]="pickerMediaTempo"></mat-datepicker-toggle>
+        <mat-date-range-picker #pickerMediaTempo></mat-date-range-picker>
+      </mat-form-field>
+    </div>
+
+    <!-- Cards de Estatísticas -->
+    <div class="stats-cards" *ngIf="temDadosMediaTempo() && !isLoadingMediaTempo">
+      <div class="stat-card stat-card--primary">
+        <div class="stat-card__icon">
+          <i class="fa fa-clock"></i>
+        </div>
+        <div class="stat-card__content">
+          <span class="stat-card__value">{{ formatarTempoMediaTempo(dadosMediaTempo.mediaTempo) }}</span>
+          <span class="stat-card__label">Tempo Médio</span>
+        </div>
+      </div>
+
+      <div class="stat-card stat-card--success">
+        <div class="stat-card__icon">
+          <i class="fa fa-calendar-check"></i>
+        </div>
+        <div class="stat-card__content">
+          <span class="stat-card__value">{{ dadosMediaTempo.totalConsultas }}</span>
+          <span class="stat-card__label">Total de Consultas</span>
+        </div>
+      </div>
+
+      <div class="stat-card stat-card--info">
+        <div class="stat-card__icon">
+          <i class="fa fa-arrow-down"></i>
+        </div>
+        <div class="stat-card__content">
+          <span class="stat-card__value">{{ formatarTempoMediaTempo(dadosMediaTempo.tempoMinimo) }}</span>
+          <span class="stat-card__label">Tempo Mínimo</span>
+        </div>
+      </div>
+
+      <div class="stat-card stat-card--danger">
+        <div class="stat-card__icon">
+          <i class="fa fa-arrow-up"></i>
+        </div>
+        <div class="stat-card__content">
+          <span class="stat-card__value">{{ formatarTempoMediaTempo(dadosMediaTempo.tempoMaximo) }}</span>
+          <span class="stat-card__label">Tempo Máximo</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div class="loading-state" *ngIf="isLoadingMediaTempo">
+      <i class="fa fa-spinner fa-spin"></i>
+      <p>Carregando dados...</p>
+    </div>
+
+    <!-- Error State -->
+    <div class="error-state" *ngIf="hasErrorMediaTempo && !isLoadingMediaTempo">
+      <i class="fa fa-exclamation-triangle"></i>
+      <p>{{ errorMessageMediaTempo }}</p>
+    </div>
+
+    <!-- Gráfico -->
+    <div class="grafico-wrapper" *ngIf="temDadosMediaTempo() && !isLoadingMediaTempo && !hasErrorMediaTempo">
+      <canvas #canvasMediaTempo></canvas>
+    </div>
+
+    <!-- Empty State -->
+    <div class="empty-state" *ngIf="!temDadosMediaTempo() && !isLoadingMediaTempo && !hasErrorMediaTempo">
+      <i class="fa fa-chart-bar"></i>
+      <p>Nenhuma consulta encontrada no período selecionado</p>
+    </div>
+  </div>
+
+  <!-- Slot genérico para inserção futura de novos gráficos -->
+  <ng-content></ng-content>
+
+</div>

@@ -1,5 +1,6 @@
 import { NgModule, LOCALE_ID } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { registerLocaleData, DatePipe } from '@angular/common';
 import localePt from '@angular/common/locales/pt';
 import { AppRoutingModule } from './app-routing.module';
@@ -30,7 +31,8 @@ registerLocaleData(localePt);
   declarations: [AppComponent, BarraLateraComponent],
   imports: [
     BrowserModule,
-    CoreModule,  
+    BrowserAnimationsModule,
+    CoreModule,
     AppRoutingModule,
     PublicoModule,
     AdministradorModule,

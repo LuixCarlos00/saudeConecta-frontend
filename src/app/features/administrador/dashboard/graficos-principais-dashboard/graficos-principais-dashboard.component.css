@@ -1,0 +1,577 @@
+/* =============================================================================
+   GRID DE GRÁFICOS PRINCIPAIS DO DASHBOARD
+   Layout padronizado - dois gráficos lado a lado (responsivo)
+   ============================================================================= */
+
+/* Importar estilos compartilhados padronizados */
+@import '../shared-chart-styles.css';
+
+.graficos-principais-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+}
+
+.grafico-item {
+  min-width: 0;
+}
+
+@media (max-width: 1024px) {
+  .graficos-principais-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* =============================================================================
+   ESTILOS DOS GRÁFICOS (código bruto padronizado)
+   ============================================================================= */
+
+.chart-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Filtros */
+.filter-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: nowrap;
+}
+
+.filter-title {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.filter-title i {
+  margin-right: 6px;
+}
+
+.quick-filters-inline {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  flex-wrap: nowrap;
+}
+
+.quick-filter-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: var(--btn-secondary-bg);
+  border: 1px solid var(--btn-secondary-border);
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.quick-filter-btn--small {
+  padding: 4px 10px;
+  font-size: 0.7rem;
+}
+
+.quick-filter-btn i {
+  font-size: 0.7rem;
+}
+
+.quick-filter-btn--small i {
+  font-size: 0.65rem;
+}
+
+.quick-filter-btn:hover {
+  background: var(--btn-secondary-hover);
+  color: var(--text-primary);
+}
+
+.quick-filter-btn--active {
+  background: var(--btn-primary-bg);
+  border-color: var(--btn-primary-bg);
+  color: var(--btn-primary-text);
+}
+
+.quick-filter-btn--active:hover {
+  background: var(--btn-primary-hover);
+}
+
+/* Date Range Picker */
+.date-range-picker {
+  margin-left: auto;
+}
+
+.custom-period-field {
+  width: 180px;
+}
+
+::ng-deep .custom-period-field .mat-mdc-form-field-subscript-wrapper {
+  display: none;
+}
+
+::ng-deep .custom-period-field .mdc-text-field {
+  background: var(--bg-input);
+  border-radius: 6px;
+  height: 30px;
+  padding: 0 8px;
+}
+
+::ng-deep .custom-period-field .mat-mdc-form-field-flex {
+  height: 30px;
+  align-items: center;
+}
+
+::ng-deep .custom-period-field .mat-mdc-form-field-infix {
+  padding: 0;
+  min-height: 30px;
+  display: flex;
+  align-items: center;
+}
+
+::ng-deep .custom-period-field .mat-mdc-floating-label {
+  font-size: 0.65rem;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+}
+
+::ng-deep .custom-period-field.mat-focused .mat-mdc-floating-label,
+::ng-deep .custom-period-field .mdc-text-field--label-floating .mat-mdc-floating-label {
+  transform: translateY(-50%) !important;
+}
+
+::ng-deep .custom-period-field input {
+  font-size: 0.65rem;
+  height: 16px;
+  line-height: 16px;
+}
+
+::ng-deep .custom-period-field .mat-mdc-form-field-icon-suffix {
+  padding-left: 2px;
+}
+
+::ng-deep .custom-period-field .mat-mdc-icon-button {
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+::ng-deep .custom-period-field .mat-mdc-icon-button .mat-mdc-button-touch-target {
+  width: 22px;
+  height: 22px;
+}
+
+::ng-deep .custom-period-field .mat-mdc-icon-button svg,
+::ng-deep .custom-period-field .mat-mdc-icon-button .mat-icon {
+  width: 14px;
+  height: 14px;
+  font-size: 14px;
+}
+
+/* Estados */
+.chart-loading,
+.chart-error,
+.chart-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 48px 24px;
+  text-align: center;
+}
+
+.chart-loading {
+  color: var(--primary-color);
+}
+
+.chart-loading i {
+  font-size: 2rem;
+}
+
+.chart-error {
+  color: var(--error-color);
+}
+
+.chart-error i {
+  font-size: 2.5rem;
+  opacity: 0.7;
+}
+
+.chart-error span {
+  color: var(--text-secondary);
+}
+
+.retry-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: var(--btn-primary-bg);
+  border: none;
+  border-radius: 8px;
+  color: var(--btn-primary-text);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.retry-btn:hover {
+  background: var(--btn-primary-hover);
+}
+
+.chart-empty {
+  color: var(--text-muted);
+}
+
+.chart-empty i {
+  font-size: 3rem;
+  opacity: 0.5;
+}
+
+/* Wrapper do Gráfico */
+.chart-wrapper {
+  position: relative;
+  height: 300px;
+  width: 100%;
+}
+
+.chart-wrapper--hidden {
+  display: none;
+}
+
+/* Calendário Material */
+::ng-deep .mat-calendar {
+  background-color: var(--bg-card) !important;
+  border-radius: 12px;
+}
+
+::ng-deep .mat-calendar-period-button,
+::ng-deep .mat-calendar-previous-button,
+::ng-deep .mat-calendar-next-button {
+  color: var(--text-primary) !important;
+}
+
+::ng-deep .mat-calendar-body-cell-content {
+  color: var(--text-primary) !important;
+}
+
+::ng-deep .mat-calendar-body-selected {
+  background-color: var(--primary-color) !important;
+  color: white !important;
+}
+
+::ng-deep .mat-calendar-body-today {
+  border-color: var(--primary-color) !important;
+}
+
+::ng-deep .mat-calendar-body-in-range::before {
+  background: rgba(var(--primary-rgb), 0.2) !important;
+}
+
+/* Responsividade */
+@media (max-width: 480px) {
+  .chart-wrapper {
+    height: 220px;
+  }
+}
+
+/* =============================================================================
+   GRÁFICO: SALDO FINANCEIRO
+   ============================================================================= */
+.saldo-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.saldo-filtros {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.saldo-filtro-btn {
+  padding: 5px 14px;
+  border: 1px solid var(--border-color, #dee2e6);
+  border-radius: 20px;
+  background: var(--bg-secondary, #f8f9fa);
+  color: var(--text-secondary, #6c757d);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.saldo-filtro-btn:hover {
+  background: var(--primary-light, #e8f0fe);
+  color: var(--primary-color, #0066CC);
+  border-color: var(--primary-color, #0066CC);
+}
+
+.saldo-filtro-btn.active {
+  background: var(--primary-color, #0066CC);
+  color: #fff;
+  border-color: var(--primary-color, #0066CC);
+}
+
+.saldo-resumo {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.saldo-resumo-item {
+  display: flex;
+  flex-direction: column;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: var(--bg-secondary, #f8f9fa);
+  border-left: 3px solid transparent;
+}
+
+.saldo-resumo-item.consultas {
+  border-left-color: rgba(59, 130, 246, 1);
+}
+
+.saldo-resumo-item.procedimentos {
+  border-left-color: rgba(16, 185, 129, 1);
+}
+
+.saldo-resumo-item.total {
+  border-left-color: var(--primary-color, #0066CC);
+}
+
+.saldo-resumo-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted, #999);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.saldo-resumo-valor {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary, #212529);
+  margin-top: 2px;
+}
+
+.saldo-resumo-qtd {
+  font-size: 11px;
+  color: var(--text-muted, #999);
+  margin-top: 2px;
+}
+
+.saldo-chart-wrapper {
+  position: relative;
+  height: 220px;
+}
+
+.saldo-loading,
+.saldo-erro {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 40px 0;
+  font-size: 13px;
+  color: var(--text-muted, #999);
+}
+
+.saldo-erro {
+  color: var(--error-color, #e74c3c);
+}
+
+@media (max-width: 600px) {
+  .saldo-resumo {
+    grid-template-columns: 1fr;
+  }
+
+  .saldo-filtros {
+    gap: 4px;
+  }
+
+  .saldo-filtro-btn {
+    font-size: 11px;
+    padding: 4px 10px;
+  }
+}
+
+/* =============================================================================
+   GRÁFICO: CLÍNICOS POR ESPECIALIDADE
+   ============================================================================= */
+.especialidade-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.especialidade-resumo {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.especialidade-resumo-total {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--primary-color, #0066CC);
+}
+
+.especialidade-resumo-label {
+  font-size: 13px;
+  color: var(--text-muted, #999);
+}
+
+.especialidade-chart-wrapper {
+  position: relative;
+  height: 220px;
+}
+
+.especialidade-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 40px 0;
+  font-size: 13px;
+  color: var(--text-muted, #999);
+}
+
+.especialidade-status--erro {
+  color: var(--error-color, #e74c3c);
+}
+
+/* =============================================================================
+   GRÁFICO: MÉDIA DE TEMPO DE CONSULTA
+   ============================================================================= */
+.quick-filters {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.custom-period {
+  margin-top: 12px;
+}
+
+.loading-state,
+.error-state,
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  text-align: center;
+  gap: 1rem;
+}
+
+.loading-state i,
+.error-state i,
+.empty-state i {
+  font-size: 3rem;
+  color: var(--text-muted, #9ca3af);
+}
+
+.loading-state i {
+  color: var(--primary-color, #3b82f6);
+}
+
+.error-state i {
+  color: var(--error-color, #ef4444);
+}
+
+.loading-state p,
+.error-state p,
+.empty-state p {
+  color: var(--text-secondary, #6b7280);
+  font-size: 1rem;
+}
+
+.stats-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.stat-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: var(--bg-card, #fff);
+  border-radius: 12px;
+  box-shadow: var(--shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.1));
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md, 0 4px 6px rgba(0, 0, 0, 0.1));
+}
+
+.stat-card__icon {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  font-size: 1.5rem;
+}
+
+.stat-card--primary .stat-card__icon {
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+}
+
+.stat-card--success .stat-card__icon {
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+}
+
+.stat-card--info .stat-card__icon {
+  background: rgba(99, 102, 241, 0.1);
+  color: #6366f1;
+}
+
+.stat-card--danger .stat-card__icon {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+.stat-card__content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.stat-card__value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary, #1f2937);
+}
+
+.stat-card__label {
+  font-size: 0.875rem;
+  color: var(--text-secondary, #6b7280);
+}
+
+.grafico-wrapper {
+  flex: 1;
+  min-height: 300px;
+  position: relative;
+}

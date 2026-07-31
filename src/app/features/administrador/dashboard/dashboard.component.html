@@ -2,10 +2,10 @@
   <!-- Header do Dashboard -->
   <header class="dashboard-header">
     <div class="dashboard-header__title">
-      <h1>
+      <h2>
         <i class="fa-solid fa-chart-line"></i>
         Painel de Controle
-      </h1>
+      </h2>
       <p class="dashboard-header__subtitle">
         Bem-vindo! Aqui está o resumo das suas atividades.
       </p>
@@ -14,37 +14,49 @@
       <span class="dashboard-header__date">
         <i class="fa-regular fa-calendar"></i>
         {{ today | date:'EEEE, dd \'de\' MMMM' }}
+
+        <!-- Sino de notificação de cobrança pendente - Apenas AdminOrg -->
+        <span class="notification-bell-wrapper" *ngIf="ControleAcessoService.isAdmin()">
+          <button
+            class="notification-bell"
+            [class.notification-bell--active]="cobrancaPendente && !assinaturaInadimplente"
+            (click)="toggleNotificacaoCobranca()"
+            [attr.aria-label]="cobrancaPendente ? 'Você tem uma cobrança pendente' : 'Notificações'">
+            <i class="fa-solid fa-bell"></i>
+            <span class="notification-bell__dot" *ngIf="cobrancaPendente && !assinaturaInadimplente"></span>
+          </button>
+
+          <!-- Dropdown com a mensagem de cobrança pendente -->
+          <div class="notification-dropdown" *ngIf="mostrarNotificacaoCobranca && cobrancaPendente && !assinaturaInadimplente">
+            <div class="banner-cobranca-pendente">
+              <div class="banner-cobranca-pendente__icon">
+                <i class="fa-solid fa-receipt"></i>
+              </div>
+              <div class="banner-cobranca-pendente__content">
+                <strong>Cobrança mensal gerada</strong>
+                <p>
+                  Sua cobrança de <strong>{{ cobrancaPendente.valorTotal | currency:'BRL' }}</strong> vence em <strong>{{ cobrancaPendente.dataVencimentoPix | date:'dd/MM/yyyy' }}</strong>. Você tem até essa data para realizar o pagamento.
+                </p>
+                <p class="banner-cobranca-pendente__prazo">
+                  <i class="fa-solid fa-clock"></i>
+                  <span *ngIf="diasRestantesPagamento > 0">
+                    <strong>{{ diasRestantesPagamento }}</strong> {{ diasRestantesPagamento === 1 ? 'dia restante' : 'dias restantes' }} para pagamento
+                  </span>
+                  <span *ngIf="diasRestantesPagamento === 0" class="banner-cobranca-pendente__urgente">
+                    Vence hoje! Pague para evitar a inadimplência
+                  </span>
+                </p>
+              </div>
+              <button class="banner-cobranca-pendente__action" (click)="navegarPara('/minha-assinatura'); fecharNotificacaoCobranca()">
+                <i class="fa-solid fa-qrcode"></i>
+                Ver QR Code Pix
+              </button>
+            </div>
+          </div>
+        </span>
       </span>
     </div>
   </header>
-
-  <!-- Banner de Inadimplência -->
-  <!-- Banner de cobrança pendente (gerada automaticamente dia 1º do mês) - Apenas AdminOrg -->
-  <div class="banner-cobranca-pendente" *ngIf="cobrancaPendente && !assinaturaInadimplente && ControleAcessoService.isAdmin()">
-    <div class="banner-cobranca-pendente__icon">
-      <i class="fa-solid fa-receipt"></i>
-    </div>
-    <div class="banner-cobranca-pendente__content">
-      <strong>Cobrança mensal gerada</strong>
-      <p>
-        Sua cobrança de <strong>{{ cobrancaPendente.valorTotal | currency:'BRL' }}</strong> foi gerada automaticamente.
-        Você tem até <strong>{{ cobrancaPendente.dataVencimentoPix | date:'dd/MM/yyyy' }}</strong> para realizar o pagamento.
-      </p>
-      <p class="banner-cobranca-pendente__prazo">
-        <i class="fa-solid fa-clock"></i>
-        <span *ngIf="diasRestantesPagamento > 0">
-          <strong>{{ diasRestantesPagamento }}</strong> {{ diasRestantesPagamento === 1 ? 'dia restante' : 'dias restantes' }} para pagamento
-        </span>
-        <span *ngIf="diasRestantesPagamento === 0" class="banner-cobranca-pendente__urgente">
-          Vence hoje! Pague para evitar inadimplência
-        </span>
-      </p>
-    </div>
-    <button class="banner-cobranca-pendente__action" (click)="navegarPara('/minha-assinatura')">
-      <i class="fa-solid fa-qrcode"></i>
-      Ver QR Code Pix
-    </button>
-  </div>
 
   <!-- Banner de inadimplência (prioridade sobre cobrança pendente) - Apenas AdminOrg -->
   <div class="banner-inadimplencia" *ngIf="assinaturaInadimplente && ControleAcessoService.isAdmin()">
@@ -85,7 +97,7 @@
         </span>
         <div class="stats-carousel__controls">
           <span class="stats-carousel__counter">
-            {{ carrosselOffset + 1 }}–{{ minVal(carrosselOffset + CARDS_POR_PAGINA, cardsVisiveis.length) }}
+            {{ carrosselOffset + 1 }}–{{ minVal(carrosselOffset + cardsPorPagina, cardsVisiveis.length) }}
             de {{ cardsVisiveis.length }}
           </span>
           <button class="stats-carousel__btn"
@@ -103,8 +115,8 @@
         </div>
       </div>
 
-      <!-- Grade de até 5 cards visíveis -->
-      <div class="stats-carousel__grid">
+      <!-- Grade de cards visíveis (quantidade dinâmica conforme largura da tela) -->
+      <div class="stats-carousel__grid" #cardsGrid>
         <div class="sc-card sc-card--{{ card.cor }}"
              *ngFor="let card of cardsNaPagina"
              [@cardSlide]>
@@ -132,59 +144,21 @@
 
     </section>
 
-    <!-- Gráficos Principais -->
-    <div class="dashboard-charts">
-      <div class="hc-card dashboard-chart" *ngIf="isGraficoAtivo(TipoGraficoDashboard.CONSULTAS_POR_PERIODO)">
-        <div>
-          <h3 class="hc-card__title">
-            <i class="fa-solid fa-chart-bar"></i>
-            Consultas por Período
-          </h3>
-        </div>
-        <div>
-          <app-grafico-qnt-consultas-dia-anterior></app-grafico-qnt-consultas-dia-anterior>
-        </div>
-      </div>
 
-      <div class="hc-card dashboard-chart" *ngIf="isGraficoAtivo(TipoGraficoDashboard.AGENDAMENTOS_DIAS_SEMANA)">
-        <div>
-          <h3 class="hc-card__title">
-            <i class="fa-solid fa-calendar-days"></i>
-            Agendamentos
-          </h3>
-        </div>
-        <div>
-          <app-grafico-agendamentos-dias-semanas-mes></app-grafico-agendamentos-dias-semanas-mes>
-        </div>
-      </div>
-    </div>
+    <app-graficos-principais-dashboard
+      [exibirConsultasPorPeriodo]="isGraficoAtivo(TipoGraficoDashboard.CONSULTAS_POR_PERIODO)"
+      [exibirAgendamentos]="isGraficoAtivo(TipoGraficoDashboard.AGENDAMENTOS_DIAS_SEMANA)">
+    </app-graficos-principais-dashboard>
+
+
 
     <!-- Gráficos Secundários -->
-    <div class="dashboard-charts dashboard-charts--secondary">
-      <div class="hc-card dashboard-chart" *ngIf="isGraficoAtivo(TipoGraficoDashboard.SALDO_FINANCEIRO)">
-        <div class="hc-card__header">
-          <h3 class="hc-card__title">
-            <i class="fa-solid fa-coins"></i>
-            Saldo Financeiro
-          </h3>
-        </div>
-        <div>
-          <app-grafico-saldo></app-grafico-saldo>
-        </div>
-      </div>
-
-      <div class="hc-card dashboard-chart" *ngIf="isGraficoAtivo(TipoGraficoDashboard.MEDICOS_POR_ESPECIALIDADE)">
-        <div class="hc-card__header">
-          <h3 class="hc-card__title">
-            <i class="fa-solid fa-stethoscope"></i>
-            Clínico por Especialidade
-          </h3>
-        </div>
-        <div>
-          <app-grafico-categoria-medicos></app-grafico-categoria-medicos>
-        </div>
-      </div>
-    </div>
+    <app-graficos-principais-dashboard
+      [exibirConsultasPorPeriodo]="false"
+      [exibirAgendamentos]="false"
+      [exibirSaldoFinanceiro]="isGraficoAtivo(TipoGraficoDashboard.SALDO_FINANCEIRO)"
+      [exibirMedicosPorEspecialidade]="isGraficoAtivo(TipoGraficoDashboard.MEDICOS_POR_ESPECIALIDADE)">
+    </app-graficos-principais-dashboard>
 
   </div>
 
@@ -262,33 +236,12 @@
     </section>
 
     <!-- Gráficos do Profissional — controlados pelo mesmo sistema de configuração -->
-    <div class="dashboard-charts">
+    <app-graficos-principais-dashboard
+      [exibirConsultasPorPeriodo]="false"
+      [exibirAgendamentos]="isGraficoAtivo(TipoGraficoDashboard.AGENDAMENTOS_MEDICO_PERIODO)"
+      [exibirMediaTempoConsulta]="isGraficoAtivo(TipoGraficoDashboard.MEDIA_TEMPO_CONSULTA)">
+    </app-graficos-principais-dashboard>
 
-      <div class="hc-card dashboard-chart" *ngIf="isGraficoAtivo(TipoGraficoDashboard.MEDIA_TEMPO_CONSULTA)">
-        <div class="hc-card__header">
-          <h3 class="hc-card__title">
-            <i class="fa-solid fa-clock"></i>
-            Média de Tempo de Consulta
-          </h3>
-        </div>
-        <div>
-          <app-grafico-media-tempo-consulta></app-grafico-media-tempo-consulta>
-        </div>
-      </div>
-
-      <div class="hc-card dashboard-chart" *ngIf="isGraficoAtivo(TipoGraficoDashboard.AGENDAMENTOS_MEDICO_PERIODO)">
-        <div class="hc-card__header">
-          <h3 class="hc-card__title">
-            <i class="fa-solid fa-calendar-days"></i>
-            Meus Agendamentos por Período
-          </h3>
-        </div>
-        <div>
-          <app-grafico-agendamentos-dias-semanas-mes></app-grafico-agendamentos-dias-semanas-mes>
-        </div>
-      </div>
-
-    </div>
   </div>
 
 
