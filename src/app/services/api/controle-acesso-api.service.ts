@@ -38,7 +38,7 @@ export class ControleAcessoApiService {
     });
   }
 
-  private possuiRole(role: TipoUsuario): boolean {
+  private possuiRole(role: string): boolean {
     const autorizacao = this.tokenService.obterAutorizacao();
     return autorizacao.includes(role);
   }
@@ -46,23 +46,23 @@ export class ControleAcessoApiService {
   // ========== VERIFICAÇÕES POR TIPO ==========
 
   isSuperAdmin(): boolean {
-    return this.possuiRole(TipoUsuario.SUPER_ADMIN);
+    return this.possuiRole('ROLE_SUPER_ADMIN');
   }
 
   isAdmin(): boolean {
-    return this.possuiRole(TipoUsuario.ADMIN);
+    return this.possuiRole('ROLE_ADMIN') && !this.possuiRole('ROLE_SUPER_ADMIN');
   }
 
   isGerente(): boolean {
-    return this.possuiRole(TipoUsuario.GERENTE);
+    return this.possuiRole('ROLE_GERENTE');
   }
 
   isProfissional(): boolean {
-    return this.possuiRole(TipoUsuario.PROFISSIONAL);
+    return this.possuiRole('ROLE_PROFISSIONAL');
   }
 
   isRecepcionista(): boolean {
-    return this.possuiRole(TipoUsuario.RECEPCIONISTA);
+    return this.possuiRole('ROLE_RECEPCIONISTA');
   }
 
   // ========== VERIFICAÇÕES DE PERMISSÃO POR MENU ==========

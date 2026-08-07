@@ -308,7 +308,7 @@ export class ConfiguracoesSistemaComponent implements OnInit, OnDestroy {
 
     this.usuarioApiService.buscarPerfilCompleto(usuario.id).subscribe({
       next: (dados: any) => {
-        if (dados.tipoUsuario === 'PROFISSIONAL' && dados.profissional?.id) {
+        if (dados.tipoUsuarioNovo === 'CLINICO' && dados.profissional?.id) {
           this.isProfissional = true;
           this.profissionalId = dados.profissional.id;
         }

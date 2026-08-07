@@ -14,7 +14,7 @@ export interface Usuario {
 export interface UsuarioResponse {
   id: number;
   login: string;
-  tipoUsuario: number;
+  tipoUsuarioNovo: string;
   status: number;
 }
 

@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CepApiService } from 'src/app/services/api/cep-api.service';
+import { PlanoApiService } from 'src/app/services/api/plano-api.service';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import Swal from 'sweetalert2';
@@ -19,6 +20,7 @@ import {
   cnpjValidator,
   antiInjectionValidator,
 } from 'src/app/util/validators/form-validators';
+import { PlanoAssinatura } from 'src/app/util/variados/interfaces/planos/PlanoAssinatura';
 
 @Component({
   selector: 'app-cadastro-admin-org',
@@ -31,6 +33,9 @@ export class CadastroAdminOrgComponent implements OnInit, OnDestroy {
   formulario!: FormGroup;
   isLoading = false;
   isBuscandoCep = false;
+  isLoadingPlanos = false;
+  planos: PlanoAssinatura[] = [];
+  isJuridica = true;
   getFieldError = getFieldError;
 
   readonly tiposClinica = [
@@ -59,11 +64,15 @@ export class CadastroAdminOrgComponent implements OnInit, OnDestroy {
     private administradorApi: AdministradorApiService,
     private filtroStateService: FiltroStateService,
     private cepApiService: CepApiService,
+    private planoApiService: PlanoApiService,
     private router: Router
   ) {}
 
   ngOnInit(): void {
+    this.carregarPlanos();
+
     this.formulario = this.fb.group({
+      tipoPessoa:   ['JURIDICA', Validators.required],
       nome:         ['', [Validators.required, nomeCompletoValidator(), antiInjectionValidator()]],
       cpf:          ['', [Validators.required, cpfValidator()]],
       cargo:        ['', Validators.required],
@@ -74,7 +83,7 @@ export class CadastroAdminOrgComponent implements OnInit, OnDestroy {
       cnpj:         ['', [Validators.required, cnpjValidator()]],
       tipoClinica:  ['', Validators.required],
       emailClinica: ['', [Validators.required, emailValidator()]],
-      telefone:     ['', [Validators.required, telefoneValidator()]],
+      telefone:     ['', telefoneValidator()],
 
       cep:          ['', [Validators.required, cepValidator()]],
       uf:           ['', Validators.required],
@@ -83,6 +92,7 @@ export class CadastroAdminOrgComponent implements OnInit, OnDestroy {
       rua:          ['', [Validators.required, textoBrValidator(2, 200), antiInjectionValidator()]],
       numero:       ['', [Validators.required, numeroEnderecoValidator()]],
       complemento:  ['', antiInjectionValidator()],
+      planoId: ['', Validators.required],
     });
 
     this.formulario.get('cpf')?.valueChanges.subscribe(value => {
@@ -119,6 +129,42 @@ export class CadastroAdminOrgComponent implements OnInit, OnDestroy {
     this.subscription?.unsubscribe();
   }
 
+  carregarPlanos(): void {
+    this.isLoadingPlanos = true;
+    this.planoApiService.listarPlanosAtivos().subscribe({
+      next: (planos) => {
+        this.planos = planos;
+        this.isLoadingPlanos = false;
+      },
+      error: () => {
+        this.isLoadingPlanos = false;
+        Swal.fire({ icon: 'error', title: 'Erro', text: 'Erro ao carregar planos disponíveis.' });
+      }
+    });
+  }
+
+  onTipoPessoaChange(): void {
+    const tipoPessoa = this.formulario.get('tipoPessoa')?.value;
+    this.isJuridica = tipoPessoa === 'JURIDICA';
+
+    // Atualizar validadores baseados no tipo de pessoa
+    const companyFields = ['nomeClinica', 'razaoSocial', 'cnpj', 'tipoClinica', 'emailClinica', 'telefone'];
+    
+    if (this.isJuridica) {
+      // Tornar campos obrigatórios para JURIDICA
+      companyFields.forEach(field => {
+        this.formulario.get(field)?.addValidators([Validators.required]);
+        this.formulario.get(field)?.updateValueAndValidity();
+      });
+    } else {
+      // Remover validadores obrigatórios para FISICA
+      companyFields.forEach(field => {
+        this.formulario.get(field)?.removeValidators([Validators.required]);
+        this.formulario.get(field)?.updateValueAndValidity();
+      });
+    }
+  }
+
   validateCpfOnBlur(): void {
     this.formulario.get('cpf')?.markAsTouched();
   }
@@ -150,6 +196,16 @@ export class CadastroAdminOrgComponent implements OnInit, OnDestroy {
   }
 
   cadastrar(): void {
+    // Validação adicional para campos obrigatórios baseados no tipo de pessoa
+    if (this.isJuridica) {
+      const companyFields = ['nomeClinica', 'razaoSocial', 'cnpj', 'tipoClinica', 'emailClinica', 'telefone'];
+      for (const field of companyFields) {
+        if (!this.formulario.get(field)?.value) {
+          this.formulario.get(field)?.markAsTouched();
+        }
+      }
+    }
+
     if (!this.formulario.valid) {
       this.formulario.markAllAsTouched();
       Swal.fire({ icon: 'warning', title: 'Formulário incompleto', text: 'Preencha todos os campos obrigatórios.' });
@@ -159,7 +215,8 @@ export class CadastroAdminOrgComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     const payload = {
       ...this.formulario.value,
-      numero: parseInt(this.formulario.value.numero, 10)
+      numero: parseInt(this.formulario.value.numero, 10),
+      planoId: parseInt(this.formulario.value.planoId, 10)
     };
 
     this.administradorApi.cadastrarAdminOrgCompleto(payload).subscribe({
