@@ -1,5 +1,17 @@
 import { Component, OnInit } from '@angular/core';
 
+export type PrioridadeChamado = 'Alta' | 'Média' | 'Baixa';
+export type StatusChamado = 'EM ANÁLISE' | 'EM ANDAMENTO' | 'CONCLUÍDO';
+
+export interface ChamadoSuporte {
+  id: string;
+  assunto: string;
+  categoria: string;
+  prioridade: PrioridadeChamado;
+  status: StatusChamado;
+  data: string;
+}
+
 @Component({
   selector: 'app-suporte',
   templateUrl: './suporte.component.html',
@@ -50,18 +62,6 @@ export class SuporteComponent implements OnInit {
     }
   ];
 
-  linksUteis = [
-    { titulo: 'Manual do Usuário', icone: 'fa-solid fa-book', url: '#' },
-    { titulo: 'Vídeos Tutoriais', icone: 'fa-solid fa-video', url: '#' },
-    { titulo: 'Base de Conhecimento', icone: 'fa-solid fa-lightbulb', url: '#' },
-    { titulo: 'Novidades do Sistema', icone: 'fa-solid fa-newspaper', url: '#' }
-  ];
-
-  formContato = {
-    assunto: '',
-    mensagem: ''
-  };
-
   assuntos = [
     'Dúvida técnica',
     'Problema no sistema',
@@ -70,9 +70,43 @@ export class SuporteComponent implements OnInit {
     'Outros'
   ];
 
+  prioridades = [
+    { valor: 'Baixa', label: 'Baixa (Dúvida pontual)' },
+    { valor: 'Média', label: 'Média (Impacto operacional parcial)' },
+    { valor: 'Alta', label: 'Alta (Impedimento operacional total)' }
+  ];
+
   faqAberto: number | null = null;
-  enviando = false;
-  mensagemEnviada = false;
+
+  // ===================== Chamados Técnicos (Tickets) =====================
+  chamados: ChamadoSuporte[] = [
+    {
+      id: '#SC-9042',
+      assunto: 'Falha ao exportar relatório financeiro em PDF',
+      categoria: 'Módulo de Faturamento',
+      prioridade: 'Alta',
+      status: 'EM ANDAMENTO',
+      data: 'Ontem, 14:32'
+    },
+    {
+      id: '#SC-9037',
+      assunto: 'Dúvida sobre permissões de secretária',
+      categoria: 'Acesso e Segurança',
+      prioridade: 'Baixa',
+      status: 'CONCLUÍDO',
+      data: '05/08/2026, 09:15'
+    }
+  ];
+
+  mostrarModalChamado = false;
+  mostrarToastChamado = false;
+  enviandoChamado = false;
+
+  novoChamado = {
+    assunto: '',
+    prioridade: '',
+    mensagem: ''
+  };
 
   constructor() { }
 
@@ -82,21 +116,41 @@ export class SuporteComponent implements OnInit {
     this.faqAberto = this.faqAberto === index ? null : index;
   }
 
-  enviarMensagem(): void {
-    if (!this.formContato.assunto || !this.formContato.mensagem) {
+  abrirModalChamado(): void {
+    this.mostrarModalChamado = true;
+  }
+
+  fecharModalChamado(): void {
+    this.mostrarModalChamado = false;
+    this.novoChamado = { assunto: '', prioridade: '', mensagem: '' };
+  }
+
+  enviarChamado(): void {
+    if (!this.novoChamado.assunto || !this.novoChamado.prioridade || !this.novoChamado.mensagem.trim()) {
       return;
     }
 
-    this.enviando = true;
+    this.enviandoChamado = true;
 
+    // Simulação local (frontend-only). Integração com backend será feita futuramente.
     setTimeout(() => {
-      this.enviando = false;
-      this.mensagemEnviada = true;
-      this.formContato = { assunto: '', mensagem: '' };
+      const numero = Math.floor(9000 + Math.random() * 1000);
+      const chamado: ChamadoSuporte = {
+        id: `#SC-${numero}`,
+        assunto: this.novoChamado.assunto,
+        categoria: this.novoChamado.assunto,
+        prioridade: this.novoChamado.prioridade as PrioridadeChamado,
+        status: 'EM ANÁLISE',
+        data: 'Hoje, ' + new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+      };
 
-      setTimeout(() => {
-        this.mensagemEnviada = false;
-      }, 5000);
-    }, 1500);
+      this.chamados = [chamado, ...this.chamados];
+      this.enviandoChamado = false;
+      this.mostrarModalChamado = false;
+      this.novoChamado = { assunto: '', prioridade: '', mensagem: '' };
+
+      this.mostrarToastChamado = true;
+      setTimeout(() => this.mostrarToastChamado = false, 3000);
+    }, 800);
   }
 }

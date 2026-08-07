@@ -3,8 +3,6 @@ import { DashboardApiService } from 'src/app/services/api/dashboard-api.service'
 import { ConfiguracaoCardService } from 'src/app/services/api/configuracao-card.service';
 import { ControleAcessoApiService } from 'src/app/services/api/controle-acesso-api.service';
 import { AssinaturaApiService } from 'src/app/services/api/assinatura-api.service';
-import { CobrancaApiService } from 'src/app/services/api/cobranca-api.service';
-import { AssinaturaTenant, CobrancaTenant } from 'src/app/util/variados/interfaces/planos/PlanoAssinatura';
 import { Component, OnInit, OnDestroy, AfterViewInit, HostListener, ElementRef, ViewChild } from '@angular/core';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { Router } from '@angular/router';
@@ -69,13 +67,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   dataLimiteAcesso: Date | null = null;
   diasRestantes: number = 0;
 
-  // Cobrança pendente (banner de pagamento)
-  cobrancaPendente: CobrancaTenant | null = null;
-  diasRestantesPagamento: number = 0;
-
-  // Controle do dropdown de notificações (sino)
-  mostrarNotificacaoCobranca = false;
-
   // Expor enums para o template
   TipoGraficoDashboard = TipoGraficoDashboard;
   TipoCardDashboard = TipoCardDashboard;
@@ -100,21 +91,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     private profissionalApiService: ProfissionalApiService,
     private configuracaoCardService: ConfiguracaoCardService,
     private dashboardApiService: DashboardApiService,
-    private assinaturaApiService: AssinaturaApiService,
-    private cobrancaApiService: CobrancaApiService,
-    private elementRef: ElementRef
+    private assinaturaApiService: AssinaturaApiService
   ) { }
-
-  @HostListener('document:click', ['$event'])
-  onDocumentClick(event: MouseEvent): void {
-    if (!this.mostrarNotificacaoCobranca) {
-      return;
-    }
-    const clicouDentro = this.elementRef.nativeElement.querySelector('.notification-bell-wrapper')?.contains(event.target as Node);
-    if (!clicouDentro) {
-      this.mostrarNotificacaoCobranca = false;
-    }
-  }
 
   ngOnInit(): void {
     this.themeSubscription = this.themeService.currentTheme$.subscribe(
@@ -253,19 +231,15 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   /**
-   * Verifica o status da assinatura e cobrança pendente.
-   * - Banner de inadimplência: exibido quando status = INADIMPLENTE
-   * - Banner de pagamento: exibido quando há cobrança PENDENTE (gerada automaticamente dia 1º)
+   * Verifica o status da assinatura (banner de inadimplência).
+   * A notificação de cobrança pendente (sino) é tratada globalmente
+   * pela barra superior (BarraSuperiorComponent).
    */
   private verificarStatusAssinatura(): void {
     if (this.ControleAcessoService.isSuperAdmin()) return;
 
-    forkJoin({
-      assinatura: this.assinaturaApiService.minhaAssinatura(),
-      cobranca: this.cobrancaApiService.buscarCobrancaPendenteAtual()
-    }).subscribe({
-      next: ({ assinatura, cobranca }) => {
-        // Banner de inadimplência
+    this.assinaturaApiService.minhaAssinatura().subscribe({
+      next: (assinatura) => {
         if (assinatura.status === 'INADIMPLENTE') {
           this.assinaturaInadimplente = true;
           const dataVencimento = new Date(assinatura.dataVencimento);
@@ -275,15 +249,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
           const hoje = new Date();
           const diffMs = this.dataLimiteAcesso.getTime() - hoje.getTime();
           this.diasRestantes = Math.max(0, Math.ceil(diffMs / (1000 * 60 * 60 * 24)));
-        }
-
-        // Banner de cobrança pendente (gerada automaticamente)
-        if (cobranca && cobranca.status === 'PENDENTE') {
-          this.cobrancaPendente = cobranca;
-          const dataVencimento = new Date(cobranca.dataVencimentoPix);
-          const hoje = new Date();
-          const diffMs = dataVencimento.getTime() - hoje.getTime();
-          this.diasRestantesPagamento = Math.max(0, Math.ceil(diffMs / (1000 * 60 * 60 * 24)));
         }
       },
       error: (err) => console.warn('Não foi possível verificar status da assinatura:', err)
@@ -296,14 +261,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
   navegarPara(rota: string): void {
     this.router.navigate([rota]);
-  }
-
-  toggleNotificacaoCobranca(): void {
-    this.mostrarNotificacaoCobranca = !this.mostrarNotificacaoCobranca;
-  }
-
-  fecharNotificacaoCobranca(): void {
-    this.mostrarNotificacaoCobranca = false;
   }
 
   private carregarConfiguracoesGraficos(): void {

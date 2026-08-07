@@ -1,0 +1,68 @@
+<header class="topbar">
+
+  <!-- Data atual -->
+  <div class="topbar-date">
+    <i class="fa-regular fa-calendar"></i>
+    <span>{{ today | date:'EEEE, dd \'de\' MMMM' }}</span>
+  </div>
+
+  <div class="topbar-actions">
+
+    <!-- Ajuda / Suporte Técnico -->
+    <button class="help-button" (click)="navegarPara('/suporte')" aria-label="Suporte técnico" title="Suporte técnico">
+      <i class="fa-solid fa-question"></i>
+    </button>
+
+    <!-- Sino de notificação de cobrança pendente - Apenas AdminOrg -->
+    <span class="notification-bell-wrapper" *ngIf="ControleAcessoService.isAdmin()">
+      <button
+        class="notification-bell"
+        [class.notification-bell--active]="cobrancaPendente && !assinaturaInadimplente"
+        (click)="toggleNotificacaoCobranca()"
+        [attr.aria-label]="cobrancaPendente ? 'Você tem uma cobrança pendente' : 'Notificações'">
+        <i class="fa-solid fa-bell"></i>
+        <span class="notification-bell__dot" *ngIf="cobrancaPendente && !assinaturaInadimplente"></span>
+      </button>
+
+      <!-- Dropdown com a mensagem de cobrança pendente -->
+      <div class="notification-dropdown" *ngIf="mostrarNotificacaoCobranca && cobrancaPendente && !assinaturaInadimplente">
+        <div class="banner-cobranca-pendente">
+          <div class="banner-cobranca-pendente__icon">
+            <i class="fa-solid fa-receipt"></i>
+          </div>
+          <div class="banner-cobranca-pendente__content">
+            <strong>Cobrança mensal gerada</strong>
+            <p>
+              Sua cobrança de <strong>{{ cobrancaPendente.valorTotal | currency:'BRL' }}</strong> vence em <strong>{{ cobrancaPendente.dataVencimentoPix | date:'dd/MM/yyyy' }}</strong>. Você tem até essa data para realizar o pagamento.
+            </p>
+            <p class="banner-cobranca-pendente__prazo">
+              <i class="fa-solid fa-clock"></i>
+              <span *ngIf="diasRestantesPagamento > 0">
+                <strong>{{ diasRestantesPagamento }}</strong> {{ diasRestantesPagamento === 1 ? 'dia restante' : 'dias restantes' }} para pagamento
+              </span>
+              <span *ngIf="diasRestantesPagamento === 0" class="banner-cobranca-pendente__urgente">
+                Vence hoje! Pague para evitar a inadimplência
+              </span>
+            </p>
+          </div>
+          <button class="banner-cobranca-pendente__action" (click)="navegarPara('/minha-assinatura')">
+            <i class="fa-solid fa-qrcode"></i>
+            Ver QR Code Pix
+          </button>
+        </div>
+      </div>
+    </span>
+
+    <!-- Informações do Usuário -->
+    <div class="topbar-user" (click)="navegarPara('/Dashboard')">
+      <div class="topbar-user__avatar">
+        <i class="fa-solid fa-user-doctor"></i>
+      </div>
+      <div class="topbar-user__details">
+        <span class="topbar-user__name">{{ getNomeExibicao() }}</span>
+        <span class="topbar-user__role">{{ getUserRole() }}</span>
+      </div>
+    </div>
+
+  </div>
+</header>

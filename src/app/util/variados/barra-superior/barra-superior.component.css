@@ -1,0 +1,328 @@
+/* =============================================================================
+   BARRA SUPERIOR FIXA - Healthcare Admin
+   ============================================================================= */
+
+:host {
+  --topbar-height: 64px;
+  --primary-color: #0066CC;
+  --primary-light: #3d8bda;
+  --text-primary: #1a1f2e;
+  --text-secondary: #64748b;
+  display: block;
+  flex-shrink: 0;
+}
+
+.topbar {
+  height: var(--topbar-height);
+  min-height: var(--topbar-height);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 0 24px;
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+}
+
+/* Data atual */
+.topbar-date {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-transform: capitalize;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.topbar-date i {
+  color: var(--primary-color);
+}
+
+/* Ações à direita */
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-shrink: 0;
+}
+
+/* Informações do usuário */
+.topbar-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: 10px;
+  transition: background 0.2s;
+}
+
+.topbar-user:hover {
+  background: #f3f4f6;
+}
+
+.topbar-user__avatar {
+  min-width: 36px;
+  width: 36px;
+  height: 36px;
+  background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.topbar-user__details {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+  white-space: nowrap;
+}
+
+.topbar-user__name {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.topbar-user__role {
+  font-size: 11.5px;
+  color: var(--text-secondary);
+}
+
+/* Botão de Ajuda / Suporte Técnico */
+.help-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1.5px solid #e5e7eb;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, border-color 0.2s, transform 0.15s;
+}
+
+.help-button:hover {
+  background: rgba(0, 102, 204, 0.1);
+  color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.help-button:active {
+  transform: translateY(1px);
+}
+
+/* =============================================================================
+   SINO DE NOTIFICAÇÃO (COBRANÇA PENDENTE)
+   ============================================================================= */
+
+.notification-bell-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.notification-bell {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: transparent;
+  border: none;
+  border-radius: 50%;
+  color: var(--text-secondary);
+  font-size: 16px;
+  padding: 0;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, transform 0.15s;
+}
+
+.notification-bell:hover {
+  background: rgba(0, 102, 204, 0.1);
+  color: var(--primary-color);
+}
+
+.notification-bell:active {
+  transform: translateY(1px);
+}
+
+.notification-bell--active {
+  color: #d32f2f;
+  animation: bellShake 2.5s ease-in-out infinite;
+}
+
+.notification-bell--active:hover {
+  background: rgba(211, 47, 47, 0.12);
+  color: #d32f2f;
+}
+
+.notification-bell__dot {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 8px;
+  height: 8px;
+  background: #d32f2f;
+  border: 1.5px solid #fff;
+  border-radius: 50%;
+}
+
+@keyframes bellShake {
+  0%, 85%, 100% { transform: rotate(0deg); }
+  87% { transform: rotate(-12deg); }
+  89% { transform: rotate(10deg); }
+  91% { transform: rotate(-8deg); }
+  93% { transform: rotate(6deg); }
+  95% { transform: rotate(0deg); }
+}
+
+.notification-dropdown {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  width: 320px;
+  max-width: 90vw;
+  z-index: 100;
+  animation: dropdownFadeIn 0.2s ease-out;
+}
+
+@keyframes dropdownFadeIn {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* =============================================================================
+   BANNER DE COBRANÇA PENDENTE
+   ============================================================================= */
+
+.banner-cobranca-pendente {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  padding: 14px 16px;
+  background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+  border: 1px solid #2196f3;
+  border-left: 5px solid #1976d2;
+  border-radius: 12px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.16);
+  animation: bannerSlideIn 0.3s ease-out;
+}
+
+@keyframes bannerSlideIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.banner-cobranca-pendente__icon {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(25, 118, 210, 0.12);
+  border-radius: 50%;
+  color: #1976d2;
+  font-size: 15px;
+}
+
+.banner-cobranca-pendente__content {
+  width: 100%;
+  color: #0d47a1;
+}
+
+.banner-cobranca-pendente__content strong {
+  font-size: 12.5px;
+  color: #1565c0;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.banner-cobranca-pendente__content p {
+  margin: 0;
+  font-size: 11.5px;
+  line-height: 1.5;
+}
+
+.banner-cobranca-pendente__content p strong {
+  display: inline;
+  font-size: inherit;
+  color: inherit;
+  margin: 0;
+}
+
+.banner-cobranca-pendente__prazo {
+  margin-top: 6px !important;
+  font-weight: 500;
+  color: #1976d2;
+  font-size: 11px;
+}
+
+.banner-cobranca-pendente__prazo i {
+  margin-right: 4px;
+}
+
+.banner-cobranca-pendente__urgente {
+  color: #d32f2f;
+  font-weight: 700;
+}
+
+.banner-cobranca-pendente__action {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 16px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #fff;
+  background: #1976d2;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.banner-cobranca-pendente__action:hover {
+  background: #1565c0;
+}
+
+/* =============================================================================
+   RESPONSIVIDADE
+   ============================================================================= */
+
+@media (max-width: 768px) {
+  .topbar {
+    padding: 0 16px 0 64px; /* Espaço para o botão mobile do sidebar */
+  }
+
+  .topbar-date span {
+    display: none;
+  }
+
+  .topbar-user__details {
+    display: none;
+  }
+
+  .notification-dropdown {
+    right: -40px;
+    width: 280px;
+  }
+}
