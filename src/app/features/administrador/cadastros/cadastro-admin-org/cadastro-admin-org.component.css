@@ -105,3 +105,105 @@
 :host-context(body.dark-theme) .cadastro-field__hint {
   color: #64748b;
 }
+
+/* Tipo Pessoa Toggle */
+.tipo-pessoa-toggle {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.tipo-pessoa-option {
+  flex: 1;
+  min-width: 200px;
+  cursor: pointer;
+}
+
+.tipo-pessoa-option input[type="radio"] {
+  display: none;
+}
+
+.tipo-pessoa-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 20px;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  background: #fff;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+
+.tipo-pessoa-card i {
+  font-size: 32px;
+  color: #64748b;
+  transition: color 0.2s ease;
+}
+
+.tipo-pessoa-card span {
+  font-weight: 600;
+  color: #1e293b;
+  font-size: 14px;
+}
+
+.tipo-pessoa-card small {
+  color: #94a3b8;
+  font-size: 12px;
+}
+
+.tipo-pessoa-option input[type="radio"]:checked + .tipo-pessoa-card {
+  border-color: #4a2d8a;
+  background: linear-gradient(135deg, #f5f3ff, #ede9fe);
+  box-shadow: 0 0 0 3px rgba(74, 45, 138, 0.15);
+}
+
+.tipo-pessoa-option input[type="radio"]:checked + .tipo-pessoa-card i {
+  color: #4a2d8a;
+}
+
+.tipo-pessoa-option input[type="radio"]:checked + .tipo-pessoa-card span {
+  color: #4a2d8a;
+}
+
+.tipo-pessoa-option:hover .tipo-pessoa-card {
+  border-color: #a78bfa;
+  transform: translateY(-2px);
+}
+
+.tipo-pessoa-option input[type="radio"]:checked + .tipo-pessoa-card:hover {
+  border-color: #4a2d8a;
+}
+
+/* Dark theme for tipo-pessoa */
+:host-context(body.dark-theme) .tipo-pessoa-card {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+:host-context(body.dark-theme) .tipo-pessoa-card i {
+  color: #94a3b8;
+}
+
+:host-context(body.dark-theme) .tipo-pessoa-card span {
+  color: #f1f5f9;
+}
+
+:host-context(body.dark-theme) .tipo-pessoa-card small {
+  color: #64748b;
+}
+
+:host-context(body.dark-theme) .tipo-pessoa-option input[type="radio"]:checked + .tipo-pessoa-card {
+  background: linear-gradient(135deg, #2e1065, #4c1d95);
+  border-color: #8b5cf6;
+}
+
+:host-context(body.dark-theme) .tipo-pessoa-option input[type="radio"]:checked + .tipo-pessoa-card i {
+  color: #a78bfa;
+}
+
+:host-context(body.dark-theme) .tipo-pessoa-option input[type="radio"]:checked + .tipo-pessoa-card span {
+  color: #fff;
+}
+

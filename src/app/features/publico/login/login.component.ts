@@ -53,6 +53,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.loginForm = this.formBuilder.group({
       username: ['', [Validators.required]],
       password: ['', [Validators.required, Validators.minLength(3)]],
+      perfil: ['', [Validators.required]],
     });
   }
 
@@ -85,6 +86,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     const credentials = {
       login: this.loginForm.get('username')?.value,
       senha: this.loginForm.get('password')?.value,
+      perfil: this.loginForm.get('perfil')?.value,
     };
 
     this.authService.login(credentials)

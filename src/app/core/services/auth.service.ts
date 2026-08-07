@@ -19,6 +19,7 @@ export interface DecodedToken {
   iss: string;
   organizacaoId?: number;
   tipoUsuario?: number;
+  perfil?: string;
 }
 
 /**
@@ -135,7 +136,7 @@ export class AuthService implements OnDestroy {
    */
   logout(): void {
     this.clearAuthState();
-    this.router.navigate(['']);
+    this.router.navigate(['/login']);
   }
 
   /**

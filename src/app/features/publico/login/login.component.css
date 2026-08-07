@@ -232,6 +232,38 @@
   color: #00d9ff;
 }
 
+.input-group select {
+  width: 100%;
+  padding: 16px 16px 16px 52px;
+  border: 2px solid #e5e7eb;
+  border-radius: 14px;
+  font-size: 15px;
+  color: #1a1a2e;
+  background: #f9fafb;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+.input-group select:focus {
+  border-color: #00d9ff;
+  background: white;
+  box-shadow: 0 0 0 4px rgba(0, 217, 255, 0.1);
+}
+
+.input-group select:focus + label {
+  color: #00d9ff;
+}
+
+.input-group select:focus ~ .input-icon,
+.input-group:focus-within .input-icon {
+  color: #00d9ff;
+}
+
 /* Link Esqueci Senha */
 .forgot-password {
   text-align: right;

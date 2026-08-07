@@ -16,6 +16,42 @@
     <div class="cadastro-body">
       <form [formGroup]="formulario">
 
+        <!-- Seção: Tipo de Pessoa -->
+        <section class="cadastro-section cadastro-section--open">
+          <div class="cadastro-section__header">
+            <i class="fa-solid fa-user"></i>
+            <h3 class="cadastro-section__title">Tipo de Cadastro</h3>
+          </div>
+          <div class="cadastro-section__body">
+            <div class="cadastro-grid">
+              <div class="cadastro-field cadastro-field--full">
+                <label class="cadastro-field__label"><span class="cadastro-field__required">*</span> Tipo de Pessoa</label>
+                <div class="tipo-pessoa-toggle">
+                  <label class="tipo-pessoa-option">
+                    <input type="radio" name="tipoPessoa" value="JURIDICA" formControlName="tipoPessoa" (change)="onTipoPessoaChange()">
+                    <span class="tipo-pessoa-card">
+                      <i class="fa-solid fa-building"></i>
+                      <span>Pessoa Jurídica</span>
+                      <small>Empresa/CNPJ</small>
+                    </span>
+                  </label>
+                  <label class="tipo-pessoa-option">
+                    <input type="radio" name="tipoPessoa" value="FISICA" formControlName="tipoPessoa" (change)="onTipoPessoaChange()">
+                    <span class="tipo-pessoa-card">
+                      <i class="fa-solid fa-user"></i>
+                      <span>Pessoa Física</span>
+                      <small>Profissional Individual/CPF</small>
+                    </span>
+                  </label>
+                </div>
+                <div *ngIf="formulario.get('tipoPessoa')?.invalid && formulario.get('tipoPessoa')?.touched" class="cadastro-field__error">
+                  Selecione o tipo de pessoa
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
         <!-- Seção: Dados do Administrador -->
         <section class="cadastro-section cadastro-section--open">
           <div class="cadastro-section__header">
@@ -75,8 +111,8 @@
           </div>
         </section>
 
-        <!-- Seção: Dados da Organização -->
-        <section class="cadastro-section cadastro-section--open">
+        <!-- Seção: Dados da Organização (apenas para JURIDICA) -->
+        <section class="cadastro-section cadastro-section--open" *ngIf="isJuridica">
           <div class="cadastro-section__header">
             <i class="fa-solid fa-hospital"></i>
             <h3 class="cadastro-section__title">Dados da Organização</h3>
@@ -90,7 +126,7 @@
                   [class.input--error]="formulario.get('nomeClinica')?.invalid && formulario.get('nomeClinica')?.touched"
                   [class.input--valid]="formulario.get('nomeClinica')?.valid && formulario.get('nomeClinica')?.touched">
                 <div *ngIf="formulario.get('nomeClinica')?.invalid && formulario.get('nomeClinica')?.touched" class="cadastro-field__error">
-                  {{ getFieldError(formulario.get('nomeClinica')?.errors) }}
+                  Campo obrigatório para pessoa jurídica
                 </div>
               </div>
 
@@ -100,7 +136,7 @@
                   [class.input--error]="formulario.get('razaoSocial')?.invalid && formulario.get('razaoSocial')?.touched"
                   [class.input--valid]="formulario.get('razaoSocial')?.valid && formulario.get('razaoSocial')?.touched">
                 <div *ngIf="formulario.get('razaoSocial')?.invalid && formulario.get('razaoSocial')?.touched" class="cadastro-field__error">
-                  {{ getFieldError(formulario.get('razaoSocial')?.errors) }}
+                  Campo obrigatório para pessoa jurídica
                 </div>
               </div>
 
@@ -110,7 +146,7 @@
                   [class.input--error]="formulario.get('cnpj')?.invalid && formulario.get('cnpj')?.touched"
                   [class.input--valid]="formulario.get('cnpj')?.valid && formulario.get('cnpj')?.touched">
                 <div *ngIf="formulario.get('cnpj')?.invalid && formulario.get('cnpj')?.touched" class="cadastro-field__error">
-                  {{ getFieldError(formulario.get('cnpj')?.errors) }}
+                  Campo obrigatório para pessoa jurídica
                 </div>
                 <div class="cadastro-field__hint">Formato: 00.000.000/0001-00</div>
               </div>
@@ -123,7 +159,7 @@
                   <option *ngFor="let t of tiposClinica" [value]="t.value">{{ t.label }}</option>
                 </select>
                 <div *ngIf="formulario.get('tipoClinica')?.invalid && formulario.get('tipoClinica')?.touched" class="cadastro-field__error">
-                  {{ getFieldError(formulario.get('tipoClinica')?.errors) }}
+                  Campo obrigatório para pessoa jurídica
                 </div>
               </div>
 
@@ -133,7 +169,7 @@
                   [class.input--error]="formulario.get('emailClinica')?.invalid && formulario.get('emailClinica')?.touched"
                   [class.input--valid]="formulario.get('emailClinica')?.valid && formulario.get('emailClinica')?.touched">
                 <div *ngIf="formulario.get('emailClinica')?.invalid && formulario.get('emailClinica')?.touched" class="cadastro-field__error">
-                  {{ getFieldError(formulario.get('emailClinica')?.errors) }}
+                  Campo obrigatório para pessoa jurídica
                 </div>
               </div>
 
@@ -144,7 +180,7 @@
                   [class.input--error]="formulario.get('telefone')?.invalid && formulario.get('telefone')?.touched"
                   [class.input--valid]="formulario.get('telefone')?.valid && formulario.get('telefone')?.touched">
                 <div *ngIf="formulario.get('telefone')?.invalid && formulario.get('telefone')?.touched" class="cadastro-field__error">
-                  {{ getFieldError(formulario.get('telefone')?.errors) }}
+                  Campo obrigatório para pessoa jurídica
                 </div>
                 <div class="cadastro-field__hint">Apenas números: DD + número (ex: 11999999999)</div>
               </div>
@@ -244,6 +280,35 @@
           </div>
         </section>
 
+        <!-- Seção: Plano de Assinatura -->
+        <section class="cadastro-section cadastro-section--open">
+          <div class="cadastro-section__header">
+            <i class="fa-solid fa-file-contract"></i>
+            <h3 class="cadastro-section__title">Plano de Assinatura</h3>
+          </div>
+          <div class="cadastro-section__body">
+            <div class="cadastro-grid">
+
+              <div class="cadastro-field cadastro-field--full">
+                <label class="cadastro-field__label"><span class="cadastro-field__required">*</span> Plano</label>
+                <select class="cadastro-field__select" formControlName="planoId"
+                  [class.input--error]="formulario.get('planoId')?.invalid && formulario.get('planoId')?.touched"
+                  [disabled]="isLoadingPlanos">
+                  <option value="" disabled>Selecione o plano</option>
+                  <option *ngFor="let plano of planos" [value]="plano.id">{{ plano.nome }} - {{ plano.valorMensal | currency:'BRL' }}/mês</option>
+                </select>
+                <div *ngIf="formulario.get('planoId')?.invalid && formulario.get('planoId')?.touched" class="cadastro-field__error">
+                  {{ getFieldError(formulario.get('planoId')?.errors) }}
+                </div>
+                <div *ngIf="isLoadingPlanos" class="cadastro-field__hint">
+                  <i class="fa-solid fa-spinner fa-spin"></i> Carregando planos...
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </section>
+
       </form>
     </div>
 
@@ -251,7 +316,7 @@
     <footer class="cadastro-footer">
       <div class="cadastro-footer__hint">
         <i class="fa-solid fa-asterisk"></i>
-        <span>Campos obrigatórios | O CNPJ será o login e a senha inicial do administrador</span>
+        <span>Campos obrigatórios | Para Pessoa Jurídica: CNPJ será o login. Para Pessoa Física: CPF será o login</span>
       </div>
       <div class="cadastro-footer__actions">
         <button class="cadastro-btn cadastro-btn--secondary" (click)="cancelar()" [disabled]="isLoading">

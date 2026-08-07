@@ -2,7 +2,7 @@ export interface Usuario {
   id: number;
   login?: string;
   status?: number;
-  tipoUsuario?: number;
+  tipoUsuarioNovo?: string;
   nome?: string;
   perfil?: string;
 

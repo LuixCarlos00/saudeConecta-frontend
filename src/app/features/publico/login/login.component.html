@@ -41,6 +41,21 @@
           <label for="password">Senha</label>
         </div>
 
+        <!-- Campo Perfil -->
+        <div class="input-group">
+          <div class="input-icon">
+            <i class="fa-solid fa-user-tag"></i>
+          </div>
+          <select id="perfil" formControlName="perfil" required>
+            <option value="">Selecione seu perfil</option>
+            <option value="ROOT">Root</option>
+            <option value="GESTOR">Gestor</option>
+            <option value="CLINICO">Clínico</option>
+            <option value="ASSISTENTE">Assistente</option>
+          </select>
+          <label for="perfil">Perfil</label>
+        </div>
+
         <!-- Link Esqueci Senha -->
         <div class="forgot-password">
           <a routerLink="/recuperaCadastro" class="forgot-link">
