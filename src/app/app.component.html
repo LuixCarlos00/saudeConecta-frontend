@@ -1,8 +1,11 @@
-<!-- Área logada: com sidebar -->
+<!-- Área logada: com sidebar e barra superior fixa -->
 <main *ngIf="estaLogado()">
   <app-barra-Latera></app-barra-Latera>
-  <div class="main-content">
-    <router-outlet></router-outlet>
+  <div class="content-wrapper">
+    <app-barra-superior></app-barra-superior>
+    <div class="main-content">
+      <router-outlet></router-outlet>
+    </div>
   </div>
 </main>
 
