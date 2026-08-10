@@ -7,7 +7,24 @@
         <i class="fa-solid fa-calendar-days"></i>
         Agenda
       </h2>
-      <span class="subtitulo">{{ tituloAtual }}</span>
+      <span class="subtitulo">{{ tituloAtual }} </span>
+
+
+      <button class="btn-nova-consulta" *ngIf="controleAcesso.isAdmin() || controleAcesso.isRecepcionista()" (click)="abrirNovaConsulta($event)">
+        <i class="fa-solid fa-plus"></i>
+        Nova Consulta
+      </button>
+
+      <!-- Legenda -->
+      <div class="legenda-header">
+        <div class="legenda-item" *ngFor="let s of legendaAtual">
+          <span class="legenda-cor" [ngClass]="s.cor"></span>
+          <span>{{ s.label }}</span>
+        </div>
+      </div>
+
+
+
     </div>
 
     <div class="header-controls">
@@ -55,13 +72,8 @@
     <!-- ===== PAINEL LATERAL ===== -->
     <aside class="filtros-panel">
 
-      <!-- ── Sempre visível: Nova Consulta + mini-calendário ── -->
+      <!-- ── Sempre visível: mini-calendário ── -->
       <div class="painel-fixo">
-
-        <button class="btn-nova-consulta" *ngIf="controleAcesso.isAdmin() || controleAcesso.isRecepcionista()" (click)="abrirNovaConsulta($event)">
-          <i class="fa-solid fa-plus"></i>
-          Nova Consulta
-        </button>
 
         <div class="mini-calendar-wrapper">
           <mat-calendar
@@ -157,17 +169,6 @@
         </div>
 
       </div><!-- /filtros-conteudo -->
-
-      <hr class="divider">
-
-      <!-- ── Sempre visível: Legenda dinâmica por tipo ── -->
-      <div class="legenda painel-legenda">
-        <h4 class="legenda-titulo">Legenda</h4>
-        <div class="legenda-item" *ngFor="let s of legendaAtual">
-          <span class="legenda-cor" [ngClass]="s.cor"></span>
-          <span>{{ s.label }}</span>
-        </div>
-      </div>
 
     </aside>
 

@@ -2,9 +2,6 @@
   <!-- Header -->
   <header class="config-header">
     <div class="header-content">
-      <div class="header-icon">
-        <i class="fa-solid fa-gear"></i>
-      </div>
       <div class="header-text">
         <h1>Configurações do Sistema</h1>
         <p>Personalize a aparência e comportamento do sistema</p>
@@ -24,18 +21,15 @@
       </button> -->
 
       <button class="tab-button" (click)="setActiveTab('graficos')">
-        <i class="fa-solid fa-chart-line"></i>
         <span>Gráficos do Dashboard</span>
       </button>
 
       <button class="tab-button" (click)="setActiveTab('cards')">
-        <i class="fa-solid fa-table-cells-large"></i>
         <span>Cards do Dashboard</span>
       </button>
 
       <button class="tab-button" *ngIf="isProfissional"
         (click)="setActiveTab('planejamentos'); carregarProcedimentosPadrao()">
-        <i class="fa-solid fa-list-check"></i>
         <span>Planejamentos</span>
       </button>
     </div>
@@ -43,7 +37,6 @@
     <!-- Seção de Temas -->
     <section class="config-section" *ngIf="activeTab === 'temas'">
       <div class="section-header">
-        <i class="fa-solid fa-palette"></i>
         <h2>Aparência</h2>
       </div>
       <p class="section-description">
@@ -64,7 +57,6 @@
           </div>
           <div class="theme-info">
             <div class="theme-name">
-              <i class="fa-solid fa-sun"></i>
               <span>Claro</span>
             </div>
             <p class="theme-description">Tema claro padrão</p>
@@ -86,7 +78,6 @@
           </div>
           <div class="theme-info">
             <div class="theme-name">
-              <i class="fa-solid fa-moon"></i>
               <span>Escuro Azul</span>
             </div>
             <p class="theme-description">Fundo azul escuro com labels brancas</p>
@@ -108,7 +99,6 @@
           </div>
           <div class="theme-info">
             <div class="theme-name">
-              <i class="fa-solid fa-circle"></i>
               <span>Escuro Preto</span>
             </div>
             <p class="theme-description">Fundo preto com labels brancas</p>
@@ -122,9 +112,6 @@
 
     <!-- Info Card -->
     <section class="info-card" *ngIf="activeTab === 'temas'">
-      <div class="info-icon">
-        <i class="fa-solid fa-circle-info"></i>
-      </div>
       <div class="info-content">
         <h3>Sobre os Temas</h3>
         <p>
@@ -139,7 +126,6 @@
     <section class="config-section graficos-section" *ngIf="activeTab === 'graficos'">
       <!-- Header da Seção -->
       <div class="section-header">
-        <i class="fa-solid fa-chart-line"></i>
         <div>
           <h2>Gráficos do Dashboard</h2>
           <p class="section-subtitle">Personalize a visualização dos dados em tempo real</p>
@@ -149,7 +135,6 @@
       <!-- Descrição com Estatísticas -->
       <div class="section-stats-wrapper">
         <p class="section-description">
-          <i class="fa-solid fa-circle-info"></i>
           <span>
             Controle quais gráficos serão exibidos no dashboard. Ative ou desative os gráficos
             de acordo com suas necessidades. As alterações serão aplicadas imediatamente.
@@ -157,21 +142,18 @@
         </p>
         <div class="stats-badges" *ngIf="!loading && configuracoes.length > 0">
           <div class="stat-badge stat-badge--total">
-            <i class="fa-solid fa-chart-bar"></i>
             <div class="stat-content">
               <span class="stat-value">{{ configuracoes.length }}</span>
               <span class="stat-label">Total</span>
             </div>
           </div>
           <div class="stat-badge stat-badge--active">
-            <i class="fa-solid fa-circle-check"></i>
             <div class="stat-content">
               <span class="stat-value">{{ (configuracoes | filter: 'ativo': true).length }}</span>
               <span class="stat-label">Ativos</span>
             </div>
           </div>
           <div class="stat-badge stat-badge--inactive">
-            <i class="fa-solid fa-circle-xmark"></i>
             <div class="stat-content">
               <span class="stat-value">{{ (configuracoes | filter: 'ativo': false).length }}</span>
               <span class="stat-label">Inativos</span>
@@ -182,9 +164,6 @@
 
       <!-- Loading State Aprimorado -->
       <div class="loading-state" *ngIf="loading">
-        <div class="loading-spinner">
-          <i class="fa-solid fa-spinner fa-spin"></i>
-        </div>
         <span class="loading-text">Carregando configurações...</span>
         <p class="loading-subtext">Aguarde enquanto buscamos suas preferências</p>
       </div>
@@ -192,73 +171,36 @@
       <!-- Gráficos Grid Aprimorado -->
       <div class="grafico-grid" *ngIf="!loading && configuracoes.length > 0">
         <div class="grafico-card" *ngFor="let config of configuracoes; let i = index"
-          [class.grafico-card--active]="config.ativo" [style.animation-delay]="i * 0.05 + 's'">
+          [class.grafico-card--active]="config.ativo">
 
           <!-- Header do Card -->
           <div class="grafico-header">
-            <div class="grafico-icon-wrapper">
-              <div class="grafico-icon" [class.active]="config.ativo">
-                <i class="fa-solid" [ngClass]="getGraficoIcon(config.tipoGrafico)"></i>
-              </div>
-              <div class="grafico-pulse" *ngIf="config.ativo"></div>
-            </div>
-
-            <div class="grafico-info">
-              <h3 class="grafico-title">{{ config.descricao }}</h3>
-              <div class="grafico-meta">
-                <span class="grafico-ordem">{{ config.ordemExibicao }}</span>
-                <span class="grafico-tipo">{{ config.tipoGrafico }}</span>
-              </div>
-            </div>
+            <h3 class="grafico-title">{{ config.descricao }}</h3>
           </div>
 
           <!-- Body do Card -->
           <div class="grafico-card-body">
             <div class="toggle-container">
-              <div class="status-badge" [class.active]="config.ativo">
-                <i class="fa-solid" [ngClass]="config.ativo ? 'fa-circle-check' : 'fa-circle-xmark'"></i>
-                <span>{{ config.ativo ? 'Ativo' : 'Inativo' }}</span>
-              </div>
-
               <label class="toggle-switch" [attr.aria-label]="'Alternar ' + config.descricao">
                 <input type="checkbox" [checked]="config.ativo" (change)="toggleGrafico(config)"
                   [attr.aria-checked]="config.ativo">
-                <span class="toggle-slider">
-                  <span class="toggle-icon toggle-icon--off">
-                    <i class="fa-solid fa-xmark"></i>
-                  </span>
-                  <span class="toggle-icon toggle-icon--on">
-                    <i class="fa-solid fa-check"></i>
-                  </span>
-                </span>
+                <span class="toggle-slider"></span>
               </label>
+              <span class="status-text" [class.active]="config.ativo">
+                {{ config.ativo ? 'Ativo' : 'Inativo' }}
+              </span>
             </div>
-
-            <!-- Indicador de Posição -->
-            <div class="position-indicator" *ngIf="config.ativo">
-              <i class="fa-solid fa-arrow-up-short-wide"></i>
-              <span>Posição {{ config.ordemExibicao }} no dashboard</span>
-            </div>
-          </div>
-
-          <!-- Overlay de Ativo -->
-          <div class="active-overlay" *ngIf="config.ativo">
-            <i class="fa-solid fa-eye"></i>
           </div>
         </div>
       </div>
 
       <!-- Empty State Aprimorado -->
       <div class="empty-state" *ngIf="!loading && configuracoes.length === 0">
-        <div class="empty-icon">
-          <i class="fa-solid fa-chart-line"></i>
-        </div>
         <h3 class="empty-title">Nenhuma configuração encontrada</h3>
         <p class="empty-description">
           As configurações de gráficos serão criadas automaticamente no primeiro acesso.
         </p>
         <button class="btn-primary" (click)="carregarConfiguracoes()">
-          <i class="fa-solid fa-rotate"></i>
           Recarregar
         </button>
       </div>
@@ -266,37 +208,28 @@
       <!-- Botões de Ação Aprimorados -->
       <div class="action-buttons" *ngIf="!loading && configuracoes.length > 0">
         <button class="btn-secondary" (click)="resetarConfiguracoes()">
-          <i class="fa-solid fa-rotate-left"></i>
           <span>Resetar para Padrão</span>
         </button>
         <button class="btn-primary" (click)="salvarConfiguracoes()">
-          <i class="fa-solid fa-floppy-disk"></i>
           <span>Salvar Configurações</span>
         </button>
       </div>
 
       <!-- Info Card Aprimorado -->
       <section class="info-card info-card--enhanced">
-        <div class="info-icon">
-          <i class="fa-solid fa-lightbulb"></i>
-        </div>
         <div class="info-content">
-          <h3>💡 Dicas de Uso</h3>
+          <h3>Dicas de Uso</h3>
           <ul class="info-list">
             <li>
-              <i class="fa-solid fa-check-circle"></i>
               <span>Gráficos <strong>desativados</strong> não aparecem no dashboard</span>
             </li>
             <li>
-              <i class="fa-solid fa-check-circle"></i>
               <span>A <strong>ordem de exibição</strong> determina a posição no dashboard</span>
             </li>
             <li>
-              <i class="fa-solid fa-check-circle"></i>
               <span>Alterações são aplicadas <strong>imediatamente</strong> após salvar</span>
             </li>
             <li>
-              <i class="fa-solid fa-check-circle"></i>
               <span>Use <strong>"Resetar"</strong> para ativar todos os gráficos</span>
             </li>
           </ul>
@@ -308,7 +241,6 @@
 
       <!-- Header da Seção -->
       <div class="section-header">
-        <i class="fa-solid fa-table-cells-large"></i>
         <div>
           <h2>Cards do Dashboard</h2>
           <p class="section-subtitle">Escolha quais informações exibir nos cards de estatísticas</p>
@@ -318,7 +250,6 @@
       <!-- Descrição com Estatísticas -->
       <div class="section-stats-wrapper">
         <p class="section-description">
-          <i class="fa-solid fa-circle-info"></i>
           <span>
             Controle quais cards de estatísticas serão exibidos no dashboard.
             Ative ou desative de acordo com as informações mais relevantes para sua organização.
@@ -326,21 +257,18 @@
         </p>
         <div class="stats-badges" *ngIf="!loadingCards && configuracoesCards.length > 0">
           <div class="stat-badge stat-badge--total">
-            <i class="fa-solid fa-table-cells"></i>
             <div class="stat-content">
               <span class="stat-value">{{ configuracoesCards.length }}</span>
               <span class="stat-label">Total</span>
             </div>
           </div>
           <div class="stat-badge stat-badge--active">
-            <i class="fa-solid fa-circle-check"></i>
             <div class="stat-content">
               <span class="stat-value">{{ (configuracoesCards | filter: 'ativo': true).length }}</span>
               <span class="stat-label">Ativos</span>
             </div>
           </div>
           <div class="stat-badge stat-badge--inactive">
-            <i class="fa-solid fa-circle-xmark"></i>
             <div class="stat-content">
               <span class="stat-value">{{ (configuracoesCards | filter: 'ativo': false).length }}</span>
               <span class="stat-label">Inativos</span>
@@ -361,69 +289,36 @@
       <!-- Cards Grid -->
       <div class="grafico-grid" *ngIf="!loadingCards && configuracoesCards.length > 0">
         <div class="grafico-card" *ngFor="let config of configuracoesCards; let i = index"
-          [class.grafico-card--active]="config.ativo" [style.animation-delay]="i * 0.05 + 's'">
+          [class.grafico-card--active]="config.ativo">
 
           <!-- Header do Card -->
           <div class="grafico-header">
-            <div class="grafico-icon-wrapper">
-              <div class="grafico-icon" [class.active]="config.ativo">
-                <i class="fa-solid" [ngClass]="getCardIcon(config.tipoCard)"></i>
-              </div>
-              <div class="grafico-pulse" *ngIf="config.ativo"></div>
-            </div>
-            <div class="grafico-info">
-              <h3 class="grafico-title">{{ config.descricao }}</h3>
-              <div class="grafico-meta">
-                <span class="grafico-ordem">{{ config.ordemExibicao }}</span>
-                <span class="grafico-tipo">{{ config.tipoCard }}</span>
-              </div>
-            </div>
+            <h3 class="grafico-title">{{ config.descricao }}</h3>
           </div>
 
           <!-- Body do Card -->
           <div class="grafico-card-body">
             <div class="toggle-container">
-              <div class="status-badge" [class.active]="config.ativo">
-                <i class="fa-solid" [ngClass]="config.ativo ? 'fa-circle-check' : 'fa-circle-xmark'"></i>
-                <span>{{ config.ativo ? 'Visível' : 'Oculto' }}</span>
-              </div>
               <label class="toggle-switch" [attr.aria-label]="'Alternar ' + config.descricao">
                 <input type="checkbox" [checked]="config.ativo" (change)="toggleCard(config)"
                   [attr.aria-checked]="config.ativo">
-                <span class="toggle-slider">
-                  <span class="toggle-icon toggle-icon--off">
-                    <i class="fa-solid fa-xmark"></i>
-                  </span>
-                  <span class="toggle-icon toggle-icon--on">
-                    <i class="fa-solid fa-check"></i>
-                  </span>
-                </span>
+                <span class="toggle-slider"></span>
               </label>
+              <span class="status-text" [class.active]="config.ativo">
+                {{ config.ativo ? 'Visível' : 'Oculto' }}
+              </span>
             </div>
-            <div class="position-indicator" *ngIf="config.ativo">
-              <i class="fa-solid fa-eye"></i>
-              <span>Visível na posição {{ config.ordemExibicao }}</span>
-            </div>
-          </div>
-
-          <!-- Overlay de Ativo -->
-          <div class="active-overlay" *ngIf="config.ativo">
-            <i class="fa-solid fa-eye"></i>
           </div>
         </div>
       </div>
 
       <!-- Empty State -->
       <div class="empty-state" *ngIf="!loadingCards && configuracoesCards.length === 0">
-        <div class="empty-icon">
-          <i class="fa-solid fa-table-cells-large"></i>
-        </div>
         <h3 class="empty-title">Nenhuma configuração encontrada</h3>
         <p class="empty-description">
           As configurações de cards serão criadas automaticamente no primeiro acesso.
         </p>
         <button class="btn-primary" (click)="carregarConfiguracoesCards()">
-          <i class="fa-solid fa-rotate"></i>
           Recarregar
         </button>
       </div>
@@ -431,33 +326,25 @@
       <!-- Botões de Ação -->
       <div class="action-buttons" *ngIf="!loadingCards && configuracoesCards.length > 0">
         <button class="btn-secondary" (click)="resetarConfiguracoesCards()">
-          <i class="fa-solid fa-rotate-left"></i>
           <span>Exibir Todos</span>
         </button>
         <button class="btn-primary" (click)="salvarConfiguracoesCards()">
-          <i class="fa-solid fa-floppy-disk"></i>
           <span>Salvar Configurações</span>
         </button>
       </div>
 
       <!-- Info Card -->
       <section class="info-card info-card--enhanced">
-        <div class="info-icon">
-          <i class="fa-solid fa-lightbulb"></i>
-        </div>
         <div class="info-content">
-          <h3>💡 Dicas de Uso</h3>
+          <h3>Dicas de Uso</h3>
           <ul class="info-list">
             <li>
-              <i class="fa-solid fa-check-circle"></i>
               <span>Cards <strong>ocultos</strong> não aparecem no painel de estatísticas</span>
             </li>
             <li>
-              <i class="fa-solid fa-check-circle"></i>
               <span>A <strong>ordem de exibição</strong> determina a posição no dashboard</span>
             </li>
             <li>
-              <i class="fa-solid fa-check-circle"></i>
               <span>Use <strong>"Exibir Todos"</strong> para reativar todos os cards</span>
             </li>
           </ul>
@@ -472,7 +359,6 @@
 
       <!-- Header -->
       <div class="section-header">
-        <i class="fa-solid fa-list-check"></i>
         <div>
           <h2>Procedimentos Padrão</h2>
           <p class="section-subtitle">Gerencie os tipos de planejamento disponíveis no prontuário</p>
@@ -482,7 +368,6 @@
       <!-- Estatísticas -->
       <div class="section-stats-wrapper">
         <p class="section-description">
-          <i class="fa-solid fa-circle-info"></i>
           <span>
             Cadastre, edite ou bloqueie procedimentos que aparecerão como opções
             pré-definidas na aba de Planejamento Terapêutico do prontuário.
@@ -490,21 +375,18 @@
         </p>
         <div class="stats-badges" *ngIf="!loadingProcedimentos && procedimentosPadrao.length > 0">
           <div class="stat-badge stat-badge--total">
-            <i class="fa-solid fa-list"></i>
             <div class="stat-content">
               <span class="stat-value">{{ totalProcedimentos }}</span>
               <span class="stat-label">Total</span>
             </div>
           </div>
           <div class="stat-badge stat-badge--active">
-            <i class="fa-solid fa-circle-check"></i>
             <div class="stat-content">
               <span class="stat-value">{{ ativosProcedimentos }}</span>
               <span class="stat-label">Ativos</span>
             </div>
           </div>
           <div class="stat-badge stat-badge--inactive">
-            <i class="fa-solid fa-circle-xmark"></i>
             <div class="stat-content">
               <span class="stat-value">{{ inativosProcedimentos }}</span>
               <span class="stat-label">Bloqueados</span>
@@ -524,23 +406,23 @@
       <!-- ───────── Formulário de Cadastro ───────── -->
       <div class="proc-form-card" *ngIf="!loadingProcedimentos">
         <div class="proc-form-header">
-          <h3><i class="fa-solid fa-plus-circle"></i> Cadastrar Novo Procedimento</h3>
+          <h3>Novo Procedimento</h3>
         </div>
         <div class="proc-form-body">
           <div class="proc-form-grid">
             <div class="proc-form-group">
-              <label>Nome do Procedimento <span style="color:#ef4444">*</span></label>
+              <label>Nome <span style="color:#ef4444">*</span></label>
               <input type="text" [(ngModel)]="novoProcedimento.nomeProcedimento"
-                placeholder="Ex: Limpeza, Restauração, Canal..." class="proc-form-input">
+                placeholder="Ex: Limpeza, Restauração..." class="proc-form-input">
             </div>
             <div class="proc-form-group">
-              <label>Valor Padrão (R$)</label>
+              <label>Valor (R$)</label>
               <input type="number" [(ngModel)]="novoProcedimento.valorPadrao"
                 placeholder="0.00" step="0.01" min="0" class="proc-form-input">
             </div>
             <div class="proc-form-group proc-form-group--btn">
               <button class="btn-primary" (click)="criarProcedimento()">
-                <i class="fa-solid fa-plus"></i> Cadastrar
+                Cadastrar
               </button>
             </div>
           </div>
@@ -553,7 +435,7 @@
           <thead>
             <tr>
               <th>Procedimento</th>
-              <th>Valor (R$)</th>
+              <th>Valor</th>
               <th>Status</th>
               <th>Ações</th>
             </tr>
@@ -568,19 +450,17 @@
                 <td>
                   <span class="proc-status" [class.proc-status--ativo]="proc.ativo"
                     [class.proc-status--bloqueado]="!proc.ativo">
-                    <i class="fa-solid" [ngClass]="proc.ativo ? 'fa-circle-check' : 'fa-ban'"></i>
                     {{ proc.ativo ? 'Ativo' : 'Bloqueado' }}
                   </span>
                 </td>
                 <td class="proc-actions">
-                  <button class="proc-btn proc-btn--edit" title="Editar" (click)="iniciarEdicao(proc)">
-                    <i class="fa-solid fa-pen"></i>
+                  <button class="proc-btn proc-btn--edit" (click)="iniciarEdicao(proc)">
+                    Editar
                   </button>
                   <button class="proc-btn" [class.proc-btn--block]="proc.ativo"
                     [class.proc-btn--unblock]="!proc.ativo"
-                    [title]="proc.ativo ? 'Bloquear' : 'Ativar'"
                     (click)="toggleProcedimento(proc)">
-                    <i class="fa-solid" [ngClass]="proc.ativo ? 'fa-ban' : 'fa-circle-check'"></i>
+                    {{ proc.ativo ? 'Bloquear' : 'Ativar' }}
                   </button>
                 </td>
               </ng-container>
@@ -595,11 +475,11 @@
                     class="proc-edit-input proc-edit-input--valor">
                 </td>
                 <td colspan="2" class="proc-actions">
-                  <button class="proc-btn proc-btn--save" title="Salvar" (click)="salvarEdicao(proc)">
-                    <i class="fa-solid fa-check"></i>
+                  <button class="proc-btn proc-btn--save" (click)="salvarEdicao(proc)">
+                    Salvar
                   </button>
-                  <button class="proc-btn proc-btn--cancel" title="Cancelar" (click)="cancelarEdicao()">
-                    <i class="fa-solid fa-xmark"></i>
+                  <button class="proc-btn proc-btn--cancel" (click)="cancelarEdicao()">
+                    Cancelar
                   </button>
                 </td>
               </ng-container>
@@ -610,9 +490,6 @@
 
       <!-- Empty State -->
       <div class="empty-state" *ngIf="!loadingProcedimentos && procedimentosPadrao.length === 0">
-        <div class="empty-icon">
-          <i class="fa-solid fa-clipboard-list"></i>
-        </div>
         <h3 class="empty-title">Nenhum procedimento cadastrado</h3>
         <p class="empty-description">
           Utilize o formulário acima para cadastrar procedimentos padrão.
@@ -622,27 +499,20 @@
 
       <!-- Dicas -->
       <section class="info-card info-card--enhanced" style="margin-top: 24px;">
-        <div class="info-icon">
-          <i class="fa-solid fa-lightbulb"></i>
-        </div>
         <div class="info-content">
           <h3>Dicas de Uso</h3>
           <ul class="info-list">
             <li>
-              <i class="fa-solid fa-check-circle"></i>
               <span>Procedimentos <strong>bloqueados</strong> não aparecem no prontuário</span>
             </li>
             <li>
-              <i class="fa-solid fa-check-circle"></i>
               <span>O <strong>valor padrão</strong> é preenchido automaticamente ao selecionar o procedimento</span>
             </li>
             <li>
-              <i class="fa-solid fa-check-circle"></i>
-              <span>Use o botão <i class="fa-solid fa-pen"></i> para <strong>editar</strong> nome ou valor</span>
+              <span>Use o botão de edição para <strong>editar</strong> nome ou valor</span>
             </li>
             <li>
-              <i class="fa-solid fa-check-circle"></i>
-              <span>Use o botão <i class="fa-solid fa-ban"></i> para <strong>bloquear</strong> ou reativar um procedimento</span>
+              <span>Use o botão de bloqueio para <strong>bloquear</strong> ou reativar um procedimento</span>
             </li>
           </ul>
         </div>

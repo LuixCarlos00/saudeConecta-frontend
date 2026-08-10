@@ -86,7 +86,8 @@ export class BarraLateraComponent implements OnInit, OnDestroy {
       '/agenda-calendario': 'AgendaCalendario',
       '/mensageria': 'Mensageria',
       '/gerenciar-planos': 'GerenciarPlanos',
-      '/minha-assinatura': 'MinhaAssinatura'
+      '/minha-assinatura': 'MinhaAssinatura',
+      '/suporte': 'Suporte'
     };
 
     this.activeRoute = routeMap[url] || '';

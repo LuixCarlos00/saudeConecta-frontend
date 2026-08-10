@@ -6,8 +6,8 @@
   --topbar-height: 64px;
   --primary-color: #0066CC;
   --primary-light: #3d8bda;
-  --text-primary: #1a1f2e;
-  --text-secondary: #64748b;
+  --text-primary: #ffffff;
+  --text-secondary: #94a3b8;
   display: block;
   flex-shrink: 0;
 }
@@ -20,8 +20,8 @@
   justify-content: space-between;
   gap: 16px;
   padding: 0 24px;
-  background: #ffffff;
-  border-bottom: 1px solid #e5e7eb;
+  background: #232838;
+  border-bottom: 1px solid #2d3548;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
 }
 
@@ -63,7 +63,7 @@
 }
 
 .topbar-user:hover {
-  background: #f3f4f6;
+  background: #252b3d;
 }
 
 .topbar-user__avatar {

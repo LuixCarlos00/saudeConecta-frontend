@@ -423,7 +423,7 @@
 
 /* Scrollbar Customizada */
 .sidebar-nav::-webkit-scrollbar {
-  width: 4px;
+  width: 0px;
 }
 
 .sidebar-nav::-webkit-scrollbar-track {
@@ -431,12 +431,21 @@
 }
 
 .sidebar-nav::-webkit-scrollbar-thumb {
-  background: var(--sidebar-border);
-  border-radius: 4px;
+  background: transparent;
 }
 
 .sidebar-nav::-webkit-scrollbar-thumb:hover {
-  background: var(--text-muted);
+  background: transparent;
+}
+
+/* Esconder scrollbar horizontal */
+.sidebar-nav {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+}
+
+.sidebar-nav::-webkit-scrollbar {
+  display: none; /* Chrome/Safari/Opera */
 }
 
 /* =============================================================================

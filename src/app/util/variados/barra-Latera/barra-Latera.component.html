@@ -113,6 +113,14 @@
       <!-- Divisor -->
       <li class="nav-divider"></li>
 
+      <!-- Suporte - Todos -->
+      <li class="nav-item" [class.active]="activeRoute === 'Suporte'">
+        <button class="nav-link" (click)="navigateTo('suporte')" title="Suporte">
+          <i class="fa-solid fa-headset nav-icon"></i>
+          <span class="nav-text">Suporte</span>
+        </button>
+      </li>
+
       <!-- ========== CONFIGURAÇÕES ========== -->
       <li class="nav-item has-submenu" [class.submenu-open]="isConfigOpen">
         <button class="nav-link" (click)="toggleConfig()" title="Configurações">
@@ -133,13 +141,6 @@
             <button class="submenu-link" (click)="navigateTo('trocar_senha')">
               <i class="fa-solid fa-key"></i>
               <span>Alterar Senha</span>
-            </button>
-          </li>
-          <!-- Suporte - Todos -->
-          <li class="submenu-item">
-            <button class="submenu-link" (click)="navigateTo('suporte')">
-              <i class="fa-solid fa-headset"></i>
-              <span>Suporte</span>
             </button>
           </li>
           <!-- Sobre - Todos -->

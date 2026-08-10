@@ -5,7 +5,8 @@ export type StatusChamado = 'EM ANÁLISE' | 'EM ANDAMENTO' | 'CONCLUÍDO';
 
 export interface ChamadoSuporte {
   id: string;
-  assunto: string;
+  titulo: string;
+  corpo: string;
   categoria: string;
   prioridade: PrioridadeChamado;
   status: StatusChamado;
@@ -24,22 +25,13 @@ export class SuporteComponent implements OnInit {
       icone: 'fa-solid fa-envelope',
       titulo: 'E-mail',
       valor: 'suporte@saudeconecta.com.br',
-      descricao: 'Resposta em até 24 horas',
-      cor: '#00d9ff'
-    },
-    {
-      icone: 'fa-solid fa-phone',
-      titulo: 'Telefone',
-      valor: '(11) 99999-9999',
-      descricao: 'Seg a Sex, 8h às 18h',
-      cor: '#00ff88'
+      descricao: 'Resposta em até 24 horas'
     },
     {
       icone: 'fa-brands fa-whatsapp',
       titulo: 'WhatsApp',
       valor: '(11) 99999-9999',
-      descricao: 'Atendimento rápido',
-      cor: '#25d366'
+      descricao: 'Atendimento rápido'
     }
   ];
 
@@ -82,7 +74,8 @@ export class SuporteComponent implements OnInit {
   chamados: ChamadoSuporte[] = [
     {
       id: '#SC-9042',
-      assunto: 'Falha ao exportar relatório financeiro em PDF',
+      titulo: 'Falha ao exportar relatório financeiro em PDF',
+      corpo: 'O sistema apresenta erro ao tentar exportar o relatório financeiro em formato PDF. A mensagem de erro indica um problema no módulo de geração de documentos. O sistema apresenta erro ao tentar exportar o relatório financeiro em formato PDF. A mensagem de erro indica um problema no módulo de geração de documentos. O sistema apresenta erro ao tentar exportar o relatório financeiro em formato PDF. A mensagem de erro indica um problema no módulo de geração de documentos.',
       categoria: 'Módulo de Faturamento',
       prioridade: 'Alta',
       status: 'EM ANDAMENTO',
@@ -90,7 +83,8 @@ export class SuporteComponent implements OnInit {
     },
     {
       id: '#SC-9037',
-      assunto: 'Dúvida sobre permissões de secretária',
+      titulo: 'Dúvida sobre permissões de secretária',
+      corpo: 'Gostaria de saber quais permissões a secretária tem acesso no sistema. Preciso configurar o perfil de uma nova funcionária.',
       categoria: 'Acesso e Segurança',
       prioridade: 'Baixa',
       status: 'CONCLUÍDO',
@@ -99,13 +93,23 @@ export class SuporteComponent implements OnInit {
   ];
 
   mostrarModalChamado = false;
+  mostrarModalVisualizacao = false;
   mostrarToastChamado = false;
   enviandoChamado = false;
+  chamadoSelecionado: ChamadoSuporte | null = null;
+
+  // Controle de abas no modal de visualização
+  abaAtiva: 'escopo' | 'imagens' = 'escopo';
+
+  // Upload de imagens
+  imagensChamado: string[] = [];
+  imagemParaUpload: File | null = null;
+  previewImagem: string | null = null;
 
   novoChamado = {
-    assunto: '',
-    prioridade: '',
-    mensagem: ''
+    titulo: '',
+    corpo: '',
+    prioridade: ''
   };
 
   constructor() { }
@@ -117,16 +121,67 @@ export class SuporteComponent implements OnInit {
   }
 
   abrirModalChamado(): void {
+    // Pre-fill with mock data for testing
+    this.novoChamado = {
+      titulo: 'Problema no sistema',
+      corpo: 'Estou enfrentando dificuldades ao acessar o módulo de agendamento. O sistema apresenta erro ao tentar salvar novas consultas.',
+      prioridade: 'Média'
+    };
     this.mostrarModalChamado = true;
+  }
+
+  abrirModalVisualizacao(chamado: ChamadoSuporte): void {
+    this.chamadoSelecionado = chamado;
+    this.mostrarModalVisualizacao = true;
+  }
+
+  fecharModalVisualizacao(): void {
+    this.mostrarModalVisualizacao = false;
+    this.chamadoSelecionado = null;
+    this.abaAtiva = 'escopo';
+    this.imagensChamado = [];
+    this.imagemParaUpload = null;
+    this.previewImagem = null;
+  }
+
+  mudarAba(aba: 'escopo' | 'imagens'): void {
+    this.abaAtiva = aba;
+  }
+
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files) {
+      for (let i = 0; i < input.files.length; i++) {
+        const file = input.files[i];
+        const previewUrl = URL.createObjectURL(file);
+        this.imagensChamado.push(previewUrl);
+      }
+    }
+  }
+
+  removerPreview(): void {
+    this.imagemParaUpload = null;
+    this.previewImagem = null;
+  }
+
+  adicionarImagem(): void {
+    if (this.previewImagem) {
+      this.imagensChamado.push(this.previewImagem);
+      this.removerPreview();
+    }
+  }
+
+  removerImagem(index: number): void {
+    this.imagensChamado.splice(index, 1);
   }
 
   fecharModalChamado(): void {
     this.mostrarModalChamado = false;
-    this.novoChamado = { assunto: '', prioridade: '', mensagem: '' };
+    this.novoChamado = { titulo: '', corpo: '', prioridade: '' };
   }
 
   enviarChamado(): void {
-    if (!this.novoChamado.assunto || !this.novoChamado.prioridade || !this.novoChamado.mensagem.trim()) {
+    if (!this.novoChamado.titulo || !this.novoChamado.prioridade || !this.novoChamado.corpo.trim()) {
       return;
     }
 
@@ -137,8 +192,9 @@ export class SuporteComponent implements OnInit {
       const numero = Math.floor(9000 + Math.random() * 1000);
       const chamado: ChamadoSuporte = {
         id: `#SC-${numero}`,
-        assunto: this.novoChamado.assunto,
-        categoria: this.novoChamado.assunto,
+        titulo: this.novoChamado.titulo,
+        corpo: this.novoChamado.corpo,
+        categoria: 'Geral',
         prioridade: this.novoChamado.prioridade as PrioridadeChamado,
         status: 'EM ANÁLISE',
         data: 'Hoje, ' + new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
@@ -147,7 +203,7 @@ export class SuporteComponent implements OnInit {
       this.chamados = [chamado, ...this.chamados];
       this.enviandoChamado = false;
       this.mostrarModalChamado = false;
-      this.novoChamado = { assunto: '', prioridade: '', mensagem: '' };
+      this.novoChamado = { titulo: '', corpo: '', prioridade: '' };
 
       this.mostrarToastChamado = true;
       setTimeout(() => this.mostrarToastChamado = false, 3000);
