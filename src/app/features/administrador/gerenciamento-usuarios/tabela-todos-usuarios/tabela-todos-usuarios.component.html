@@ -2,10 +2,7 @@
   <!-- Header da tabela -->
   <div class="table-header">
     <div class="header-info">
-      <h3>
-        <i class="fa-solid fa-users"></i>
-        Usuários do Sistema
-      </h3>
+      <h3>Usuários do Sistema</h3>
       <span class="badge-count">{{ dataSource.length }} registros</span>
     </div>
   </div>
@@ -13,14 +10,14 @@
   <!-- Loading State -->
   <div *ngIf="isLoading" class="loading-container">
     <div class="loading-spinner">
-      <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
+      <i class="fa-solid fa-spinner fa-spin"></i>
       <span>Carregando usuários...</span>
     </div>
   </div>
 
   <!-- Empty State -->
   <div *ngIf="!isLoading && dataSource.length === 0" class="empty-state">
-    <i class="fa-solid fa-users-slash fa-3x"></i>
+    <i class="fa-solid fa-users-slash"></i>
     <h4>Nenhum usuário encontrado</h4>
     <p>Não há usuários que correspondam aos filtros aplicados.</p>
   </div>
@@ -39,19 +36,13 @@
 
       <!-- Coluna Nome -->
       <ng-container matColumnDef="nome">
-        <th mat-header-cell *matHeaderCellDef class="col-nome">
-          <i class="fa-solid fa-user"></i> Nome
-        </th>
+        <th mat-header-cell *matHeaderCellDef class="col-nome">Nome</th>
         <td mat-cell *matCellDef="let usuario" class="col-nome">
           <div class="user-info">
-            <div class="user-avatar" [ngClass]="'avatar-' + normalizarClasse(usuario.categoria)">
-              <i class="fa-solid" [ngClass]="usuario.categoriaIcon"></i>
-            </div>
+            <div class="user-avatar">{{ usuario.nome | slice:0:1 }}</div>
             <div class="user-details">
               <span class="user-name">{{ usuario.nome }}</span>
-              <span class="user-org" *ngIf="usuario.nomeOrganizacao">
-                <i class="fa-solid fa-building fa-xs"></i> {{ usuario.nomeOrganizacao }}
-              </span>
+              <span class="user-org" *ngIf="usuario.nomeOrganizacao">{{ usuario.nomeOrganizacao }}</span>
               <span class="user-code" *ngIf="!usuario.nomeOrganizacao">#{{ usuario.codigo }}</span>
             </div>
           </div>
@@ -60,22 +51,15 @@
 
       <!-- Coluna Categoria -->
       <ng-container matColumnDef="categoria">
-        <th mat-header-cell *matHeaderCellDef class="col-categoria">
-          <i class="fa-solid fa-tag"></i> Categoria
-        </th>
+        <th mat-header-cell *matHeaderCellDef class="col-categoria">Categoria</th>
         <td mat-cell *matCellDef="let usuario" class="col-categoria">
-          <span class="categoria-badge" [ngClass]="'categoria-' + normalizarClasse(usuario.categoria)">
-            <i class="fa-solid" [ngClass]="usuario.categoriaIcon"></i>
-            {{ usuario.categoria }}
-          </span>
+          <span class="categoria-badge">{{ usuario.categoria }}</span>
         </td>
       </ng-container>
 
       <!-- Coluna Email -->
       <ng-container matColumnDef="email">
-        <th mat-header-cell *matHeaderCellDef class="col-email">
-          <i class="fa-solid fa-envelope"></i> Email
-        </th>
+        <th mat-header-cell *matHeaderCellDef class="col-email">Email</th>
         <td mat-cell *matCellDef="let usuario" class="col-email">
           <span class="email-text" [title]="usuario.email">
             {{ usuario.email || 'Não informado' }}
@@ -85,32 +69,19 @@
 
       <!-- Coluna Plano (apenas SUPER_ADMIN) -->
       <ng-container matColumnDef="plano">
-        <th mat-header-cell *matHeaderCellDef class="col-plano">
-          <i class="fa-solid fa-layer-group"></i> Plano
-        </th>
+        <th mat-header-cell *matHeaderCellDef class="col-plano">Plano</th>
         <td mat-cell *matCellDef="let usuario" class="col-plano">
-          <span *ngIf="usuario.nomePlano" class="plano-badge">
-            <i class="fa-solid fa-check-circle"></i>
-            {{ usuario.nomePlano }}
-          </span>
-          <span *ngIf="!usuario.nomePlano && isAdministrador(usuario)" class="plano-badge sem-plano">
-            <i class="fa-solid fa-exclamation-circle"></i>
-            Sem plano
-          </span>
-          <span *ngIf="!isAdministrador(usuario)" class="plano-badge na">
-            -
-          </span>
+          <span *ngIf="usuario.nomePlano" class="plano-badge">{{ usuario.nomePlano }}</span>
+          <span *ngIf="!usuario.nomePlano && isAdministrador(usuario)" class="plano-badge sem-plano">Sem plano</span>
+          <span *ngIf="!isAdministrador(usuario)" class="plano-badge na">-</span>
         </td>
       </ng-container>
 
       <!-- Coluna Status -->
       <ng-container matColumnDef="status">
-        <th mat-header-cell *matHeaderCellDef class="col-status">
-          <i class="fa-solid fa-circle-check"></i> Status
-        </th>
+        <th mat-header-cell *matHeaderCellDef class="col-status">Status</th>
         <td mat-cell *matCellDef="let usuario" class="col-status">
           <span class="status-badge" [ngClass]="usuario.status ? 'status-ativo' : 'status-bloqueado'">
-            <i class="fa-solid" [ngClass]="usuario.status ? 'fa-check-circle' : 'fa-ban'"></i>
             {{ usuario.status ? 'Ativo' : 'Bloqueado' }}
           </span>
         </td>
@@ -118,48 +89,37 @@
 
       <!-- Coluna Ações -->
       <ng-container matColumnDef="acoes">
-        <th mat-header-cell *matHeaderCellDef class="col-acoes">
-          <i class="fa-solid fa-gear"></i> Ações
-        </th>
+        <th mat-header-cell *matHeaderCellDef class="col-acoes">Ações</th>
         <td mat-cell *matCellDef="let usuario" class="col-acoes">
-          <div class="action-buttons">
-            <!-- Botão Trocar Senha -->
-            <button
-              *ngIf="!isPaciente(usuario)"
-              class="btn-action btn-senha"
-              (click)="abrirTrocaSenha(usuario); $event.stopPropagation()"
-              title="Alterar senha">
-              <i class="fa-solid fa-key"></i>
+          <button
+            class="btn-menu-acoes"
+            [matMenuTriggerFor]="menuAcoes"
+            (click)="$event.stopPropagation()"
+            title="Mais ações">
+            <i class="fa-solid fa-ellipsis-vertical"></i>
+          </button>
+
+          <mat-menu #menuAcoes="matMenu" xPosition="before">
+            <button mat-menu-item *ngIf="!isPaciente(usuario)" (click)="abrirTrocaSenha(usuario)">
+              <i class="fa-solid fa-key menu-item-icon"></i>
+              <span>Alterar senha</span>
             </button>
 
-            <!-- Botão Associar Plano (SUPER_ADMIN apenas para Administradores) -->
-            <button
-              *ngIf="controleAcessoService.isSuperAdmin() && isAdministrador(usuario)"
-              class="btn-action btn-plano"
-              (click)="abrirAssociarPlano(usuario); $event.stopPropagation()"
-              title="Associar plano à organização">
-              <i class="fa-solid fa-link"></i>
+            <button mat-menu-item *ngIf="controleAcessoService.isSuperAdmin() && isAdministrador(usuario)" (click)="abrirAssociarPlano(usuario)">
+              <i class="fa-solid fa-link menu-item-icon"></i>
+              <span>Associar plano</span>
             </button>
 
-            <!-- Botão Bloquear/Desbloquear (oculto para o próprio AdminOrg) -->
-            <button
-              *ngIf="!isProprioUsuario(usuario)"
-              class="btn-action"
-              [ngClass]="usuario.status ? 'btn-bloquear' : 'btn-desbloquear'"
-              (click)="alternarStatusUsuario(usuario); $event.stopPropagation()"
-              [title]="usuario.status ? 'Bloquear usuário' : 'Desbloquear usuário'">
-              <i class="fa-solid" [ngClass]="usuario.status ? 'fa-lock-open' : 'fa-lock'"></i>
+            <button mat-menu-item *ngIf="!isProprioUsuario(usuario)" (click)="alternarStatusUsuario(usuario)">
+              <i class="fa-solid menu-item-icon" [ngClass]="usuario.status ? 'fa-lock-open' : 'fa-lock'"></i>
+              <span>{{ usuario.status ? 'Bloquear usuário' : 'Desbloquear usuário' }}</span>
             </button>
 
-            <!-- Botão Deletar (oculto para o próprio AdminOrg) -->
-            <button
-              *ngIf="!isProprioUsuario(usuario)"
-              class="btn-action btn-deletar"
-              (click)="confirmarDelecao(usuario); $event.stopPropagation()"
-              title="Excluir usuário">
-              <i class="fa-solid fa-trash"></i>
+            <button mat-menu-item class="menu-item-danger" *ngIf="!isProprioUsuario(usuario)" (click)="confirmarDelecao(usuario)">
+              <i class="fa-solid fa-trash menu-item-icon"></i>
+              <span>Excluir usuário</span>
             </button>
-          </div>
+          </mat-menu>
         </td>
       </ng-container>
 

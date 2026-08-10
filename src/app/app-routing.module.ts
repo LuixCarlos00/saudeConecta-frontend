@@ -16,7 +16,6 @@ import { RecuperaCadastroComponent } from './features/publico/recupera-cadastro/
 import { DashboardComponent } from './features/administrador/dashboard/dashboard.component';
 import { GerenciamentoComponent } from './features/administrador/gerenciamento-agenda/gerenciamento.component';
 import { GerenciamentoUsuarioComponent } from './features/administrador/gerenciamento-usuarios/gerenciamento-usuario.component';
-import { CadastroUsuarioComponent } from './features/administrador/cadastros/cadastro-usuario/cadastro-usuario.component';
 import { CadastroComponent } from './features/administrador/cadastros/cadastro/cadastro.component';
 import { CadastroPacienteComponent } from './features/administrador/cadastros/cadastro-paciente/cadastro-paciente.component';
 import { CadastroMedicoComponent } from './features/administrador/cadastros/cadastro-medico/cadastro-medico.component';
@@ -49,7 +48,6 @@ const routes: Routes = [
 
   // ========== ROTAS PÚBLICAS ==========
   { path: 'login', component: LoginComponent, canActivate: [GuardaRotasLogin] },
-  { path: 'cadastroUsuario', component: CadastroUsuarioComponent },
   { path: 'recuperaCadastro', component: RecuperaCadastroComponent },
   { path: 'questionario-saude/:token', component: QuestionarioSaudeComponent },
   { path: 'assinatura-planejamento/:token', component: AssinaturaPlanejamentoComponent },

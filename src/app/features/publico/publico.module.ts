@@ -14,7 +14,6 @@ import { RecuperaCadastroComponent } from './recupera-cadastro/recupera-cadastro
 const routes: Routes = [
   // Rotas públicas serão adicionadas aqui
   // { path: 'login', component: LoginComponent },
-  // { path: 'cadastro', component: CadastroUsuarioComponent },
   // { path: 'recupera-cadastro', component: RecuperaCadastroComponent },
 ];
 

@@ -1,8 +1,9 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, Optional, ViewChild, ElementRef } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CepApiService } from 'src/app/services/api/cep-api.service';
 import { PlanoApiService } from 'src/app/services/api/plano-api.service';
 import { Router } from '@angular/router';
+import { MatDialogRef } from '@angular/material/dialog';
 import { Subscription } from 'rxjs';
 import Swal from 'sweetalert2';
 import { AdministradorApiService } from 'src/app/services/api/administrador-api.service';
@@ -37,6 +38,9 @@ export class CadastroAdminOrgComponent implements OnInit, OnDestroy {
   planos: PlanoAssinatura[] = [];
   isJuridica = true;
   getFieldError = getFieldError;
+  secaoVisivel = 'tipo';
+
+  @ViewChild('scrollArea', { static: false }) scrollArea!: ElementRef;
 
   readonly tiposClinica = [
     { value: 'CLINICA_MEDICA', label: 'Clínica Médica' },
@@ -65,7 +69,8 @@ export class CadastroAdminOrgComponent implements OnInit, OnDestroy {
     private filtroStateService: FiltroStateService,
     private cepApiService: CepApiService,
     private planoApiService: PlanoApiService,
-    private router: Router
+    private router: Router,
+    @Optional() private dialogRef: MatDialogRef<CadastroAdminOrgComponent>
   ) {}
 
   ngOnInit(): void {
@@ -163,6 +168,40 @@ export class CadastroAdminOrgComponent implements OnInit, OnDestroy {
         this.formulario.get(field)?.updateValueAndValidity();
       });
     }
+  }
+
+  irParaSecao(secao: string): void {
+    this.secaoVisivel = secao;
+    const el = document.getElementById('sec-' + secao);
+    if (el && this.scrollArea) {
+      const container = this.scrollArea.nativeElement;
+      const top = el.offsetTop - container.offsetTop;
+      container.scrollTo({ top, behavior: 'smooth' });
+    }
+  }
+
+  onScroll(event?: Event): void {
+    if (!this.scrollArea) { return; }
+    const container = this.scrollArea.nativeElement;
+    const scrollTop = container.scrollTop;
+    const secoes = ['tipo', 'administrador', 'organizacao', 'endereco', 'plano'];
+    for (const secao of secoes) {
+      const el = document.getElementById('sec-' + secao);
+      if (!el) { continue; }
+      const offsetTop = el.offsetTop - container.offsetTop;
+      const offsetBottom = offsetTop + el.offsetHeight;
+      if (scrollTop >= offsetTop - 40 && scrollTop < offsetBottom - 40) {
+        this.secaoVisivel = secao;
+      }
+    }
+  }
+
+  fechar(): void {
+    if (this.dialogRef) {
+      this.dialogRef.close(false);
+      return;
+    }
+    this.cancelar();
   }
 
   validateCpfOnBlur(): void {

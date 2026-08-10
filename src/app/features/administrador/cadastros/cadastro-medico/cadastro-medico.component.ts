@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, Optional } from '@angular/core';
+import { Component, OnInit, OnDestroy, Optional, ViewChild, ElementRef } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
@@ -48,6 +48,9 @@ export class CadastroMedicoComponent implements OnInit, OnDestroy {
   mostrarModalNovaEspecialidade = false;
   novaEspecialidadeNome = '';
   getFieldError = getFieldError;
+  secaoVisivel = 'pessoal';
+
+  @ViewChild('scrollArea', { static: false }) scrollArea!: ElementRef;
 
 
   logradouro: logradouro = {
@@ -135,6 +138,38 @@ export class CadastroMedicoComponent implements OnInit, OnDestroy {
   }
 
 
+  irParaSecao(secao: string) {
+    this.secaoVisivel = secao;
+    const el = document.getElementById('sec-' + secao);
+    if (el && this.scrollArea) {
+      const container = this.scrollArea.nativeElement;
+      const top = el.offsetTop - container.offsetTop;
+      container.scrollTo({ top, behavior: 'smooth' });
+    }
+  }
+
+  onScroll(event?: Event) {
+    if (!this.scrollArea) { return; }
+    const container = this.scrollArea.nativeElement;
+    const scrollTop = container.scrollTop;
+    const secoes = ['pessoal', 'profissional', 'endereco'];
+    for (const secao of secoes) {
+      const el = document.getElementById('sec-' + secao);
+      if (!el) { continue; }
+      const offsetTop = el.offsetTop - container.offsetTop;
+      const offsetBottom = offsetTop + el.offsetHeight;
+      if (scrollTop >= offsetTop - 40 && scrollTop < offsetBottom - 40) {
+        this.secaoVisivel = secao;
+      }
+    }
+  }
+
+  fechar() {
+    if (this.dialogRef) {
+      this.dialogRef.close(false);
+    }
+  }
+
   validateCpfOnBlur() {
     const cpfControl = this.FormularioMedico.get('cpf');
     if (cpfControl) {
@@ -203,7 +238,7 @@ export class CadastroMedicoComponent implements OnInit, OnDestroy {
     this.isLoadingEspecialidades = true;
     this.especialidadeService.carregarEspecialidades().subscribe({
       next: (especialidades) => {
-        this.especialidades = especialidades;
+        this.especialidades = especialidades.sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'));
         this.isLoadingEspecialidades = false;
       },
       error: (error) => {
@@ -249,6 +284,7 @@ export class CadastroMedicoComponent implements OnInit, OnDestroy {
       next: (novaEspecialidade) => {
         this.isLoading = false;
         this.especialidades.push(novaEspecialidade);
+        this.especialidades.sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'));
         this.FormularioMedico.patchValue({ especialidade: novaEspecialidade.nome });
         this.fecharModalNovaEspecialidade();
 

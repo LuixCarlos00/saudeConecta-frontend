@@ -1,87 +1,107 @@
-<div class="cadastro-container">
-  <div class="cadastro-dialog">
-    <!-- Header -->
-    <header class="cadastro-header cadastro-header--admin">
-      <div class="cadastro-header__info">
-        <div class="cadastro-header__icon">
-          <i class="fa-solid fa-user-shield"></i>
-        </div>
-        <div>
-          <h2 class="cadastro-header__title">Cadastro de Administrador</h2>
-          <p class="cadastro-header__subtitle">Preencha os dados do administrador</p>
-        </div>
-      </div>
-    </header>
+<div class="modal-shell">
 
-    <!-- Body -->
-    <div class="cadastro-body">
-      <!-- Seção: Dados -->
-      <section class="cadastro-section cadastro-section--open">
-        <div class="cadastro-section__header">
-          <i class="fa-solid fa-user-gear"></i>
-          <h3 class="cadastro-section__title">Dados do Administrador</h3>
-        </div>
-        <div class="cadastro-section__body">
-          <form [formGroup]="FormularioADM" class="cadastro-grid">
-            <div class="cadastro-field">
-              <label class="cadastro-field__label">
-                <span class="cadastro-field__required">*</span> Nome Completo
-              </label>
-              <input 
-                type="text" 
-                class="cadastro-field__input" 
-                formControlName="nome" 
-                placeholder="Digite o nome completo">
-            </div>
-
-            <div class="cadastro-field">
-              <label class="cadastro-field__label">
-                <span class="cadastro-field__required">*</span> CPF (usado como login)
-              </label>
-              <input 
-                type="text" 
-                class="cadastro-field__input" 
-                formControlName="cpf" 
-                placeholder="000.000.000-00"
-                maxlength="14"
-                (blur)="validateCpfOnBlur()">
-              <div *ngIf="FormularioADM.get('cpf')?.invalid && FormularioADM.get('cpf')?.touched" class="cadastro-field__error">
-                <span *ngIf="FormularioADM.get('cpf')?.errors?.['required']">CPF é obrigatório</span>
-                <span *ngIf="FormularioADM.get('cpf')?.errors?.['cpfInvalid']">CPF inválido</span>
-              </div>
-            </div>
-
-            <div class="cadastro-field cadastro-field--full">
-              <label class="cadastro-field__label">
-                <span class="cadastro-field__required">*</span> Email
-              </label>
-              <input 
-                type="email" 
-                class="cadastro-field__input" 
-                formControlName="email" 
-                placeholder="email@exemplo.com">
-            </div>
-
-          </form>
-        </div>
-      </section>
+  <div class="modal-top">
+    <div class="modal-top-left">
+      <i class="fa-solid fa-user-shield"></i>
+      <span class="modal-titulo">Cadastro de Administrador</span>
     </div>
-
-    <!-- Footer -->
-    <footer class="cadastro-footer">
-      <div class="cadastro-footer__hint">
-        <i class="fa-solid fa-asterisk"></i>
-        <span>Campos obrigatórios | O CPF será usado como login e a senha será enviada por email</span>
-      </div>
-      <div class="cadastro-footer__actions">
-        <button 
-          class="cadastro-btn cadastro-btn--primary"
-          [disabled]="!FormularioADM.valid || isLoading"
-          (click)="cadastra()">
-          <i class="fa-solid" [ngClass]="isLoading ? 'fa-spinner fa-spin' : 'fa-check'"></i>
-          {{ isLoading ? 'Cadastrando...' : 'Cadastrar Administrador' }}
-        </button>
-      </div>
-    </footer>
+    <button class="modal-close" (click)="fechar()">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
   </div>
+
+  <div class="modal-body">
+
+    <nav class="modal-nav">
+      <button class="nav-item" [class.active]="secaoVisivel === 'pessoal'" (click)="irParaSecao('pessoal')">
+        <span class="nav-dot"></span> Dados Pessoais
+      </button>
+      <button class="nav-item" [class.active]="secaoVisivel === 'contato'" (click)="irParaSecao('contato')">
+        <span class="nav-dot"></span> Contato e Acesso
+      </button>
+    </nav>
+
+    <div class="modal-scroll-body" #scrollArea (scroll)="onScroll($event)">
+
+      <div class="secao" id="sec-pessoal" [formGroup]="FormularioADM">
+        <div class="secao-header">
+          <span class="secao-icone azul"><i class="fa-solid fa-user"></i></span>
+          <h2 class="secao-titulo">Dados Pessoais</h2>
+        </div>
+        <div class="form-grid-2">
+
+          <!-- Nome Completo -->
+          <div class="field-group field-group--full">
+            <label class="field-label">
+              <span class="req">*</span> Nome Completo
+            </label>
+            <input type="text" class="field-input" formControlName="nome" placeholder="Ex: João da Silva"
+              [class.input--error]="FormularioADM.get('nome')?.invalid && FormularioADM.get('nome')?.touched"
+              [class.input--valid]="FormularioADM.get('nome')?.valid && FormularioADM.get('nome')?.touched">
+            <div class="field-error" *ngIf="FormularioADM.get('nome')?.invalid && FormularioADM.get('nome')?.touched">
+              Nome é obrigatório
+            </div>
+            <div class="field-hint">Informe nome e sobrenome.</div>
+          </div>
+
+          <!-- CPF -->
+          <div class="field-group field-group--full">
+            <label class="field-label">
+              <span class="req">*</span> CPF (usado como login)
+            </label>
+            <input type="text" class="field-input" formControlName="cpf" placeholder="000.000.000-00" maxlength="14"
+              (blur)="validateCpfOnBlur()"
+              [class.input--error]="FormularioADM.get('cpf')?.invalid && FormularioADM.get('cpf')?.touched"
+              [class.input--valid]="FormularioADM.get('cpf')?.valid && FormularioADM.get('cpf')?.touched">
+            <div class="field-error" *ngIf="FormularioADM.get('cpf')?.invalid && FormularioADM.get('cpf')?.touched">
+              <span *ngIf="FormularioADM.get('cpf')?.errors?.['required']">CPF é obrigatório</span>
+              <span *ngIf="FormularioADM.get('cpf')?.errors?.['cpfInvalid']">CPF inválido</span>
+            </div>
+            <div class="field-hint">Formato: 000.000.000-00. Será usado como login de acesso.</div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="secao-divider"></div>
+
+      <div class="secao" id="sec-contato" [formGroup]="FormularioADM">
+        <div class="secao-header">
+          <span class="secao-icone verde"><i class="fa-solid fa-address-book"></i></span>
+          <h2 class="secao-titulo">Contato e Acesso</h2>
+        </div>
+        <div class="form-grid-2">
+
+          <!-- Email -->
+          <div class="field-group field-group--full">
+            <label class="field-label">
+              <span class="req">*</span> Email
+            </label>
+            <input type="email" class="field-input" formControlName="email" placeholder="email@exemplo.com"
+              [class.input--error]="FormularioADM.get('email')?.invalid && FormularioADM.get('email')?.touched"
+              [class.input--valid]="FormularioADM.get('email')?.valid && FormularioADM.get('email')?.touched">
+            <div class="field-error" *ngIf="FormularioADM.get('email')?.invalid && FormularioADM.get('email')?.touched">
+              <span *ngIf="FormularioADM.get('email')?.errors?.['required']">Email é obrigatório</span>
+              <span *ngIf="FormularioADM.get('email')?.errors?.['email']">Email inválido</span>
+            </div>
+            <div class="field-hint">Use um e-mail válido. As credenciais serão enviadas para este endereço.</div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="modal-footer">
+    <span class="modal-footer__hint">O CPF será usado como login e a senha será enviada por email</span>
+    <div class="modal-footer__actions">
+      <button class="btn-cancelar" (click)="fechar()">Cancelar</button>
+      <button class="btn-confirmar" [disabled]="!FormularioADM.valid || isLoading" (click)="cadastra()">
+        <i class="fa-solid" [ngClass]="isLoading ? 'fa-spinner fa-spin' : 'fa-check'"></i>
+        {{ isLoading ? 'Cadastrando...' : 'Cadastrar Administrador' }}
+      </button>
+    </div>
+  </div>
+
 </div>

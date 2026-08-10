@@ -1,12 +1,14 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, Optional, ViewChild, ElementRef } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { MatDialogRef } from '@angular/material/dialog';
 import { Subscription } from 'rxjs';
 import Swal from 'sweetalert2';
 import { AdministradorApiService } from 'src/app/services/api/administrador-api.service';
 import { FiltroStateService } from 'src/app/services/state/filtro-state.service';
 import { cpfValidator } from 'src/app/util/validators/cpf-form.validator';
 import { CpfValidator } from 'src/app/util/validators/cpf.validator';
+import { getFieldError } from 'src/app/util/validators/field-errors';
 
 @Component({
   selector: 'app-cadastro-adm',
@@ -18,12 +20,17 @@ export class CadastroAdmComponent implements OnInit, OnDestroy {
   private subscription: Subscription | undefined;
   FormularioADM!: FormGroup;
   isLoading = false;
+  getFieldError = getFieldError;
+  secaoVisivel = 'pessoal';
+
+  @ViewChild('scrollArea', { static: false }) scrollArea!: ElementRef;
 
   constructor(
     private router: Router,
     private form: FormBuilder,
     private administradorApi: AdministradorApiService,
-    private filtroStateService: FiltroStateService
+    private filtroStateService: FiltroStateService,
+    @Optional() private dialogRef: MatDialogRef<CadastroAdmComponent>
   ) { }
 
   ngOnInit() {
@@ -53,6 +60,38 @@ export class CadastroAdmComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     if (this.subscription) {
       this.subscription.unsubscribe();
+    }
+  }
+
+  irParaSecao(secao: string) {
+    this.secaoVisivel = secao;
+    const el = document.getElementById('sec-' + secao);
+    if (el && this.scrollArea) {
+      const container = this.scrollArea.nativeElement;
+      const top = el.offsetTop - container.offsetTop;
+      container.scrollTo({ top, behavior: 'smooth' });
+    }
+  }
+
+  onScroll(event?: Event) {
+    if (!this.scrollArea) { return; }
+    const container = this.scrollArea.nativeElement;
+    const scrollTop = container.scrollTop;
+    const secoes = ['pessoal', 'contato'];
+    for (const secao of secoes) {
+      const el = document.getElementById('sec-' + secao);
+      if (!el) { continue; }
+      const offsetTop = el.offsetTop - container.offsetTop;
+      const offsetBottom = offsetTop + el.offsetHeight;
+      if (scrollTop >= offsetTop - 40 && scrollTop < offsetBottom - 40) {
+        this.secaoVisivel = secao;
+      }
+    }
+  }
+
+  fechar() {
+    if (this.dialogRef) {
+      this.dialogRef.close(false);
     }
   }
 
