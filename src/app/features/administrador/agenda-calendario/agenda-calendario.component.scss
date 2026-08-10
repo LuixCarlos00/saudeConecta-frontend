@@ -43,11 +43,13 @@ $status: (
   display: flex;
   flex-direction: column;
   height: 100vh;
+  max-width: 100%;
   background: $bg;
   font-family: 'Segoe UI', sans-serif;
   color: $text;
   overflow: hidden;
   position: relative;
+  font-size: 11px;
 }
 
 // ── Header ────────────────────────────────────────────────
@@ -55,36 +57,56 @@ $status: (
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 24px;
+  padding: 6px 12px;
   background: $surface;
   border-bottom: 1px solid $border;
   box-shadow: $shadow;
   flex-shrink: 0;
-  gap: 16px;
+  gap: 6px;
   flex-wrap: wrap;
 }
 
 .header-left {
   display: flex;
+  flex-direction: row;
   align-items: center;
-  gap: 16px;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
 .titulo-pagina {
-  font-size: 1.3rem;
+  font-size: 0.85rem;
   font-weight: 700;
   color: $primary;
   margin: 0;
   display: flex;
   align-items: center;
-  gap: 8px;
-  i { font-size: 1.1rem; }
+  gap: 5px;
+  i { font-size: 0.75rem; }
 }
 
 .subtitulo {
-  font-size: 1rem;
+  font-size: 0.7rem;
   font-weight: 600;
   color: $text;
+}
+
+.legenda-header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.legenda-header .legenda-item {
+  font-size: 0.65rem;
+  color: $text;
+}
+
+.legenda-header .legenda-cor {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
 }
 
 .header-controls {
@@ -107,19 +129,19 @@ $status: (
   color: $text;
   border-radius: 6px;
   cursor: pointer;
-  font-size: 0.85rem;
+  font-size: 0.75rem;
   transition: all .15s;
 
   &:hover { background: $bg; }
 
   &.btn-hoje {
-    padding: 6px 14px;
+    padding: 5px 10px;
     font-weight: 600;
   }
 
   &.btn-arrow {
-    padding: 6px 10px;
-    font-size: 0.8rem;
+    padding: 5px 8px;
+    font-size: 0.7rem;
   }
 }
 
@@ -135,17 +157,17 @@ $status: (
 .btn-view {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 6px 14px;
+  gap: 5px;
+  padding: 5px 10px;
   border: none;
   background: transparent;
   border-radius: 6px;
   color: $text-muted;
-  font-size: 0.85rem;
+  font-size: 0.75rem;
   cursor: pointer;
   transition: all .15s;
 
-  i { font-size: 0.8rem; }
+  i { font-size: 0.7rem; }
 
   &.active {
     background: $surface;
@@ -157,31 +179,32 @@ $status: (
   &:hover:not(.active) { background: darken($bg, 4%); }
 }
 
-// Botão Nova Consulta (no painel lateral)
-.btn-nova-consulta {
+// Botão Nova Consulta (no header)
+.header-left .btn-nova-consulta {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  width: 100%;
-  padding: 11px 16px;
+  gap: 5px;
+  width: auto;
+  padding: 5px 12px;
   background: $primary;
   color: #fff;
   border: none;
-  border-radius: 8px;
-  font-size: 0.88rem;
+  border-radius: 5px;
+  font-size: 0.7rem;
   font-weight: 700;
   cursor: pointer;
   letter-spacing: 0.3px;
   transition: background .15s, box-shadow .15s, transform .1s;
-  box-shadow: 0 3px 10px rgba(37, 99, 235, 0.35);
-  margin-bottom: 16px;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+  margin-top: 0;
+  flex-shrink: 0;
 
-  i { font-size: 0.85rem; }
+  i { font-size: 0.65rem; }
 
   &:hover {
     background: $primary-dk;
-    box-shadow: 0 5px 16px rgba(37, 99, 235, 0.45);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
     transform: translateY(-1px);
   }
   &:active { transform: translateY(0); }
@@ -196,8 +219,8 @@ $status: (
 
 // ── Painel Lateral ────────────────────────────────────────
 .filtros-panel {
-  width: 260px;
-  min-width: 260px;
+  width: 200px;
+  min-width: 200px;
   background: $surface;
   border-right: 1px solid $border;
   overflow-y: auto;
@@ -229,8 +252,8 @@ $status: (
   flex-direction: column;
   gap: 12px;
   padding: 12px 16px;
-  overflow: hidden;
-  max-height: 1000px;
+  overflow-y: auto;
+  max-height: 500px;
   opacity: 1;
   transition: max-height .32s cubic-bezier(.4, 0, .2, 1),
               padding .3s ease,
@@ -287,7 +310,7 @@ $status: (
 }
 
 .filtros-titulo {
-  font-size: 0.85rem;
+  font-size: 0.78rem;
   font-weight: 700;
   color: $text-muted;
   text-transform: uppercase;
@@ -300,10 +323,41 @@ $status: (
 
 .mini-calendar-wrapper {
   ::ng-deep {
-    .mat-calendar { font-size: 0.75rem; }
-    .mat-calendar-header { padding: 4px 0; }
+    .mat-calendar { font-size: 0.6rem; }
+    .mat-calendar-header { padding: 2px 0; }
     .mat-calendar-content { padding: 0; }
     .mat-calendar-table { width: 100%; }
+    
+    // Month/year header
+    .mat-calendar-period-button {
+      font-size: 0.65rem !important;
+      font-weight: 600 !important;
+      padding: 2px 4px !important;
+    }
+    
+    // Navigation buttons
+    .mat-calendar-arrow {
+      font-size: 0.6rem !important;
+    }
+    
+    // Day cells
+    .mat-calendar-body-cell {
+      padding: 0 !important;
+      height: 24px !important;
+    }
+    
+    .mat-calendar-body-cell-content {
+      font-size: 0.55rem !important;
+      width: 20px !important;
+      height: 20px !important;
+      line-height: 20px !important;
+    }
+    
+    // Weekday headers
+    .mat-calendar-table-header th {
+      font-size: 0.5rem !important;
+      padding: 2px 0 !important;
+    }
   }
 }
 
@@ -316,20 +370,20 @@ $status: (
 }
 
 .filtro-label {
-  font-size: 0.78rem;
+  font-size: 0.68rem;
   font-weight: 600;
   color: $text-muted;
   display: flex;
   align-items: center;
-  gap: 5px;
-  i { font-size: 0.7rem; }
+  gap: 3px;
+  i { font-size: 0.6rem; }
 }
 
 .filtro-select {
   border: 1px solid $border;
-  border-radius: 6px;
-  padding: 6px 8px;
-  font-size: 0.82rem;
+  border-radius: 5px;
+  padding: 4px 6px;
+  font-size: 0.7rem;
   color: $text;
   background: $bg;
   cursor: pointer;
@@ -348,8 +402,8 @@ $status: (
 .legenda-item {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 0.8rem;
+  gap: 6px;
+  font-size: 0.75rem;
   color: $text;
 }
 .legenda-cor {
@@ -370,19 +424,19 @@ $status: (
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 5px;
-  padding: 6px 8px;
+  gap: 3px;
+  padding: 4px 6px;
   background: $bg;
   border: 1px solid $border;
-  border-radius: 6px;
-  font-size: 0.73rem;
+  border-radius: 5px;
+  font-size: 0.64rem;
   font-weight: 500;
   color: $text-muted;
   cursor: pointer;
   transition: all .15s;
   white-space: nowrap;
 
-  i { font-size: 0.65rem; }
+  i { font-size: 0.55rem; }
 
   &:hover { background: lighten($primary, 45%); border-color: $primary; color: $primary; }
 
@@ -403,10 +457,10 @@ $status: (
 
 .filtro-input {
   flex: 1;
-  padding: 6px 8px;
+  padding: 4px 6px;
   border: 1px solid $border;
-  border-radius: 6px;
-  font-size: 0.8rem;
+  border-radius: 5px;
+  font-size: 0.7rem;
   color: $text;
   background: $bg;
   outline: none;
@@ -513,7 +567,7 @@ $status: (
 .calendario-main {
   flex: 1;
   overflow: auto;
-  padding: 16px;
+  padding: 8px;
   position: relative;
 }
 
@@ -561,8 +615,8 @@ $status: (
   background: $surface;
   border: 1px solid $border;
   border-radius: $radius;
-  min-height: 100px;
-  padding: 6px;
+  min-height: 55px;
+  padding: 4px;
   cursor: pointer;
   transition: all .15s;
   overflow: hidden;
@@ -594,10 +648,10 @@ $status: (
 }
 
 .numero-dia {
-  font-size: 0.85rem;
+  font-size: 0.65rem;
   font-weight: 600;
-  width: 24px;
-  height: 24px;
+  width: 16px;
+  height: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -619,10 +673,10 @@ $status: (
 .evento-chip {
   display: flex;
   align-items: center;
-  gap: 4px;
-  padding: 2px 6px;
+  gap: 3px;
+  padding: 3px 5px;
   border-radius: 4px;
-  font-size: 0.72rem;
+  font-size: 0.52rem;
   cursor: pointer;
   white-space: nowrap;
   overflow: hidden;
@@ -636,10 +690,10 @@ $status: (
 }
 
 .mais-eventos {
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   color: $primary;
   font-weight: 600;
-  padding: 1px 4px;
+  padding: 1px 3px;
   cursor: pointer;
 }
 
@@ -648,20 +702,20 @@ $status: (
 // ─────────────────────────────────────────────────────────
 .grade-semana-header {
   display: grid;
-  grid-template-columns: 60px repeat(7, 1fr);
+  grid-template-columns: 40px repeat(7, 1fr);
   border-bottom: 2px solid $border;
   background: $surface;
   border-radius: $radius $radius 0 0;
   overflow: hidden;
 }
 
-.col-hora-header { padding: 10px; }
+.col-hora-header { padding: 4px; }
 
 .dia-semana-col-header {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 10px 4px;
+  padding: 4px 1px;
   cursor: pointer;
   border-left: 1px solid $border;
   transition: background .15s;
@@ -670,22 +724,22 @@ $status: (
   &.hoje { background: rgba($primary,.05); }
 
   .dia-nome {
-    font-size: 0.72rem;
+    font-size: 0.55rem;
     font-weight: 600;
     color: $text-muted;
     text-transform: uppercase;
   }
 
   .dia-numero {
-    font-size: 1.1rem;
+    font-size: 0.75rem;
     font-weight: 700;
     color: $text;
 
     &.hoje-numero {
       background: $primary;
       color: #fff;
-      width: 30px;
-      height: 30px;
+      width: 18px;
+      height: 18px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -696,24 +750,24 @@ $status: (
 
 .grade-semana-corpo {
   display: grid;
-  grid-template-columns: 60px repeat(7, 1fr);
+  grid-template-columns: 40px repeat(7, 1fr);
   background: $surface;
   border-radius: 0 0 $radius $radius;
   overflow: hidden;
   border: 1px solid $border;
   border-top: none;
-  min-height: 400px;
+  min-height: 250px;
 }
 
 .col-horas { border-right: 1px solid $border; }
 
 .slot-hora {
-  height: 64px;
+  height: 40px;
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  padding-top: 4px;
-  font-size: 0.72rem;
+  padding-top: 1px;
+  font-size: 0.55rem;
   color: $text-muted;
   border-bottom: 1px solid $border;
 }
@@ -731,9 +785,9 @@ $status: (
 }
 
 .evento-card {
-  border-radius: 6px;
-  padding: 4px 8px;
-  font-size: 0.75rem;
+  border-radius: 3px;
+  padding: 2px 4px;
+  font-size: 0.58rem;
   cursor: pointer;
   transition: filter .1s;
 
@@ -763,7 +817,7 @@ $status: (
   border: 1px solid $border;
 
   .dia-nome-completo {
-    font-size: 1rem;
+    font-size: 0.9rem;
     font-weight: 700;
     color: $text;
   }
@@ -786,8 +840,8 @@ $status: (
 
 .slot-dia {
   display: grid;
-  grid-template-columns: 60px 1fr;
-  min-height: 60px;
+  grid-template-columns: 40px 1fr;
+  min-height: 40px;
   border: 1px solid $border;
   border-radius: $radius;
   background: $surface;
@@ -799,11 +853,11 @@ $status: (
   align-items: center;
   justify-content: center;
   background: $bg;
-  font-size: 0.75rem;
+  font-size: 0.6rem;
   font-weight: 600;
   color: $text-muted;
   border-right: 1px solid $border;
-  padding: 0 8px;
+  padding: 0 4px;
 }
 
 .hora-eventos {
@@ -816,8 +870,8 @@ $status: (
 .hora-vazia { min-height: 40px; }
 
 .evento-card-dia {
-  border-radius: 6px;
-  padding: 8px 12px;
+  border-radius: 3px;
+  padding: 4px 6px;
   cursor: pointer;
   transition: filter .1s;
 
@@ -833,15 +887,15 @@ $status: (
 
 .evento-hora-dia {
   font-weight: 700;
-  font-size: 0.82rem;
+  font-size: 0.6rem;
 }
 
 .evento-status-badge {
-  font-size: 0.7rem;
+  font-size: 0.52rem;
   font-weight: 600;
   background: rgba(0,0,0,.08);
-  padding: 2px 6px;
-  border-radius: 10px;
+  padding: 1px 3px;
+  border-radius: 8px;
 }
 
 .evento-paciente,
@@ -849,10 +903,10 @@ $status: (
 .evento-medico {
   display: flex;
   align-items: center;
-  gap: 6px;
-  font-size: 0.8rem;
-  margin-top: 2px;
-  i { font-size: 0.72rem; opacity: .7; }
+  gap: 3px;
+  font-size: 0.58rem;
+  margin-top: 1px;
+  i { font-size: 0.55rem; opacity: .7; }
 }
 
 // ─────────────────────────────────────────────────────────
@@ -865,7 +919,7 @@ $status: (
   top: 0;
   left: 0;
   bottom: 0;
-  right: clamp(380px, 45%, 680px);
+  right: clamp(260px, 34%, 480px);
   background: rgba(0, 0, 0, .52);
   z-index: 1100;
   animation: fadeIn .2s ease;
@@ -881,9 +935,9 @@ $status: (
   position: fixed;
   top: 0;
   right: 0;
-  width: 45%;
-  min-width: 380px;
-  max-width: 680px;
+  width: 34%;
+  min-width: 260px;
+  max-width: 480px;
   height: 100vh;
   background: #fff;
   z-index: 1200;
@@ -893,6 +947,7 @@ $status: (
   transform: translateX(100%);
   transition: transform .28s cubic-bezier(.4, 0, .2, 1);
   font-family: 'Segoe UI', system-ui, sans-serif;
+  font-size: 10px;
 }
 
 .drawer-panel.drawer-aberto {
@@ -905,7 +960,7 @@ $status: (
 
 // ── BLOCO 1: Header ───────────────────────────────────────
 .drw-header {
-  padding: 16px 18px 14px;
+  padding: 8px 10px 6px;
   border-bottom: 1px solid #e5eaf0;
   flex-shrink: 0;
   background: #fff;
@@ -928,13 +983,13 @@ $status: (
 .drw-status-pill {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  font-size: 0.73rem;
+  gap: 4px;
+  font-size: 0.68rem;
   font-weight: 600;
-  padding: 4px 10px;
+  padding: 3px 8px;
   border-radius: 999px;
 
-  i { font-size: 0.8rem; }
+  i { font-size: 0.75rem; }
 
   &--status-agendada   { background: #dbeafe; color: #1d4ed8; }
   &--status-confirmada { background: #dcfce7; color: #15803d; }
@@ -953,8 +1008,8 @@ $status: (
 }
 
 .drw-avatar {
-  width: 44px;
-  height: 44px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   background: #eff6ff;
   color: #2563eb;
@@ -962,7 +1017,7 @@ $status: (
   align-items: center;
   justify-content: center;
   font-weight: 700;
-  font-size: 0.88rem;
+  font-size: 0.65rem;
   flex-shrink: 0;
 }
 
@@ -974,20 +1029,20 @@ $status: (
 }
 
 .drw-paciente-nome {
-  font-size: 1rem;
+  font-size: 0.7rem;
   font-weight: 600;
   color: #0f172a;
 }
 
 .drw-paciente-tel {
-  font-size: 0.78rem;
+  font-size: 0.72rem;
   color: #64748b;
   display: flex;
   align-items: center;
   gap: 4px;
   margin-top: 2px !important;
 
-  i { font-size: 0.7rem; }
+  i { font-size: 0.65rem; }
 }
 
 .drw-fechar-btn {
@@ -1008,35 +1063,35 @@ $status: (
 .drw-datetime {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 14px 18px;
+  gap: 6px;
+  padding: 8px 10px;
   border-bottom: 1px solid #e5eaf0;
   flex-shrink: 0;
   background: #fff;
 }
 
 .drw-datetime-icon {
-  width: 38px;
-  height: 38px;
-  border-radius: 10px;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
   background: #f1f5f9;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
 
-  i { font-size: 1rem; color: #64748b; }
+  i { font-size: 0.75rem; color: #64748b; }
 }
 
 .drw-datetime-date {
-  font-size: 0.87rem;
+  font-size: 0.8rem;
   font-weight: 600;
   color: #0f172a;
   margin: 0;
 }
 
 .drw-datetime-time {
-  font-size: 0.78rem;
+  font-size: 0.72rem;
   color: #64748b;
   margin: 2px 0 0;
 }
@@ -1045,15 +1100,15 @@ $status: (
 .drawer-corpo {
   flex: 1;
   overflow-y: auto;
-  padding: 16px 18px;
+  padding: 8px 10px;
   display: flex;
   flex-direction: column;
   gap: 0;
   scrollbar-width: thin;
   scrollbar-color: #d1d9e0 transparent;
 
-  &::-webkit-scrollbar       { width: 5px; }
-  &::-webkit-scrollbar-thumb { background: #d1d9e0; border-radius: 4px; }
+  &::-webkit-scrollbar       { width: 4px; }
+  &::-webkit-scrollbar-thumb { background: #d1d9e0; border-radius: 3px; }
 }
 
 // ── BLOCO 3: Grid clínico + pagamento ─────────────────────
@@ -1067,25 +1122,25 @@ $status: (
 
 .drw-mini-card {
   background: #f8fafc;
-  border-radius: 10px;
-  padding: 12px;
+  border-radius: 4px;
+  padding: 6px;
 
   p { margin: 0; }
 }
 
 .drw-mini-label {
-  font-size: 0.7rem;
+  font-size: 0.65rem;
   color: #94a3b8;
-  margin-bottom: 6px !important;
+  margin-bottom: 5px !important;
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 3px;
 
-  i { font-size: 0.75rem; }
+  i { font-size: 0.7rem; }
 }
 
 .drw-mini-value {
-  font-size: 0.82rem;
+  font-size: 0.76rem;
   font-weight: 600;
   color: #0f172a;
   white-space: nowrap;
@@ -1094,23 +1149,23 @@ $status: (
 }
 
 .drw-mini-sub {
-  font-size: 0.73rem;
+  font-size: 0.68rem;
   color: #64748b;
   margin-top: 2px !important;
 }
 
 // ── Seções genéricas ──────────────────────────────────────
 .drw-section {
-  padding: 14px 0;
+  padding: 12px 0;
   border-bottom: 1px solid #e5eaf0;
 
   &:last-child { border-bottom: none; }
 }
 
 .drw-section-label {
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   color: #94a3b8;
-  margin: 0 0 10px;
+  margin: 0 0 8px;
   font-weight: 500;
 }
 
@@ -1170,11 +1225,11 @@ $pulse-delay: $seg * 0.8;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 5px;
+  gap: 4px;
   flex: 1;
 
   span {
-    font-size: 0.68rem;
+    font-size: 0.64rem;
     color: #94a3b8;
     white-space: nowrap;
   }
@@ -1184,8 +1239,8 @@ $pulse-delay: $seg * 0.8;
 }
 
 .drw-step-dot {
-  width: 22px;
-  height: 22px;
+  width: 18px;
+  height: 18px;
   border-radius: 50%;
   background: #f1f5f9;
   border: 1.5px solid #d1d9e0;
@@ -1195,7 +1250,7 @@ $pulse-delay: $seg * 0.8;
   // base: aparece imediatamente sem animar (steps futuros)
   opacity: 1;
 
-  i { font-size: 0.65rem; display: none; }
+  i { font-size: 0.55rem; display: none; }
 
   // ── Step concluído ──
   .drw-step--done & {
@@ -1271,39 +1326,39 @@ $pulse-delay: $seg * 0.8;
   display: inline-flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 6px;
-  margin-top: 12px;
-  padding: 8px 12px;
+  gap: 5px;
+  margin-top: 10px;
+  padding: 6px 10px;
   background: #fef2f2;
   border: 1px solid #fecaca;
   border-radius: 8px;
-  font-size: 0.78rem;
+  font-size: 0.72rem;
   color: #b91c1c;
   font-weight: 500;
   animation: dotAppear .4s cubic-bezier(.34,1.56,.64,1) both;
 
-  i { font-size: 0.85rem; }
+  i { font-size: 0.78rem; }
   span { color: #7f1d1d; font-weight: 400; }
 }
 
 // ── BLOCO 5: Observações ──────────────────────────────────
 .drw-obs-text {
-  font-size: 0.83rem;
+  font-size: 0.78rem;
   color: #334155;
   line-height: 1.6;
   background: #f8fafc;
   border-radius: 8px;
-  padding: 10px 12px;
+  padding: 8px 10px;
   margin: 0;
 }
 
 // ── BLOCO 6: Select de status ─────────────────────────────
 .drw-select {
   width: 100%;
-  padding: 9px 12px;
+  padding: 8px 10px;
   border: 1px solid #e2e8f0;
   border-radius: 8px;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   font-weight: 500;
   color: #1e293b;
   background: #f8fafc;
@@ -1323,7 +1378,7 @@ $pulse-delay: $seg * 0.8;
 .drw-acoes-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 8px;
+  gap: 6px;
 }
 
 .drw-acao-btn {
@@ -1331,10 +1386,10 @@ $pulse-delay: $seg * 0.8;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  padding: 10px 4px;
-  border-radius: 10px;
-  font-size: 0.7rem;
+  gap: 3px;
+  padding: 6px 2px;
+  border-radius: 6px;
+  font-size: 0.6rem;
   font-weight: 600;
   cursor: pointer;
   border: 1px solid #e5eaf0;
@@ -1343,7 +1398,7 @@ $pulse-delay: $seg * 0.8;
   text-decoration: none;
   transition: background .15s, border-color .15s, color .15s, transform .12s;
 
-  i { font-size: 1.1rem; color: #64748b; transition: color .15s; }
+  i { font-size: 0.75rem; color: #64748b; transition: color .15s; }
 
   &:hover {
     background: #f1f5f9;

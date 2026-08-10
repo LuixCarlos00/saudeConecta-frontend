@@ -11,13 +11,13 @@
   <!-- Canais de Contato (Hotline) -->
   <div class="hotline-grid">
     <div class="hotline-card" *ngFor="let canal of canaisContato">
-      <div class="hotline-icon" [style.background]="canal.cor + '20'" [style.color]="canal.cor">
+      <div class="hotline-icon">
         <i [class]="canal.icone"></i>
       </div>
       <div class="hotline-info">
         <h4>{{ canal.titulo }}</h4>
+        <p class="hotline-valor">{{ canal.valor }}</p>
         <p class="hotline-descricao">{{ canal.descricao }}</p>
-        <p class="hotline-valor" [style.color]="canal.cor">{{ canal.valor }}</p>
       </div>
     </div>
   </div>
@@ -39,7 +39,7 @@
     </div>
 
     <div class="chamados-lista" *ngIf="chamados.length > 0; else semChamados">
-      <div class="chamado-item" *ngFor="let chamado of chamados">
+      <div class="chamado-item" *ngFor="let chamado of chamados" (click)="abrirModalVisualizacao(chamado)" style="cursor: pointer;">
         <div class="chamado-info">
           <div class="chamado-icon"
                [class.prioridade-alta]="chamado.prioridade === 'Alta'"
@@ -50,7 +50,7 @@
           <div class="chamado-detalhes">
             <div class="chamado-titulo-linha">
               <span class="chamado-id">{{ chamado.id }}</span>
-              <h4>{{ chamado.assunto }}</h4>
+              <h4>{{ chamado.titulo }}</h4>
             </div>
             <div class="chamado-meta">
               <span>Módulo: {{ chamado.categoria }}</span>
@@ -80,25 +80,23 @@
   <div class="modal-overlay" *ngIf="mostrarModalChamado" (click)="fecharModalChamado()">
     <form class="modal-chamado" (click)="$event.stopPropagation()" (ngSubmit)="enviarChamado()">
       <div class="modal-header">
-        <h3>
-          <i class="fa-solid fa-paper-plane"></i>
-          Enviar Mensagem
-        </h3>
-        <button type="button" class="modal-close" (click)="fecharModalChamado()">
-          <i class="fa-solid fa-xmark"></i>
-        </button>
+        <div class="modal-header-top">
+          <h3>
+            <i class="fa-solid fa-paper-plane"></i>
+            Enviar Mensagem
+          </h3>
+          <button type="button" class="modal-close" (click)="fecharModalChamado()">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
       </div>
-
       <div class="modal-body">
         <div class="form-group">
-          <label for="assuntoChamado">
-            <i class="fa-solid fa-tag"></i>
-            Assunto
+          <label for="tituloChamado">
+            <i class="fa-solid fa-heading"></i>
+            Título
           </label>
-          <select id="assuntoChamado" [(ngModel)]="novoChamado.assunto" name="assuntoChamado">
-            <option value="">Selecione o assunto</option>
-            <option *ngFor="let assunto of assuntos" [value]="assunto">{{ assunto }}</option>
-          </select>
+          <input type="text" id="tituloChamado" [(ngModel)]="novoChamado.titulo" name="tituloChamado" placeholder="Digite um título resumido">
         </div>
 
         <div class="form-group">
@@ -113,27 +111,179 @@
         </div>
 
         <div class="form-group">
-          <label for="mensagemChamado">
+          <label for="corpoChamado">
             <i class="fa-solid fa-message"></i>
-            Mensagem
+            Corpo da Mensagem
           </label>
           <textarea
-            id="mensagemChamado"
+            id="corpoChamado"
             rows="5"
-            [(ngModel)]="novoChamado.mensagem"
-            name="mensagemChamado"
-            placeholder="Descreva sua dúvida ou problema..."></textarea>
+            [(ngModel)]="novoChamado.corpo"
+            name="corpoChamado"
+            placeholder="Descreva sua dúvida ou problema em detalhes..."></textarea>
+        </div>
+
+        <!-- Upload de Imagens -->
+        <div class="form-group">
+          <label>
+            <i class="fa-solid fa-images"></i>
+            Imagens
+          </label>
+          <div class="upload-area">
+            <input type="file" id="imagemInputNovo" accept="image/*" multiple (change)="onFileSelected($event)" style="display: none;">
+            <label for="imagemInputNovo" class="upload-label">
+              <i class="fa-solid fa-cloud-upload-alt"></i>
+              <span>Clique para adicionar imagem</span>
+              <span class="upload-hint">PNG, JPG até 5MB</span>
+            </label>
+          </div>
+
+          <!-- Lista de Imagens Anexadas -->
+          <div class="imagens-anexadas" *ngIf="imagensChamado.length > 0">
+            <div class="imagem-anexada-item" *ngFor="let imagem of imagensChamado; let i = index">
+              <i class="fa-solid fa-file-image"></i>
+              <span>Imagem {{ i + 1 }}</span>
+              <button type="button" class="remove-imagem-btn" (click)="removerImagem(i)">
+                <i class="fa-solid fa-times"></i>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
       <div class="modal-footer">
         <button type="button" class="btn-cancelar" (click)="fecharModalChamado()">Cancelar</button>
-        <button type="submit" class="btn-registrar" [disabled]="!novoChamado.assunto || !novoChamado.prioridade || !novoChamado.mensagem || enviandoChamado">
+        <button type="submit" class="btn-registrar" [disabled]="!novoChamado.titulo || !novoChamado.prioridade || !novoChamado.corpo || enviandoChamado">
           <span *ngIf="!enviandoChamado">Enviar Mensagem</span>
           <span *ngIf="enviandoChamado"><i class="fa-solid fa-spinner fa-spin"></i> Enviando...</span>
         </button>
       </div>
     </form>
+  </div>
+
+  <!-- Modal: Visualizar Chamado -->
+  <div class="modal-overlay" *ngIf="mostrarModalVisualizacao" (click)="fecharModalVisualizacao()">
+    <div class="modal-chamado" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div class="modal-header-top">
+          <h3>
+            <i class="fa-solid fa-eye"></i>
+            Detalhes do Chamado
+          </h3>
+          <button type="button" class="modal-close" (click)="fecharModalVisualizacao()">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+        <!-- Título do Chamado -->
+        <div class="detalhe-item">
+          <span class="detalhe-label">{{ chamadoSelecionado?.titulo }} </span>
+        </div>
+      </div>
+
+
+      <!-- Abas -->
+      <div class="modal-tabs">
+        <button class="tab-button" [class.active]="abaAtiva === 'escopo'" (click)="mudarAba('escopo')">
+          <i class="fa-solid fa-info-circle"></i>
+          <span>Escopo</span>
+        </button>
+        <button class="tab-button" [class.active]="abaAtiva === 'imagens'" (click)="mudarAba('imagens')">
+          <i class="fa-solid fa-images"></i>
+          <span>Imagens</span>
+        </button>
+      </div>
+
+      <div class="modal-body" *ngIf="chamadoSelecionado">
+        <!-- Aba Escopo -->
+        <div class="tab-content" *ngIf="abaAtiva === 'escopo'">
+          <div class="chamado-detalhes-view">
+            <div class="detalhes-grid">
+              <div class="detalhe-item">
+                <span class="detalhe-label">ID:</span>
+                <span class="detalhe-valor">{{ chamadoSelecionado.id }}</span>
+              </div>
+              <div class="detalhe-item">
+                <span class="detalhe-label">Categoria:</span>
+                <span class="detalhe-valor">{{ chamadoSelecionado.categoria }}</span>
+              </div>
+              <div class="detalhe-item">
+                <span class="detalhe-label">Prioridade:</span>
+                <span class="detalhe-valor"
+                      [class.prioridade-alta]="chamadoSelecionado.prioridade === 'Alta'"
+                      [class.prioridade-media]="chamadoSelecionado.prioridade === 'Média'"
+                      [class.prioridade-baixa]="chamadoSelecionado.prioridade === 'Baixa'">
+                  {{ chamadoSelecionado.prioridade }}
+                </span>
+              </div>
+              <div class="detalhe-item">
+                <span class="detalhe-label">Status:</span>
+                <span class="detalhe-valor status-badge"
+                      [class.status-analise]="chamadoSelecionado.status === 'EM ANÁLISE'"
+                      [class.status-andamento]="chamadoSelecionado.status === 'EM ANDAMENTO'"
+                      [class.status-concluido]="chamadoSelecionado.status === 'CONCLUÍDO'">
+                  {{ chamadoSelecionado.status }}
+                </span>
+              </div>
+              <div class="detalhe-item">
+                <span class="detalhe-label">Criado em:</span>
+                <span class="detalhe-valor">{{ chamadoSelecionado.data }}</span>
+              </div>
+            </div>
+
+            <div class="corpo-card">
+              <span class="corpo-label">Corpo da Mensagem:</span>
+              <span class="corpo-valor">{{ chamadoSelecionado.corpo }}</span>
+            </div>
+
+            <div class="fluxo-status">
+              <div class="fluxo-item" [class.ativo]="chamadoSelecionado.status === 'EM ANÁLISE' || chamadoSelecionado.status === 'EM ANDAMENTO' || chamadoSelecionado.status === 'CONCLUÍDO'">
+                <i class="fa-solid fa-paper-plane"></i>
+                <span>Enviado</span>
+              </div>
+              <div class="fluxo-linha"></div>
+              <div class="fluxo-item" [class.ativo]="chamadoSelecionado.status === 'EM ANÁLISE' || chamadoSelecionado.status === 'EM ANDAMENTO' || chamadoSelecionado.status === 'CONCLUÍDO'">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <span>Em Análise</span>
+              </div>
+              <div class="fluxo-linha"></div>
+              <div class="fluxo-item" [class.ativo]="chamadoSelecionado.status === 'EM ANDAMENTO' || chamadoSelecionado.status === 'CONCLUÍDO'">
+                <i class="fa-solid fa-gears"></i>
+                <span>Em Andamento</span>
+              </div>
+              <div class="fluxo-linha"></div>
+              <div class="fluxo-item" [class.ativo]="chamadoSelecionado.status === 'CONCLUÍDO'">
+                <i class="fa-solid fa-check-circle"></i>
+                <span>Concluído</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Aba Imagens -->
+        <div class="tab-content" *ngIf="abaAtiva === 'imagens'">
+          <div class="imagens-section">
+            <!-- Lista de Imagens do Chamado -->
+            <div class="imagens-lista" *ngIf="imagensChamado.length > 0">
+              <h4>Imagens do Chamado ({{ imagensChamado.length }})</h4>
+              <div class="imagens-grid">
+                <div class="imagem-item" *ngFor="let imagem of imagensChamado; let i = index">
+                  <img [src]="imagem" alt="Imagem {{ i + 1 }}" class="imagem-thumb">
+                </div>
+              </div>
+            </div>
+
+            <div class="sem-imagens" *ngIf="imagensChamado.length === 0">
+              <i class="fa-solid fa-image"></i>
+              <span>Nenhuma imagem adicionada</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-registrar" (click)="fecharModalVisualizacao()">Fechar</button>
+      </div>
+    </div>
   </div>
 
   <!-- FAQ Rápido -->

@@ -4,8 +4,8 @@
 
 /* ===== Container Principal ===== */
 .password-page {
-  max-width: 800px;
-  margin: 0 auto;
+  max-width:auto;
+
   padding: 24px;
   animation: fadeIn 0.5s ease;
 }
