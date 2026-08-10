@@ -34,7 +34,6 @@ import { CadastroComponent } from './cadastros/cadastro/cadastro.component';
 import { CadastroMedicoComponent } from './cadastros/cadastro-medico/cadastro-medico.component';
 import { CadastroPacienteComponent } from './cadastros/cadastro-paciente/cadastro-paciente.component';
 import { CadastroSecretariaComponent } from './cadastros/cadastro-secretaria/cadastro-secretaria.component';
-import { CadastroUsuarioComponent } from './cadastros/cadastro-usuario/cadastro-usuario.component';
 
 // Componentes de Configurações
 import { ConfiguracoesSistemaComponent } from './configuracoes/configuracoes-sistema.component';
@@ -111,7 +110,6 @@ const routes: Routes = [
     CadastroMedicoComponent,
     CadastroPacienteComponent,
     CadastroSecretariaComponent,
-    CadastroUsuarioComponent,
     
     // Componentes de Configurações
     ConfiguracoesSistemaComponent,

@@ -58,13 +58,6 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Navega para cadastro de novo usuário
-   */
-  navigateToRegister(): void {
-    this.router.navigate(['cadastroUsuario']);
-  }
-
-  /**
    * Navega para recuperação de senha
    */
   navigateToPasswordRecovery(): void {
@@ -143,11 +136,6 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   // ========== Métodos legados (compatibilidade) ==========
-
-  /** @deprecated Use navigateToRegister() */
-  cadastraNovoUsuario(): void {
-    this.navigateToRegister();
-  }
 
   /** @deprecated Use navigateToPasswordRecovery() */
   recuperaSenha_Usuario(): void {
