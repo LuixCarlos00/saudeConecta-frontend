@@ -1,0 +1,198 @@
+<div class="gestao-container">
+
+  <header class="gestao-header">
+    <div>
+      <h1>
+        <i class="fa-solid fa-headset"></i>
+        Gestão de Chamados
+      </h1>
+      <p>Acompanhe e atualize os chamados técnicos abertos por todas as organizações.</p>
+    </div>
+    <button class="btn-secundario" (click)="carregarChamados()" [disabled]="isCarregando">
+      <i class="fa-solid fa-rotate" [class.fa-spin]="isCarregando"></i>
+      <span>Atualizar</span>
+    </button>
+  </header>
+
+  <!-- Filtros -->
+  <section class="filtros-card">
+    <div class="filtro-group">
+      <label for="filtroStatus">Status</label>
+      <select id="filtroStatus" [(ngModel)]="filtroStatus" (change)="aplicarFiltros()">
+        <option value="">Todos</option>
+        <option *ngFor="let item of statusDisponiveis" [value]="item.valor">{{ item.label }}</option>
+      </select>
+    </div>
+
+    <div class="filtro-group">
+      <label for="filtroPrioridade">Prioridade</label>
+      <select id="filtroPrioridade" [(ngModel)]="filtroPrioridade" (change)="aplicarFiltros()">
+        <option value="">Todas</option>
+        <option *ngFor="let item of prioridadesDisponiveis" [value]="item.valor">{{ item.label }}</option>
+      </select>
+    </div>
+
+    <button class="btn-limpar" (click)="limparFiltros()">
+      <i class="fa-solid fa-eraser"></i>
+      <span>Limpar</span>
+    </button>
+
+    <span class="total-registros">{{ totalRegistros }} chamado(s)</span>
+  </section>
+
+  <!-- Tabela -->
+  <section class="tabela-card">
+    <p class="estado-vazio" *ngIf="isCarregando">
+      <i class="fa-solid fa-spinner fa-spin"></i> Carregando chamados...
+    </p>
+
+    <table class="tabela-chamados" *ngIf="!isCarregando && chamados.length > 0">
+      <thead>
+        <tr>
+          <th>Protocolo</th>
+          <th>Título</th>
+          <th>Solicitante</th>
+          <th>Categoria</th>
+          <th>Prioridade</th>
+          <th>Status</th>
+          <th>Aberto em</th>
+          <th>Previsão</th>
+          <th class="coluna-acoes">Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let chamado of chamados" (click)="selecionarChamado(chamado)">
+          <td class="celula-protocolo">{{ chamado.protocolo }}</td>
+          <td>{{ chamado.titulo }}</td>
+          <td>
+            <div class="solicitante">
+              <strong>{{ chamado.criadorNome }}</strong>
+              <small>{{ chamado.criadorEmail }}</small>
+            </div>
+          </td>
+          <td>{{ chamado.categoriaDescricao }}</td>
+          <td>
+            <span class="badge" [ngClass]="obterClassePrioridade(chamado.prioridade)">
+              {{ chamado.prioridadeDescricao }}
+            </span>
+          </td>
+          <td>
+            <span class="badge" [ngClass]="obterClasseStatus(chamado.status)">
+              {{ chamado.statusDescricao }}
+            </span>
+          </td>
+          <td>{{ chamado.dataCriacao | date: 'dd/MM/yyyy HH:mm' }}</td>
+          <td>{{ chamado.previsaoAtendimento | date: 'dd/MM/yyyy' }}</td>
+          <td class="coluna-acoes">
+            <button class="btn-acao" (click)="abrirModalStatus(chamado); $event.stopPropagation()" title="Alterar status">
+              <i class="fa-solid fa-pen-to-square"></i>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p class="estado-vazio" *ngIf="!isCarregando && chamados.length === 0">
+      <i class="fa-solid fa-inbox"></i> Nenhum chamado encontrado.
+    </p>
+
+    <!-- Paginação -->
+    <div class="paginacao" *ngIf="totalPaginas > 1">
+      <button (click)="irParaPagina(paginaAtual - 1)" [disabled]="paginaAtual === 0">
+        <i class="fa-solid fa-chevron-left"></i>
+      </button>
+      <span>Página {{ paginaAtual + 1 }} de {{ totalPaginas }}</span>
+      <button (click)="irParaPagina(paginaAtual + 1)" [disabled]="paginaAtual + 1 >= totalPaginas">
+        <i class="fa-solid fa-chevron-right"></i>
+      </button>
+    </div>
+  </section>
+
+  <!-- Painel de detalhes -->
+  <section class="detalhe-card" *ngIf="chamadoSelecionado && !mostrarModalStatus">
+    <div class="detalhe-header">
+      <h2>
+        <i class="fa-solid fa-file-lines"></i>
+        {{ chamadoSelecionado.protocolo }}
+      </h2>
+      <button class="btn-fechar" (click)="fecharDetalhe()">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <div class="detalhe-grid">
+      <div><span class="rotulo">Título:</span> {{ chamadoSelecionado.titulo }}</div>
+      <div><span class="rotulo">Categoria:</span> {{ chamadoSelecionado.categoriaDescricao }}</div>
+      <div><span class="rotulo">Prioridade:</span> {{ chamadoSelecionado.prioridadeDescricao }}</div>
+      <div><span class="rotulo">Status:</span> {{ chamadoSelecionado.statusDescricao }}</div>
+      <div><span class="rotulo">Organização:</span> {{ chamadoSelecionado.organizacaoId }}</div>
+      <div><span class="rotulo">Solicitante:</span> {{ chamadoSelecionado.criadorNome }} ({{ chamadoSelecionado.criadorEmail }})</div>
+    </div>
+
+    <div class="detalhe-corpo">
+      <span class="rotulo">Descrição:</span>
+      <p>{{ chamadoSelecionado.corpo }}</p>
+    </div>
+
+    <div class="detalhe-anexos" *ngIf="chamadoSelecionado.anexos?.length">
+      <span class="rotulo">Anexos ({{ chamadoSelecionado.anexos.length }}):</span>
+      <ul>
+        <li *ngFor="let anexo of chamadoSelecionado.anexos">
+          <i class="fa-solid fa-paperclip"></i> {{ anexo.nomeArquivo }}
+        </li>
+      </ul>
+    </div>
+
+    <div class="detalhe-acoes">
+      <button class="btn-primario" (click)="abrirModalStatus(chamadoSelecionado)">
+        <i class="fa-solid fa-pen-to-square"></i>
+        <span>Alterar Status</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- Modal de alteração de status -->
+  <div class="modal-overlay" *ngIf="mostrarModalStatus" (click)="fecharModalStatus()">
+    <div class="modal-status" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>
+          <i class="fa-solid fa-arrows-rotate"></i>
+          Alterar Status
+        </h3>
+        <button class="btn-fechar" (click)="fecharModalStatus()">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <p class="modal-protocolo">{{ chamadoSelecionado?.protocolo }} — {{ chamadoSelecionado?.titulo }}</p>
+
+        <div class="form-group">
+          <label for="novoStatus">Novo status</label>
+          <select id="novoStatus" [(ngModel)]="novoStatus" name="novoStatus">
+            <option *ngFor="let item of statusDisponiveis" [value]="item.valor">{{ item.label }}</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="observacaoStatus">Mensagem ao solicitante (opcional)</label>
+          <textarea id="observacaoStatus" rows="4" [(ngModel)]="observacaoStatus" name="observacaoStatus"
+            placeholder="Descreva o que foi feito ou os próximos passos..."></textarea>
+        </div>
+
+        <p class="aviso-email">
+          <i class="fa-solid fa-envelope"></i>
+          O solicitante será notificado por email sobre esta alteração.
+        </p>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-secundario" (click)="fecharModalStatus()">Cancelar</button>
+        <button class="btn-primario" (click)="confirmarAtualizacaoStatus()" [disabled]="!novoStatus || isAtualizandoStatus">
+          <span *ngIf="!isAtualizandoStatus">Confirmar</span>
+          <span *ngIf="isAtualizandoStatus"><i class="fa-solid fa-spinner fa-spin"></i> Salvando...</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

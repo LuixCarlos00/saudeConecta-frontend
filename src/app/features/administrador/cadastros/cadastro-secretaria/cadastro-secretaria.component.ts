@@ -202,6 +202,6 @@ export class CadastroSecretariaComponent implements OnInit, OnDestroy {
   }
 
   voltarParaHome() {
-    this.router.navigate(['cadastro']);
+    this.router.navigate(['Gerenciamento-Usuarios']);
   }
 }

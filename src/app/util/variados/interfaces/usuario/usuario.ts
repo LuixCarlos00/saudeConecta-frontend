@@ -5,6 +5,7 @@ export interface Usuario {
   tipoUsuarioNovo?: string;
   nome?: string;
   perfil?: string;
+  tipoProfissional?: string;
 
   // Propriedades JWT (quando usado como token)
   aud?: string;

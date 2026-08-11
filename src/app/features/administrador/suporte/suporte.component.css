@@ -1126,6 +1126,38 @@
   box-shadow: 0 4px 12px rgba(0, 217, 255, 0.2);
 }
 
+.anexo-nao-suportado {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px;
+  text-align: center;
+  background: #f9fafb;
+  color: #6b7280;
+}
+
+.anexo-nao-suportado i {
+  font-size: 24px;
+  color: #9ca3af;
+}
+
+.anexo-nao-suportado span {
+  font-size: 11px;
+  font-weight: 600;
+  word-break: break-all;
+  line-height: 1.2;
+}
+
+.anexo-nao-suportado small {
+  font-size: 9px;
+  color: #9ca3af;
+  line-height: 1.2;
+}
+
 .imagem-thumb {
   width: 100%;
   height: 100%;

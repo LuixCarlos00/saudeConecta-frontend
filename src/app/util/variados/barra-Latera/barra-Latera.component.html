@@ -113,8 +113,18 @@
       <!-- Divisor -->
       <li class="nav-divider"></li>
 
-      <!-- Suporte - Todos -->
-      <li class="nav-item" [class.active]="activeRoute === 'Suporte'">
+      <!-- Gestao de Chamados - Super Admin apenas -->
+      <li class="nav-item" *ngIf="ControleAcessoService.isSuperAdmin()"
+        [class.active]="activeRoute === 'GestaoChamados'">
+        <button class="nav-link" (click)="navigateTo('GestaoChamados')" title="Gestão de Chamados">
+          <i class="fa-solid fa-ticket nav-icon"></i>
+          <span class="nav-text">Gestão de Chamados</span>
+        </button>
+      </li>
+
+      <!-- Suporte - Todos exceto Super Admin -->
+      <li class="nav-item" *ngIf="!ControleAcessoService.isSuperAdmin()"
+        [class.active]="activeRoute === 'Suporte'">
         <button class="nav-link" (click)="navigateTo('suporte')" title="Suporte">
           <i class="fa-solid fa-headset nav-icon"></i>
           <span class="nav-text">Suporte</span>

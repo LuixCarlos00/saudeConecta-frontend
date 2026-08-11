@@ -206,9 +206,9 @@ export class AgendaMedicoGerenciamentoComponent implements OnInit, OnDestroy {
           didOpen: () => { Swal.showLoading(); },
         }).then(() => {
           this.prontuarioStateService.changeConsulta(element);
-          if (this.UsuarioLogado.perfil === 'MEDICO') {
+          if (this.UsuarioLogado.tipoProfissional === 'MEDICO') {
             this.router.navigate(['startconsulta']);
-          } else if (this.UsuarioLogado.perfil === 'DENTISTA') {
+          } else if (this.UsuarioLogado.tipoProfissional === 'DENTISTA') {
             this.router.navigate(['startconsulta-dentista']);
           }
         });
@@ -220,7 +220,7 @@ export class AgendaMedicoGerenciamentoComponent implements OnInit, OnDestroy {
   // Impressões — delegadas ao RelatorioService centralizado
   // ─────────────────────────────────────────────────────────────────────────────
   AbrirOpcoesImpressao(element: Consultav2) {
-    this.relatorioService.abrirRelatorioProfissional(element, this.UsuarioLogado.perfil || '');
+    this.relatorioService.abrirRelatorioProfissional(element, this.UsuarioLogado.tipoProfissional || '');
   }
 
   /**
@@ -229,7 +229,7 @@ export class AgendaMedicoGerenciamentoComponent implements OnInit, OnDestroy {
    */
   EditarProntuario(element: Consultav2): void {
     // Escolher o componente correto baseado no perfil do usuário
-    if (this.UsuarioLogado.perfil === 'DENTISTA') {
+    if (this.UsuarioLogado.tipoProfissional === 'DENTISTA') {
       const dialogRef = this.dialog.open(EditarProntuarioDentistaComponent, {
         width: '90%',
         maxWidth: '1200px',
