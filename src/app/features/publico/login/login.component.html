@@ -20,33 +20,51 @@
       </div>
 
       <!-- Formulário -->
-      <form [formGroup]="FormularioUsuario" class="login-form" (keydown.enter)="Login()">
+      <form [formGroup]="loginForm" class="login-form" (ngSubmit)="login()" novalidate>
         <!-- Campo Usuário -->
-        <div class="input-group">
+        <div class="input-group" [class.has-error]="isInvalid(usernameControl)">
           <div class="input-icon">
             <i class="fa-solid fa-user"></i>
           </div>
           <input type="text" id="username" formControlName="username" placeholder="Digite seu usuário"
-            autocomplete="username" required>
+            autocomplete="username" autocapitalize="none" spellcheck="false"
+            [attr.aria-invalid]="isInvalid(usernameControl)"
+            [attr.aria-describedby]="isInvalid(usernameControl) ? 'username-error' : null">
           <label for="username">Usuário</label>
+          <p class="field-error" id="username-error" *ngIf="isInvalid(usernameControl)">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            <span>Informe seu usuário.</span>
+          </p>
         </div>
 
         <!-- Campo Senha -->
-        <div class="input-group">
+        <div class="input-group" [class.has-error]="isInvalid(passwordControl)">
           <div class="input-icon">
             <i class="fa-solid fa-lock"></i>
           </div>
-          <input type="password" id="password" formControlName="password" placeholder="Digite sua senha"
-            autocomplete="current-password">
+          <input [type]="showPassword ? 'text' : 'password'" id="password" formControlName="password"
+            placeholder="Digite sua senha" autocomplete="current-password" class="has-suffix"
+            [attr.aria-invalid]="isInvalid(passwordControl)"
+            [attr.aria-describedby]="isInvalid(passwordControl) ? 'password-error' : null">
           <label for="password">Senha</label>
+          <button type="button" class="input-suffix" (click)="togglePasswordVisibility()"
+            [attr.aria-label]="showPassword ? 'Ocultar senha' : 'Mostrar senha'" tabindex="-1">
+            <i class="fa-solid" [class.fa-eye]="!showPassword" [class.fa-eye-slash]="showPassword"></i>
+          </button>
+          <p class="field-error" id="password-error" *ngIf="isInvalid(passwordControl)">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            <span>{{ passwordControl?.hasError('required') ? 'Informe sua senha.' : 'A senha deve ter no mínimo 3 caracteres.' }}</span>
+          </p>
         </div>
 
         <!-- Campo Perfil -->
-        <div class="input-group">
+        <div class="input-group" [class.has-error]="isInvalid(perfilControl)">
           <div class="input-icon">
             <i class="fa-solid fa-user-tag"></i>
           </div>
-          <select id="perfil" formControlName="perfil" required>
+          <select id="perfil" formControlName="perfil"
+            [attr.aria-invalid]="isInvalid(perfilControl)"
+            [attr.aria-describedby]="isInvalid(perfilControl) ? 'perfil-error' : null">
             <option value="">Selecione seu perfil</option>
             <option value="ROOT">Root</option>
             <option value="GESTOR">Gestor</option>
@@ -54,6 +72,11 @@
             <option value="ASSISTENTE">Assistente</option>
           </select>
           <label for="perfil">Perfil</label>
+          <i class="fa-solid fa-chevron-down select-arrow" aria-hidden="true"></i>
+          <p class="field-error" id="perfil-error" *ngIf="isInvalid(perfilControl)">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            <span>Selecione um perfil de acesso.</span>
+          </p>
         </div>
 
         <!-- Link Esqueci Senha -->
@@ -65,9 +88,10 @@
         </div>
 
         <!-- Botão Login -->
-        <button type="button" class="btn-login" (click)="Login()">
-          <span class="btn-text">Entrar</span>
-          <i class="fa-solid fa-arrow-right btn-icon"></i>
+        <button type="submit" class="btn-login" [disabled]="isLoading">
+          <span class="btn-text">{{ isLoading ? 'Entrando...' : 'Entrar' }}</span>
+          <i class="fa-solid btn-icon" [class.fa-arrow-right]="!isLoading"
+            [class.fa-circle-notch]="isLoading" [class.fa-spin]="isLoading"></i>
         </button>
       </form>
 

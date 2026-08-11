@@ -16,7 +16,6 @@ import { RecuperaCadastroComponent } from './features/publico/recupera-cadastro/
 import { DashboardComponent } from './features/administrador/dashboard/dashboard.component';
 import { GerenciamentoComponent } from './features/administrador/gerenciamento-agenda/gerenciamento.component';
 import { GerenciamentoUsuarioComponent } from './features/administrador/gerenciamento-usuarios/gerenciamento-usuario.component';
-import { CadastroComponent } from './features/administrador/cadastros/cadastro/cadastro.component';
 import { CadastroPacienteComponent } from './features/administrador/cadastros/cadastro-paciente/cadastro-paciente.component';
 import { CadastroMedicoComponent } from './features/administrador/cadastros/cadastro-medico/cadastro-medico.component';
 import { CadastroAdmComponent } from './features/administrador/cadastros/cadastro-adm/cadastro-adm.component';
@@ -26,6 +25,7 @@ import { ConfiguracoesSistemaComponent } from './features/administrador/configur
 import { TrocaSenhaComponent } from './features/administrador/troca-senha/troca-senha.component';
 import { SobreComponent } from './features/administrador/sobre/sobre.component';
 import { SuporteComponent } from './features/administrador/suporte/suporte.component';
+import { GestaoChamadosComponent } from './features/administrador/suporte/gestao-chamados/gestao-chamados.component';
 import { MensageriaComponent } from './features/administrador/mensageria/mensageria.component';
 import { GerenciarPlanosComponent } from './features/administrador/planos/gerenciar-planos/gerenciar-planos.component';
 import { ListaPlanosComponent } from './features/administrador/planos/lista-planos/lista-planos.component';
@@ -63,11 +63,11 @@ const routes: Routes = [
   { path: 'gerenciamento', component: GerenciamentoComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: [Role.ADMIN, Role.SECRETARY] } },
   { path: 'Gerenciamento-Usuarios', component: GerenciamentoUsuarioComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: [Role.ADMIN, Role.SECRETARY] } },
   { path: 'cadastroadmin', component: CadastroAdmComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: [Role.ADMIN, Role.SECRETARY] } },
-  { path: 'cadastro', component: CadastroComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: [Role.ADMIN, Role.SECRETARY] } },
   { path: 'cadastroPaciente', component: CadastroPacienteComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: [Role.ADMIN, Role.SECRETARY] } },
   { path: 'cadastroMedico', component: CadastroMedicoComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: [Role.ADMIN, Role.SECRETARY] } },
   { path: 'cadastroSecretaria', component: CadastroSecretariaComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: [Role.ADMIN, Role.SECRETARY] } },
   { path: 'cadastroAdminOrg', component: CadastroAdminOrgComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: [Role.SUPER_ADMIN] } },
+  { path: 'gestao-chamados', component: GestaoChamadosComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: [Role.SUPER_ADMIN] } },
   { path: 'mensageria', component: MensageriaComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: [Role.ADMIN, Role.SECRETARY] } },
   
   // ========== ROTAS DE PLANOS ==========

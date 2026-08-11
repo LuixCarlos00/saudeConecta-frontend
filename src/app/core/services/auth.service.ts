@@ -20,6 +20,7 @@ export interface DecodedToken {
   organizacaoId?: number;
   tipoUsuario?: number;
   perfil?: string;
+  tipoProfissional?: string;
 }
 
 /**
@@ -350,6 +351,33 @@ export class AuthService implements OnDestroy {
    */
   isAssistente(): boolean {
     return this.hasProfile('ASSISTENTE');
+  }
+
+  /**
+   * Obtém a especialização do clínico logado (MEDICO ou DENTISTA).
+   *
+   * @returns tipo do profissional ou string vazia quando não aplicável
+   */
+  getTipoProfissional(): string {
+    return this.getCurrentUser()?.tipoProfissional ?? '';
+  }
+
+  /**
+   * Verifica se o clínico logado é médico.
+   *
+   * @returns true quando o tipo profissional é MEDICO
+   */
+  isMedico(): boolean {
+    return this.getTipoProfissional() === 'MEDICO';
+  }
+
+  /**
+   * Verifica se o clínico logado é dentista.
+   *
+   * @returns true quando o tipo profissional é DENTISTA
+   */
+  isDentista(): boolean {
+    return this.getTipoProfissional() === 'DENTISTA';
   }
 
   /**

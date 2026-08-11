@@ -3,7 +3,7 @@
   <!-- ===== HEADER ===== -->
   <div class="calendario-header">
     <div class="header-left">
-      <h2 class="titulo-pagina">
+      <h2 class="titulo-pagina"  (click)="mudarVisualizacao('mes')" >
         <i class="fa-solid fa-calendar-days"></i>
         Agenda
       </h2>
@@ -475,7 +475,7 @@
 
           <!-- Iniciar Consulta — CONFIRMADA e apenas para médicos e dentistas -->
           <button class="drw-acao-btn drw-acao-btn--success"
-                  *ngIf="consultaSelecionada.status === 'CONFIRMADA' && (UsuarioLogado.perfil === 'MEDICO' || UsuarioLogado.perfil === 'DENTISTA')"
+                  *ngIf="consultaSelecionada.status === 'CONFIRMADA' && UsuarioLogado.perfil === 'CLINICO' "
                   (click)="iniciarConsultaDrawer()"
                   title="Iniciar Consulta">
             <i class="fa-solid fa-stethoscope"></i>
@@ -518,9 +518,9 @@
             <span>Imprimir</span>
           </button>
 
-          <!-- Editar — AGENDADA ou CONFIRMADA -->
+          <!-- Editar — indisponível em CONFIRMADA para clínico e gestor -->
           <button class="drw-acao-btn"
-                  *ngIf="(consultaSelecionada.status === 'AGENDADA' || consultaSelecionada.status === 'CONFIRMADA') && controleAcesso.isAdmin()"
+                  *ngIf="podeEditarConsulta(consultaSelecionada.status)"
                   (click)="abrirEdicao()"
                   title="Editar Consulta">
             <i class="fa-solid fa-pen-to-square"></i>
