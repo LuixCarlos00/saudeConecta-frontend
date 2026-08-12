@@ -88,6 +88,7 @@ export class BarraLateraComponent implements OnInit, OnDestroy {
       '/gerenciar-planos': 'GerenciarPlanos',
       '/minha-assinatura': 'MinhaAssinatura',
       '/gestao-chamados': 'GestaoChamados',
+      '/relatorios': 'Relatorios',
       '/suporte': 'Suporte'
     };
 
@@ -160,7 +161,8 @@ export class BarraLateraComponent implements OnInit, OnDestroy {
       'Mensageria': 'mensageria',
       'GerenciarPlanos': 'gerenciar-planos',
       'MinhaAssinatura': 'minha-assinatura',
-      'GestaoChamados': 'gestao-chamados'
+      'GestaoChamados': 'gestao-chamados',
+      'Relatorios': 'relatorios'
     };
 
     const route = routes[rota];

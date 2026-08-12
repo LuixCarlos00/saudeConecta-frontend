@@ -6,6 +6,9 @@ import { FormsModule } from '@angular/forms';
 // Componente seletor de relatório
 import { RelatorioComponent } from './relatorio.component';
 
+// Tela de relatórios por paciente
+import { RelatoriosPacientesComponent } from './relatorios-pacientes/relatorios-pacientes.component';
+
 // Componente comum — Histórico Completo (médico + dentista)
 import { HistoricoCompletoComponent } from './impressoes-comuns/historico-completo/historico-completo.component';
 
@@ -41,6 +44,9 @@ import { RegistroConsulataMedicoComponent } from './impressoes-medico/registro-c
     // Seletor de relatório
     RelatorioComponent,
 
+    // Tela de relatórios por paciente
+    RelatoriosPacientesComponent,
+
     // Comum
     HistoricoCompletoComponent,
 
@@ -70,6 +76,7 @@ import { RegistroConsulataMedicoComponent } from './impressoes-medico/registro-c
   exports: [
     // Exporta o seletor para que outros módulos possam usá-lo se necessário
     RelatorioComponent,
+    RelatoriosPacientesComponent,
   ],
 })
 export class RelatorioModule {}

@@ -40,6 +40,7 @@ import { AgendaCalendarioComponent } from './features/administrador/agenda-calen
 import { ProntuarioDentistaComponent } from './features/medico/prontuario-dentista/prontuario-dentista.component';
 import { QuestionarioSaudeComponent } from './features/publico/questionario-saude/questionario-saude.component';
 import { AssinaturaPlanejamentoComponent } from './features/publico/assinatura-planejamento/assinatura-planejamento.component';
+import { RelatoriosPacientesComponent } from './features/relatorio/relatorios-pacientes/relatorios-pacientes.component';
 
 
 const routes: Routes = [
@@ -60,7 +61,7 @@ const routes: Routes = [
   { path: 'suporte', component: SuporteComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: [Role.ADMIN, Role.DOCTOR, Role.SECRETARY] } },
 
   // ========== ROTAS APENAS ADMIN ==========
-  { path: 'gerenciamento', component: GerenciamentoComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: [Role.ADMIN, Role.SECRETARY] } },
+  //{ path: 'gerenciamento', component: GerenciamentoComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: [Role.ADMIN, Role.SECRETARY] } },
   { path: 'Gerenciamento-Usuarios', component: GerenciamentoUsuarioComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: [Role.ADMIN, Role.SECRETARY] } },
   { path: 'cadastroadmin', component: CadastroAdmComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: [Role.ADMIN, Role.SECRETARY] } },
   { path: 'cadastroPaciente', component: CadastroPacienteComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: [Role.ADMIN, Role.SECRETARY] } },
@@ -80,8 +81,11 @@ const routes: Routes = [
   { path: 'startconsulta', component: ProntuarioMedicoComponent, canActivate: [AuthGuard, RoleGuard, ProntuarioGuard], data: { roles: [Role.DOCTOR] } },
   { path: 'startconsulta-dentista', component: ProntuarioDentistaComponent, canActivate: [AuthGuard, RoleGuard, ProntuarioGuard], data: { roles: [Role.DOCTOR] } },
   { path: 'Prontuario', component: ProntuarioComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: [Role.DOCTOR] } },
-  { path: 'Agenda-Medico', component: AgendaMedicoGerenciamentoComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: [Role.DOCTOR] } },
+  // { path: 'Agenda-Medico', component: AgendaMedicoGerenciamentoComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: [Role.DOCTOR] } },
   { path: 'agenda-calendario', component: AgendaCalendarioComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: [Role.ADMIN, Role.DOCTOR, Role.SECRETARY] } },
+
+  // ========== RELATORIOS ==========
+  { path: 'relatorios', component: RelatoriosPacientesComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: [Role.ADMIN, Role.DOCTOR, Role.SECRETARY] } },
 
   // ========== ROTA 404 ==========
   { path: '**', pathMatch: 'full', component: NotFoudComponent },
