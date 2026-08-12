@@ -362,7 +362,7 @@ export class GraficosPrincipaisDashboardComponent implements OnInit, OnChanges, 
     } else {
       // Super Admin: busca todas as consultas
       request$ = this.consultaApiService.buscarPorIntervaloDeDatas(
-        paramentrosBusca, dataFim, "ALL"
+        paramentrosBusca, dataFim
       );
     }
 
@@ -410,8 +410,7 @@ export class GraficosPrincipaisDashboardComponent implements OnInit, OnChanges, 
       )
       : this.consultaApiService.buscarPorIntervaloDeDatas(
         DataInicioFormatada,
-        DataFimFormatada,
-        "ALL"
+        DataFimFormatada
       );
 
     request$
@@ -612,7 +611,7 @@ export class GraficosPrincipaisDashboardComponent implements OnInit, OnChanges, 
     if (idMedicoFiltro) {
       // Profissional: busca apenas seus agendamentos
       request$ = this.consultaApiService.pesquisarClinicasEmIntervaloDeDatas(
-        idMedicoFiltro, paramentrosBusca, dataFim, "ALL"
+        idMedicoFiltro, paramentrosBusca, dataFim
       );
     } else if (this.organizacaoId) {
       // Admin de organização: busca agendamentos da organização
@@ -622,7 +621,7 @@ export class GraficosPrincipaisDashboardComponent implements OnInit, OnChanges, 
     } else {
       // Super Admin: busca todos os agendamentos
       request$ = this.consultaApiService.buscarPorIntervaloDeDatas(
-        paramentrosBusca, dataFim, "ALL"
+        paramentrosBusca, dataFim
       );
     }
 
@@ -663,15 +662,14 @@ export class GraficosPrincipaisDashboardComponent implements OnInit, OnChanges, 
 
     // Se é médico, busca apenas seus agendamentos
     const request$ = idMedicoFiltro
-      ? this.consultaApiService.buscarPorMedicoEIntervalo(
+      ? this.consultaApiService.pesquisarClinicasEmIntervaloDeDatas(
         idMedicoFiltro,
         DataInicioFormatada,
         DataFimFormatada
       )
       : this.consultaApiService.buscarPorIntervaloDeDatas(
         DataInicioFormatada,
-        DataFimFormatada,
-        "ALL"
+        DataFimFormatada
       );
 
     request$

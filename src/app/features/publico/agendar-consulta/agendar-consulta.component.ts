@@ -158,6 +158,7 @@ export class AgendarConsultaComponent implements OnInit {
       };
       this.MostraHora = true;
       this.DataSelecionada = data;
+      this._carregarProfissionalCompleto(c.profissionalId);
     }
 
     if (data) {
@@ -165,6 +166,28 @@ export class AgendarConsultaComponent implements OnInit {
       const options = { weekday: 'long' as const };
       this.DiaDaSemana = new Intl.DateTimeFormat('pt-BR', options).format(d);
     }
+  }
+
+  /**
+   * Carrega o cadastro completo do profissional da consulta em edicao.
+   * Necessario porque a consulta traz apenas nome e id do profissional,
+   * e a especialidade dele e obrigatoria no payload de atualizacao.
+   *
+   * @param profissionalId id do profissional vinculado a consulta
+   */
+  private _carregarProfissionalCompleto(profissionalId: number | undefined): void {
+    if (!profissionalId) return;
+
+    this.profissionalApi.buscarClinicoIdByOrg(profissionalId).subscribe({
+      next: profissional => {
+        if (profissional) {
+          this.Medico = { ...profissional, ...this.Medico, especialidades: profissional.especialidades };
+        }
+      },
+      error: () => {
+        // Mantem os dados minimos vindos da consulta; a especialidade original sera reaproveitada.
+      }
+    });
   }
 
   // ── Navegação de seções ────────────────────────────────
@@ -392,6 +415,8 @@ export class AgendarConsultaComponent implements OnInit {
       profissionalId:   this.Medico?.id || this.consultaOriginal.profissionalId,
       pacienteId:       this.Paciente?.codigo || this.consultaOriginal.pacienteId,
       dataHora:         data && hora ? `${data}T${hora}` : this.consultaOriginal.dataHora,
+      especialidadeId:  this._resolverEspecialidadeId(),
+      duracaoMinutos:   this.Medico?.tempoConsultaMinutos || this.consultaOriginal.duracaoMinutos || null,
       observacoes:      obs,
       formaPagamentoId: fp || this.consultaOriginal.formaPagamentoId,
       valor:            parseFloat(val) || this.consultaOriginal.valor
@@ -407,6 +432,18 @@ export class AgendarConsultaComponent implements OnInit {
   }
 
   // ── Helpers ────────────────────────────────────────────
+
+  /**
+   * Resolve a especialidade a ser enviada na atualizacao da consulta.
+   * Usa a especialidade do medico selecionado (caso tenha sido trocado)
+   * e recai na especialidade ja gravada na consulta.
+   *
+   * @returns id da especialidade ou null quando nao houver nenhuma disponivel
+   */
+  private _resolverEspecialidadeId(): number | null {
+    const especialidades = this.Medico?.especialidades as any;
+    return especialidades?.[0]?.id ?? this.consultaOriginal?.especialidadeId ?? null;
+  }
 
   private _transformaFormaPagamento(): number {
     const v = this.FormularioConsulta.get('Pagamento')?.value;

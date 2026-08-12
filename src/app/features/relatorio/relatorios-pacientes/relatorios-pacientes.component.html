@@ -1,0 +1,278 @@
+<div class="rel-page">
+
+  <!-- Cabecalho -->
+  <header class="rel-header">
+    <div class="rel-header__left">
+      <div class="rel-header__icon">
+        <i class="fa-solid fa-folder-open"></i>
+      </div>
+      <div>
+        <h1 class="rel-header__title">Relatórios dos Pacientes</h1>
+        <p class="rel-header__subtitle">
+          {{ visaoAdministrativa
+              ? 'Documentos emitidos por todos os profissionais da organização'
+              : 'Documentos emitidos nos seus atendimentos' }}
+        </p>
+      </div>
+    </div>
+
+    <div class="rel-header__stats">
+      <div class="rel-stat">
+        <span class="rel-stat__valor">{{ pacientesFiltrados.length }}</span>
+        <span class="rel-stat__label">Pacientes</span>
+      </div>
+      <div class="rel-stat">
+        <span class="rel-stat__valor">{{ totalDocumentosFiltrados }}</span>
+        <span class="rel-stat__label">Documentos</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Filtros -->
+  <section class="rel-filtros">
+    <div class="rel-campo rel-campo--busca">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input
+        type="text"
+        placeholder="Buscar por nome, CPF ou telefone"
+        [(ngModel)]="termoBusca"
+        (ngModelChange)="aplicarFiltros()"
+        (keyup.enter)="carregarPacientes()">
+      <button
+        type="button"
+        class="rel-campo__limpar"
+        *ngIf="termoBusca"
+        (click)="termoBusca = ''; carregarPacientes()"
+        title="Limpar busca">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <div class="rel-campo" *ngIf="visaoAdministrativa">
+      <label>Profissional</label>
+      <select [(ngModel)]="profissionalFiltroId" (ngModelChange)="carregarPacientes()">
+        <option [ngValue]="null">Todos</option>
+        <option *ngFor="let prof of profissionais" [ngValue]="prof.id">
+          {{ prof.nome }} — {{ prof.especialidade }}
+        </option>
+      </select>
+    </div>
+
+    <div class="rel-campo">
+      <label>Tipo de documento</label>
+      <select [(ngModel)]="tipoDocumentoFiltro" (ngModelChange)="aplicarFiltros()">
+        <option value="TODOS">Todos</option>
+        <option *ngFor="let tipo of tiposDocumento" [value]="tipo">
+          {{ meta(tipo).rotulo }}
+        </option>
+      </select>
+    </div>
+
+    <div class="rel-campo">
+      <label>Ordenar por</label>
+      <select [(ngModel)]="ordenacao" (ngModelChange)="aplicarFiltros()">
+        <option value="RECENTE">Atendimento mais recente</option>
+        <option value="NOME">Nome do paciente</option>
+        <option value="DOCUMENTOS">Mais documentos</option>
+      </select>
+    </div>
+
+    <button type="button" class="rel-btn rel-btn--ghost" (click)="limparFiltros()">
+      <i class="fa-solid fa-filter-circle-xmark"></i>
+      Limpar
+    </button>
+
+    <button type="button" class="rel-btn rel-btn--ghost" (click)="carregarPacientes()" [disabled]="isCarregando">
+      <i class="fa-solid" [class.fa-rotate]="!isCarregando" [class.fa-spinner]="isCarregando"
+         [class.fa-spin]="isCarregando"></i>
+      Atualizar
+    </button>
+  </section>
+
+  <!-- Conteudo -->
+  <div class="rel-conteudo">
+
+    <!-- Lista de pacientes -->
+    <aside class="rel-lista">
+      <div class="rel-lista__header">
+        <h2>Pacientes atendidos</h2>
+        <span class="rel-lista__contador">{{ pacientesFiltrados.length }}</span>
+      </div>
+
+      <div class="rel-lista__body">
+        <p class="rel-vazio" *ngIf="isCarregando">
+          <i class="fa-solid fa-spinner fa-spin"></i>
+          Carregando relatórios...
+        </p>
+
+        <p class="rel-vazio" *ngIf="!isCarregando && mensagemErro">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+          {{ mensagemErro }}
+        </p>
+
+        <p class="rel-vazio" *ngIf="!isCarregando && !mensagemErro && pacientesFiltrados.length === 0">
+          <i class="fa-solid fa-user-slash"></i>
+          Nenhum paciente encontrado com os filtros atuais.
+        </p>
+
+        <button
+          type="button"
+          class="rel-paciente"
+          *ngFor="let paciente of pacientesFiltrados"
+          [class.rel-paciente--ativo]="pacienteSelecionado?.id === paciente.id"
+          (click)="selecionarPaciente(paciente)">
+
+          <span class="rel-paciente__avatar">{{ obterIniciais(paciente.nome) }}</span>
+
+          <span class="rel-paciente__info">
+            <span class="rel-paciente__nome">{{ paciente.nome }}</span>
+            <span class="rel-paciente__meta">
+              <ng-container *ngIf="calcularIdade(paciente.dataNascimento) as idade">{{ idade }} anos · </ng-container>
+              {{ paciente.cpf || 'CPF não informado' }}
+            </span>
+            <span class="rel-paciente__meta" *ngIf="visaoAdministrativa && paciente.profissionalNome">
+              <i class="fa-solid fa-user-doctor"></i> {{ paciente.profissionalNome }}
+            </span>
+            <span class="rel-paciente__rodape">
+              Último atendimento em {{ paciente.ultimoAtendimento | date: 'dd/MM/yyyy' }}
+            </span>
+          </span>
+
+          <span class="rel-paciente__badges">
+            <span class="rel-badge rel-badge--consultas" title="Consultas">
+              <i class="fa-solid fa-stethoscope"></i> {{ paciente.totalConsultas }}
+            </span>
+            <span class="rel-badge rel-badge--docs" title="Documentos">
+              <i class="fa-solid fa-file-lines"></i> {{ paciente.totalDocumentos }}
+            </span>
+          </span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Detalhe do paciente -->
+    <section class="rel-detalhe">
+
+      <!-- Estado vazio -->
+      <div class="rel-detalhe__placeholder" *ngIf="!pacienteSelecionado">
+        <i class="fa-solid fa-folder-open"></i>
+        <h3>Selecione um paciente</h3>
+        <p>Escolha um paciente na lista ao lado para visualizar todos os relatórios e documentos emitidos.</p>
+      </div>
+
+      <ng-container *ngIf="pacienteSelecionado as paciente">
+
+        <!-- Cabecalho do paciente -->
+        <header class="rel-detalhe__header">
+          <div class="rel-detalhe__identidade">
+            <span class="rel-paciente__avatar rel-paciente__avatar--grande">
+              {{ obterIniciais(paciente.nome) }}
+            </span>
+            <div>
+              <h2>{{ paciente.nome }}</h2>
+              <div class="rel-detalhe__dados">
+                <span><i class="fa-solid fa-id-card"></i> {{ paciente.cpf || 'Não informado' }}</span>
+                <span *ngIf="paciente.dataNascimento">
+                  <i class="fa-solid fa-cake-candles"></i>
+                  {{ paciente.dataNascimento | date: 'dd/MM/yyyy' }} ({{ calcularIdade(paciente.dataNascimento) }} anos)
+                </span>
+                <span *ngIf="paciente.telefone"><i class="fa-solid fa-phone"></i> {{ paciente.telefone }}</span>
+                <span *ngIf="paciente.email"><i class="fa-solid fa-envelope"></i> {{ paciente.email }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="rel-detalhe__acoes">
+            <button type="button" class="rel-btn rel-btn--primario" (click)="exportarHistoricoCompleto()">
+              <i class="fa-solid fa-file-medical"></i>
+              Histórico completo
+            </button>
+            <button type="button" class="rel-btn rel-btn--ghost" (click)="fecharDetalhe()" title="Fechar">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+        </header>
+
+        <!-- Timeline de consultas -->
+        <div class="rel-timeline">
+          <p class="rel-vazio" *ngIf="consultasDoPaciente.length === 0">
+            <i class="fa-solid fa-file-circle-xmark"></i>
+            Nenhuma consulta com documentos do tipo selecionado.
+          </p>
+
+          <article
+            class="rel-consulta"
+            *ngFor="let consulta of consultasDoPaciente"
+            [class.rel-consulta--aberta]="consultaExpandidaId === consulta.id">
+
+            <button type="button" class="rel-consulta__header" (click)="alternarConsulta(consulta.id)">
+              <span class="rel-consulta__data">
+                <strong>{{ consulta.dataHora | date: 'dd/MM/yyyy' }}</strong>
+                <small>{{ consulta.dataHora | date: 'HH:mm' }}</small>
+              </span>
+
+              <span class="rel-consulta__resumo">
+                <span class="rel-consulta__titulo">{{ consulta.especialidadeNome || 'Sem especialidade' }}</span>
+                <span class="rel-consulta__subtitulo">
+                  {{ consulta.diagnostico || 'Sem diagnóstico registrado' }}
+                </span>
+                <span class="rel-consulta__profissional" *ngIf="visaoAdministrativa && consulta.profissionalNome">
+                  <i class="fa-solid fa-user-doctor"></i> {{ consulta.profissionalNome }}
+                </span>
+              </span>
+
+              <span class="rel-consulta__direita">
+                <span class="rel-status" [ngClass]="obterClasseStatus(consulta.status)" *ngIf="consulta.status">
+                  {{ consulta.status }}
+                </span>
+                <span class="rel-badge rel-badge--docs">
+                  <i class="fa-solid fa-file-lines"></i>
+                  {{ documentosVisiveis(consulta).length }}
+                </span>
+                <i class="fa-solid fa-chevron-down rel-consulta__seta"></i>
+              </span>
+            </button>
+
+            <div class="rel-documentos" *ngIf="consultaExpandidaId === consulta.id">
+              <button
+                type="button"
+                class="rel-documento"
+                *ngFor="let documento of documentosVisiveis(consulta)"
+                (click)="visualizarDocumento(documento)">
+
+                <span
+                  class="rel-documento__icone"
+                  [style.background]="meta(documento.tipo).cor + '1a'"
+                  [style.color]="meta(documento.tipo).cor">
+                  <i [class]="meta(documento.tipo).icone"></i>
+                </span>
+
+                <span class="rel-documento__info">
+                  <span class="rel-documento__titulo">{{ documento.titulo }}</span>
+                  <span class="rel-documento__descricao">{{ documento.descricao }}</span>
+                  <span class="rel-documento__rodape">
+                    <span
+                      class="rel-tag"
+                      [style.background]="meta(documento.tipo).cor + '1a'"
+                      [style.color]="meta(documento.tipo).cor">
+                      {{ meta(documento.tipo).rotulo }}
+                    </span>
+                    <span class="rel-documento__data">
+                      <i class="fa-regular fa-clock"></i>
+                      {{ documento.emitidoEm | date: 'dd/MM/yyyy HH:mm' }}
+                    </span>
+                    <span class="rel-documento__assinatura" *ngIf="documento.assinado">
+                      <i class="fa-solid fa-signature"></i> Assinado
+                    </span>
+                  </span>
+                </span>
+
+                <i class="fa-solid fa-eye rel-documento__acao"></i>
+              </button>
+            </div>
+          </article>
+        </div>
+      </ng-container>
+    </section>
+  </div>
+</div>

@@ -8,6 +8,7 @@ import { PlanejamentoTerapeuticoApiService } from 'src/app/services/api/planejam
 
 import { Consultav2, StatusConsulta } from 'src/app/util/variados/interfaces/consulta/consultav2';
 import { Prontuario } from 'src/app/util/variados/interfaces/Prontuario/Prontuario';
+import { TipoDocumento } from 'src/app/util/variados/interfaces/relatorio/relatorio-paciente';
 
 import { RelatorioComponent } from './relatorio.component';
 
@@ -150,6 +151,59 @@ export class RelatorioService {
         );
       }
     });
+  }
+
+  // ─────────────────────────────────────────────────────────────────────────────
+  // Fluxo direto — Tela de relatórios por paciente
+  //
+  // Nessa tela o usuário já escolheu o documento no card, então o seletor
+  // (RelatorioComponent) é dispensado: o dialog de impressão é aberto direto.
+  // ─────────────────────────────────────────────────────────────────────────────
+
+  /**
+   * Abre a impressão de um documento específico de uma consulta.
+   * Tenta o prontuário médico e faz fallback para o odontológico,
+   * seguindo o mesmo comportamento do fluxo do administrador.
+   * @param consultaId - Consulta que originou o documento
+   * @param tipo - Tipo do documento selecionado no card
+   */
+  abrirDocumentoDaConsulta(consultaId: number, tipo: TipoDocumento): void {
+    this.prontuarioApiService.buscarProntuarioById(consultaId).subscribe(
+      (dados: Prontuario) => this.abrirDialogImpressaoMedico(this.mapearTipoParaOpcao(tipo, 'MEDICO'), dados),
+      () => this.prontuarioDentistaApiService.buscarProntuarioDentistaById(consultaId).subscribe(
+        (dados: Prontuario) => this.abrirDialogImpressaoDentista(this.mapearTipoParaOpcao(tipo, 'DENTISTA'), dados),
+        () => this.mostrarErroProntuarioNaoEncontrado()
+      )
+    );
+  }
+
+  /**
+   * Abre o histórico completo a partir do paciente, sem depender de uma consulta.
+   * O HistoricoCompletoComponent utiliza apenas o pacienteId.
+   * @param pacienteId - Paciente cujo histórico será exibido
+   */
+  abrirHistoricoCompletoDoPaciente(pacienteId: number): void {
+    this.abrirHistoricoCompleto({ pacienteId } as Consultav2);
+  }
+
+  /**
+   * Converte o tipo de documento do relatório na opção usada pelos dialogs.
+   * O planejamento terapêutico possui códigos distintos por tipo de profissional.
+   * @param tipo - Tipo do documento
+   * @param tipoProfissional - 'MEDICO' ou 'DENTISTA'
+   * @returns Código da opção de impressão
+   */
+  private mapearTipoParaOpcao(tipo: TipoDocumento, tipoProfissional: 'MEDICO' | 'DENTISTA'): string {
+    const mapa: Partial<Record<TipoDocumento, string>> = {
+      EXAMES: '1',
+      PRESCRICAO: '2',
+      ATESTADO: '4',
+      REGISTRO_CONSULTA: '5',
+      COMPROVANTE_PAGAMENTO: '6',
+      QUESTIONARIO_SAUDE: '8',
+      PLANEJAMENTO: tipoProfissional === 'DENTISTA' ? '9' : '10',
+    };
+    return mapa[tipo] ?? '5';
   }
 
   // ─────────────────────────────────────────────────────────────────────────────

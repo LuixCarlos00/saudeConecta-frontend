@@ -30,13 +30,35 @@
       </li>
 
       <!-- ========== MENU SUPER ADMIN / ADMIN ========== -->
-        <li class="nav-item" *ngIf="ControleAcessoService.podeVerMenuAgenda()"
-            [class.active]="activeRoute === 'gerenciamento'">
-            <button class="nav-link" (click)="navigateTo('gerenciamento')" title="Gerenciamento de Agenda">
-                <i class="fa-solid fa-calendar-check nav-icon"></i>
-                <span class="nav-text">Agenda</span>
+<!--        <li class="nav-item" *ngIf="ControleAcessoService.podeVerMenuAgenda()"-->
+<!--            [class.active]="activeRoute === 'gerenciamento'">-->
+<!--            <button class="nav-link" (click)="navigateTo('gerenciamento')" title="Gerenciamento de Agenda">-->
+<!--                <i class="fa-solid fa-calendar-check nav-icon"></i>-->
+<!--                <span class="nav-text">Agenda</span>-->
+<!--            </button>-->
+<!--        </li>-->
+
+
+        <!-- Agenda Calendário - Médico, Secretaria e Admin -->
+        <li class="nav-item"
+            *ngIf="ControleAcessoService.podeVerMenuMinhaAgenda() || ControleAcessoService.podeVerMenuAgenda()"
+            [class.active]="activeRoute === 'AgendaCalendario'">
+            <button class="nav-link" (click)="navigateTo('AgendaCalendario')" title="Agenda Calendário">
+                <i class="fa-solid fa-calendar-days nav-icon"></i>
+                <span class="nav-text">Agenda Calendário</span>
             </button>
         </li>
+
+
+      <!-- Relatórios - Profissional, Admin e Secretaria -->
+      <li class="nav-item"
+        *ngIf="!ControleAcessoService.isSuperAdmin()"
+        [class.active]="activeRoute === 'Relatorios'">
+        <button class="nav-link" (click)="navigateTo('Relatorios')" title="Relatórios dos Pacientes">
+          <i class="fa-solid fa-folder-open nav-icon"></i>
+          <span class="nav-text">Relatórios</span>
+        </button>
+      </li>
 
       <!-- Gerenciamento de Usuários - Super Admin, Admin -->
       <li class="nav-item" *ngIf="ControleAcessoService.podeVerMenuUsuarios()"
@@ -80,23 +102,15 @@
       <!-- ========== MENU PROFISSIONAL DE SAÚDE ========== -->
 
       <!-- Minha Agenda - Profissional -->
-      <li class="nav-item" *ngIf="ControleAcessoService.podeVerMenuMinhaAgenda()"
+<!--      <li class="nav-item" *ngIf="ControleAcessoService.podeVerMenuMinhaAgenda()"
         [class.active]="activeRoute === 'AgendaMedico'">
         <button class="nav-link" (click)="navigateTo('AgendaMedico')" title="Minha Agenda">
           <i class="fa-solid fa-calendar-check nav-icon"></i>
           <span class="nav-text">Minha Agenda</span>
         </button>
-      </li>
+      </li>-->
 
-      <!-- Agenda Calendário - Médico, Secretaria e Admin -->
-      <li class="nav-item"
-        *ngIf="ControleAcessoService.podeVerMenuMinhaAgenda() || ControleAcessoService.podeVerMenuAgenda()"
-        [class.active]="activeRoute === 'AgendaCalendario'">
-        <button class="nav-link" (click)="navigateTo('AgendaCalendario')" title="Agenda Calendário">
-          <i class="fa-solid fa-calendar-days nav-icon"></i>
-          <span class="nav-text">Agenda Calendário</span>
-        </button>
-      </li>
+
 
 
       <!-- ========== MENU COMUM ========== -->

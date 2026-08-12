@@ -7,6 +7,9 @@ export { RelatorioService } from './relatorio.service';
 // Componente seletor
 export { RelatorioComponent, RelatorioOption } from './relatorio.component';
 
+// Tela de relatórios por paciente
+export { RelatoriosPacientesComponent } from './relatorios-pacientes/relatorios-pacientes.component';
+
 // Impressões Médico
 export { AtestadoMedicoComponent } from './impressoes-medico/atestado-medico/AtestadoMedico.component';
 export { ComprovantePagamentoMedicoComponent } from './impressoes-medico/comprovante-pagamento-medico/comprovante-pagamento-medico.component';
