@@ -628,9 +628,9 @@ export class AgendaCalendarioComponent implements OnInit, OnDestroy {
             didOpen: () => { Swal.showLoading(); },
           }).then(() => {
             this.prontuarioState.changeConsulta(element);
-            if (this.UsuarioLogado.perfil === 'MEDICO') {
+            if (this.UsuarioLogado.tipoProfissional === 'MEDICO') {
               this.router.navigate(['startconsulta']);
-            } else if (this.UsuarioLogado.perfil === 'DENTISTA') {
+            } else if (this.UsuarioLogado.tipoProfissional === 'DENTISTA') {
               this.router.navigate(['startconsulta-dentista']);
             }
           });
@@ -828,5 +828,22 @@ export class AgendaCalendarioComponent implements OnInit, OnDestroy {
 
   podeVerTodosProfissionais(): boolean {
     return this.controleAcesso.isAdmin() || this.controleAcesso.isRecepcionista();
+  }
+
+  /**
+   * Define se o botao de edicao da consulta deve ser exibido no drawer.
+   * Consultas confirmadas nao podem ser editadas por clinico ou gestor.
+   *
+   * @param status status atual da consulta
+   * @returns true quando a edicao e permitida para o perfil logado
+   */
+  podeEditarConsulta(status: string): boolean {
+    const perfilRestrito = this.controleAcesso.isAdmin() || this.controleAcesso.isProfissional();
+
+    if (status === 'CONFIRMADA' && perfilRestrito) {
+      return false;
+    }
+
+    return (status === 'AGENDADA' || status === 'CONFIRMADA') && this.controleAcesso.isAdmin();
   }
 }

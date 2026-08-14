@@ -1,153 +1,351 @@
 <div class="suporte-container">
   <!-- Header -->
-  <div class="suporte-header">
-    <div class="header-content">
-      <div class="header-icon">
-        <i class="fa-solid fa-headset"></i>
+
+
+  <!-- Toast de sucesso -->
+  <div class="toast-chamado" *ngIf="mostrarToastChamado">
+    <i class="fa-solid fa-circle-check"></i>
+    <span>Chamado técnico aberto com sucesso!</span>
+  </div>
+
+  <!-- Estatísticas de Chamados e Informações do Sistema -->
+  <div class="info-cards-row">
+    <div class="info-card" *ngFor="let stat of estatisticasChamados">
+      <div class="info-card-icon info-card-icon--destaque">
+        <i [class]="stat.icone"></i>
       </div>
-      <div class="header-text">
-        <h1>Central de Suporte</h1>
-        <p>Estamos aqui para ajudar você</p>
+      <div class="info-card-content">
+        <h4>{{ stat.titulo }}</h4>
+        <p class="info-card-valor">{{ stat.valor }}</p>
+      </div>
+    </div>
+
+    <div class="info-card" *ngFor="let info of informacoesSistema">
+      <div class="info-card-icon">
+        <i [class]="info.icone"></i>
+      </div>
+      <div class="info-card-content">
+        <h4>{{ info.titulo }}</h4>
+        <p class="info-card-valor">{{ info.valor }}</p>
+        <p class="info-card-descricao">{{ info.descricao }}</p>
       </div>
     </div>
   </div>
 
-  <div class="suporte-grid">
-    <!-- Coluna Esquerda -->
-    <div class="coluna-esquerda">
-      <!-- Canais de Contato -->
-      <section class="card canais-contato">
+  <!-- Histórico de Chamados Técnicos -->
+  <section class="card chamados-section">
+    <div class="chamados-header">
+      <div>
         <h2>
-          <i class="fa-solid fa-phone-volume"></i>
-          Fale Conosco
+          <i class="fa-solid fa-ticket"></i>
+          Histórico de Chamados Técnicos
         </h2>
-        <div class="canais-grid">
-          <div class="canal-card" *ngFor="let canal of canaisContato">
-            <div class="canal-icon" [style.background]="canal.cor + '20'" [style.color]="canal.cor">
-              <i [class]="canal.icone"></i>
-            </div>
-            <div class="canal-info">
-              <span class="canal-titulo">{{ canal.titulo }}</span>
-              <span class="canal-valor">{{ canal.valor }}</span>
-              <span class="canal-descricao">{{ canal.descricao }}</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Links Úteis -->
-      <section class="card links-uteis">
-        <h2>
-          <i class="fa-solid fa-link"></i>
-          Links Úteis
-        </h2>
-        <div class="links-grid">
-          <a class="link-card" *ngFor="let link of linksUteis" [href]="link.url">
-            <i [class]="link.icone"></i>
-            <span>{{ link.titulo }}</span>
-            <i class="fa-solid fa-arrow-right arrow"></i>
-          </a>
-        </div>
-      </section>
-
-      <!-- Horário de Atendimento -->
-      <section class="card horario">
-        <h2>
-          <i class="fa-solid fa-clock"></i>
-          Horário de Atendimento
-        </h2>
-        <div class="horario-content">
-          <div class="horario-item">
-            <span class="dia">Segunda a Sexta</span>
-            <span class="hora">08:00 - 18:00</span>
-          </div>
-          <div class="horario-item">
-            <span class="dia">Sábado</span>
-            <span class="hora">09:00 - 13:00</span>
-          </div>
-          <div class="horario-item fechado">
-            <span class="dia">Domingo e Feriados</span>
-            <span class="hora">Fechado</span>
-          </div>
-        </div>
-      </section>
+        <p class="chamados-subtitulo">Acompanhe as solicitações abertas junto ao nosso time técnico.</p>
+      </div>
+      <button class="btn-novo-chamado" (click)="abrirModalChamado()">
+        <i class="fa-solid fa-plus"></i>
+        <span>Abrir Novo Chamado</span>
+      </button>
     </div>
 
-    <!-- Coluna Direita -->
-    <div class="coluna-direita">
-      <!-- FAQ Rápido -->
-      <section class="card faq">
-        <h2>
-          <i class="fa-solid fa-circle-question"></i>
-          Perguntas Frequentes
-        </h2>
-        <div class="faq-list">
-          <div class="faq-item" *ngFor="let item of faqRapido; let i = index" [class.active]="faqAberto === i">
-            <div class="faq-question" (click)="toggleFaq(i)">
-              <span>{{ item.pergunta }}</span>
-              <i class="fa-solid" [class.fa-plus]="faqAberto !== i" [class.fa-minus]="faqAberto === i"></i>
+    <p class="chamados-vazio" *ngIf="isCarregandoChamados">
+      <i class="fa-solid fa-spinner fa-spin"></i> Carregando chamados...
+    </p>
+
+    <div class="chamados-lista" *ngIf="!isCarregandoChamados && chamados.length > 0; else semChamados">
+      <div class="chamado-item" *ngFor="let chamado of chamados" (click)="abrirModalVisualizacao(chamado)" style="cursor: pointer;">
+        <div class="chamado-info">
+          <div class="chamado-icon"
+               [class.prioridade-alta]="chamado.prioridade === 'ALTA'"
+               [class.prioridade-media]="chamado.prioridade === 'MEDIA'"
+               [class.prioridade-baixa]="chamado.prioridade === 'BAIXA'">
+            <i class="fa-solid fa-circle-exclamation"></i>
+          </div>
+          <div class="chamado-detalhes">
+            <div class="chamado-titulo-linha">
+              <span class="chamado-id">{{ chamado.protocolo }}</span>
+              <h4>{{ chamado.titulo }}</h4>
             </div>
-            <div class="faq-answer" [class.open]="faqAberto === i">
-              <p>{{ item.resposta }}</p>
+            <div class="chamado-meta">
+              <span>Categoria: {{ chamado.categoriaDescricao }}</span>
+              <span>•</span>
+              <span>Prioridade:
+                <strong [class.texto-alta]="chamado.prioridade === 'ALTA'">{{ chamado.prioridadeDescricao }}</strong>
+              </span>
+              <span>•</span>
+              <span>Criado em: {{ chamado.dataCriacao | date: 'dd/MM/yyyy HH:mm' }}</span>
             </div>
           </div>
         </div>
-      </section>
+        <span class="chamado-status"
+              [class.status-analise]="chamado.status === 'EM_ANALISE'"
+              [class.status-andamento]="chamado.status === 'EM_ANDAMENTO'"
+              [class.status-concluido]="chamado.status === 'CONCLUIDO'">
+          {{ chamado.statusDescricao }}
+        </span>
+      </div>
+    </div>
+    <ng-template #semChamados>
+      <p class="chamados-vazio" *ngIf="!isCarregandoChamados">Nenhum chamado técnico aberto até o momento.</p>
+    </ng-template>
+  </section>
 
-      <!-- Formulário de Contato -->
-      <section class="card formulario">
-        <h2>
-          <i class="fa-solid fa-paper-plane"></i>
-          Enviar Mensagem
-        </h2>
-
-        <!-- Mensagem de Sucesso -->
-        <div class="mensagem-sucesso" *ngIf="mensagemEnviada">
-          <i class="fa-solid fa-circle-check"></i>
-          <span>Mensagem enviada com sucesso! Responderemos em breve.</span>
-        </div>
-
-        <form class="form-contato" *ngIf="!mensagemEnviada">
-          <div class="form-group">
-            <label for="assunto">
-              <i class="fa-solid fa-tag"></i>
-              Assunto
-            </label>
-            <select id="assunto" [(ngModel)]="formContato.assunto" name="assunto">
-              <option value="">Selecione o assunto</option>
-              <option *ngFor="let assunto of assuntos" [value]="assunto">{{ assunto }}</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label for="mensagem">
-              <i class="fa-solid fa-message"></i>
-              Mensagem
-            </label>
-            <textarea 
-              id="mensagem" 
-              [(ngModel)]="formContato.mensagem" 
-              name="mensagem"
-              rows="5" 
-              placeholder="Descreva sua dúvida ou problema..."></textarea>
-          </div>
-
-          <button 
-            type="button" 
-            class="btn-enviar" 
-            (click)="enviarMensagem()"
-            [disabled]="!formContato.assunto || !formContato.mensagem || enviando">
-            <span *ngIf="!enviando">
-              <i class="fa-solid fa-paper-plane"></i>
-              Enviar Mensagem
-            </span>
-            <span *ngIf="enviando">
-              <i class="fa-solid fa-spinner fa-spin"></i>
-              Enviando...
-            </span>
+  <!-- Modal: Abrir Novo Chamado / Enviar Mensagem -->
+  <div class="modal-overlay" *ngIf="mostrarModalChamado" (click)="fecharModalChamado()">
+    <form class="modal-chamado" (click)="$event.stopPropagation()" (ngSubmit)="enviarChamado()">
+      <div class="modal-header">
+        <div class="modal-header-top">
+          <h3>
+            <i class="fa-solid fa-paper-plane"></i>
+            Enviar Mensagem
+          </h3>
+          <button type="button" class="modal-close" (click)="fecharModalChamado()">
+            <i class="fa-solid fa-xmark"></i>
           </button>
-        </form>
-      </section>
+        </div>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="tituloChamado">
+            <i class="fa-solid fa-heading"></i>
+            Título
+          </label>
+          <input type="text" id="tituloChamado" [(ngModel)]="novoChamado.titulo" name="tituloChamado" placeholder="Digite um título resumido">
+        </div>
+
+        <div class="form-group">
+          <label for="categoriaChamado">
+            <i class="fa-solid fa-layer-group"></i>
+            Categoria
+          </label>
+          <select id="categoriaChamado" [(ngModel)]="novoChamado.categoria" name="categoriaChamado">
+            <option value="">Selecione a categoria</option>
+            <option *ngFor="let cat of categorias" [value]="cat.valor">{{ cat.label }}</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="prioridadeChamado">
+            <i class="fa-solid fa-flag"></i>
+            Prioridade
+          </label>
+          <select id="prioridadeChamado" [(ngModel)]="novoChamado.prioridade" name="prioridadeChamado">
+            <option value="">Selecione a prioridade</option>
+            <option *ngFor="let prio of prioridades" [value]="prio.valor">{{ prio.label }}</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="corpoChamado">
+            <i class="fa-solid fa-message"></i>
+            Corpo da Mensagem
+          </label>
+          <textarea
+            id="corpoChamado"
+            rows="5"
+            [(ngModel)]="novoChamado.corpo"
+            name="corpoChamado"
+            placeholder="Descreva sua dúvida ou problema em detalhes..."></textarea>
+        </div>
+
+        <!-- Upload de Imagens -->
+        <div class="form-group">
+          <label>
+            <i class="fa-solid fa-images"></i>
+            Imagens
+          </label>
+          <div class="upload-area">
+            <input type="file" id="imagemInputNovo" accept="image/*" multiple (change)="onFileSelected($event)" style="display: none;">
+            <label for="imagemInputNovo" class="upload-label">
+              <i class="fa-solid fa-cloud-upload-alt"></i>
+              <span>Clique para adicionar imagem</span>
+              <span class="upload-hint">PNG, JPG até 5MB</span>
+            </label>
+          </div>
+
+          <!-- Lista de Imagens Anexadas -->
+          <div class="imagens-anexadas" *ngIf="anexosNovoChamado.length > 0">
+            <div class="imagem-anexada-item" *ngFor="let anexo of anexosNovoChamado; let i = index">
+              <i class="fa-solid fa-file-image"></i>
+              <span>{{ anexo.nomeArquivo }}</span>
+              <button type="button" class="remove-imagem-btn" (click)="removerImagem(i)">
+                <i class="fa-solid fa-times"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-cancelar" (click)="fecharModalChamado()">Cancelar</button>
+        <button type="submit" class="btn-registrar" [disabled]="!novoChamado.titulo || !novoChamado.categoria || !novoChamado.prioridade || !novoChamado.corpo || enviandoChamado">
+          <span *ngIf="!enviandoChamado">Enviar Mensagem</span>
+          <span *ngIf="enviandoChamado"><i class="fa-solid fa-spinner fa-spin"></i> Enviando...</span>
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Modal: Visualizar Chamado -->
+  <div class="modal-overlay" *ngIf="mostrarModalVisualizacao" (click)="fecharModalVisualizacao()">
+    <div class="modal-chamado" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div class="modal-header-top">
+          <h3>
+            <i class="fa-solid fa-eye"></i>
+            Detalhes do Chamado
+          </h3>
+          <button type="button" class="modal-close" (click)="fecharModalVisualizacao()">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+        <!-- Título do Chamado -->
+        <div class="detalhe-item">
+          <span class="detalhe-label">{{ chamadoSelecionado?.titulo }} </span>
+        </div>
+      </div>
+
+
+      <!-- Abas -->
+      <div class="modal-tabs">
+        <button class="tab-button" [class.active]="abaAtiva === 'escopo'" (click)="mudarAba('escopo')">
+          <i class="fa-solid fa-info-circle"></i>
+          <span>Escopo</span>
+        </button>
+        <button class="tab-button" [class.active]="abaAtiva === 'imagens'" (click)="mudarAba('imagens')">
+          <i class="fa-solid fa-images"></i>
+          <span>Imagens</span>
+        </button>
+      </div>
+
+      <div class="modal-body" *ngIf="chamadoSelecionado">
+        <!-- Aba Escopo -->
+        <div class="tab-content" *ngIf="abaAtiva === 'escopo'">
+          <div class="chamado-detalhes-view">
+            <div class="detalhes-grid">
+              <div class="detalhe-item">
+                <span class="detalhe-label">Protocolo:</span>
+                <span class="detalhe-valor">{{ chamadoSelecionado.protocolo }}</span>
+              </div>
+              <div class="detalhe-item">
+                <span class="detalhe-label">Categoria:</span>
+                <span class="detalhe-valor">{{ chamadoSelecionado.categoriaDescricao }}</span>
+              </div>
+              <div class="detalhe-item">
+                <span class="detalhe-label">Prioridade:</span>
+                <span class="detalhe-valor"
+                      [class.prioridade-alta]="chamadoSelecionado.prioridade === 'ALTA'"
+                      [class.prioridade-media]="chamadoSelecionado.prioridade === 'MEDIA'"
+                      [class.prioridade-baixa]="chamadoSelecionado.prioridade === 'BAIXA'">
+                  {{ chamadoSelecionado.prioridadeDescricao }}
+                </span>
+              </div>
+              <div class="detalhe-item">
+                <span class="detalhe-label">Status:</span>
+                <span class="detalhe-valor status-badge"
+                      [class.status-analise]="chamadoSelecionado.status === 'EM_ANALISE'"
+                      [class.status-andamento]="chamadoSelecionado.status === 'EM_ANDAMENTO'"
+                      [class.status-concluido]="chamadoSelecionado.status === 'CONCLUIDO'">
+                  {{ chamadoSelecionado.statusDescricao }}
+                </span>
+              </div>
+              <div class="detalhe-item">
+                <span class="detalhe-label">Criado em:</span>
+                <span class="detalhe-valor">{{ chamadoSelecionado.dataCriacao | date: 'dd/MM/yyyy HH:mm' }}</span>
+              </div>
+              <div class="detalhe-item" *ngIf="chamadoSelecionado.previsaoAtendimento">
+                <span class="detalhe-label">Previsão de atendimento:</span>
+                <span class="detalhe-valor">{{ chamadoSelecionado.previsaoAtendimento | date: 'dd/MM/yyyy' }}</span>
+              </div>
+            </div>
+
+            <div class="corpo-card">
+              <span class="corpo-label">Corpo da Mensagem:</span>
+              <span class="corpo-valor">{{ chamadoSelecionado.corpo }}</span>
+            </div>
+
+            <div class="fluxo-status">
+              <div class="fluxo-item ativo">
+                <i class="fa-solid fa-paper-plane"></i>
+                <span>Enviado</span>
+              </div>
+              <div class="fluxo-linha"></div>
+              <div class="fluxo-item" [class.ativo]="chamadoSelecionado.status === 'EM_ANALISE' || chamadoSelecionado.status === 'EM_ANDAMENTO' || chamadoSelecionado.status === 'CONCLUIDO'">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <span>Em Análise</span>
+              </div>
+              <div class="fluxo-linha"></div>
+              <div class="fluxo-item" [class.ativo]="chamadoSelecionado.status === 'EM_ANDAMENTO' || chamadoSelecionado.status === 'CONCLUIDO'">
+                <i class="fa-solid fa-gears"></i>
+                <span>Em Andamento</span>
+              </div>
+              <div class="fluxo-linha"></div>
+              <div class="fluxo-item" [class.ativo]="chamadoSelecionado.status === 'CONCLUIDO'">
+                <i class="fa-solid fa-check-circle"></i>
+                <span>Concluído</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Aba Imagens -->
+        <div class="tab-content" *ngIf="abaAtiva === 'imagens'">
+          <div class="imagens-section">
+            <p class="chamados-vazio" *ngIf="isCarregandoDetalhe">
+              <i class="fa-solid fa-spinner fa-spin"></i> Carregando imagens...
+            </p>
+
+            <!-- Lista de Imagens do Chamado -->
+            <div class="imagens-lista" *ngIf="!isCarregandoDetalhe && imagensChamado.length > 0">
+              <h4>Imagens do Chamado ({{ imagensChamado.length }})</h4>
+              <div class="imagens-grid">
+                <a class="imagem-item"
+                   *ngFor="let anexo of imagensChamado; let i = index"
+                   [href]="anexo.url"
+                   [download]="anexo.nomeArquivo"
+                   target="_blank"
+                   rel="noopener"
+                   [title]="anexo.nomeArquivo">
+                  <img *ngIf="anexo.renderizavel" [src]="anexo.url" [alt]="anexo.nomeArquivo" class="imagem-thumb">
+                  <div class="anexo-nao-suportado" *ngIf="!anexo.renderizavel">
+                    <i class="fa-solid fa-file-arrow-down"></i>
+                    <span>{{ anexo.nomeArquivo }}</span>
+                    <small>Formato não exibível no navegador. Clique para baixar.</small>
+                  </div>
+                </a>
+              </div>
+            </div>
+
+            <div class="sem-imagens" *ngIf="!isCarregandoDetalhe && imagensChamado.length === 0">
+              <i class="fa-solid fa-image"></i>
+              <span>Nenhuma imagem adicionada</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-registrar" (click)="fecharModalVisualizacao()">Fechar</button>
+      </div>
     </div>
   </div>
+
+  <!-- FAQ Rápido -->
+  <section class="card faq">
+    <h2>
+      <i class="fa-solid fa-circle-question"></i>
+      Perguntas Frequentes
+    </h2>
+    <div class="faq-list">
+      <div class="faq-item" *ngFor="let item of faqRapido; let i = index" [class.active]="faqAberto === i">
+        <div class="faq-question" (click)="toggleFaq(i)">
+          <span>{{ item.pergunta }}</span>
+          <i class="fa-solid" [class.fa-plus]="faqAberto !== i" [class.fa-minus]="faqAberto === i"></i>
+        </div>
+        <div class="faq-answer" [class.open]="faqAberto === i">
+          <p>{{ item.resposta }}</p>
+        </div>
+      </div>
+    </div>
+  </section>
 </div>

@@ -3,11 +3,28 @@
   <!-- ===== HEADER ===== -->
   <div class="calendario-header">
     <div class="header-left">
-      <h2 class="titulo-pagina">
+      <h2 class="titulo-pagina"  (click)="mudarVisualizacao('mes')" >
         <i class="fa-solid fa-calendar-days"></i>
         Agenda
       </h2>
-      <span class="subtitulo">{{ tituloAtual }}</span>
+      <span class="subtitulo">{{ tituloAtual }} </span>
+
+
+      <button class="btn-nova-consulta" *ngIf="controleAcesso.isAdmin() || controleAcesso.isRecepcionista()" (click)="abrirNovaConsulta($event)">
+        <i class="fa-solid fa-plus"></i>
+        Nova Consulta
+      </button>
+
+      <!-- Legenda -->
+      <div class="legenda-header">
+        <div class="legenda-item" *ngFor="let s of legendaAtual">
+          <span class="legenda-cor" [ngClass]="s.cor"></span>
+          <span>{{ s.label }}</span>
+        </div>
+      </div>
+
+
+
     </div>
 
     <div class="header-controls">
@@ -55,13 +72,8 @@
     <!-- ===== PAINEL LATERAL ===== -->
     <aside class="filtros-panel">
 
-      <!-- ── Sempre visível: Nova Consulta + mini-calendário ── -->
+      <!-- ── Sempre visível: mini-calendário ── -->
       <div class="painel-fixo">
-
-        <button class="btn-nova-consulta" *ngIf="controleAcesso.isAdmin() || controleAcesso.isRecepcionista()" (click)="abrirNovaConsulta($event)">
-          <i class="fa-solid fa-plus"></i>
-          Nova Consulta
-        </button>
 
         <div class="mini-calendar-wrapper">
           <mat-calendar
@@ -157,17 +169,6 @@
         </div>
 
       </div><!-- /filtros-conteudo -->
-
-      <hr class="divider">
-
-      <!-- ── Sempre visível: Legenda dinâmica por tipo ── -->
-      <div class="legenda painel-legenda">
-        <h4 class="legenda-titulo">Legenda</h4>
-        <div class="legenda-item" *ngFor="let s of legendaAtual">
-          <span class="legenda-cor" [ngClass]="s.cor"></span>
-          <span>{{ s.label }}</span>
-        </div>
-      </div>
 
     </aside>
 
@@ -474,7 +475,7 @@
 
           <!-- Iniciar Consulta — CONFIRMADA e apenas para médicos e dentistas -->
           <button class="drw-acao-btn drw-acao-btn--success"
-                  *ngIf="consultaSelecionada.status === 'CONFIRMADA' && (UsuarioLogado.perfil === 'MEDICO' || UsuarioLogado.perfil === 'DENTISTA')"
+                  *ngIf="consultaSelecionada.status === 'CONFIRMADA' && UsuarioLogado.perfil === 'CLINICO' "
                   (click)="iniciarConsultaDrawer()"
                   title="Iniciar Consulta">
             <i class="fa-solid fa-stethoscope"></i>
@@ -517,9 +518,9 @@
             <span>Imprimir</span>
           </button>
 
-          <!-- Editar — AGENDADA ou CONFIRMADA -->
+          <!-- Editar — indisponível em CONFIRMADA para clínico e gestor -->
           <button class="drw-acao-btn"
-                  *ngIf="(consultaSelecionada.status === 'AGENDADA' || consultaSelecionada.status === 'CONFIRMADA') && controleAcesso.isAdmin()"
+                  *ngIf="podeEditarConsulta(consultaSelecionada.status)"
                   (click)="abrirEdicao()"
                   title="Editar Consulta">
             <i class="fa-solid fa-pen-to-square"></i>

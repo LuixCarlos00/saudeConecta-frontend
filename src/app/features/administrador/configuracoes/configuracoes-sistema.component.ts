@@ -13,6 +13,7 @@ import {
 import { ProcedimentoPadraoApiService } from 'src/app/services/api/procedimento-padrao-api.service';
 import { UsuarioApiService } from 'src/app/services/api/usuario-api.service';
 import { tokenService } from 'src/app/util/Token/Token.service';
+import { AuthService } from 'src/app/core/services/auth.service';
 import { Subscription } from 'rxjs';
 import Swal from 'sweetalert2';
 
@@ -41,6 +42,7 @@ export class ConfiguracoesSistemaComponent implements OnInit, OnDestroy {
   editandoValor: number | null = null;
   novoProcedimento = { nomeProcedimento: '', valorPadrao: 0 };
   mostrarFormNovo = false;
+  termoPesquisa = '';
 
   private themeSubscription?: Subscription;
 
@@ -50,7 +52,8 @@ export class ConfiguracoesSistemaComponent implements OnInit, OnDestroy {
     private configuracaoCardService: ConfiguracaoCardService,
     private procedimentoPadraoService: ProcedimentoPadraoApiService,
     private usuarioApiService: UsuarioApiService,
-    private tokenSvc: tokenService
+    private tokenSvc: tokenService,
+    private authService: AuthService
   ) {
     this.availableThemes = this.themeService.availableThemes;
   }
@@ -302,18 +305,35 @@ export class ConfiguracoesSistemaComponent implements OnInit, OnDestroy {
   // ── Planejamentos (Procedimentos Padrão) ──────────────────────────────────
 
   private verificarProfissional(): void {
+    // Verifica se o usuário tem perfil CLINICO usando o AuthService
+    if (!this.authService.isClinico()) {
+      this.isProfissional = false;
+      return;
+    }
+
+    // Se for CLINICO, busca o ID do profissional
     this.tokenSvc.decodificaToken();
     const usuario = this.tokenSvc.getUsuarioLogado();
-    if (!usuario?.id) return;
+    if (!usuario?.id) {
+      console.log('Usuário sem ID');
+      return;
+    }
 
     this.usuarioApiService.buscarPerfilCompleto(usuario.id).subscribe({
       next: (dados: any) => {
-        if (dados.tipoUsuarioNovo === 'CLINICO' && dados.profissional?.id) {
+        console.log('Dados do perfil:', dados);
+        if (dados.profissional?.id) {
           this.isProfissional = true;
           this.profissionalId = dados.profissional.id;
+        } else {
+          this.isProfissional = false;
+          console.log('Profissional ID não encontrado');
         }
       },
-      error: () => {}
+      error: (error) => {
+        console.error('Erro ao buscar perfil:', error);
+        this.isProfissional = false;
+      }
     });
   }
 
@@ -406,4 +426,18 @@ export class ConfiguracoesSistemaComponent implements OnInit, OnDestroy {
   get totalProcedimentos(): number { return this.procedimentosPadrao.length; }
   get ativosProcedimentos(): number { return this.procedimentosPadrao.filter(p => p.ativo).length; }
   get inativosProcedimentos(): number { return this.procedimentosPadrao.filter(p => !p.ativo).length; }
+
+  get procedimentosFiltrados(): any[] {
+    if (!this.termoPesquisa || this.termoPesquisa.trim() === '') {
+      return this.procedimentosPadrao;
+    }
+    const termo = this.termoPesquisa.toLowerCase().trim();
+    return this.procedimentosPadrao.filter(proc =>
+      proc.nomeProcedimento.toLowerCase().includes(termo)
+    );
+  }
+
+  limparPesquisa(): void {
+    this.termoPesquisa = '';
+  }
 }

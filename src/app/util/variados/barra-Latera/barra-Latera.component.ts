@@ -16,8 +16,7 @@ export class BarraLateraComponent implements OnInit, OnDestroy {
 
 
   // Estado do Sidebar
-  isExpanded = false;
-  isPinned = false;
+  isExpanded = true;
   isMobileOpen = false;
   isConfigOpen = false;
   isCadastroOpen = false;
@@ -87,7 +86,10 @@ export class BarraLateraComponent implements OnInit, OnDestroy {
       '/agenda-calendario': 'AgendaCalendario',
       '/mensageria': 'Mensageria',
       '/gerenciar-planos': 'GerenciarPlanos',
-      '/minha-assinatura': 'MinhaAssinatura'
+      '/minha-assinatura': 'MinhaAssinatura',
+      '/gestao-chamados': 'GestaoChamados',
+      '/relatorios': 'Relatorios',
+      '/suporte': 'Suporte'
     };
 
     this.activeRoute = routeMap[url] || '';
@@ -102,26 +104,13 @@ export class BarraLateraComponent implements OnInit, OnDestroy {
     return this.UsuarioLogado.nome || this.UsuarioLogado.sub || 'Usuário';
   }
 
-  // Expande sidebar no hover (desktop)
-  onMouseEnter(): void {
-    if (!this.isPinned && window.innerWidth > 768) {
-      this.isExpanded = true;
-    }
-  }
-
-  // Recolhe sidebar ao sair do hover (desktop)
-  onMouseLeave(): void {
-    if (!this.isPinned && window.innerWidth > 768) {
-      this.isExpanded = false;
+  // Alterna entre sidebar aberta (expandida) e minimizada
+  toggleSidebar(): void {
+    this.isExpanded = !this.isExpanded;
+    if (!this.isExpanded) {
       this.isConfigOpen = false;
       this.isCadastroOpen = false;
     }
-  }
-
-  // Toggle para fixar/desfixar sidebar expandido
-  toggleSidebar(): void {
-    this.isPinned = !this.isPinned;
-    this.isExpanded = this.isPinned;
   }
 
   // Toggle do submenu de configurações
@@ -171,7 +160,9 @@ export class BarraLateraComponent implements OnInit, OnDestroy {
       'startconsulta': 'startconsulta',
       'Mensageria': 'mensageria',
       'GerenciarPlanos': 'gerenciar-planos',
-      'MinhaAssinatura': 'minha-assinatura'
+      'MinhaAssinatura': 'minha-assinatura',
+      'GestaoChamados': 'gestao-chamados',
+      'Relatorios': 'relatorios'
     };
 
     const route = routes[rota];

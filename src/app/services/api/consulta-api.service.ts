@@ -92,15 +92,27 @@ export class ConsultaApiService {
     return this.http.get<Consultav2[]>(`${this.apiUrl}/buscar`, { params });
   }
 
-  pesquisarClinicasEmIntervaloDeDatas(medicoId: number, inicio: string, fim: string, status: string): Observable<Consultav2[]> {
+  pesquisarClinicasEmIntervaloDeDatas(medicoId: number, inicio: string, fim: string, status?: string): Observable<Consultav2[]> {
+    let params = new HttpParams()
+      .set('dataInicial', inicio)
+      .set('dataFinal', fim);
+    if (status) {
+      params = params.set('status', status);
+    }
     return this.http.get<Consultav2[]>(
-      `${this.apiUrl}/profissional/${medicoId}/intervalo?dataInicial=${inicio}&dataFinal=${fim}&status=${status}`
+      `${this.apiUrl}/profissional/${medicoId}/intervalo`, { params }
     );
   }
 
-  buscarPorIntervaloDeDatas(dataInicio: string, dataFim: string, status: string): Observable<Consultav2[]> {
+  buscarPorIntervaloDeDatas(dataInicio: string, dataFim: string, status?: string): Observable<Consultav2[]> {
+    let params = new HttpParams()
+      .set('dataInicial', dataInicio)
+      .set('dataFinal', dataFim);
+    if (status) {
+      params = params.set('status', status);
+    }
     return this.http.get<Consultav2[]>(
-      `${this.apiUrl}/intervalo?dataInicial=${dataInicio}&dataFinal=${dataFim}&status=${status}`
+      `${this.apiUrl}/intervalo`, { params }
     );
   }
 
@@ -209,12 +221,6 @@ export class ConsultaApiService {
 
   buscarDoAnoAtual(): Observable<Consultav2[]> {
     return this.http.get<Consultav2[]>(`${this.apiUrl}/ano-atual`);
-  }
-
-  buscarPorMedicoEIntervalo(medicoId: number, dataInicio: string, dataFim: string): Observable<Consultav2[]> {
-    return this.http.get<Consultav2[]>(
-      `${this.apiUrl}/profissional/${medicoId}/intervalo?dataInicial=${dataInicio}&dataFinal=${dataFim}`
-    );
   }
 
 

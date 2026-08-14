@@ -17,6 +17,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { BarraLateraComponent } from './util/variados/barra-Latera/barra-Latera.component';
+import { BarraSuperiorComponent } from './util/variados/barra-superior/barra-superior.component';
 import { NgChartsModule } from 'ng2-charts';
 import { MatBadgeModule } from '@angular/material/badge';
 import { CoreModule } from './core/core.module';
@@ -28,7 +29,7 @@ import { RelatorioModule } from './features/relatorio/relatorio.module';
 registerLocaleData(localePt);
 
 @NgModule({
-  declarations: [AppComponent, BarraLateraComponent],
+  declarations: [AppComponent, BarraLateraComponent, BarraSuperiorComponent],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,

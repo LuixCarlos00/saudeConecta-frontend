@@ -1,7 +1,6 @@
 /* Container Principal */
 .dados-pessoais-container {
-  max-width: 1000px;
-  margin: 0 auto;
+
   padding: 24px;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }

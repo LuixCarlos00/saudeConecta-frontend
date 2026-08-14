@@ -20,6 +20,7 @@ export interface DecodedToken {
   organizacaoId?: number;
   tipoUsuario?: number;
   perfil?: string;
+  tipoProfissional?: string;
 }
 
 /**
@@ -248,13 +249,11 @@ export class AuthService implements OnDestroy {
    * Verifica se a role é permitida no sistema
    */
   hasAllowedRole(role: string): boolean {
-    // Verifica se contém alguma das roles permitidas
-    return role.includes('ROLE_ADMIN') || 
-           role.includes('ROLE_SUPER_ADMIN') || 
+    // Verifica se contém alguma das roles permitidas (baseado em TipoUsuarioNovo)
+    return role.includes('ROLE_SUPER_ADMIN') || 
+           role.includes('ROLE_ADMIN') || 
            role.includes('ROLE_PROFISSIONAL') || 
-           role.includes('ROLE_RECEPCIONISTA') ||
-           role.includes('ROLE_Medico') ||
-           role.includes('ROLE_Secretaria');
+           role.includes('ROLE_RECEPCIONISTA');
   }
 
   /**
@@ -305,6 +304,80 @@ export class AuthService implements OnDestroy {
    */
   hasOrganization(): boolean {
     return this.getOrganizacaoId() !== null;
+  }
+
+  /**
+   * Obtém o perfil do usuário atual
+   */
+  getUserProfile(): string {
+    const user = this.getCurrentUser();
+    console.log('AuthService - getCurrentUser:', user);
+    console.log('AuthService - perfil:', user?.perfil);
+    return user?.perfil ?? '';
+  }
+
+  /**
+   * Verifica se o usuário tem um perfil específico
+   */
+  hasProfile(profile: string): boolean {
+    const currentProfile = this.getUserProfile();
+    console.log(`AuthService - hasProfile(${profile}): currentProfile="${currentProfile}", result=${currentProfile === profile}`);
+    return currentProfile === profile;
+  }
+
+  /**
+   * Verifica se o usuário é ROOT (Super Administrador)
+   */
+  isRoot(): boolean {
+    return this.hasProfile('ROOT');
+  }
+
+  /**
+   * Verifica se o usuário é GESTOR
+   */
+  isGestor(): boolean {
+    return this.hasProfile('GESTOR');
+  }
+
+  /**
+   * Verifica se o usuário é CLINICO
+   */
+  isClinico(): boolean {
+    return this.hasProfile('CLINICO');
+  }
+
+  /**
+   * Verifica se o usuário é ASSISTENTE
+   */
+  isAssistente(): boolean {
+    return this.hasProfile('ASSISTENTE');
+  }
+
+  /**
+   * Obtém a especialização do clínico logado (MEDICO ou DENTISTA).
+   *
+   * @returns tipo do profissional ou string vazia quando não aplicável
+   */
+  getTipoProfissional(): string {
+    return this.getCurrentUser()?.tipoProfissional ?? '';
+  }
+
+  /**
+   * Verifica se o clínico logado é médico.
+   *
+   * @returns true quando o tipo profissional é MEDICO
+   */
+  isMedico(): boolean {
+    return this.getTipoProfissional() === 'MEDICO';
+  }
+
+  /**
+   * Verifica se o clínico logado é dentista.
+   *
+   * @returns true quando o tipo profissional é DENTISTA
+   */
+  isDentista(): boolean {
+    return this.getTipoProfissional() === 'DENTISTA';
   }
 
   /**

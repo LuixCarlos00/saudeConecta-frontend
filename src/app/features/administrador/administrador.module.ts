@@ -30,11 +30,9 @@ import { RelatorioModule } from 'src/app/features/relatorio/relatorio.module';
 // Componentes de Cadastros
 import { CadastroAdmComponent } from './cadastros/cadastro-adm/cadastro-adm.component';
 import { CadastroAdminOrgComponent } from './cadastros/cadastro-admin-org/cadastro-admin-org.component';
-import { CadastroComponent } from './cadastros/cadastro/cadastro.component';
 import { CadastroMedicoComponent } from './cadastros/cadastro-medico/cadastro-medico.component';
 import { CadastroPacienteComponent } from './cadastros/cadastro-paciente/cadastro-paciente.component';
 import { CadastroSecretariaComponent } from './cadastros/cadastro-secretaria/cadastro-secretaria.component';
-import { CadastroUsuarioComponent } from './cadastros/cadastro-usuario/cadastro-usuario.component';
 
 // Componentes de Configurações
 import { ConfiguracoesSistemaComponent } from './configuracoes/configuracoes-sistema.component';
@@ -79,6 +77,7 @@ import { GerenciarPlanosComponent } from './planos/gerenciar-planos/gerenciar-pl
 // Componentes de Suporte
 import { SobreComponent } from './sobre/sobre.component';
 import { SuporteComponent } from './suporte/suporte.component';
+import { GestaoChamadosComponent } from './suporte/gestao-chamados/gestao-chamados.component';
 import { TrocaSenhaComponent } from './troca-senha/troca-senha.component';
 
 const routes: Routes = [
@@ -107,11 +106,9 @@ const routes: Routes = [
     // Componentes de Cadastros
     CadastroAdmComponent,
     CadastroAdminOrgComponent,
-    CadastroComponent,
     CadastroMedicoComponent,
     CadastroPacienteComponent,
     CadastroSecretariaComponent,
-    CadastroUsuarioComponent,
     
     // Componentes de Configurações
     ConfiguracoesSistemaComponent,
@@ -156,6 +153,7 @@ const routes: Routes = [
     // Componentes de Suporte
     SobreComponent,
     SuporteComponent,
+    GestaoChamadosComponent,
     TrocaSenhaComponent,
     
     // Pipes

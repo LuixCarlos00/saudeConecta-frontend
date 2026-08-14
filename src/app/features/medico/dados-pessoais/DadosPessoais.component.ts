@@ -150,10 +150,10 @@ export class DadosPessoaisComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (dados) => {
           console.log('dados', dados);
-          this.tipoUsuario = dados.tipoUsuarioNovo || '';
-          this.isProfissional = dados.tipoUsuarioNovo === 'CLINICO';
-          this.isAdmin = dados.tipoUsuarioNovo === 'GESTOR';
-          this.isSecretaria = dados.tipoUsuarioNovo === 'ASSISTENTE';
+          this.tipoUsuario = dados.tipoUsuario || '';
+          this.isProfissional = dados.tipoUsuario === 'CLINICO';
+          this.isAdmin = dados.tipoUsuario === 'GESTOR';
+          this.isSecretaria = dados.tipoUsuario === 'ASSISTENTE';
 
           // Reconfigura o form de acordo com o tipo de usuário
           this.configurarFormPorTipo();

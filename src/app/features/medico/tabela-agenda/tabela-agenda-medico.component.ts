@@ -84,7 +84,7 @@ export class TabelaAgendaMedicoComponent implements OnInit {
   }
 
   private navegarParaProntuario(): void {
-    if (this.UsuarioLogado.perfil === 'DENTISTA') {
+    if (this.UsuarioLogado.tipoProfissional === 'DENTISTA') {
       this.route.navigate(['startconsulta-dentista']);
     } else {
       this.route.navigate(['startconsulta']);

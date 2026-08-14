@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Subject, takeUntil } from 'rxjs';
 
 // Core services
@@ -25,6 +25,9 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   /** Flag de loading */
   isLoading = false;
+
+  /** Controla a visibilidade do campo de senha */
+  showPassword = false;
 
   /** Subject para gerenciar unsubscribe */
   private readonly destroy$ = new Subject<void>();
@@ -58,10 +61,19 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Navega para cadastro de novo usuário
+   * Alterna a visibilidade do campo de senha
    */
-  navigateToRegister(): void {
-    this.router.navigate(['cadastroUsuario']);
+  togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
+  }
+
+  /**
+   * Indica se um controle deve exibir mensagem de erro
+   * @param control Controle do formulário a validar
+   * @returns true quando o controle é inválido e já foi tocado/alterado
+   */
+  isInvalid(control: AbstractControl | null): boolean {
+    return !!control && control.invalid && (control.touched || control.dirty);
   }
 
   /**
@@ -142,12 +154,11 @@ export class LoginComponent implements OnInit, OnDestroy {
     return this.loginForm.get('password');
   }
 
-  // ========== Métodos legados (compatibilidade) ==========
-
-  /** @deprecated Use navigateToRegister() */
-  cadastraNovoUsuario(): void {
-    this.navigateToRegister();
+  get perfilControl() {
+    return this.loginForm.get('perfil');
   }
+
+  // ========== Métodos legados (compatibilidade) ==========
 
   /** @deprecated Use navigateToPasswordRecovery() */
   recuperaSenha_Usuario(): void {

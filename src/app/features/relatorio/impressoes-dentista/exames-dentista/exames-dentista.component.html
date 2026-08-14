@@ -1,119 +1,79 @@
-<div class="documento-container">
-  <!-- Header do Dialog -->
+<div class="registro-container">
   <header class="dialog-header">
     <div class="header-info">
-      <div class="header-icon">
-        <i class="fa-solid fa-tooth"></i>
-      </div>
+      <div class="header-icon"><i class="fa-solid fa-flask-vial"></i></div>
       <div class="header-text">
         <h2 class="header-title">Solicitação de Procedimentos</h2>
-        <p class="header-subtitle">Documento para realização de procedimentos odontológicos</p>
+        <p class="header-subtitle">Documento odontológico para realização de procedimentos</p>
       </div>
     </div>
-    <button class="close-btn" mat-dialog-close>
-      <i class="fa-solid fa-xmark"></i>
-    </button>
+    <button class="close-btn" mat-dialog-close><i class="fa-solid fa-xmark"></i></button>
   </header>
 
-  <!-- Conteúdo do PDF -->
   <div class="dialog-body">
     <div id="pdfContent" class="pdf-content">
-      <!-- Cabeçalho do Documento -->
+
+      <!-- Cabeçalho -->
       <div class="pdf-header">
         <h1 class="pdf-title">SOLICITAÇÃO DE PROCEDIMENTOS</h1>
+        <div class="pdf-subtitle">Nº {{ codigoProntuario }}</div>
       </div>
 
-      <!-- Seção: Dados do Paciente -->
-      <div class="pdf-section">
-        <div class="section-header section-header--executive">
-          <h2>DADOS DO PACIENTE</h2>
-        </div>
-        <div class="section-content section-content--horizontal">
-          <div class="pdf-field">
-            <span class="field-label">NOME</span>
-            <span class="field-value">{{ nomePaciente }}</span>
-          </div>
-          <div class="pdf-field">
-            <span class="field-label">CPF</span>
-            <span class="field-value">{{ cpfPaciente }}</span>
-          </div>
-        </div>
+      <!-- Dados do Paciente -->
+      <div class="section-header"><div class="section-bar"></div><span class="section-title">DADOS DO PACIENTE</span></div>
+      <table class="data-table">
+        <tr>
+          <td class="cell"><strong>Nome:</strong> {{ nomePaciente || '-' }}</td>
+          <td class="cell"><strong>CPF:</strong> {{ cpfPaciente || '-' }}</td>
+        </tr>
+      </table>
+
+      <!-- Informações da Solicitação -->
+      <div class="section-header"><div class="section-bar"></div><span class="section-title">INFORMAÇÕES DA SOLICITAÇÃO</span></div>
+      <table class="data-table">
+        <tr>
+          <td class="cell"><strong>Título:</strong> {{ tituloExame || '-' }}</td>
+          <td class="cell"><strong>Solicitado em:</strong> {{ dataSolicitacao || '-' }}</td>
+          <td class="cell"><strong>Data do procedimento:</strong> {{ dataExame || '-' }}</td>
+        </tr>
+      </table>
+
+      <!-- Dentista Solicitante -->
+      <div class="section-header"><div class="section-bar"></div><span class="section-title">DENTISTA SOLICITANTE</span></div>
+      <table class="data-table">
+        <tr>
+          <td class="cell"><strong>Nome:</strong> {{ nomeDentista || '-' }}</td>
+          <td class="cell"><strong>CRO:</strong> {{ cro || '-' }}</td>
+          <td class="cell"><strong>Email:</strong> {{ emailDentista || '-' }}</td>
+          <td class="cell"><strong>Tel.:</strong> {{ telefoneDentista || '-' }}</td>
+        </tr>
+      </table>
+
+      <!-- Procedimentos Solicitados -->
+      <div class="section-header"><div class="section-bar"></div><span class="section-title">PROCEDIMENTOS SOLICITADOS</span></div>
+      <div class="texto-bloco">{{ procedimentos || '-' }}</div>
+
+      <!-- Assinatura -->
+      <div class="section-header"><div class="section-bar"></div><span class="section-title">ASSINATURA</span></div>
+      <div class="assinatura-box">
+        <div class="assinatura-linha"></div>
+        <div class="assinatura-nome">{{ nomeDentista || 'Profissional' }}</div>
+        <div class="assinatura-nome">CRO: {{ cro || '-' }}</div>
       </div>
 
-      <!-- Seção: Dentista Solicitante -->
-      <div class="pdf-section">
-        <div class="section-header section-header--executive">
-          <h2>DENTISTA SOLICITANTE</h2>
-        </div>
-        <div class="section-content section-content--horizontal">
-          <div class="pdf-field">
-            <span class="field-label">NOME</span>
-            <span class="field-value">Dr. {{ nomeDentista }}</span>
-          </div>
-          <div class="pdf-field">
-            <span class="field-label">CRO</span>
-            <span class="field-value">{{ cro }}</span>
-          </div>
-          <div class="pdf-field">
-            <span class="field-label">EMAIL</span>
-            <span class="field-value">{{ emailDentista }}</span>
-          </div>
-          <div class="pdf-field">
-            <span class="field-label">TELEFONE</span>
-            <span class="field-value">{{ telefoneDentista }}</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Seção: Informações da Solicitação -->
-      <div class="pdf-section">
-        <div class="section-header section-header--executive">
-          <h2>INFORMAÇÕES DA SOLICITAÇÃO</h2>
-        </div>
-        <div class="section-content section-content--horizontal">
-          <div class="pdf-field">
-            <span class="field-label">TÍTULO</span>
-            <span class="field-value">{{ tituloExame }}</span>
-          </div>
-          <div class="pdf-field">
-            <span class="field-label">DATA DA SOLICITAÇÃO</span>
-            <span class="field-value">{{ dataSolicitacao }}</span>
-          </div>
-          <div class="pdf-field">
-            <span class="field-label">DATA DO PROCEDIMENTO</span>
-            <span class="field-value">{{ dataExame }}</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Seção: Procedimentos Solicitados -->
-      <div class="pdf-section">
-        <div class="section-header section-header--executive">
-          <h2>PROCEDIMENTOS SOLICITADOS</h2>
-        </div>
-        <div class="section-content section-content--vertical">
-          <div class="exame-content">{{ procedimentos }}</div>
-        </div>
-      </div>
+      <!-- Aviso -->
+      <div class="alert-row">Documento válido para apresentação em clínicas e laboratórios odontológicos.</div>
 
       <!-- Rodapé -->
       <div class="pdf-footer">
-        <div class="footer-line"></div>
-        <p class="footer-date">Emitido em: {{ dataAtual }}</p>
-        <p class="footer-info">Documento válido para apresentação em laboratórios e clínicas especializadas.</p>
+        <div class="footer-date">Emitido em: {{ getDataAtual() }} às {{ getHoraAtual() }}</div>
+        <div class="footer-info">Documento odontológico - Confidencial</div>
       </div>
     </div>
   </div>
 
-  <!-- Footer com Ações -->
   <footer class="dialog-footer">
-    <button class="btn btn--secondary" mat-dialog-close>
-      <i class="fa-solid fa-xmark"></i>
-      Cancelar
-    </button>
-    <button class="btn btn--primary" (click)="GerarPDF()">
-      <i class="fa-solid fa-file-pdf"></i>
-      Gerar PDF
-    </button>
+    <button class="btn btn--secondary" mat-dialog-close><i class="fa-solid fa-xmark"></i> Cancelar</button>
+    <button class="btn btn--primary" (click)="GerarPDF()"><i class="fa-solid fa-file-pdf"></i> Gerar PDF</button>
   </footer>
 </div>

@@ -5,6 +5,9 @@
 
 /* Variáveis CSS */
 :host {
+  display: block;
+  height: 100%;
+  flex-shrink: 0;
   --sidebar-width-collapsed: 72px;
   --sidebar-width-expanded: 260px;
   --sidebar-bg: #1a1f2e;
@@ -21,17 +24,16 @@
   --border-radius: 12px;
 }
 
-/* Sidebar Principal */
+/* Sidebar Principal
+   No desktop, o sidebar participa do fluxo flex (empurra o conteúdo,
+   sem sobrepor). No mobile, volta a ser fixed/overlay (ver media query). */
 .sidebar {
-  position: fixed;
-  top: 0;
-  left: 0;
   height: 100vh;
   width: var(--sidebar-width-collapsed);
+  flex-shrink: 0;
   background: var(--sidebar-bg);
   display: flex;
   flex-direction: column;
-  z-index: 1000;
   transition: width var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 4px 0 24px rgba(0, 0, 0, 0.15);
   overflow: hidden;
@@ -76,9 +78,17 @@
   font-weight: 700;
   color: var(--text-primary);
   white-space: nowrap;
-  opacity: 0;
-  transform: translateX(-10px);
-  transition: opacity var(--transition-speed), transform var(--transition-speed);
+}
+
+.sidebar-section-title {
+  padding: 16px 20px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid var(--sidebar-border);
+  margin-bottom: 4px;
 }
 
 .sidebar.expanded .logo-text {
@@ -94,12 +104,8 @@
   padding: 8px;
   border-radius: 8px;
   transition: all 0.2s;
-  opacity: 0;
-  min-width: 32px;
-}
-
-.sidebar.expanded .toggle-btn {
   opacity: 1;
+  min-width: 32px;
 }
 
 .toggle-btn:hover {
@@ -425,7 +431,7 @@
 
 /* Scrollbar Customizada */
 .sidebar-nav::-webkit-scrollbar {
-  width: 4px;
+  width: 0px;
 }
 
 .sidebar-nav::-webkit-scrollbar-track {
@@ -433,12 +439,21 @@
 }
 
 .sidebar-nav::-webkit-scrollbar-thumb {
-  background: var(--sidebar-border);
-  border-radius: 4px;
+  background: transparent;
 }
 
 .sidebar-nav::-webkit-scrollbar-thumb:hover {
-  background: var(--text-muted);
+  background: transparent;
+}
+
+/* Esconder scrollbar horizontal */
+.sidebar-nav {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+}
+
+.sidebar-nav::-webkit-scrollbar {
+  display: none; /* Chrome/Safari/Opera */
 }
 
 /* =============================================================================
@@ -447,6 +462,10 @@
 
 @media (max-width: 768px) {
   .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
     transform: translateX(-100%);
     width: var(--sidebar-width-expanded);
   }

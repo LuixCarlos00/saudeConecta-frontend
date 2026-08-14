@@ -1,162 +1,107 @@
-<div class="atestado-container">
-  <div class="dialog-header">
+<div class="registro-container">
+  <header class="dialog-header">
     <div class="header-info">
-      <div class="header-icon">
-        <i class="fa-solid fa-clipboard-question"></i>
-      </div>
+      <div class="header-icon"><i class="fa-solid fa-clipboard-list"></i></div>
       <div class="header-text">
-        <h1 class="header-title">Questionário de Saúde</h1>
-        <p class="header-subtitle">Pré-visualização do documento</p>
+        <h2 class="header-title">Questionário de Saúde</h2>
+        <p class="header-subtitle">Anamnese respondida pelo paciente</p>
       </div>
     </div>
-    <button class="close-btn" (click)="fechar()">
-      <i class="fa-solid fa-xmark"></i>
-    </button>
-  </div>
+    <button class="close-btn" (click)="fechar()"><i class="fa-solid fa-xmark"></i></button>
+  </header>
 
   <div class="dialog-body">
-    <div class="pdf-content" [class.content-blur]="!questionarioRespondido">
+    <div id="pdfContent" class="pdf-content">
 
-      <div class="blur-overlay" *ngIf="!questionarioRespondido">
-        <div class="blur-message">
-          <i class="fa-solid fa-lock"></i>
-          <h3>Questionário não assinado</h3>
-          <p>O paciente ainda não respondeu/assinou o questionário de saúde.</p>
-        </div>
-      </div>
-
-      <div class="pdf-header pdf-header--blue">
+      <!-- Cabeçalho -->
+      <div class="pdf-header">
         <h1 class="pdf-title">QUESTIONÁRIO DE SAÚDE</h1>
-        <p class="pdf-number">Prontuário Nº {{ codigoProntuario }}</p>
+        <div class="pdf-subtitle">Nº {{ codigoProntuario || consultaId }}</div>
       </div>
 
-      <!-- Dados do Profissional -->
-      <div class="pdf-section">
-        <div class="section-header section-header--blue">
-          <h2>DADOS DO PROFISSIONAL</h2>
-        </div>
-        <div class="section-content section-content--horizontal">
-          <div class="pdf-field">
-            <span class="field-label">NOME</span>
-            <span class="field-value">{{ nomeMedico }}</span>
-          </div>
-          <div class="pdf-field">
-            <span class="field-label">CRM</span>
-            <span class="field-value">{{ crm }}</span>
-          </div>
-        </div>
+      <!-- Aviso de pendência -->
+      <div class="alert-row" *ngIf="!questionarioRespondido">
+        Questionário ainda não respondido ou não assinado pelo paciente.
       </div>
 
       <!-- Dados do Paciente -->
-      <div class="pdf-section">
-        <div class="section-header section-header--green">
-          <h2>DADOS DO PACIENTE</h2>
-        </div>
-        <div class="section-content section-content--horizontal">
-          <div class="pdf-field">
-            <span class="field-label">PACIENTE</span>
-            <span class="field-value">{{ nomePaciente }}</span>
-          </div>
-          <div class="pdf-field">
-            <span class="field-label">CPF</span>
-            <span class="field-value">{{ cpfPaciente || '-' }}</span>
-          </div>
-        </div>
-      </div>
+      <div class="section-header"><div class="section-bar"></div><span class="section-title">DADOS DO PACIENTE</span></div>
+      <table class="data-table">
+        <tr>
+          <td class="cell"><strong>Nome:</strong> {{ nomePaciente || '-' }}</td>
+          <td class="cell"><strong>CPF:</strong> {{ cpfPaciente || '-' }}</td>
+        </tr>
+      </table>
 
       <!-- Dados da Consulta -->
-      <div class="pdf-section">
-        <div class="section-header section-header--blue">
-          <h2>DADOS DA CONSULTA</h2>
-        </div>
-        <div class="section-content section-content--horizontal">
-          <div class="pdf-field">
-            <span class="field-label">CONSULTA Nº</span>
-            <span class="field-value">{{ consultaId }}</span>
-          </div>
-          <div class="pdf-field">
-            <span class="field-label">DATA</span>
-            <span class="field-value">{{ dataConsulta }}</span>
-          </div>
-          <div class="pdf-field">
-            <span class="field-label">HORÁRIO</span>
-            <span class="field-value">{{ horarioConsulta }}</span>
-          </div>
-        </div>
-      </div>
+      <div class="section-header"><div class="section-bar"></div><span class="section-title">DADOS DA CONSULTA</span></div>
+      <table class="data-table">
+        <tr>
+          <td class="cell"><strong>Consulta Nº:</strong> {{ consultaId || '-' }}</td>
+          <td class="cell"><strong>Data:</strong> {{ dataConsulta || '-' }}</td>
+          <td class="cell"><strong>Horário:</strong> {{ horarioConsulta || '-' }}</td>
+          <td class="cell"><strong>Status:</strong> {{ questionarioStatus || 'PENDENTE' }}</td>
+        </tr>
+      </table>
+
+      <!-- Médico Atendente -->
+      <div class="section-header"><div class="section-bar"></div><span class="section-title">MÉDICO ATENDENTE</span></div>
+      <table class="data-table">
+        <tr>
+          <td class="cell"><strong>Nome:</strong> {{ nomeMedico || '-' }}</td>
+          <td class="cell"><strong>CRM:</strong> {{ crm || '-' }}</td>
+        </tr>
+      </table>
 
       <!-- Respostas do Questionário -->
-      <div class="pdf-section" *ngIf="questionarioPerguntas.length > 0">
-        <div class="section-header section-header--purple">
-          <h2>RESPOSTAS DO QUESTIONÁRIO</h2>
-        </div>
-        <div class="section-content section-content--vertical">
-          <table class="questionario-table">
-            <thead>
-              <tr>
-                <th style="width: 50%;">PERGUNTA</th>
-                <th style="width: 15%;">RESPOSTA</th>
-                <th style="width: 35%;">OBSERVAÇÃO</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let item of questionarioPerguntas">
-                <td>{{ item.pergunta }}</td>
-                <td>
-                  <span class="badge"
-                    [class.badge--success]="item.resposta === 'Não'"
-                    [class.badge--warning]="item.resposta === 'Sim'">
-                    {{ item.resposta }}
-                  </span>
-                </td>
-                <td>{{ item.observacao || '—' }}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <ng-container *ngIf="questionarioPerguntas.length > 0">
+        <div class="section-header"><div class="section-bar"></div><span class="section-title">RESPOSTAS DO QUESTIONÁRIO</span></div>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th class="cell cell--header col-pergunta">PERGUNTA</th>
+              <th class="cell cell--header col-resposta">RESPOSTA</th>
+              <th class="cell cell--header col-observacao">OBSERVAÇÃO</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of questionarioPerguntas">
+              <td class="cell">{{ item.pergunta }}</td>
+              <td class="cell cell--center">{{ item.resposta || '-' }}</td>
+              <td class="cell">{{ item.observacao || '-' }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </ng-container>
 
       <!-- Assinatura Digital -->
-      <div class="pdf-section" *ngIf="questionarioRespondido">
-        <div class="section-header section-header--teal">
-          <h2>ASSINATURA DIGITAL</h2>
+      <ng-container *ngIf="questionarioRespondido">
+        <div class="section-header"><div class="section-bar"></div><span class="section-title">ASSINATURA DIGITAL</span></div>
+        <table class="data-table">
+          <tr>
+            <td class="cell"><strong>Data/Hora:</strong> {{ formatarDataAssinatura() }}</td>
+            <td class="cell"><strong>IP de Origem:</strong> {{ questionarioIpOrigem || '-' }}</td>
+          </tr>
+        </table>
+        <div class="assinatura-box" *ngIf="questionarioAssinatura">
+          <img class="assinatura-img" [src]="questionarioAssinatura" alt="Assinatura do paciente" />
+          <div class="assinatura-linha"></div>
+          <div class="assinatura-nome">{{ nomePaciente || 'Paciente' }}</div>
         </div>
-        <div class="section-content section-content--vertical">
-          <div class="assinatura-info">
-            <div class="assinatura-dados">
-              <div class="assinatura-item">
-                <i class="fa-solid fa-calendar-check"></i>
-                <span><strong>Data/Hora:</strong> {{ formatarDataAssinatura() }}</span>
-              </div>
-              <div class="assinatura-item">
-                <i class="fa-solid fa-network-wired"></i>
-                <span><strong>IP de Origem:</strong> {{ questionarioIpOrigem || '-' }}</span>
-              </div>
-            </div>
-            <div class="assinatura-imagem" *ngIf="questionarioAssinatura">
-              <p class="assinatura-label">Assinatura do Paciente</p>
-              <img [src]="questionarioAssinatura" alt="Assinatura do paciente" />
-            </div>
-          </div>
-        </div>
-      </div>
+      </ng-container>
 
+      <!-- Rodapé -->
       <div class="pdf-footer">
-        <div class="footer-line"></div>
         <div class="footer-date">Emitido em: {{ getDataAtual() }} às {{ getHoraAtual() }}</div>
         <div class="footer-info">Documento clínico - Confidencial</div>
       </div>
     </div>
   </div>
 
-  <div class="dialog-footer">
-    <button class="btn btn--secondary" (click)="fechar()">
-      <i class="fa-solid fa-xmark"></i>
-      Cancelar
-    </button>
+  <footer class="dialog-footer">
+    <button class="btn btn--secondary" (click)="fechar()"><i class="fa-solid fa-xmark"></i> Cancelar</button>
     <button class="btn btn--primary" (click)="GerarPDF()" [disabled]="!questionarioRespondido">
-      <i class="fa-solid fa-file-pdf"></i>
-      Gerar PDF
+      <i class="fa-solid fa-file-pdf"></i> Gerar PDF
     </button>
-  </div>
+  </footer>
 </div>

@@ -5,5 +5,7 @@ export * from './auth-api.service';
 export * from './secretaria-api.service';
 export * from './administrador-api.service';
 
+export * from './chamado-suporte-api.service';
 export * from './controle-acesso-api.service';
+export * from './relatorio-api.service';
 export * from './api-url.service';

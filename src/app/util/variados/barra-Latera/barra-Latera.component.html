@@ -1,6 +1,5 @@
 <!-- Sidebar Moderno - Healthcare Admin -->
-<aside class="sidebar" [class.expanded]="isExpanded" [class.mobile-open]="isMobileOpen" (mouseenter)="onMouseEnter()"
-  (mouseleave)="onMouseLeave()">
+<aside class="sidebar" [class.expanded]="isExpanded" [class.mobile-open]="isMobileOpen">
 
   <!-- Header do Sidebar -->
   <div class="sidebar-header">
@@ -14,16 +13,8 @@
   </div>
 
   <!-- Informações do Usuário -->
-  <div class="user-info">
-    <div class="user-avatar">
-      <i class="fa-solid fa-user-doctor"></i>
-    </div>
-    <div class="user-details" (click)="navegarPara('/Dashboard')">
-      <span class="user-name">{{ getNomeExibicao() }}</span>
-      <span class="user-role">{{ getUserRole() }}</span>
-    </div>
-  </div>
 
+  <div class="sidebar-section-title">Menu Operacional</div>
   <!-- Navegação Principal -->
   <nav class="sidebar-nav">
     <ul class="nav-list">
@@ -39,13 +30,35 @@
       </li>
 
       <!-- ========== MENU SUPER ADMIN / ADMIN ========== -->
-        <li class="nav-item" *ngIf="ControleAcessoService.podeVerMenuAgenda()"
-            [class.active]="activeRoute === 'gerenciamento'">
-            <button class="nav-link" (click)="navigateTo('gerenciamento')" title="Gerenciamento de Agenda">
-                <i class="fa-solid fa-calendar-check nav-icon"></i>
-                <span class="nav-text">Agenda</span>
+<!--        <li class="nav-item" *ngIf="ControleAcessoService.podeVerMenuAgenda()"-->
+<!--            [class.active]="activeRoute === 'gerenciamento'">-->
+<!--            <button class="nav-link" (click)="navigateTo('gerenciamento')" title="Gerenciamento de Agenda">-->
+<!--                <i class="fa-solid fa-calendar-check nav-icon"></i>-->
+<!--                <span class="nav-text">Agenda</span>-->
+<!--            </button>-->
+<!--        </li>-->
+
+
+        <!-- Agenda Calendário - Médico, Secretaria e Admin -->
+        <li class="nav-item"
+            *ngIf="ControleAcessoService.podeVerMenuMinhaAgenda() || ControleAcessoService.podeVerMenuAgenda()"
+            [class.active]="activeRoute === 'AgendaCalendario'">
+            <button class="nav-link" (click)="navigateTo('AgendaCalendario')" title="Agenda Calendário">
+                <i class="fa-solid fa-calendar-days nav-icon"></i>
+                <span class="nav-text">Agenda Calendário</span>
             </button>
         </li>
+
+
+      <!-- Relatórios - Profissional, Admin e Secretaria -->
+      <li class="nav-item"
+        *ngIf="!ControleAcessoService.isSuperAdmin()"
+        [class.active]="activeRoute === 'Relatorios'">
+        <button class="nav-link" (click)="navigateTo('Relatorios')" title="Relatórios dos Pacientes">
+          <i class="fa-solid fa-folder-open nav-icon"></i>
+          <span class="nav-text">Relatórios</span>
+        </button>
+      </li>
 
       <!-- Gerenciamento de Usuários - Super Admin, Admin -->
       <li class="nav-item" *ngIf="ControleAcessoService.podeVerMenuUsuarios()"
@@ -89,23 +102,15 @@
       <!-- ========== MENU PROFISSIONAL DE SAÚDE ========== -->
 
       <!-- Minha Agenda - Profissional -->
-      <li class="nav-item" *ngIf="ControleAcessoService.podeVerMenuMinhaAgenda()"
+<!--      <li class="nav-item" *ngIf="ControleAcessoService.podeVerMenuMinhaAgenda()"
         [class.active]="activeRoute === 'AgendaMedico'">
         <button class="nav-link" (click)="navigateTo('AgendaMedico')" title="Minha Agenda">
           <i class="fa-solid fa-calendar-check nav-icon"></i>
           <span class="nav-text">Minha Agenda</span>
         </button>
-      </li>
+      </li>-->
 
-      <!-- Agenda Calendário - Médico, Secretaria e Admin -->
-      <li class="nav-item"
-        *ngIf="ControleAcessoService.podeVerMenuMinhaAgenda() || ControleAcessoService.podeVerMenuAgenda()"
-        [class.active]="activeRoute === 'AgendaCalendario'">
-        <button class="nav-link" (click)="navigateTo('AgendaCalendario')" title="Agenda Calendário">
-          <i class="fa-solid fa-calendar-days nav-icon"></i>
-          <span class="nav-text">Agenda Calendário</span>
-        </button>
-      </li>
+
 
 
       <!-- ========== MENU COMUM ========== -->
@@ -121,6 +126,24 @@
 
       <!-- Divisor -->
       <li class="nav-divider"></li>
+
+      <!-- Gestao de Chamados - Super Admin apenas -->
+      <li class="nav-item" *ngIf="ControleAcessoService.isSuperAdmin()"
+        [class.active]="activeRoute === 'GestaoChamados'">
+        <button class="nav-link" (click)="navigateTo('GestaoChamados')" title="Gestão de Chamados">
+          <i class="fa-solid fa-ticket nav-icon"></i>
+          <span class="nav-text">Gestão de Chamados</span>
+        </button>
+      </li>
+
+      <!-- Suporte - Todos exceto Super Admin -->
+      <li class="nav-item" *ngIf="!ControleAcessoService.isSuperAdmin()"
+        [class.active]="activeRoute === 'Suporte'">
+        <button class="nav-link" (click)="navigateTo('suporte')" title="Suporte">
+          <i class="fa-solid fa-headset nav-icon"></i>
+          <span class="nav-text">Suporte</span>
+        </button>
+      </li>
 
       <!-- ========== CONFIGURAÇÕES ========== -->
       <li class="nav-item has-submenu" [class.submenu-open]="isConfigOpen">
@@ -144,13 +167,6 @@
               <span>Alterar Senha</span>
             </button>
           </li>
-          <!-- Suporte - Todos -->
-          <!-- <li class="submenu-item">
-            <button class="submenu-link" (click)="navigateTo('suporte')">
-              <i class="fa-solid fa-headset"></i>
-              <span>Suporte</span>
-            </button>
-          </li> -->
           <!-- Sobre - Todos -->
           <!-- <li class="submenu-item">
             <button class="submenu-link" (click)="navigateTo('sobre')">

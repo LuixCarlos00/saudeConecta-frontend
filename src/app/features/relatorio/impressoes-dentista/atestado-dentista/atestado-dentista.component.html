@@ -1,160 +1,87 @@
-<div class="atestado-container">
-  <!-- Header do Dialog -->
+<div class="registro-container">
   <header class="dialog-header">
     <div class="header-info">
-      <div class="header-icon">
-        <i class="fa-solid fa-file-signature"></i>
-      </div>
+      <div class="header-icon"><i class="fa-solid fa-file-signature"></i></div>
       <div class="header-text">
         <h2 class="header-title">Atestado Odontológico</h2>
         <p class="header-subtitle">Documento oficial de atendimento</p>
       </div>
     </div>
-    <button class="close-btn" mat-dialog-close>
-      <i class="fa-solid fa-xmark"></i>
-    </button>
+    <button class="close-btn" mat-dialog-close><i class="fa-solid fa-xmark"></i></button>
   </header>
 
-  <!-- Conteúdo do PDF -->
   <div class="dialog-body">
     <div id="pdfContent" class="pdf-content">
-      <!-- Cabeçalho do Documento -->
+
+      <!-- Cabeçalho -->
       <div class="pdf-header">
         <h1 class="pdf-title">ATESTADO ODONTOLÓGICO</h1>
-        <div class="pdf-number">Nº: {{ codigoProntuario }}</div>
+        <div class="pdf-subtitle">Nº {{ codigoProntuario }}</div>
       </div>
 
-      <!-- Seção: Dados do Paciente -->
-      <div class="pdf-section">
-        <div class="section-header section-header--executive">
-          <h2>DADOS DO PACIENTE</h2>
-        </div>
-        <div class="section-content section-content--horizontal">
-          <div class="pdf-field">
-            <span class="field-label">NOME</span>
-            <span class="field-value">{{ nomePaciente }}</span>
-          </div>
-          <div class="pdf-field">
-            <span class="field-label">CPF</span>
-            <span class="field-value">{{ cpfPaciente }}</span>
-          </div>
-          <div class="pdf-field">
-            <span class="field-label">DATA NASCIMENTO</span>
-            <span class="field-value">{{ dataNascimento }}</span>
-          </div>
-        </div>
-      </div>
+      <!-- Dados do Paciente -->
+      <div class="section-header"><div class="section-bar"></div><span class="section-title">DADOS DO PACIENTE</span></div>
+      <table class="data-table">
+        <tr>
+          <td class="cell"><strong>Nome:</strong> {{ nomePaciente || '-' }}</td>
+          <td class="cell"><strong>CPF:</strong> {{ cpfPaciente || '-' }}</td>
+          <td class="cell"><strong>Nasc.:</strong> {{ dataNascimento || '-' }}</td>
+        </tr>
+      </table>
 
-      <!-- Seção: Dados da Consulta -->
-      <div class="pdf-section">
-        <div class="section-header section-header--executive">
-          <h2>DADOS DA CONSULTA</h2>
-        </div>
-        <div class="section-content section-content--horizontal">
-          <div class="pdf-field">
-            <span class="field-label">DATA</span>
-            <span class="field-value">{{ dataConsulta }}</span>
-          </div>
-          <div class="pdf-field">
-            <span class="field-label">HORÁRIO</span>
-            <span class="field-value">{{ horarioConsulta }}</span>
-          </div>
-          <div class="pdf-field">
-            <span class="field-label">DIA DA SEMANA</span>
-            <span class="field-value">{{ diaSemana }}</span>
-          </div>
-        </div>
-      </div>
+      <!-- Dados da Consulta -->
+      <div class="section-header"><div class="section-bar"></div><span class="section-title">DADOS DA CONSULTA</span></div>
+      <table class="data-table">
+        <tr>
+          <td class="cell"><strong>Data:</strong> {{ dataConsulta || '-' }}</td>
+          <td class="cell"><strong>Horário:</strong> {{ horarioConsulta || '-' }}</td>
+          <td class="cell"><strong>Dia:</strong> {{ diaSemana || '-' }}</td>
+        </tr>
+      </table>
 
-      <!-- Seção: Dentista Atendente -->
-      <div class="pdf-section">
-        <div class="section-header section-header--executive">
-          <h2>DENTISTA ATENDENTE</h2>
-        </div>
-        <div class="section-content section-content--horizontal">
-          <div class="pdf-field">
-            <span class="field-label">NOME</span>
-            <span class="field-value">Dr. {{ nomeDentista }}</span>
-          </div>
-          <div class="pdf-field">
-            <span class="field-label">CRO</span>
-            <span class="field-value">{{ cro }}</span>
-          </div>
-          <div class="pdf-field">
-            <span class="field-label">EMAIL</span>
-            <span class="field-value">{{ emailDentista }}</span>
-          </div>
-          <div class="pdf-field">
-            <span class="field-label">TELEFONE</span>
-            <span class="field-value">{{ telefoneDentista }}</span>
-          </div>
-        </div>
-      </div>
+      <!-- Dentista Atendente -->
+      <div class="section-header"><div class="section-bar"></div><span class="section-title">DENTISTA ATENDENTE</span></div>
+      <table class="data-table">
+        <tr>
+          <td class="cell"><strong>Nome:</strong> {{ nomeDentista || '-' }}</td>
+          <td class="cell"><strong>CRO:</strong> {{ cro || '-' }}</td>
+        </tr>
+        <tr>
+          <td class="cell"><strong>Email:</strong> {{ emailDentista || '-' }}</td>
+          <td class="cell"><strong>Telefone:</strong> {{ telefoneDentista || '-' }}</td>
+        </tr>
+      </table>
 
-      <!-- Seção: Códigos CID / TUSS -->
-      <div class="pdf-section" *ngIf="cidTexto || tussTexto">
-        <div class="section-header section-header--executive">
-          <h2>CÓDIGOS CID / TUSS</h2>
-        </div>
-        <div class="section-content section-content--vertical">
-          <div class="pdf-field" *ngIf="cidTexto">
-            <span class="field-label">CID</span>
-            <span class="field-value">{{ cidTexto }}</span>
-          </div>
-          <div class="pdf-field" *ngIf="tussTexto">
-            <span class="field-label">TUSS</span>
-            <span class="field-value">{{ tussTexto }}</span>
-          </div>
-        </div>
-      </div>
+      <!-- Códigos CID / TUSS -->
+      <ng-container *ngIf="cidTexto || tussTexto">
+        <div class="section-header"><div class="section-bar"></div><span class="section-title">CÓDIGOS CID / TUSS</span></div>
+        <div class="inline-field" *ngIf="cidTexto"><strong>CID:</strong> {{ cidTexto }}</div>
+        <div class="inline-field" *ngIf="tussTexto"><strong>TUSS:</strong> {{ tussTexto }}</div>
+      </ng-container>
 
-      <!-- Seção: Declaração -->
-      <div class="pdf-section">
-        <div class="section-header section-header--executive">
-          <h2>DECLARAÇÃO</h2>
-        </div>
-        <div class="section-content section-content--vertical">
-          <div class="declaration-content">
-            Atesto para os devidos fins que o(a) paciente acima identificado(a) foi atendido(a) por mim
-            na data e horário mencionados, necessitando de repouso por <span class="days-input">______</span>
-            <strong>dias</strong>.
-          </div>
-        </div>
-      </div>
+      <!-- Declaração -->
+      <div class="section-header"><div class="section-bar"></div><span class="section-title">DECLARAÇÃO</span></div>
+      <div class="texto-bloco">{{ textoDeclaracao }}</div>
 
-      <!-- Seção: Assinatura -->
-      <div class="pdf-section">
-        <div class="section-header section-header--executive">
-          <h2>ASSINATURA</h2>
-        </div>
-        <div class="section-content section-content--vertical">
-          <div class="signature-content">
-            <div class="signature-label">Carimbo e Assinatura:</div>
-            <div class="signature-line"></div>
-            <div class="signature-name">{{ nomeDentista }}</div>
-            <div class="signature-crm">CRO: {{ cro }}</div>
-          </div>
-        </div>
+      <!-- Assinatura -->
+      <div class="section-header"><div class="section-bar"></div><span class="section-title">ASSINATURA</span></div>
+      <div class="assinatura-box">
+        <div class="assinatura-linha"></div>
+        <div class="assinatura-nome">{{ nomeDentista || 'Profissional' }}</div>
+        <div class="assinatura-nome">CRO: {{ cro || '-' }}</div>
       </div>
+      <div class="alert-row">Documento válido apenas com assinatura e carimbo do profissional.</div>
 
       <!-- Rodapé -->
       <div class="pdf-footer">
-        <div class="footer-line"></div>
         <div class="footer-date">Emitido em: {{ getDataAtual() }} às {{ getHoraAtual() }}</div>
-        <div class="footer-info">Documento válido apenas com assinatura e carimbo</div>
+        <div class="footer-info">Atestado odontológico - Confidencial</div>
       </div>
     </div>
   </div>
 
-  <!-- Footer com Ações -->
   <footer class="dialog-footer">
-    <button class="btn btn--secondary" mat-dialog-close>
-      <i class="fa-solid fa-xmark"></i>
-      Cancelar
-    </button>
-    <button class="btn btn--primary" (click)="GerarPDF()">
-      <i class="fa-solid fa-file-pdf"></i>
-      Gerar PDF
-    </button>
+    <button class="btn btn--secondary" mat-dialog-close><i class="fa-solid fa-xmark"></i> Cancelar</button>
+    <button class="btn btn--primary" (click)="GerarPDF()"><i class="fa-solid fa-file-pdf"></i> Gerar PDF</button>
   </footer>
 </div>

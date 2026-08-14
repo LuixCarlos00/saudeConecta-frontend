@@ -1,3 +1,4 @@
+import { ComponentType } from '@angular/cdk/portal';
 import { Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import Swal from 'sweetalert2';
@@ -8,6 +9,7 @@ import { PlanejamentoTerapeuticoApiService } from 'src/app/services/api/planejam
 
 import { Consultav2, StatusConsulta } from 'src/app/util/variados/interfaces/consulta/consultav2';
 import { Prontuario } from 'src/app/util/variados/interfaces/Prontuario/Prontuario';
+import { ConsultaRelatorio, PacienteAtendido, TipoDocumento } from 'src/app/util/variados/interfaces/relatorio/relatorio-paciente';
 
 import { RelatorioComponent } from './relatorio.component';
 
@@ -31,6 +33,15 @@ import { PlanejamentoDentistaComponent } from './impressoes-dentista/planejament
 import { PrescricaoDentistaComponent } from './impressoes-dentista/prescricao-dentista/prescricao-dentista.component';
 import { QuestionarioSaudeDentistaComponent } from './impressoes-dentista/questionario-saude-dentista/questionario-saude-dentista.component';
 import { RegistroConsultaDentistaComponent } from './impressoes-dentista/registro-consulta-dentista/registro-consulta-dentista.component';
+
+/**
+ * Contexto vindo da tela de relatórios por paciente.
+ * Usado pelos documentos que não dependem de prontuário para montar o cabeçalho.
+ */
+export interface ContextoRelatorio {
+  paciente?: PacienteAtendido | null;
+  consulta?: ConsultaRelatorio | null;
+}
 
 /**
  * Serviço centralizado de relatórios.
@@ -150,6 +161,119 @@ export class RelatorioService {
         );
       }
     });
+  }
+
+  // ─────────────────────────────────────────────────────────────────────────────
+  // Fluxo direto — Tela de relatórios por paciente
+  //
+  // Nessa tela o usuário já escolheu o documento no card, então o seletor
+  // (RelatorioComponent) é dispensado: o dialog de impressão é aberto direto.
+  // ─────────────────────────────────────────────────────────────────────────────
+
+  /**
+   * Abre a impressão de um documento específico de uma consulta.
+   * Tenta o prontuário médico e faz fallback para o odontológico,
+   * seguindo o mesmo comportamento do fluxo do administrador.
+   *
+   * O questionário de saúde é assinado pelo paciente antes do atendimento e
+   * existe de forma independente do prontuário, portanto é aberto direto com
+   * os dados do próprio relatório.
+   *
+   * @param consultaId - Consulta que originou o documento
+   * @param tipo - Tipo do documento selecionado no card
+   * @param contexto - Paciente e consulta do relatório, usados pelos documentos que não dependem de prontuário
+   */
+  abrirDocumentoDaConsulta(consultaId: number, tipo: TipoDocumento, contexto?: ContextoRelatorio): void {
+    if (tipo === 'QUESTIONARIO_SAUDE') {
+      this.abrirQuestionarioSaude(consultaId, contexto);
+      return;
+    }
+
+    this.prontuarioApiService.buscarProntuarioById(consultaId).subscribe(
+      (dados: Prontuario) => this.abrirDialogImpressaoMedico(this.mapearTipoParaOpcao(tipo, 'MEDICO'), dados),
+      () => this.prontuarioDentistaApiService.buscarProntuarioDentistaById(consultaId).subscribe(
+        (dados: Prontuario) => this.abrirDialogImpressaoDentista(this.mapearTipoParaOpcao(tipo, 'DENTISTA'), dados),
+        () => this.mostrarErroProntuarioNaoEncontrado()
+      )
+    );
+  }
+
+  /**
+   * Abre a impressão do questionário de saúde sem exigir prontuário.
+   * O componente de impressão busca as respostas pelo id da consulta.
+   *
+   * @param consultaId - Consulta vinculada ao questionário
+   * @param contexto - Paciente e consulta usados no cabeçalho do documento
+   */
+  private abrirQuestionarioSaude(consultaId: number, contexto?: ContextoRelatorio): void {
+    const ehDentista = contexto?.consulta?.tipoProfissionalNome?.toUpperCase() === 'DENTISTA';
+    const componente: ComponentType<unknown> = ehDentista
+      ? QuestionarioSaudeDentistaComponent
+      : QuestionarioSaudeMedicoComponent;
+
+    this.dialog.open(componente, {
+      width: this.DIALOG_WIDTH,
+      height: this.DIALOG_HEIGHT,
+      data: this.montarDadosQuestionario(consultaId, contexto),
+    });
+  }
+
+  /**
+   * Monta o objeto esperado pelos componentes de questionário a partir do relatório.
+   *
+   * @param consultaId - Consulta vinculada ao questionário
+   * @param contexto - Paciente e consulta do relatório
+   * @returns Estrutura compatível com o formato de prontuário usado nas impressões
+   */
+  private montarDadosQuestionario(consultaId: number, contexto?: ContextoRelatorio): any {
+    return {
+      consultaId,
+      profissional: {
+        nome: contexto?.consulta?.profissionalNome ?? '',
+        conselho: '',
+      },
+      consulta: {
+        id: consultaId,
+        dataHora: contexto?.consulta?.dataHora ?? '',
+        pacienteNome: contexto?.paciente?.nome ?? '',
+        paciente: contexto?.paciente
+          ? {
+              id: contexto.paciente.id,
+              nome: contexto.paciente.nome,
+              cpf: contexto.paciente.cpf ?? '',
+            }
+          : null,
+      },
+    };
+  }
+
+  /**
+   * Abre o histórico completo a partir do paciente, sem depender de uma consulta.
+   * O HistoricoCompletoComponent utiliza apenas o pacienteId.
+   * @param pacienteId - Paciente cujo histórico será exibido
+   */
+  abrirHistoricoCompletoDoPaciente(pacienteId: number): void {
+    this.abrirHistoricoCompleto({ pacienteId } as Consultav2);
+  }
+
+  /**
+   * Converte o tipo de documento do relatório na opção usada pelos dialogs.
+   * O planejamento terapêutico possui códigos distintos por tipo de profissional.
+   * @param tipo - Tipo do documento
+   * @param tipoProfissional - 'MEDICO' ou 'DENTISTA'
+   * @returns Código da opção de impressão
+   */
+  private mapearTipoParaOpcao(tipo: TipoDocumento, tipoProfissional: 'MEDICO' | 'DENTISTA'): string {
+    const mapa: Partial<Record<TipoDocumento, string>> = {
+      EXAMES: '1',
+      PRESCRICAO: '2',
+      ATESTADO: '4',
+      REGISTRO_CONSULTA: '5',
+      COMPROVANTE_PAGAMENTO: '6',
+      QUESTIONARIO_SAUDE: '8',
+      PLANEJAMENTO: tipoProfissional === 'DENTISTA' ? '9' : '10',
+    };
+    return mapa[tipo] ?? '5';
   }
 
   // ─────────────────────────────────────────────────────────────────────────────
