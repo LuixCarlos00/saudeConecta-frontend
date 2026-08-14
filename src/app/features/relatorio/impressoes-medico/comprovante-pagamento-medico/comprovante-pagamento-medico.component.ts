@@ -109,207 +109,370 @@ export class ComprovantePagamentoMedicoComponent implements OnInit {
 
   GerarPDF(): void {
     const doc = new jsPDF('p', 'mm', 'a4');
-    const pageWidth = doc.internal.pageSize.getWidth();
-    const pageHeight = doc.internal.pageSize.getHeight();
-    const margin = 12;
+    const pw = doc.internal.pageSize.getWidth();
+    const ph = doc.internal.pageSize.getHeight();
+    const m = 10;
+    const w = pw - m * 2;
     let y = 12;
 
-    // ── Cabeçalho ──
-    doc.setFillColor(44, 62, 80);
-    doc.rect(0, 0, pageWidth, 24, 'F');
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(14);
-    doc.setTextColor(255, 255, 255);
-    doc.text('COMPROVANTE DE PAGAMENTO - CONSULTA', pageWidth / 2, 10, { align: 'center' });
-    doc.setFontSize(8);
-    doc.setTextColor(200, 200, 200);
-    doc.text(`Prontuário Nº ${this.codigoProntuario}`, pageWidth / 2, 16, { align: 'center' });
-    doc.setFontSize(7);
-    doc.text(`Emitido em: ${this.getDataAtual()} às ${this.getHoraAtual()}`, pageWidth / 2, 21, { align: 'center' });
-    y = 30;
+    this.pdfCabecalho(doc, pw, m, y);
+    y += 12;
 
-    // ── Dados do Profissional ──
-    y = this.adicionarSecao(doc, 'DADOS DO PROFISSIONAL', y, margin, pageWidth);
-    y = this.adicionarCamposHorizontal(doc, [
-      { label: 'Nome', value: this.nomeMedico },
-      { label: 'CRM', value: this.crm },
-      { label: 'Especialidade', value: this.especialidade || '-' },
-    ], y, margin, pageWidth);
-    y += 3;
+    y = this.pdfSecao(doc, 'DADOS DO PACIENTE', m, y, w);
+    y = this.pdfTabela(doc, [[
+      { b: 'Nome:', t: this.nomePaciente || '-' },
+      { b: 'CPF:', t: this.cpfPaciente || '-' },
+    ]], m, y, w);
 
-    // ── Dados do Paciente ──
-    y = this.adicionarSecao(doc, 'DADOS DO PACIENTE', y, margin, pageWidth);
-    y = this.adicionarCamposHorizontal(doc, [
-      { label: 'Paciente', value: this.nomePaciente },
-      { label: 'CPF', value: this.cpfPaciente || '-' },
-    ], y, margin, pageWidth);
-    y += 3;
+    y = this.pdfSecao(doc, 'INFORMAÇÕES DA CONSULTA', m, y, w);
+    y = this.pdfTabela(doc, [
+      [
+        { b: 'Consulta Nº:', t: this.consultaId || '-' },
+        { b: 'Data:', t: this.dataConsulta || '-' },
+        { b: 'Horário:', t: this.horarioConsulta || '-' },
+      ],
+      [
+        { b: 'Forma Pgto.:', t: this.formaPagamento || '-' },
+        { b: 'Valor Consulta:', t: this.formatarMoeda(this.valorConsulta), span: 2 },
+      ],
+    ], m, y, w);
 
-    // ── Dados da Consulta ──
-    y = this.adicionarSecao(doc, 'INFORMAÇÕES DA CONSULTA', y, margin, pageWidth);
-    y = this.adicionarCamposHorizontal(doc, [
-      { label: 'Consulta Nº', value: this.consultaId },
-      { label: 'Data', value: this.dataConsulta },
-      { label: 'Horário', value: this.horarioConsulta },
-      { label: 'Forma Pgto.', value: this.formaPagamento || '-' },
-      { label: 'Valor Consulta', value: this.formatarMoeda(this.valorConsulta) },
-    ], y, margin, pageWidth);
-    y += 3;
+    y = this.pdfSecao(doc, 'MÉDICO RESPONSÁVEL', m, y, w);
+    y = this.pdfTabela(doc, [[
+      { b: 'Nome:', t: this.nomeMedico || '-' },
+      { b: 'CRM:', t: this.crm || '-' },
+      { b: 'Especialidade:', t: this.especialidade || '-' },
+    ]], m, y, w);
 
-    // ── Planejamento Terapêutico ──
     if (this.planejamentos.length > 0) {
-      y = this.adicionarSecao(doc, 'PLANEJAMENTO TERAPÊUTICO', y, margin, pageWidth);
-
-      const colWidths = [30, (pageWidth - (margin * 2) - 60), 30];
-
-      doc.setFillColor(240, 240, 240);
-      doc.rect(margin, y, pageWidth - (margin * 2), 7, 'F');
-      doc.setLineWidth(0.1);
-      doc.setDrawColor(180, 180, 180);
-      doc.rect(margin, y, pageWidth - (margin * 2), 7);
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(7);
-      doc.setTextColor(80, 80, 80);
-      doc.text('DATA', margin + 2, y + 4.5);
-      doc.text('PROCEDIMENTO', margin + colWidths[0] + 2, y + 4.5);
-      doc.text('VALOR', margin + colWidths[0] + colWidths[1] + 2, y + 4.5);
-      y += 7;
-
-      doc.setFont('helvetica', 'normal');
-      doc.setFontSize(8);
-      doc.setTextColor(0, 0, 0);
-      for (const plan of this.planejamentos) {
-        if (y > pageHeight - 40) { doc.addPage(); y = 12; }
-        doc.setDrawColor(180, 180, 180);
-        doc.rect(margin, y, pageWidth - (margin * 2), 6);
-        doc.text(plan.dataProcedimento || '-', margin + 2, y + 4);
-        doc.text(plan.procedimentoRealizado || '-', margin + colWidths[0] + 2, y + 4);
-        doc.text(this.formatarMoeda(plan.valor), margin + colWidths[0] + colWidths[1] + 2, y + 4);
-        y += 6;
-      }
-
-      doc.setFillColor(245, 245, 245);
-      doc.rect(margin, y, pageWidth - (margin * 2), 8, 'FD');
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(9);
-      doc.setTextColor(0, 0, 0);
-      doc.text('TOTAL PLANEJAMENTO:', margin + colWidths[0] + 2, y + 5.5);
-      doc.text(this.formatarMoeda(this.totalPlanejamento), margin + colWidths[0] + colWidths[1] + 2, y + 5.5);
-      y += 12;
+      y = this.pdfQuebraPagina(doc, y, 20, ph);
+      y = this.pdfSecao(doc, 'PLANEJAMENTO TERAPÊUTICO', m, y, w);
+      y = this.pdfTabelaPlanejamento(doc, m, y, w, ph);
     }
 
-    // ── Resumo Financeiro ──
-    y = this.adicionarSecao(doc, 'RESUMO FINANCEIRO', y, margin, pageWidth);
-
-    doc.setLineWidth(0.1);
-    doc.setDrawColor(180, 180, 180);
-
-    doc.setFillColor(250, 250, 250);
-    doc.rect(margin, y, pageWidth - (margin * 2), 8, 'FD');
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(9);
-    doc.setTextColor(80, 80, 80);
-    doc.text('Valor da Consulta:', margin + 4, y + 5.5);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(0, 0, 0);
-    doc.text(this.formatarMoeda(this.valorConsulta), pageWidth - margin - 4, y + 5.5, { align: 'right' });
-    y += 8;
-
+    y = this.pdfQuebraPagina(doc, y, 25, ph);
+    y = this.pdfSecao(doc, 'RESUMO FINANCEIRO', m, y, w);
+    y = this.pdfLinhaValor(doc, 'Valor da Consulta', this.formatarMoeda(this.valorConsulta), m, y, w, false);
     if (this.totalPlanejamento > 0) {
-      doc.setFillColor(250, 250, 250);
-      doc.rect(margin, y, pageWidth - (margin * 2), 8, 'FD');
-      doc.setFont('helvetica', 'normal');
-      doc.setFontSize(9);
-      doc.setTextColor(80, 80, 80);
-      doc.text('Total Planejamento Terapêutico:', margin + 4, y + 5.5);
-      doc.setFont('helvetica', 'bold');
-      doc.setTextColor(0, 0, 0);
-      doc.text(this.formatarMoeda(this.totalPlanejamento), pageWidth - margin - 4, y + 5.5, { align: 'right' });
-      y += 8;
+      y = this.pdfLinhaValor(doc, 'Total Planejamento Terapêutico', this.formatarMoeda(this.totalPlanejamento), m, y, w, false);
     }
+    y = this.pdfLinhaValor(
+      doc, 'TOTAL GERAL',
+      this.formatarMoeda(this.valorConsulta + this.totalPlanejamento),
+      m, y, w, true
+    );
 
-    const totalGeral = this.valorConsulta + this.totalPlanejamento;
-    doc.setFillColor(44, 62, 80);
-    doc.rect(margin, y, pageWidth - (margin * 2), 10, 'F');
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(11);
-    doc.setTextColor(255, 255, 255);
-    doc.text('TOTAL GERAL:', margin + 4, y + 7);
-    doc.text(this.formatarMoeda(totalGeral), pageWidth - margin - 4, y + 7, { align: 'right' });
-    y += 15;
+    y = this.pdfQuebraPagina(doc, y, 30, ph);
+    y = this.pdfSecao(doc, 'ASSINATURA DO PROFISSIONAL', m, y, w);
+    y = this.pdfAssinaturaProfissional(doc, m, y, w);
 
-    // ── Assinatura ──
-    doc.setDrawColor(100, 100, 100);
-    doc.setLineWidth(0.3);
-    const centroX = pageWidth / 2;
-    doc.line(centroX - 40, y + 10, centroX + 40, y + 10);
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(8);
-    doc.setTextColor(0, 0, 0);
-    doc.text(this.nomeMedico, centroX, y + 15, { align: 'center' });
-    doc.setFontSize(7);
-    doc.setTextColor(100, 100, 100);
-    doc.text(`CRM: ${this.crm}`, centroX, y + 19, { align: 'center' });
-
-    // ── Rodapé ──
-    const footerY = pageHeight - 12;
-    doc.setDrawColor(100, 100, 100);
-    doc.setLineWidth(0.3);
-    doc.line(margin, footerY, pageWidth - margin, footerY);
-    doc.setFont('helvetica', 'italic');
-    doc.setFontSize(7);
-    doc.setTextColor(136, 136, 136);
-    doc.text(`Emitido em: ${this.getDataAtual()} às ${this.getHoraAtual()}`, margin, footerY + 5);
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(6);
-    doc.setTextColor(153, 153, 153);
-    doc.text('Documento financeiro - Confidencial', pageWidth - margin, footerY + 5, { align: 'right' });
+    this.pdfRodape(doc, pw, ph);
 
     doc.save(`Comprovante_Pagamento_${this.codigoProntuario}_${this.dataAtual}.pdf`);
   }
 
-  private adicionarSecao(doc: jsPDF, titulo: string, y: number, margin: number, pageWidth: number): number {
-    if (y > 250) { doc.addPage(); y = 12; }
-    doc.setFillColor(248, 249, 250);
-    doc.rect(margin, y, pageWidth - (margin * 2), 6, 'F');
-    doc.setFillColor(100, 100, 100);
-    doc.rect(margin, y, 2, 6, 'F');
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(8);
-    doc.setTextColor(0, 0, 0);
-    doc.text(titulo.toUpperCase(), margin + 4, y + 4);
-    return y + 7.5;
+  /**
+   * Adiciona nova pagina quando o espaco restante for insuficiente.
+   *
+   * @param doc documento em construcao
+   * @param y posicao vertical atual
+   * @param necessario altura necessaria para o proximo bloco
+   * @param ph altura da pagina
+   * @returns nova posicao vertical
+   */
+  private pdfQuebraPagina(doc: any, y: number, necessario: number, ph: number): number {
+    if (y + necessario > ph - 12) {
+      doc.addPage();
+      return 8;
+    }
+    return y;
   }
 
-  private adicionarCamposHorizontal(
-    doc: jsPDF, campos: Array<{ label: string; value: string }>,
-    y: number, margin: number, pageWidth: number
-  ): number {
-    const colunas = campos.length;
-    const larguraColuna = (pageWidth - (margin * 2)) / colunas;
-    const alturaCampo = 10;
-
-    doc.setLineWidth(0.1);
-    doc.setDrawColor(180, 180, 180);
-    campos.forEach((_, index) => {
-      doc.rect(margin + (index * larguraColuna), y, larguraColuna, alturaCampo);
-    });
-
+  /**
+   * Desenha o cabecalho do documento.
+   *
+   * @param doc documento em construcao
+   * @param pw largura da pagina
+   * @param m margem lateral
+   * @param y posicao vertical inicial
+   */
+  private pdfCabecalho(doc: any, pw: number, m: number, y: number): void {
+    const w = pw - m * 2;
+    doc.setFillColor(44, 62, 80);
+    doc.rect(m, y - 4, w, 10, 'F');
+    doc.setFontSize(11.5);
     doc.setFont('helvetica', 'bold');
-    doc.setFontSize(6);
-    doc.setTextColor(102, 102, 102);
-    campos.forEach((campo, index) => {
-      doc.text(campo.label.toUpperCase(), margin + (index * larguraColuna) + 2, y + 3);
-    });
+    doc.setTextColor(255, 255, 255);
+    doc.text('COMPROVANTE DE PAGAMENTO - CONSULTA', pw / 2, y + 1, { align: 'center' });
+    doc.setFontSize(7.5);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(200, 200, 200);
+    doc.text(`Nº: ${this.codigoProntuario}`, pw / 2, y + 5, { align: 'center' });
+  }
+
+  /**
+   * Desenha o titulo de uma secao.
+   *
+   * @param doc documento em construcao
+   * @param titulo texto da secao
+   * @param m margem lateral
+   * @param y posicao vertical atual
+   * @param w largura util
+   * @returns nova posicao vertical
+   */
+  private pdfSecao(doc: any, titulo: string, m: number, y: number, w: number): number {
+    doc.setFillColor(107, 114, 128);
+    doc.rect(m, y, 2, 5, 'F');
+    doc.setFillColor(248, 249, 250);
+    doc.rect(m + 2, y, w - 2, 5, 'F');
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(107, 114, 128);
+    doc.text(titulo.toUpperCase(), m + 5, y + 3.5);
+    return y + 6;
+  }
+
+  /**
+   * Desenha uma tabela de celulas com rotulo em negrito.
+   *
+   * @param doc documento em construcao
+   * @param rows linhas com as celulas
+   * @param m margem lateral
+   * @param y posicao vertical atual
+   * @param w largura util
+   * @returns nova posicao vertical
+   */
+  private pdfTabela(doc: any, rows: any[][], m: number, y: number, w: number): number {
+    doc.setLineWidth(0.15);
+    doc.setDrawColor(180, 180, 180);
+
+    for (const row of rows) {
+      const totalSpan = row.reduce((s: number, c: any) => s + (c.span || 1), 0);
+      const colW = w / totalSpan;
+      let x = m;
+      let maxH = 4;
+
+      const processados: Array<{ x: number; cw: number; lines: string[] }> = [];
+      for (const cell of row) {
+        const cw = colW * (cell.span || 1);
+        const fullText = cell.t ? `${cell.b} ${cell.t}`.trim() : cell.b;
+        const lines = doc.splitTextToSize(fullText, cw - 2);
+        const h = Math.max(4.5, lines.length * 3.2 + 1);
+        maxH = Math.max(maxH, h);
+        processados.push({ x, cw, lines });
+        x += cw;
+      }
+
+      for (const p of processados) {
+        doc.rect(p.x, y, p.cw, maxH);
+      }
+
+      doc.setFontSize(8);
+      doc.setTextColor(30, 30, 30);
+      for (let ci = 0; ci < processados.length; ci++) {
+        const p = processados[ci];
+        const cell = row[ci];
+        let ty = y + 2.8;
+        for (let li = 0; li < p.lines.length; li++) {
+          if (li === 0 && cell.b && cell.t) {
+            doc.setFont('helvetica', 'bold');
+            doc.text(cell.b + ' ', p.x + 1, ty);
+            const bw = doc.getTextWidth(cell.b + ' ');
+            doc.setFont('helvetica', 'normal');
+            const rest = p.lines[0].substring(cell.b.length).trim();
+            doc.text(rest, p.x + 1 + bw, ty);
+          } else if (li === 0 && cell.b && !cell.t) {
+            doc.setFont('helvetica', 'bold');
+            doc.text(p.lines[0], p.x + 1, ty);
+          } else {
+            doc.setFont('helvetica', 'normal');
+            doc.text(p.lines[li], p.x + 1, ty);
+          }
+          ty += 3.2;
+        }
+      }
+
+      y += maxH;
+    }
+    return y;
+  }
+
+  /**
+   * Desenha a tabela do planejamento terapeutico com cabecalho, linhas e total.
+   *
+   * @param doc documento em construcao
+   * @param m margem lateral
+   * @param y posicao vertical atual
+   * @param w largura util
+   * @param ph altura da pagina
+   * @returns nova posicao vertical
+   */
+  private pdfTabelaPlanejamento(doc: any, m: number, y: number, w: number, ph: number): number {
+    const cols = [w * 0.18, w * 0.62, w * 0.20];
+    const xs = [m, m + cols[0], m + cols[0] + cols[1]];
+
+    y = this.pdfCabecalhoPlanejamento(doc, xs, cols, y);
 
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(8);
-    doc.setTextColor(0, 0, 0);
-    campos.forEach((campo, index) => {
-      const texto = doc.splitTextToSize(campo.value || '-', larguraColuna - 4);
-      doc.text(texto, margin + (index * larguraColuna) + 2, y + 7);
-    });
 
-    return y + alturaCampo;
+    for (const item of this.planejamentos) {
+      const proc = doc.splitTextToSize(item.procedimentoRealizado || '-', cols[1] - 2);
+      const h = Math.max(4.5, proc.length * 3.2 + 1);
+
+      if (y + h > ph - 14) {
+        doc.addPage();
+        y = 8;
+        y = this.pdfCabecalhoPlanejamento(doc, xs, cols, y);
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(8);
+      }
+
+      doc.setLineWidth(0.15);
+      doc.setDrawColor(180, 180, 180);
+      for (let i = 0; i < cols.length; i++) {
+        doc.rect(xs[i], y, cols[i], h);
+      }
+
+      doc.setTextColor(30, 30, 30);
+      doc.text(item.dataProcedimento || '-', xs[0] + 1, y + 2.8);
+      doc.text(proc, xs[1] + 1, y + 2.8);
+      doc.text(this.formatarMoeda(item.valor || 0), xs[2] + cols[2] - 1, y + 2.8, { align: 'right' });
+
+      y += h;
+    }
+
+    if (y + 5 > ph - 14) {
+      doc.addPage();
+      y = 8;
+    }
+    doc.setFillColor(243, 244, 246);
+    doc.rect(m, y, w, 5, 'F');
+    doc.setLineWidth(0.15);
+    doc.setDrawColor(180, 180, 180);
+    doc.rect(m, y, w, 5);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(8);
+    doc.setTextColor(17, 24, 39);
+    doc.text('TOTAL PLANEJAMENTO', m + 1, y + 3.4);
+    doc.text(this.formatarMoeda(this.totalPlanejamento), xs[2] + cols[2] - 1, y + 3.4, { align: 'right' });
+
+    return y + 5;
+  }
+
+  /**
+   * Desenha a faixa de cabecalho da tabela do planejamento.
+   *
+   * @param doc documento em construcao
+   * @param xs posicoes horizontais das colunas
+   * @param cols larguras das colunas
+   * @param y posicao vertical atual
+   * @returns nova posicao vertical
+   */
+  private pdfCabecalhoPlanejamento(doc: any, xs: number[], cols: number[], y: number): number {
+    const altura = 5;
+    doc.setFillColor(243, 244, 246);
+    doc.setLineWidth(0.15);
+    doc.setDrawColor(180, 180, 180);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(7);
+    doc.setTextColor(107, 114, 128);
+
+    const titulos = ['DATA', 'PROCEDIMENTO', 'VALOR'];
+    for (let i = 0; i < cols.length; i++) {
+      doc.rect(xs[i], y, cols[i], altura, 'F');
+      doc.rect(xs[i], y, cols[i], altura);
+      doc.text(titulos[i], xs[i] + 1, y + 3.4);
+    }
+    return y + altura;
+  }
+
+  /**
+   * Desenha uma linha do resumo financeiro com valor alinhado a direita.
+   *
+   * @param doc documento em construcao
+   * @param rotulo descricao do valor
+   * @param valor valor ja formatado
+   * @param m margem lateral
+   * @param y posicao vertical atual
+   * @param w largura util
+   * @param destaque aplica fundo cinza e negrito quando verdadeiro
+   * @returns nova posicao vertical
+   */
+  private pdfLinhaValor(
+    doc: any, rotulo: string, valor: string,
+    m: number, y: number, w: number, destaque: boolean
+  ): number {
+    const altura = 5.5;
+    if (destaque) {
+      doc.setFillColor(243, 244, 246);
+      doc.rect(m, y, w, altura, 'F');
+    }
+    doc.setLineWidth(0.15);
+    doc.setDrawColor(180, 180, 180);
+    doc.rect(m, y, w, altura);
+
+    doc.setFontSize(8);
+    doc.setFont('helvetica', destaque ? 'bold' : 'normal');
+    doc.setTextColor(destaque ? 17 : 55, destaque ? 24 : 65, destaque ? 39 : 81);
+    doc.text(rotulo, m + 1, y + 3.7);
+    doc.setFont('helvetica', 'bold');
+    doc.text(valor, m + w - 1, y + 3.7, { align: 'right' });
+
+    return y + altura;
+  }
+
+  /**
+   * Desenha a linha de assinatura do profissional responsavel.
+   *
+   * @param doc documento em construcao
+   * @param m margem lateral
+   * @param y posicao vertical atual
+   * @param w largura util
+   * @returns nova posicao vertical
+   */
+  private pdfAssinaturaProfissional(doc: any, m: number, y: number, w: number): number {
+    const altura = 24;
+    doc.setLineWidth(0.15);
+    doc.setDrawColor(180, 180, 180);
+    doc.rect(m, y, w, altura);
+
+    doc.setDrawColor(107, 114, 128);
+    doc.setLineWidth(0.2);
+    doc.line(m + w / 2 - 30, y + 14, m + w / 2 + 30, y + 14);
+
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(30, 30, 30);
+    doc.text(this.nomeMedico || 'Profissional', m + w / 2, y + 18, { align: 'center' });
+    doc.setFontSize(7);
+    doc.setTextColor(107, 114, 128);
+    doc.text(`CRM: ${this.crm || '-'}`, m + w / 2, y + 21.5, { align: 'center' });
+
+    return y + altura;
+  }
+
+  /**
+   * Desenha o rodape em todas as paginas do documento.
+   *
+   * @param doc documento em construcao
+   * @param pw largura da pagina
+   * @param ph altura da pagina
+   */
+  private pdfRodape(doc: any, pw: number, ph: number): void {
+    const total = doc.getNumberOfPages();
+    for (let i = 1; i <= total; i++) {
+      doc.setPage(i);
+      doc.setDrawColor(107, 114, 128);
+      doc.setLineWidth(0.3);
+      doc.line(10, ph - 10, pw - 10, ph - 10);
+      doc.setFontSize(7);
+      doc.setFont('helvetica', 'italic');
+      doc.setTextColor(156, 163, 175);
+      doc.text(
+        `Página ${i} de ${total} | Emitido em ${this.getDataAtual()} às ${this.getHoraAtual()} | Documento financeiro - Confidencial`,
+        pw / 2, ph - 7, { align: 'center' }
+      );
+    }
   }
 }

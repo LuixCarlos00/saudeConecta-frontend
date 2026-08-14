@@ -28,6 +28,8 @@ export interface ConsultaRelatorio {
   especialidadeNome: string | null;
   profissionalId: number | null;
   profissionalNome: string | null;
+  /** Codigo do tipo de profissional: 'MEDICO' ou 'DENTISTA'. */
+  tipoProfissionalNome: string | null;
   diagnostico: string | null;
   documentos: DocumentoRelatorio[];
 }

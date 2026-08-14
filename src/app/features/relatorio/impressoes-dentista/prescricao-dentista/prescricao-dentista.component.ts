@@ -36,7 +36,6 @@ export class PrescricaoDentistaComponent implements OnInit {
 
   ngOnInit() {
     const p = this.data;
-    console.log('Dados recebidos para impressão (prescrição dentista):', p);
 
     // ── Profissional ─────────────────────────────────────────────────────────
     const prof = p.profissional as any;
@@ -65,206 +64,320 @@ export class PrescricaoDentistaComponent implements OnInit {
     // ── Identificação ─────────────────────────────────────────────────────────
     this.codigoProntuario = String(p.codigo ?? p.codigoProntuario ?? '000000');
 
-    console.log('Dados para PDF (prescrição dentista):', {
-      nomeDentista: this.nomeDentista,
-      cro: this.cro,
-      nomePaciente: this.nomePaciente,
-      cpfPaciente: this.cpfPaciente,
-      tituloPrescricao: this.tituloPrescricao,
-      dataPrescricao: this.dataPrescricao,
-      codigoProntuario: this.codigoProntuario,
-    });
   }
 
-  GerarPDF() {
+  getDataAtual(): string {
+    return new Date().toLocaleDateString('pt-BR');
+  }
+
+  getHoraAtual(): string {
+    return new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+  }
+
+  GerarPDF(): void {
     const doc = new jsPDF('p', 'mm', 'a4');
-    const pageWidth = doc.internal.pageSize.getWidth();
-    const pageHeight = doc.internal.pageSize.getHeight();
-    const margin = 15;
-    let y = 20;
-    let paginaAtual = 1;
+    const pw = doc.internal.pageSize.getWidth();
+    const ph = doc.internal.pageSize.getHeight();
+    const m = 10;
+    const w = pw - m * 2;
+    let y = 12;
 
-    // Cabeçalho
-    doc.setFillColor(44, 62, 80);
-    doc.rect(0, 0, pageWidth, 25, 'F');
-    doc.setTextColor(255, 255, 255);
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(14);
-    doc.text('PRESCRIÇÃO ODONTOLÓGICA', pageWidth / 2, 16, { align: 'center' });
-    doc.setFontSize(8);
-    doc.setTextColor(200, 200, 200);
-    doc.text(`Nº: ${this.codigoProntuario}`, pageWidth / 2, 20, { align: 'center' });
-    doc.setTextColor(0, 0, 0);
-    y = 35;
-
-    // Seção: Dados do Paciente
-    y = this.adicionarSecaoVertical(doc, 'DADOS DO PACIENTE', null, y, margin, pageWidth);
-    y = this.adicionarCamposHorizontal(doc, [
-      { label: 'Nome', value: this.nomePaciente },
-      { label: 'CPF', value: this.cpfPaciente },
-    ], y, margin, pageWidth);
-    y += 3;
-
-    // Seção: Dentista Prescritor
-    y = this.adicionarSecaoVertical(doc, 'DENTISTA PRESCRITOR', null, y, margin, pageWidth);
-    y = this.adicionarCamposHorizontal(doc, [
-      { label: 'Nome', value: `Dr. ${this.nomeDentista}` },
-      { label: 'CRO', value: this.cro },
-      { label: 'Email', value: this.emailDentista },
-      { label: 'Telefone', value: this.telefoneDentista },
-    ], y, margin, pageWidth);
-    y += 3;
-
-    // Seção: Informações da Prescrição
-    y = this.adicionarSecaoVertical(doc, 'INFORMAÇÕES DA PRESCRIÇÃO', null, y, margin, pageWidth);
-    y = this.adicionarCamposHorizontal(doc, [
-      { label: 'Título', value: this.tituloPrescricao },
-      { label: 'Data Prescrição', value: this.dataPrescricao },
-    ], y, margin, pageWidth);
-    y += 3;
-
-    // Seção: Medicamentos Prescritos
-    const alturaCaixaPrescricao = 60;
-    const espacoNecessario = 7.5 + alturaCaixaPrescricao + 2;
-
-    const resultado = this.verificarEspacoAdicionarPagina(doc, y, espacoNecessario, pageHeight, margin, pageWidth);
-    y = resultado.y;
-    paginaAtual += resultado.pagina;
-
-    y = this.adicionarSecaoVertical(doc, 'MEDICAMENTOS PRESCRITOS', null, y, margin, pageWidth);
-
-    doc.setLineWidth(0.1);
-    doc.setDrawColor(150, 150, 150);
-    doc.rect(margin, y, pageWidth - (margin * 2), alturaCaixaPrescricao, 'D');
-
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(9);
-    doc.setTextColor(0, 0, 0);
-    const linhas = doc.splitTextToSize(this.prescricao, pageWidth - (margin * 2) - 4);
-    const alturaTexto = linhas.length * 4;
-    const alturaReal = Math.max(alturaCaixaPrescricao, alturaTexto + 10);
-
-    if (alturaReal > alturaCaixaPrescricao) {
-      const resultado2 = this.verificarEspacoAdicionarPagina(doc, y - 7.5, espacoNecessario + (alturaReal - alturaCaixaPrescricao), pageHeight, margin, pageWidth);
-      y = resultado2.y;
-      paginaAtual += resultado2.pagina;
-      y = this.adicionarSecaoVertical(doc, 'MEDICAMENTOS PRESCRITOS', null, y, margin, pageWidth);
-      doc.rect(margin, y, pageWidth - (margin * 2), alturaReal, 'D');
-    }
-
-    doc.text(linhas, margin + 2, y + 8);
-    y += alturaReal + 2;
-
-    // Aviso
-    const resultadoAviso = this.verificarEspacoAdicionarPagina(doc, y, 12, pageHeight, margin, pageWidth);
-    y = resultadoAviso.y;
-    paginaAtual += resultadoAviso.pagina;
-
-    doc.setFillColor(248, 249, 250);
-    doc.setDrawColor(150, 150, 150);
-    doc.rect(margin, y, pageWidth - (margin * 2), 10, 'FD');
-    doc.setFontSize(7);
-    doc.setTextColor(100, 100, 100);
-    doc.text('Uso conforme orientação odontológica. Não interrompa o tratamento sem consultar seu dentista.', pageWidth / 2, y + 6, { align: 'center' });
-    doc.setTextColor(0, 0, 0);
+    this.pdfCabecalho(doc, pw, m, y);
     y += 12;
 
-    // Rodapé
-    const footerY = pageHeight - 15;
-    doc.setLineWidth(0.3);
-    doc.setDrawColor(52, 152, 219);
-    doc.line(margin, footerY, pageWidth - margin, footerY);
-    doc.setFont('helvetica', 'italic');
-    doc.setFontSize(7);
-    doc.setTextColor(136, 136, 136);
-    doc.text(`Emitido em: ${this.dataAtual}`, margin, footerY + 5);
-    doc.setFontSize(6);
-    doc.text('Documento válido para apresentação em farmácias e estabelecimentos de saúde.', margin, footerY + 9);
+    y = this.pdfSecao(doc, 'DADOS DO PACIENTE', m, y, w);
+    y = this.pdfTabela(doc, [[
+      { b: 'Nome:', t: this.nomePaciente || '-' },
+      { b: 'CPF:', t: this.cpfPaciente || '-' },
+    ]], m, y, w);
 
-    doc.save(`Prescricao_${this.codigoProntuario}_${this.dataPrescricao}.pdf`);
+    y = this.pdfSecao(doc, 'INFORMAÇÕES DA PRESCRIÇÃO', m, y, w);
+    y = this.pdfTabela(doc, [[
+      { b: 'Título:', t: this.tituloPrescricao || '-' },
+      { b: 'Emitida em:', t: this.dataPrescricao || '-' },
+    ]], m, y, w);
+
+    y = this.pdfSecao(doc, 'DENTISTA PRESCRITOR', m, y, w);
+    y = this.pdfTabela(doc, [[
+      { b: 'Nome:', t: this.nomeDentista || '-' },
+      { b: 'CRO:', t: this.cro || '-' },
+      { b: 'Email:', t: this.emailDentista || '-' },
+      { b: 'Tel.:', t: this.telefoneDentista || '-' },
+    ]], m, y, w);
+
+    y = this.pdfQuebraPagina(doc, y, 30, ph);
+    y = this.pdfSecao(doc, 'PRESCRIÇÃO', m, y, w);
+    y = this.pdfBlocoTexto(doc, this.prescricao || '-', m, y, w, ph, 70);
+
+    y = this.pdfQuebraPagina(doc, y, 34, ph);
+    y = this.pdfSecao(doc, 'ASSINATURA', m, y, w);
+    y = this.pdfAssinaturaProfissional(doc, m, y, w);
+    y = this.pdfAviso(doc, 'Documento válido apenas com assinatura e carimbo do profissional.', m, y, w);
+
+    this.pdfRodape(doc, pw, ph);
+
+    doc.save(`Prescricao_Odontologica_${this.codigoProntuario}_${this.dataAtual}.pdf`);
   }
 
-  private adicionarSecaoVertical(doc: jsPDF, titulo: string, cor: string | null, y: number, margin: number, pageWidth: number): number {
-    doc.setFillColor(248, 249, 250);
-    doc.rect(margin, y, pageWidth - (margin * 2), 6, 'F');
-    if (cor) {
-      const rgb = this.hexToRgb(cor);
-      doc.setFillColor(rgb.r, rgb.g, rgb.b);
-      doc.rect(margin, y, 2, 6, 'F');
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(8);
-      doc.setTextColor(rgb.r, rgb.g, rgb.b);
-    } else {
-      doc.setFillColor(100, 100, 100);
-      doc.rect(margin, y, 2, 6, 'F');
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(8);
-      doc.setTextColor(0, 0, 0);
-    }
-    doc.text(titulo.toUpperCase(), margin + 4, y + 4);
-    doc.setTextColor(0, 0, 0);
-    return y + 7.5;
-  }
-
-  private adicionarCamposHorizontal(doc: jsPDF, campos: Array<{ label: string; value: string }>, y: number, margin: number, pageWidth: number): number {
-    const colunas = campos.length;
-    const larguraColuna = (pageWidth - (margin * 2)) / colunas;
-    const alturaCampo = 8;
-    doc.setLineWidth(0.1);
-    doc.setDrawColor(150, 150, 150);
-    campos.forEach((campo, index) => {
-      const x = margin + (index * larguraColuna);
-      doc.line(x, y - 2, x + larguraColuna, y - 2);
-      doc.line(x, y + alturaCampo - 1, x + larguraColuna, y + alturaCampo - 1);
-      if (index < colunas - 1) {
-        doc.line(x + larguraColuna, y - 2, x + larguraColuna, y + alturaCampo - 1);
-      }
-    });
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(6);
-    doc.setTextColor(102, 102, 102);
-    campos.forEach((campo, index) => {
-      const x = margin + (index * larguraColuna) + 2;
-      doc.text(campo.label.toUpperCase(), x, y);
-    });
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(8);
-    doc.setTextColor(0, 0, 0);
-    campos.forEach((campo, index) => {
-      const x = margin + (index * larguraColuna) + 2;
-      const texto = doc.splitTextToSize(campo.value || '-', larguraColuna - 4);
-      doc.text(texto, x, y + 4);
-    });
-    return y + alturaCampo + 2;
-  }
-
-  private verificarEspacoAdicionarPagina(doc: jsPDF, y: number, espacoNecessario: number, pageHeight: number, margin: number, pageWidth: number): { y: number; pagina: number } {
-    if (y + espacoNecessario > pageHeight - margin - 20) {
+  /**
+   * Adiciona nova pagina quando o espaco restante for insuficiente.
+   *
+   * @param doc documento em construcao
+   * @param y posicao vertical atual
+   * @param necessario altura necessaria para o proximo bloco
+   * @param ph altura da pagina
+   * @returns nova posicao vertical
+   */
+  private pdfQuebraPagina(doc: any, y: number, necessario: number, ph: number): number {
+    if (y + necessario > ph - 12) {
       doc.addPage();
-      this.adicionarCabecalhoPagina(doc, pageWidth);
-      return { y: 35, pagina: 1 };
+      return 8;
     }
-    return { y, pagina: 0 };
+    return y;
   }
 
-  private adicionarCabecalhoPagina(doc: jsPDF, pageWidth: number): void {
+  /**
+   * Desenha o cabecalho do documento.
+   *
+   * @param doc documento em construcao
+   * @param pw largura da pagina
+   * @param m margem lateral
+   * @param y posicao vertical inicial
+   */
+  private pdfCabecalho(doc: any, pw: number, m: number, y: number): void {
+    const w = pw - m * 2;
     doc.setFillColor(44, 62, 80);
-    doc.rect(0, 0, pageWidth, 25, 'F');
+    doc.rect(m, y - 4, w, 10, 'F');
+    doc.setFontSize(11.5);
     doc.setFont('helvetica', 'bold');
-    doc.setFontSize(14);
     doc.setTextColor(255, 255, 255);
-    doc.text('PRESCRIÇÃO ODONTOLÓGICA', pageWidth / 2, 16, { align: 'center' });
-    doc.setFontSize(8);
+    doc.text('PRESCRIÇÃO ODONTOLÓGICA', pw / 2, y + 1, { align: 'center' });
+    doc.setFontSize(7.5);
+    doc.setFont('helvetica', 'normal');
     doc.setTextColor(200, 200, 200);
-    doc.text(`Nº: ${this.codigoProntuario} - Continuação`, pageWidth / 2, 20, { align: 'center' });
-    doc.setTextColor(0, 0, 0);
+    doc.text(`Nº: ${this.codigoProntuario}`, pw / 2, y + 5, { align: 'center' });
   }
 
-  private hexToRgb(hex: string | null): { r: number; g: number; b: number } {
-    if (!hex) return { r: 0, g: 0, b: 0 };
-    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-    return result
-      ? { r: parseInt(result[1], 16), g: parseInt(result[2], 16), b: parseInt(result[3], 16) }
-      : { r: 0, g: 0, b: 0 };
+  /**
+   * Desenha o titulo de uma secao.
+   *
+   * @param doc documento em construcao
+   * @param titulo texto da secao
+   * @param m margem lateral
+   * @param y posicao vertical atual
+   * @param w largura util
+   * @returns nova posicao vertical
+   */
+  private pdfSecao(doc: any, titulo: string, m: number, y: number, w: number): number {
+    doc.setFillColor(107, 114, 128);
+    doc.rect(m, y, 2, 5, 'F');
+    doc.setFillColor(248, 249, 250);
+    doc.rect(m + 2, y, w - 2, 5, 'F');
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(107, 114, 128);
+    doc.text(titulo.toUpperCase(), m + 5, y + 3.5);
+    return y + 6;
+  }
+
+  /**
+   * Desenha uma tabela de celulas com rotulo em negrito.
+   *
+   * @param doc documento em construcao
+   * @param rows linhas com as celulas
+   * @param m margem lateral
+   * @param y posicao vertical atual
+   * @param w largura util
+   * @returns nova posicao vertical
+   */
+  private pdfTabela(doc: any, rows: any[][], m: number, y: number, w: number): number {
+    doc.setLineWidth(0.15);
+    doc.setDrawColor(180, 180, 180);
+
+    for (const row of rows) {
+      const totalSpan = row.reduce((s: number, c: any) => s + (c.span || 1), 0);
+      const colW = w / totalSpan;
+      let x = m;
+      let maxH = 4;
+
+      const processados: Array<{ x: number; cw: number; lines: string[] }> = [];
+      for (const cell of row) {
+        const cw = colW * (cell.span || 1);
+        const fullText = cell.t ? `${cell.b} ${cell.t}`.trim() : cell.b;
+        const lines = doc.splitTextToSize(fullText, cw - 2);
+        const h = Math.max(4.5, lines.length * 3.2 + 1);
+        maxH = Math.max(maxH, h);
+        processados.push({ x, cw, lines });
+        x += cw;
+      }
+
+      for (const p of processados) {
+        doc.rect(p.x, y, p.cw, maxH);
+      }
+
+      doc.setFontSize(8);
+      doc.setTextColor(30, 30, 30);
+      for (let ci = 0; ci < processados.length; ci++) {
+        const p = processados[ci];
+        const cell = row[ci];
+        let ty = y + 2.8;
+        for (let li = 0; li < p.lines.length; li++) {
+          if (li === 0 && cell.b && cell.t) {
+            doc.setFont('helvetica', 'bold');
+            doc.text(cell.b + ' ', p.x + 1, ty);
+            const bw = doc.getTextWidth(cell.b + ' ');
+            doc.setFont('helvetica', 'normal');
+            const rest = p.lines[0].substring(cell.b.length).trim();
+            doc.text(rest, p.x + 1 + bw, ty);
+          } else if (li === 0 && cell.b && !cell.t) {
+            doc.setFont('helvetica', 'bold');
+            doc.text(p.lines[0], p.x + 1, ty);
+          } else {
+            doc.setFont('helvetica', 'normal');
+            doc.text(p.lines[li], p.x + 1, ty);
+          }
+          ty += 3.2;
+        }
+      }
+
+      y += maxH;
+    }
+    return y;
+  }
+
+  /**
+   * Desenha um bloco de texto livre dentro de uma moldura, quebrando por pagina.
+   *
+   * @param doc documento em construcao
+   * @param texto conteudo a ser escrito
+   * @param m margem lateral
+   * @param y posicao vertical atual
+   * @param w largura util
+   * @param ph altura da pagina
+   * @param alturaMinima altura minima da moldura
+   * @returns nova posicao vertical
+   */
+  private pdfBlocoTexto(
+    doc: any, texto: string, m: number, y: number,
+    w: number, ph: number, alturaMinima: number
+  ): number {
+    doc.setFontSize(8.5);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(30, 30, 30);
+
+    let linhas: string[] = doc.splitTextToSize(texto || '-', w - 4);
+
+    while (linhas.length > 0) {
+      const disponivel = ph - 14 - y;
+      if (disponivel < 12) {
+        doc.addPage();
+        y = 8;
+        continue;
+      }
+
+      const cabem = Math.max(1, Math.floor((disponivel - 4) / 3.6));
+      const bloco = linhas.slice(0, cabem);
+      linhas = linhas.slice(cabem);
+
+      const altura = Math.max(
+        linhas.length === 0 ? alturaMinima : 0,
+        bloco.length * 3.6 + 4
+      );
+
+      doc.setLineWidth(0.15);
+      doc.setDrawColor(180, 180, 180);
+      doc.rect(m, y, w, altura);
+
+      let ty = y + 4.5;
+      for (const linha of bloco) {
+        doc.text(linha, m + 2, ty);
+        ty += 3.6;
+      }
+
+      y += altura;
+      if (linhas.length > 0) {
+        doc.addPage();
+        y = 8;
+      }
+    }
+    return y;
+  }
+
+  /**
+   * Desenha a linha de assinatura do profissional responsavel.
+   *
+   * @param doc documento em construcao
+   * @param m margem lateral
+   * @param y posicao vertical atual
+   * @param w largura util
+   * @returns nova posicao vertical
+   */
+  private pdfAssinaturaProfissional(doc: any, m: number, y: number, w: number): number {
+    const altura = 24;
+    doc.setLineWidth(0.15);
+    doc.setDrawColor(180, 180, 180);
+    doc.rect(m, y, w, altura);
+
+    doc.setDrawColor(107, 114, 128);
+    doc.setLineWidth(0.2);
+    doc.line(m + w / 2 - 30, y + 14, m + w / 2 + 30, y + 14);
+
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(30, 30, 30);
+    doc.text(this.nomeDentista || 'Profissional', m + w / 2, y + 18, { align: 'center' });
+    doc.setFontSize(7);
+    doc.setTextColor(107, 114, 128);
+    doc.text(`CRO: ${this.cro || '-'}`, m + w / 2, y + 21.5, { align: 'center' });
+
+    return y + altura;
+  }
+
+  /**
+   * Desenha a faixa de aviso do documento.
+   *
+   * @param doc documento em construcao
+   * @param texto mensagem do aviso
+   * @param m margem lateral
+   * @param y posicao vertical atual
+   * @param w largura util
+   * @returns nova posicao vertical
+   */
+  private pdfAviso(doc: any, texto: string, m: number, y: number, w: number): number {
+    const altura = 5;
+    doc.setFillColor(248, 249, 250);
+    doc.rect(m, y, w, altura, 'F');
+    doc.setLineWidth(0.15);
+    doc.setDrawColor(180, 180, 180);
+    doc.rect(m, y, w, altura);
+    doc.setFontSize(7);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(107, 114, 128);
+    doc.text(texto, m + w / 2, y + 3.4, { align: 'center' });
+    return y + altura;
+  }
+
+  /**
+   * Desenha o rodape em todas as paginas do documento.
+   *
+   * @param doc documento em construcao
+   * @param pw largura da pagina
+   * @param ph altura da pagina
+   */
+  private pdfRodape(doc: any, pw: number, ph: number): void {
+    const total = doc.getNumberOfPages();
+    for (let i = 1; i <= total; i++) {
+      doc.setPage(i);
+      doc.setDrawColor(107, 114, 128);
+      doc.setLineWidth(0.3);
+      doc.line(10, ph - 10, pw - 10, ph - 10);
+      doc.setFontSize(7);
+      doc.setFont('helvetica', 'italic');
+      doc.setTextColor(156, 163, 175);
+      doc.text(
+        `Página ${i} de ${total} | Emitido em ${this.getDataAtual()} às ${this.getHoraAtual()} | Documento odontológico - Confidencial`,
+        pw / 2, ph - 7, { align: 'center' }
+      );
+    }
   }
 }

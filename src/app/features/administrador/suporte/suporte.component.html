@@ -8,16 +8,26 @@
     <span>Chamado técnico aberto com sucesso!</span>
   </div>
 
-  <!-- Canais de Contato (Hotline) -->
-  <div class="hotline-grid">
-    <div class="hotline-card" *ngFor="let canal of canaisContato">
-      <div class="hotline-icon">
-        <i [class]="canal.icone"></i>
+  <!-- Estatísticas de Chamados e Informações do Sistema -->
+  <div class="info-cards-row">
+    <div class="info-card" *ngFor="let stat of estatisticasChamados">
+      <div class="info-card-icon info-card-icon--destaque">
+        <i [class]="stat.icone"></i>
       </div>
-      <div class="hotline-info">
-        <h4>{{ canal.titulo }}</h4>
-        <p class="hotline-valor">{{ canal.valor }}</p>
-        <p class="hotline-descricao">{{ canal.descricao }}</p>
+      <div class="info-card-content">
+        <h4>{{ stat.titulo }}</h4>
+        <p class="info-card-valor">{{ stat.valor }}</p>
+      </div>
+    </div>
+
+    <div class="info-card" *ngFor="let info of informacoesSistema">
+      <div class="info-card-icon">
+        <i [class]="info.icone"></i>
+      </div>
+      <div class="info-card-content">
+        <h4>{{ info.titulo }}</h4>
+        <p class="info-card-valor">{{ info.valor }}</p>
+        <p class="info-card-descricao">{{ info.descricao }}</p>
       </div>
     </div>
   </div>
