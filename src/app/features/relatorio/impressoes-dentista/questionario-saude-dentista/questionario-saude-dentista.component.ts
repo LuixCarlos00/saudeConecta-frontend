@@ -145,151 +145,316 @@ export class QuestionarioSaudeDentistaComponent implements OnInit, OnDestroy {
 
   GerarPDF(): void {
     const doc = new jsPDF('p', 'mm', 'a4');
-    const pageWidth = doc.internal.pageSize.getWidth();
-    const pageHeight = doc.internal.pageSize.getHeight();
-    const margin = 15;
-    let y = 20;
+    const pw = doc.internal.pageSize.getWidth();
+    const ph = doc.internal.pageSize.getHeight();
+    const m = 10;
+    const w = pw - m * 2;
+    let y = 12;
 
-    // ── Cabeçalho (cinza escuro, sem cores) ──
-    doc.setFillColor(44, 62, 80);
-    doc.rect(0, 0, pageWidth, 25, 'F');
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(14);
-    doc.setTextColor(255, 255, 255);
-    doc.text('QUESTIONÁRIO DE SAÚDE', pageWidth / 2, 16, { align: 'center' });
-    doc.setFontSize(8);
-    doc.setTextColor(200, 200, 200);
-    doc.text(`Nº: ${this.codigoProntuario}`, pageWidth / 2, 20, { align: 'center' });
-    doc.setTextColor(0, 0, 0);
-    y = 35;
+    // ── Cabeçalho ──
+    this.pdfCabecalho(doc, pw, m, y);
+    y += 12;
 
-    // ── Dados do Profissional ──
-    y = this.adicionarSecao(doc, 'DADOS DO PROFISSIONAL', y, margin, pageWidth);
-    y = this.adicionarCamposHorizontal(doc, [
-      { label: 'Nome', value: this.nomeDentista },
-      { label: 'CRO', value: this.cro },
-    ], y, margin, pageWidth);
-    y += 3;
+    // ── Aviso de pendência ──
+    if (!this.questionarioRespondido) {
+      y = this.pdfAviso(doc, 'Questionário ainda não respondido ou não assinado pelo paciente.', m, y, w);
+    }
 
     // ── Dados do Paciente ──
-    y = this.adicionarSecao(doc, 'DADOS DO PACIENTE', y, margin, pageWidth);
-    y = this.adicionarCamposHorizontal(doc, [
-      { label: 'Paciente', value: this.nomePaciente },
-      { label: 'CPF', value: this.cpfPaciente || '-' },
-    ], y, margin, pageWidth);
-    y += 3;
+    y = this.pdfSecao(doc, 'DADOS DO PACIENTE', m, y, w);
+    y = this.pdfTabela(doc, [[
+      { b: 'Nome:', t: this.nomePaciente || '-' },
+      { b: 'CPF:', t: this.cpfPaciente || '-' },
+    ]], m, y, w);
 
     // ── Dados da Consulta ──
-    y = this.adicionarSecao(doc, 'DADOS DA CONSULTA', y, margin, pageWidth);
-    y = this.adicionarCamposHorizontal(doc, [
-      { label: 'Consulta Nº', value: this.consultaId },
-      { label: 'Data', value: this.dataConsulta },
-      { label: 'Horário', value: this.horarioConsulta },
-    ], y, margin, pageWidth);
-    y += 3;
+    y = this.pdfSecao(doc, 'DADOS DA CONSULTA', m, y, w);
+    y = this.pdfTabela(doc, [[
+      { b: 'Consulta Nº:', t: this.consultaId || '-' },
+      { b: 'Data:', t: this.dataConsulta || '-' },
+      { b: 'Horário:', t: this.horarioConsulta || '-' },
+      { b: 'Status:', t: this.questionarioStatus || 'PENDENTE' },
+    ]], m, y, w);
 
-    // ── Perguntas ──
+    // ── Médico Atendente ──
+    y = this.pdfSecao(doc, 'DENTISTA ATENDENTE', m, y, w);
+    y = this.pdfTabela(doc, [[
+      { b: 'Nome:', t: this.nomeDentista || '-' },
+      { b: 'CRO:', t: this.cro || '-' },
+    ]], m, y, w);
+
+    // ── Respostas do Questionário ──
     if (this.questionarioPerguntas.length > 0) {
-      y = this.adicionarSecao(doc, 'RESPOSTAS DO QUESTIONÁRIO', y, margin, pageWidth);
+      y = this.pdfQuebraPagina(doc, y, 12, pw, ph, m);
+      y = this.pdfSecao(doc, 'RESPOSTAS DO QUESTIONÁRIO', m, y, w);
+      y = this.pdfTabela(doc, [[
+        { b: 'PERGUNTA', t: '', span: 52 },
+        { b: 'RESPOSTA', t: '', span: 13, centro: true },
+        { b: 'OBSERVAÇÃO', t: '', span: 35 },
+      ]], m, y, w);
 
-      // Header da tabela
-      doc.setFillColor(240, 240, 240);
-      doc.rect(margin, y, pageWidth - (margin * 2), 7, 'F');
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(7);
-      doc.setTextColor(80, 80, 80);
-      doc.text('PERGUNTA', margin + 2, y + 4.5);
-      doc.text('RESPOSTA', margin + 110, y + 4.5);
-      doc.text('OBSERVAÇÃO', margin + 135, y + 4.5);
-      y += 7;
-
-      doc.setFont('helvetica', 'normal');
-      doc.setFontSize(7);
-      doc.setTextColor(0, 0, 0);
       for (const item of this.questionarioPerguntas) {
-        if (y > pageHeight - 30) {
-          doc.addPage();
-          y = 12;
-        }
-        doc.setDrawColor(230, 230, 230);
-        doc.rect(margin, y, pageWidth - (margin * 2), 6);
-        const pergunta = doc.splitTextToSize(item.pergunta || '-', 105);
-        doc.text(pergunta, margin + 2, y + 4);
-        doc.text(item.resposta || '-', margin + 110, y + 4);
-        doc.text(item.observacao || '—', margin + 135, y + 4);
-        y += Math.max(6, pergunta.length * 4);
+        y = this.pdfQuebraPagina(doc, y, 6, pw, ph, m);
+        y = this.pdfTabela(doc, [[
+          { b: '', t: item.pergunta || '-', span: 52 },
+          { b: '', t: item.resposta || '-', span: 13, centro: true },
+          { b: '', t: item.observacao || '-', span: 35 },
+        ]], m, y, w);
       }
-      y += 5;
     }
 
     // ── Assinatura Digital ──
     if (this.questionarioRespondido) {
-      y = this.adicionarSecao(doc, 'ASSINATURA DIGITAL', y, margin, pageWidth);
-      doc.setFont('helvetica', 'normal');
-      doc.setFontSize(8);
-      doc.setTextColor(0, 0, 0);
-      doc.text(`Data/Hora: ${this.formatarDataAssinatura()}`, margin + 4, y + 5);
-      doc.text(`IP de Origem: ${this.questionarioIpOrigem || '-'}`, margin + 4, y + 10);
-      y += 14;
+      y = this.pdfQuebraPagina(doc, y, 40, pw, ph, m);
+      y = this.pdfSecao(doc, 'ASSINATURA DIGITAL', m, y, w);
+      y = this.pdfTabela(doc, [[
+        { b: 'Data/Hora:', t: this.formatarDataAssinatura() },
+        { b: 'IP de Origem:', t: this.questionarioIpOrigem || '-' },
+      ]], m, y, w);
 
-      if (this.questionarioAssinatura) {
-        try {
-          const imgData = this.questionarioAssinatura.startsWith('data:')
-            ? this.questionarioAssinatura
-            : `data:image/png;base64,${this.questionarioAssinatura}`;
-          doc.addImage(imgData, 'PNG', margin + 30, y, 60, 30);
-          y += 35;
-        } catch {
-          doc.text('Assinatura digital registrada', margin + 4, y + 5);
-          y += 10;
-        }
-      }
+      y = this.pdfAssinatura(doc, m, y, w);
     }
 
     // ── Rodapé ──
-    const footerY = pageHeight - 15;
-    doc.setLineWidth(0.3);
-    doc.setDrawColor(100, 100, 100);
-    doc.line(margin, footerY, pageWidth - margin, footerY);
-    doc.setFont('helvetica', 'italic');
-    doc.setFontSize(7);
-    doc.setTextColor(136, 136, 136);
-    doc.text(`Emitido em: ${this.getDataAtual()} às ${this.getHoraAtual()}`, margin, footerY + 5);
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(6);
-    doc.setTextColor(153, 153, 153);
-    doc.text('Documento clínico - Confidencial', pageWidth - margin, footerY + 5, { align: 'right' });
+    this.pdfRodape(doc, pw, ph);
 
-    doc.save(`Questionario_Saude_${this.codigoProntuario}_${new Date().toISOString().split('T')[0]}.pdf`);
+    doc.save(`Questionario_Saude_Odontologico_${this.codigoProntuario || this.consultaId}_${new Date().toISOString().split('T')[0]}.pdf`);
   }
 
-  private adicionarSecao(doc: jsPDF, titulo: string, y: number, margin: number, pageWidth: number): number {
+  // ── Helpers PDF (padronizados com o registro de consulta) ────────────────
+
+  /**
+   * Adiciona nova pagina quando o espaco restante for insuficiente.
+   *
+   * @param doc documento em construcao
+   * @param y posicao vertical atual
+   * @param necessario altura necessaria para o proximo bloco
+   * @param pw largura da pagina
+   * @param ph altura da pagina
+   * @param m margem lateral
+   * @returns nova posicao vertical
+   */
+  private pdfQuebraPagina(doc: any, y: number, necessario: number, pw: number, ph: number, m: number): number {
+    if (y + necessario > ph - 12) {
+      doc.addPage();
+      y = 8;
+    }
+    return y;
+  }
+
+  /**
+   * Desenha o cabecalho do documento.
+   *
+   * @param doc documento em construcao
+   * @param pw largura da pagina
+   * @param m margem lateral
+   * @param y posicao vertical inicial
+   */
+  private pdfCabecalho(doc: any, pw: number, m: number, y: number): void {
+    const w = pw - m * 2;
+    doc.setFillColor(44, 62, 80);
+    doc.rect(m, y - 4, w, 10, 'F');
+    doc.setFontSize(11.5);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(255, 255, 255);
+    doc.text('QUESTIONÁRIO DE SAÚDE ODONTOLÓGICO', pw / 2, y + 1, { align: 'center' });
+    doc.setFontSize(7.5);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(200, 200, 200);
+    doc.text(`Nº: ${this.codigoProntuario || this.consultaId}`, pw / 2, y + 5, { align: 'center' });
+  }
+
+  /**
+   * Desenha o titulo de uma secao.
+   *
+   * @param doc documento em construcao
+   * @param titulo texto da secao
+   * @param m margem lateral
+   * @param y posicao vertical atual
+   * @param w largura util
+   * @returns nova posicao vertical
+   */
+  private pdfSecao(doc: any, titulo: string, m: number, y: number, w: number): number {
+    doc.setFillColor(107, 114, 128);
+    doc.rect(m, y, 2, 5, 'F');
     doc.setFillColor(248, 249, 250);
-    doc.rect(margin, y, pageWidth - (margin * 2), 6, 'F');
-    doc.setFillColor(100, 100, 100);
-    doc.rect(margin, y, 2, 6, 'F');
-    doc.setFont('helvetica', 'bold');
+    doc.rect(m + 2, y, w - 2, 5, 'F');
     doc.setFontSize(8);
-    doc.setTextColor(0, 0, 0);
-    doc.text(titulo.toUpperCase(), margin + 4, y + 4);
-    doc.setTextColor(0, 0, 0);
-    return y + 7.5;
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(107, 114, 128);
+    doc.text(titulo.toUpperCase(), m + 5, y + 3.5);
+    return y + 6;
   }
 
-  private adicionarCamposHorizontal(doc: jsPDF, campos: Array<{ label: string; value: string }>, y: number, margin: number, pageWidth: number): number {
-    const colunas = campos.length;
-    const largura = (pageWidth - (margin * 2)) / colunas;
-    doc.setLineWidth(0.1);
+  /**
+   * Desenha uma tabela de celulas com rotulo em negrito.
+   *
+   * @param doc documento em construcao
+   * @param rows linhas com as celulas
+   * @param m margem lateral
+   * @param y posicao vertical atual
+   * @param w largura util
+   * @returns nova posicao vertical
+   */
+  private pdfTabela(doc: any, rows: any[][], m: number, y: number, w: number): number {
+    doc.setLineWidth(0.15);
     doc.setDrawColor(180, 180, 180);
-    campos.forEach((_, i) => doc.rect(margin + (i * largura), y, largura, 10));
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(6);
-    doc.setTextColor(102, 102, 102);
-    campos.forEach((c, i) => doc.text(c.label.toUpperCase(), margin + (i * largura) + 2, y + 3));
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(8);
-    doc.setTextColor(0, 0, 0);
-    campos.forEach((c, i) => doc.text(c.value || '-', margin + (i * largura) + 2, y + 7));
-    return y + 10;
+
+    for (const row of rows) {
+      const totalSpan = row.reduce((s: number, c: any) => s + (c.span || 1), 0);
+      const colW = w / totalSpan;
+      let x = m;
+      let maxH = 4;
+
+      const processados: Array<{ x: number; cw: number; lines: string[] }> = [];
+      for (const cell of row) {
+        const cw = colW * (cell.span || 1);
+        const fullText = cell.t ? `${cell.b} ${cell.t}`.trim() : cell.b;
+        const lines = doc.splitTextToSize(fullText, cw - 2);
+        const h = Math.max(4.5, lines.length * 3.2 + 1);
+        maxH = Math.max(maxH, h);
+        processados.push({ x, cw, lines });
+        x += cw;
+      }
+
+      for (const p of processados) {
+        doc.rect(p.x, y, p.cw, maxH);
+      }
+
+      doc.setFontSize(8);
+      doc.setTextColor(30, 30, 30);
+      for (let ci = 0; ci < processados.length; ci++) {
+        const p = processados[ci];
+        const cell = row[ci];
+        let ty = y + 2.8;
+        for (let li = 0; li < p.lines.length; li++) {
+          if (li === 0 && cell.b && cell.t) {
+            doc.setFont('helvetica', 'bold');
+            doc.text(cell.b + ' ', p.x + 1, ty);
+            const bw = doc.getTextWidth(cell.b + ' ');
+            doc.setFont('helvetica', 'normal');
+            const rest = p.lines[0].substring(cell.b.length).trim();
+            doc.text(rest, p.x + 1 + bw, ty);
+          } else if (li === 0 && cell.b && !cell.t) {
+            doc.setFont('helvetica', 'bold');
+            this.pdfTextoCelula(doc, p.lines[0], p, cell, ty);
+          } else {
+            doc.setFont('helvetica', 'normal');
+            this.pdfTextoCelula(doc, p.lines[li], p, cell, ty);
+          }
+          ty += 3.2;
+        }
+      }
+
+      y += maxH;
+    }
+    return y;
   }
+
+  /**
+   * Escreve o texto de uma celula respeitando o alinhamento configurado.
+   *
+   * @param doc documento em construcao
+   * @param texto linha a ser escrita
+   * @param p posicao e largura da celula
+   * @param cell definicao da celula
+   * @param ty posicao vertical do texto
+   */
+  private pdfTextoCelula(doc: any, texto: string, p: { x: number; cw: number }, cell: any, ty: number): void {
+    if (cell.centro) {
+      doc.text(texto, p.x + p.cw / 2, ty, { align: 'center' });
+      return;
+    }
+    doc.text(texto, p.x + 1, ty);
+  }
+
+  /**
+   * Desenha a linha de aviso exibida quando o questionario esta pendente.
+   *
+   * @param doc documento em construcao
+   * @param texto mensagem do aviso
+   * @param m margem lateral
+   * @param y posicao vertical atual
+   * @param w largura util
+   * @returns nova posicao vertical
+   */
+  private pdfAviso(doc: any, texto: string, m: number, y: number, w: number): number {
+    const altura = 5;
+    doc.setFillColor(248, 249, 250);
+    doc.rect(m, y, w, altura, 'F');
+    doc.setLineWidth(0.15);
+    doc.setDrawColor(180, 180, 180);
+    doc.rect(m, y, w, altura);
+    doc.setFontSize(7.5);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(107, 114, 128);
+    doc.text(texto.toUpperCase(), m + 2, y + 3.4);
+    return y + altura + 1;
+  }
+
+  /**
+   * Desenha o quadro da assinatura do paciente.
+   *
+   * @param doc documento em construcao
+   * @param m margem lateral
+   * @param y posicao vertical atual
+   * @param w largura util
+   * @returns nova posicao vertical
+   */
+  private pdfAssinatura(doc: any, m: number, y: number, w: number): number {
+    const altura = 30;
+    doc.setLineWidth(0.15);
+    doc.setDrawColor(180, 180, 180);
+    doc.rect(m, y, w, altura);
+
+    if (this.questionarioAssinatura) {
+      const imgData = this.questionarioAssinatura.startsWith('data:')
+        ? this.questionarioAssinatura
+        : `data:image/png;base64,${this.questionarioAssinatura}`;
+      try {
+        doc.addImage(imgData, 'PNG', m + (w - 55) / 2, y + 2, 55, 18);
+      } catch {
+        doc.setFontSize(7.5);
+        doc.setFont('helvetica', 'italic');
+        doc.setTextColor(107, 114, 128);
+        doc.text('Assinatura digital registrada', m + w / 2, y + 12, { align: 'center' });
+      }
+    }
+
+    doc.setDrawColor(107, 114, 128);
+    doc.setLineWidth(0.25);
+    doc.line(m + (w - 70) / 2, y + 22, m + (w + 70) / 2, y + 22);
+
+    doc.setFontSize(7.5);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(55, 65, 81);
+    doc.text((this.nomePaciente || 'Paciente').toUpperCase(), m + w / 2, y + 26, { align: 'center' });
+
+    return y + altura;
+  }
+
+  /**
+   * Desenha o rodape em todas as paginas do documento.
+   *
+   * @param doc documento em construcao
+   * @param pw largura da pagina
+   * @param ph altura da pagina
+   */
+  private pdfRodape(doc: any, pw: number, ph: number): void {
+    const total = doc.getNumberOfPages();
+    for (let i = 1; i <= total; i++) {
+      doc.setPage(i);
+      doc.setDrawColor(107, 114, 128);
+      doc.setLineWidth(0.3);
+      doc.line(10, ph - 10, pw - 10, ph - 10);
+      doc.setFontSize(7);
+      doc.setFont('helvetica', 'italic');
+      doc.setTextColor(156, 163, 175);
+      doc.text(
+        `Página ${i} de ${total} | Emitido em ${this.getDataAtual()} às ${this.getHoraAtual()} | Confidencial`,
+        pw / 2, ph - 7, { align: 'center' }
+      );
+    }
+  }
+
 }

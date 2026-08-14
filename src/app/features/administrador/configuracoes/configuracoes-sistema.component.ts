@@ -42,6 +42,7 @@ export class ConfiguracoesSistemaComponent implements OnInit, OnDestroy {
   editandoValor: number | null = null;
   novoProcedimento = { nomeProcedimento: '', valorPadrao: 0 };
   mostrarFormNovo = false;
+  termoPesquisa = '';
 
   private themeSubscription?: Subscription;
 
@@ -425,4 +426,18 @@ export class ConfiguracoesSistemaComponent implements OnInit, OnDestroy {
   get totalProcedimentos(): number { return this.procedimentosPadrao.length; }
   get ativosProcedimentos(): number { return this.procedimentosPadrao.filter(p => p.ativo).length; }
   get inativosProcedimentos(): number { return this.procedimentosPadrao.filter(p => !p.ativo).length; }
+
+  get procedimentosFiltrados(): any[] {
+    if (!this.termoPesquisa || this.termoPesquisa.trim() === '') {
+      return this.procedimentosPadrao;
+    }
+    const termo = this.termoPesquisa.toLowerCase().trim();
+    return this.procedimentosPadrao.filter(proc =>
+      proc.nomeProcedimento.toLowerCase().includes(termo)
+    );
+  }
+
+  limparPesquisa(): void {
+    this.termoPesquisa = '';
+  }
 }

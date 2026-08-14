@@ -634,19 +634,6 @@ body.dark-theme .filter-tab.active {
   color: #fff;
 }
 
-/* Botões de ação rápida */
-body.dark-theme .quick-action-btn {
-  background-color: var(--dark-bg-card);
-}
-
-body.dark-theme .quick-action-btn__label {
-  color: var(--dark-text-primary);
-}
-
-body.dark-theme .quick-action-btn:hover {
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
-}
-
 /* Tabelas */
 body.dark-theme table,
 body.dark-theme .mat-mdc-table {
@@ -898,15 +885,6 @@ body.theme-dark-black .mat-mdc-dialog-container {
 
 body.theme-dark-black .mdc-text-field--filled:not(.mdc-text-field--disabled) {
   background-color: #1a1a1a !important;
-}
-
-/* Quick action buttons no tema preto */
-body.theme-dark-black .quick-action-btn {
-  background-color: #121212 !important;
-}
-
-body.theme-dark-black .quick-action-btn:hover {
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
 }
 
 /* Divisores no tema preto */

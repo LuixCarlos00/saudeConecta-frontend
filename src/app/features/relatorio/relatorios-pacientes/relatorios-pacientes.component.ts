@@ -295,9 +295,13 @@ export class RelatoriosPacientesComponent implements OnInit {
    * Abre o dialog de impressao correspondente ao documento clicado.
    *
    * @param documento documento selecionado no card
+   * @param consulta consulta que originou o documento, usada como contexto do cabecalho
    */
-  visualizarDocumento(documento: DocumentoRelatorio): void {
-    this.relatorioService.abrirDocumentoDaConsulta(documento.consultaId, documento.tipo);
+  visualizarDocumento(documento: DocumentoRelatorio, consulta: ConsultaRelatorio): void {
+    this.relatorioService.abrirDocumentoDaConsulta(documento.consultaId, documento.tipo, {
+      paciente: this.pacienteSelecionado,
+      consulta
+    });
   }
 
   /** Abre o historico completo do paciente selecionado. */

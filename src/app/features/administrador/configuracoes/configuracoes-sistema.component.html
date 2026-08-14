@@ -429,6 +429,20 @@
         </div>
       </div>
 
+      <!-- ───────── Barra de Pesquisa ───────── -->
+      <div class="proc-search-wrapper" *ngIf="!loadingProcedimentos && procedimentosPadrao.length > 0">
+        <div class="proc-search-container">
+          <i class="fa-solid fa-search proc-search-icon"></i>
+          <input type="text" [(ngModel)]="termoPesquisa" placeholder="Buscar procedimento..." class="proc-search-input">
+          <button *ngIf="termoPesquisa" class="proc-search-clear" (click)="limparPesquisa()">
+            <i class="fa-solid fa-times"></i>
+          </button>
+        </div>
+        <div class="proc-search-results" *ngIf="termoPesquisa">
+          <span>{{ procedimentosFiltrados.length }} de {{ totalProcedimentos }} procedimentos</span>
+        </div>
+      </div>
+
       <!-- ───────── Tabela de Procedimentos ───────── -->
       <div class="proc-table-wrapper" *ngIf="!loadingProcedimentos && procedimentosPadrao.length > 0">
         <table class="proc-table">
@@ -441,7 +455,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let proc of procedimentosPadrao" [class.proc-row--inactive]="!proc.ativo">
+            <tr *ngFor="let proc of procedimentosFiltrados" [class.proc-row--inactive]="!proc.ativo">
 
               <!-- Modo visualização -->
               <ng-container *ngIf="editandoId !== proc.id">

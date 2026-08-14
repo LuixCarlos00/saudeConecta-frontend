@@ -12,8 +12,7 @@
 
 .healthcare-content {
   padding: $spacing-6;
-  max-width: 1400px;
-  margin: 0 auto;
+
 
   @include mobile {
     padding: $spacing-4;
@@ -593,159 +592,6 @@ $card-colors: (
 }
 
 // =============================================================================
-// PAINEL DE AÇÕES RÁPIDAS
-// =============================================================================
-
-.dashboard-quick-actions {
-  margin-top: $spacing-2;
-}
-
-.quick-actions-grid {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: $spacing-4;
-
-  @include max-width($breakpoint-xl) {
-    grid-template-columns: repeat(3, 1fr);
-  }
-
-  @include max-width($breakpoint-md) {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  @include mobile {
-    grid-template-columns: 1fr;
-  }
-}
-
-.quick-action-btn {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: $spacing-3;
-  padding: $spacing-5;
-  border: 2px solid transparent;
-  border-radius: $radius-lg;
-  background: $bg-card;
-  cursor: pointer;
-  transition: all $transition-normal;
-  min-height: 120px;
-
-  &:hover {
-    transform: translateY(-4px);
-    box-shadow: $shadow-lg;
-  }
-
-  &:active {
-    transform: translateY(-2px);
-  }
-
-  &__icon {
-    width: 52px;
-    height: 52px;
-    border-radius: $radius-lg;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: $text-2xl;
-    transition: all $transition-normal;
-  }
-
-  &__label {
-    font-size: $text-sm;
-    font-weight: $font-semibold;
-    color: $text-primary;
-    text-align: center;
-  }
-
-  // Variantes de cores
-  &--primary {
-    border-color: $primary-blue-light;
-
-    .quick-action-btn__icon {
-      background: $primary-blue-light;
-      color: $primary-blue;
-    }
-
-    &:hover {
-      border-color: $primary-blue;
-      background: $primary-blue-light;
-    }
-  }
-
-  &--success {
-    border-color: $status-normal-bg;
-
-    .quick-action-btn__icon {
-      background: $status-normal-bg;
-      color: $status-normal;
-    }
-
-    &:hover {
-      border-color: $status-normal;
-      background: $status-normal-bg;
-    }
-  }
-
-  &--warning {
-    border-color: $status-atencao-bg;
-
-    .quick-action-btn__icon {
-      background: $status-atencao-bg;
-      color: $status-atencao;
-    }
-
-    &:hover {
-      border-color: $status-atencao;
-      background: $status-atencao-bg;
-    }
-  }
-
-  &--info {
-    border-color: $status-info-bg;
-
-    .quick-action-btn__icon {
-      background: $status-info-bg;
-      color: $status-info;
-    }
-
-    &:hover {
-      border-color: $status-info;
-      background: $status-info-bg;
-    }
-  }
-
-  &--purple {
-    border-color: rgba(139, 92, 246, 0.15);
-
-    .quick-action-btn__icon {
-      background: rgba(139, 92, 246, 0.15);
-      color: #8B5CF6;
-    }
-
-    &:hover {
-      border-color: #8B5CF6;
-      background: rgba(139, 92, 246, 0.1);
-    }
-  }
-
-  &--teal {
-    border-color: $primary-teal-light;
-
-    .quick-action-btn__icon {
-      background: $primary-teal-light;
-      color: $primary-teal;
-    }
-
-    &:hover {
-      border-color: $primary-teal;
-      background: $primary-teal-light;
-    }
-  }
-}
-
-// =============================================================================
 // BANNER DE BOAS-VINDAS DO MÉDICO
 // =============================================================================
 
@@ -818,40 +664,6 @@ $card-colors: (
 
       p {
         font-size: $text-sm;
-      }
-    }
-  }
-}
-
-// =============================================================================
-// GRID DE AÇÕES RÁPIDAS DO MÉDICO
-// =============================================================================
-
-.quick-actions-grid--doctor {
-  grid-template-columns: repeat(3, 1fr);
-
-  @include max-width($breakpoint-lg) {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  @include mobile {
-    grid-template-columns: 1fr;
-  }
-
-  .quick-action-btn {
-    min-height: 140px;
-    padding: $spacing-5;
-
-    &__description {
-      font-size: $text-xs;
-      color: $text-muted;
-      margin-top: $spacing-1;
-      opacity: 0.8;
-    }
-
-    &:hover {
-      .quick-action-btn__description {
-        opacity: 1;
       }
     }
   }

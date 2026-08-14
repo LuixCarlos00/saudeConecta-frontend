@@ -2,6 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { finalize, Subject, takeUntil } from 'rxjs';
 
 import { ErrorHandlerService } from 'src/app/core/services/error-handler.service';
+import { AuthService } from 'src/app/core/services/auth.service';
 import { ChamadoSuporteApiService } from 'src/app/services/api/chamado-suporte-api.service';
 import {
   CategoriaChamado,
@@ -28,37 +29,81 @@ interface AnexoVisualizacao {
 })
 export class SuporteComponent implements OnInit, OnDestroy {
 
-  canaisContato = [
+  estatisticasChamados = [
     {
-      icone: 'fa-solid fa-envelope',
-      titulo: 'E-mail',
-      valor: 'suporte@saudeconecta.com.br',
-      descricao: 'Resposta em até 24 horas'
+      icone: 'fa-solid fa-ticket',
+      titulo: 'Total de Chamados',
+      valor: '0',
+      descricao: 'Chamados abertos'
     },
     {
-      icone: 'fa-brands fa-whatsapp',
-      titulo: 'WhatsApp',
-      valor: '(11) 99999-9999',
-      descricao: 'Atendimento rápido'
+      icone: 'fa-solid fa-clock',
+      titulo: 'Em Análise',
+      valor: '0',
+      descricao: 'Aguardando resposta'
+    },
+    {
+      icone: 'fa-solid fa-check-circle',
+      titulo: 'Concluídos',
+      valor: '0',
+      descricao: 'Chamados resolvidos'
     }
   ];
 
-  faqRapido = [
+  informacoesSistema = [
+    {
+      icone: 'fa-solid fa-clock',
+      titulo: 'Horário de Atendimento',
+      valor: 'Segunda a Sexta',
+      descricao: '08:00 às 18:00'
+    },
+    {
+      icone: 'fa-solid fa-code-branch',
+      titulo: 'Versão do Sistema',
+      valor: 'v1.0.0',
+      descricao: 'Última atualização: 13/08/2026'
+    }
+  ];
+
+  faqRapido: Array<{ pergunta: string; resposta: string }> = [];
+
+  // FAQs para ADMIN/SECRETÁRIO
+  faqAdminSecretario = [
     {
       pergunta: 'Como faço para resetar minha senha?',
-      resposta: 'Acesse a tela de login e clique em "Esqueci minha senha". Você receberá um e-mail com instruções.'
+      resposta: 'Acesse Configurações > Altera Senha e clique em "Trocar Senha". Preencha o formulario.'
     },
     {
-      pergunta: 'Como cadastrar um novo paciente?',
-      resposta: 'No menu lateral, acesse Cadastros > Paciente e preencha o formulário com os dados necessários.'
+      pergunta: 'Como agendar uma consulta para um paciente?',
+      resposta: 'No menu lateral, acesse Agenda Calendario e clique "Nova Consulta" para abrir o modal de agendamento. Selecione o paciente, profissional e preencha os dados.'
     },
     {
-      pergunta: 'Como cancelar uma consulta agendada?',
-      resposta: 'Na tela de Gerenciamento de Agenda, localize a consulta e clique no botão de cancelar.'
+      pergunta: 'Como bloquear um usuário do sistema?',
+      resposta: 'Acesse Usuários, localize o usuário desejado e clique no botão de bloquear. O usuário não poderá mais acessar o sistema.'
     },
     {
-      pergunta: 'O sistema está lento, o que fazer?',
-      resposta: 'Tente limpar o cache do navegador (Ctrl+Shift+Delete) e recarregar a página.'
+      pergunta: 'Como visualizar o histórico de um paciente?',
+      resposta: 'Acesse Relatórios clique no paciente desejado e depois em opção "Histórico completo" para ver todas as consultas e procedimentos realizados.'
+    }
+  ];
+
+  // FAQs para CLÍNICO
+  faqClinico = [
+    {
+      pergunta: 'Como faço para resetar minha senha?',
+      resposta: 'Acesse Configurações > Altera Senha e clique em "Trocar Senha". Preencha o formulario.'
+    },
+    {
+      pergunta: 'Como visualizar minha agenda?',
+      resposta: 'No menu lateral, acesse Agenda Calendario para visualizar suas consultas agendadas por dia, semana ou mês.'
+    },
+    {
+      pergunta: 'Como finalizar uma consulta no prontuário?',
+      resposta: 'Abra o prontuário do paciente, preencha os campos necessários e clique em "Finalizar Consulta" para concluir o atendimento.'
+    },
+    {
+      pergunta: 'Como cadastrar procedimentos padrão?',
+      resposta: 'Acesse Configurações > Sistema > Aba Planejamentos para cadastrar e gerenciar os procedimentos que aparecerão no prontuário.'
     }
   ];
 
@@ -127,11 +172,21 @@ export class SuporteComponent implements OnInit, OnDestroy {
 
   constructor(
     private chamadoSuporteApiService: ChamadoSuporteApiService,
-    private errorHandler: ErrorHandlerService
+    private errorHandler: ErrorHandlerService,
+    private authService: AuthService
   ) { }
 
   ngOnInit(): void {
     this.carregarChamados();
+    this.carregarFaqPorTipoUsuario();
+  }
+
+  private carregarFaqPorTipoUsuario(): void {
+    if (this.authService.isClinico()) {
+      this.faqRapido = this.faqClinico;
+    } else {
+      this.faqRapido = this.faqAdminSecretario;
+    }
   }
 
   ngOnDestroy(): void {
@@ -148,9 +203,35 @@ export class SuporteComponent implements OnInit, OnDestroy {
     this.chamadoSuporteApiService.listarTodos()
       .pipe(takeUntil(this.destroy$), finalize(() => this.isCarregandoChamados = false))
       .subscribe({
-        next: (pagina) => this.chamados = pagina.content ?? [],
+        next: (pagina) => {
+          this.chamados = pagina.content ?? [];
+          this.atualizarEstatisticas();
+        },
         error: (erro) => this.errorHandler.handleHttpError(erro, 'carregamento dos chamados')
       });
+  }
+
+  private atualizarEstatisticas(): void {
+    this.estatisticasChamados = [
+      {
+        icone: 'fa-solid fa-ticket',
+        titulo: 'Total de Chamados',
+        valor: this.chamados.length.toString(),
+        descricao: 'Chamados abertos'
+      },
+      {
+        icone: 'fa-solid fa-clock',
+        titulo: 'Em Análise',
+        valor: this.chamados.filter(c => c.status === 'EM_ANALISE').length.toString(),
+        descricao: 'Aguardando resposta'
+      },
+      {
+        icone: 'fa-solid fa-check-circle',
+        titulo: 'Concluídos',
+        valor: this.chamados.filter(c => c.status === 'CONCLUIDO').length.toString(),
+        descricao: 'Chamados resolvidos'
+      }
+    ];
   }
 
   toggleFaq(index: number): void {

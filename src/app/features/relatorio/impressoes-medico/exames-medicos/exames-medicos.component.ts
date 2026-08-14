@@ -1,4 +1,3 @@
-import { log } from 'node:console';
 import { Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { jsPDF } from 'jspdf';
@@ -32,6 +31,9 @@ export class ExamesMedicosComponent implements OnInit {
   // ID para o PDF
   codigoProntuario = '';
 
+  /** Indica se o prontuario de origem e odontologico. */
+  private ehDentista = false;
+
   constructor(
     public dialogRef: MatDialogRef<ExamesMedicosComponent>,
     @Inject(MAT_DIALOG_DATA) public data: ProntuarioUnificado
@@ -39,7 +41,7 @@ export class ExamesMedicosComponent implements OnInit {
 
   ngOnInit() {
     const p = this.data;
-    console.log('Dados recebidos para impressão:', p);
+
     // ── Profissional ─────────────────────────────────────────────────────────
     // A estrutura de profissional é a mesma para médico e dentista
     this.nomeMedico = (p.profissional as any)?.nome?.trim() || '';
@@ -67,205 +69,313 @@ export class ExamesMedicosComponent implements OnInit {
 
     // ── Identificação ─────────────────────────────────────────────────────────
     this.codigoProntuario = String(p.codigoProntuario ?? p.codigo ?? '000000');
-
-    console.log('Dados para PDF:', {
-      nomeMedico: this.nomeMedico,
-      crm: this.crm,
-      emailMedico: this.emailMedico,
-      telefoneMedico: this.telefoneMedico,
-      nomePaciente: this.nomePaciente,
-      cpfPaciente: this.cpfPaciente,
-      dataSolicitacao: this.dataSolicitacao,
-      tituloExame: this.tituloExame,
-      exame: this.exame,
-      dataExame: this.dataExame,
-      codigoProntuario: this.codigoProntuario,
-      dataAtual: this.dataAtual,
-      profissional: p.profissional,
-      consulta: p.consulta,
-      procedimentos: p.procedimentos
-
-    });
+    this.ehDentista = p.tipoProntuario === 'dentista';
   }
 
-  GerarPDF() {
+  /** Titulo da secao do profissional, conforme o tipo de prontuario. */
+  get tituloProfissional(): string {
+    return this.ehDentista ? 'DENTISTA SOLICITANTE' : 'MÉDICO SOLICITANTE';
+  }
+
+  /** Rotulo do conselho profissional, conforme o tipo de prontuario. */
+  get rotuloConselho(): string {
+    return this.ehDentista ? 'CRO' : 'CRM';
+  }
+
+  /** Titulo da secao de conteudo, conforme o tipo de prontuario. */
+  get tituloSecaoExames(): string {
+    return this.ehDentista ? 'PROCEDIMENTOS SOLICITADOS' : 'EXAMES SOLICITADOS';
+  }
+
+  /**
+   * Data atual formatada para o padrao brasileiro.
+   *
+   * @returns data no formato dd/mm/aaaa
+   */
+  getDataAtual(): string {
+    return new Date().toLocaleDateString('pt-BR');
+  }
+
+  /**
+   * Hora atual formatada para o padrao brasileiro.
+   *
+   * @returns hora no formato hh:mm
+   */
+  getHoraAtual(): string {
+    return new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+  }
+
+  GerarPDF(): void {
     const doc = new jsPDF('p', 'mm', 'a4');
-    const pageWidth = doc.internal.pageSize.getWidth();
-    const pageHeight = doc.internal.pageSize.getHeight();
-    const margin = 15;
-    let y = 20;
-    let paginaAtual = 1;
+    const pw = doc.internal.pageSize.getWidth();
+    const ph = doc.internal.pageSize.getHeight();
+    const m = 10;
+    const w = pw - m * 2;
+    let y = 12;
 
-    // Cabeçalho
-    doc.setFillColor(44, 62, 80);
-    doc.rect(0, 0, pageWidth, 25, 'F');
-    doc.setTextColor(255, 255, 255);
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(14);
-    doc.text('SOLICITAÇÃO DE EXAMES', pageWidth / 2, 16, { align: 'center' });
-    doc.setFontSize(8);
-    doc.setTextColor(200, 200, 200);
-    doc.text(`Nº: ${this.codigoProntuario}`, pageWidth / 2, 20, { align: 'center' });
-    doc.setTextColor(0, 0, 0);
-    y = 35;
+    this.pdfCabecalho(doc, pw, m, y);
+    y += 12;
 
-    // Seção: Dados do Paciente
-    y = this.adicionarSecaoVertical(doc, 'DADOS DO PACIENTE', null, y, margin, pageWidth);
-    y = this.adicionarCamposHorizontal(doc, [
-      { label: 'Nome', value: this.nomePaciente },
-      { label: 'CPF', value: this.cpfPaciente },
-    ], y, margin, pageWidth);
-    y += 3;
+    y = this.pdfSecao(doc, 'DADOS DO PACIENTE', m, y, w);
+    y = this.pdfTabela(doc, [[
+      { b: 'Nome:', t: this.nomePaciente || '-' },
+      { b: 'CPF:', t: this.cpfPaciente || '-' },
+    ]], m, y, w);
 
-    // Seção: Profissional Solicitante
-    const tituloProfissional = this.data.tipoProntuario === 'dentista' ? 'DENTISTA SOLICITANTE' : 'MÉDICO SOLICITANTE';
-    y = this.adicionarSecaoVertical(doc, tituloProfissional, null, y, margin, pageWidth);
-    y = this.adicionarCamposHorizontal(doc, [
-      { label: 'Nome', value: `Dr. ${this.nomeMedico}` },
-      { label: 'Conselho', value: this.crm },
-      { label: 'Email', value: this.emailMedico },
-      { label: 'Telefone', value: this.telefoneMedico },
-    ], y, margin, pageWidth);
-    y += 3;
+    y = this.pdfSecao(doc, 'INFORMAÇÕES DA SOLICITAÇÃO', m, y, w);
+    y = this.pdfTabela(doc, [[
+      { b: 'Título:', t: this.tituloExame || '-' },
+      { b: 'Solicitado em:', t: this.dataSolicitacao || '-' },
+      { b: 'Data do exame:', t: this.dataExame || '-' },
+    ]], m, y, w);
 
-    // Seção: Informações da Solicitação
-    y = this.adicionarSecaoVertical(doc, 'INFORMAÇÕES DA SOLICITAÇÃO', null, y, margin, pageWidth);
-    y = this.adicionarCamposHorizontal(doc, [
-      { label: 'Título', value: this.tituloExame },
-      { label: 'Data Solicitação', value: this.dataSolicitacao },
-      { label: 'Data Exame', value: this.dataExame },
-    ], y, margin, pageWidth);
-    y += 3;
+    y = this.pdfSecao(doc, this.tituloProfissional, m, y, w);
+    y = this.pdfTabela(doc, [[
+      { b: 'Nome:', t: this.nomeMedico || '-' },
+      { b: `${this.rotuloConselho}:`, t: this.crm || '-' },
+      { b: 'Email:', t: this.emailMedico || '-' },
+      { b: 'Tel.:', t: this.telefoneMedico || '-' },
+    ]], m, y, w);
 
-    // Seção: Exames / Procedimentos
-    const tituloSecao = this.data.tipoProntuario === 'dentista' ? 'PROCEDIMENTOS SOLICITADOS' : 'EXAMES SOLICITADOS';
-    const alturaCaixa = 50;
-    const espacoNecessario = 7.5 + alturaCaixa + 2;
+    y = this.pdfQuebraPagina(doc, y, 20, ph);
+    y = this.pdfSecao(doc, this.tituloSecaoExames, m, y, w);
+    y = this.pdfBlocoTexto(doc, this.exame || '-', m, y, w, ph);
 
-    const resultado = this.verificarEspacoAdicionarPagina(doc, y, espacoNecessario, pageHeight, margin, pageWidth);
-    y = resultado.y;
-    paginaAtual += resultado.pagina;
+    y = this.pdfQuebraPagina(doc, y, 8, ph);
+    y = this.pdfAviso(doc, 'Documento válido para apresentação em laboratórios e clínicas especializadas.', m, y, w);
 
-    y = this.adicionarSecaoVertical(doc, tituloSecao, null, y, margin, pageWidth);
-
-    doc.setLineWidth(0.1);
-    doc.setDrawColor(150, 150, 150);
-    doc.rect(margin, y, pageWidth - (margin * 2), alturaCaixa, 'D');
-
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(9);
-    doc.setTextColor(0, 0, 0);
-    const linhas = doc.splitTextToSize(this.exame, pageWidth - (margin * 2) - 4);
-    const alturaTexto = linhas.length * 4;
-    const alturaReal = Math.max(alturaCaixa, alturaTexto + 10);
-
-    if (alturaReal > alturaCaixa) {
-      const resultado2 = this.verificarEspacoAdicionarPagina(doc, y - 7.5, espacoNecessario + (alturaReal - alturaCaixa), pageHeight, margin, pageWidth);
-      y = resultado2.y;
-      paginaAtual += resultado2.pagina;
-      y = this.adicionarSecaoVertical(doc, tituloSecao, null, y, margin, pageWidth);
-      doc.rect(margin, y, pageWidth - (margin * 2), alturaReal, 'D');
-    }
-
-    doc.text(linhas, margin + 2, y + 8);
-    y += alturaReal + 2;
-
-    // Rodapé
-    const footerY = pageHeight - 15;
-    doc.setLineWidth(0.3);
-    doc.setDrawColor(52, 152, 219);
-    doc.line(margin, footerY, pageWidth - margin, footerY);
-    doc.setFont('helvetica', 'italic');
-    doc.setFontSize(7);
-    doc.setTextColor(136, 136, 136);
-    doc.text(`Emitido em: ${this.dataAtual}`, margin, footerY + 5);
-    doc.setFontSize(6);
-    doc.text('Documento válido para apresentação em laboratórios e clínicas especializadas.', margin, footerY + 9);
+    this.pdfRodape(doc, pw, ph);
 
     doc.save(`SolicitacaoExames_${this.codigoProntuario}_${this.dataSolicitacao}.pdf`);
   }
 
-  private adicionarSecaoVertical(doc: jsPDF, titulo: string, cor: string | null, y: number, margin: number, pageWidth: number): number {
-    doc.setFillColor(248, 249, 250);
-    doc.rect(margin, y, pageWidth - (margin * 2), 6, 'F');
-    if (cor) {
-      const rgb = this.hexToRgb(cor);
-      doc.setFillColor(rgb.r, rgb.g, rgb.b);
-      doc.rect(margin, y, 2, 6, 'F');
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(8);
-      doc.setTextColor(rgb.r, rgb.g, rgb.b);
-    } else {
-      doc.setFillColor(100, 100, 100);
-      doc.rect(margin, y, 2, 6, 'F');
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(8);
-      doc.setTextColor(0, 0, 0);
-    }
-    doc.text(titulo.toUpperCase(), margin + 4, y + 4);
-    doc.setTextColor(0, 0, 0);
-    return y + 7.5;
-  }
-
-  private adicionarCamposHorizontal(doc: jsPDF, campos: Array<{ label: string; value: string }>, y: number, margin: number, pageWidth: number): number {
-    const colunas = campos.length;
-    const larguraColuna = (pageWidth - (margin * 2)) / colunas;
-    const alturaCampo = 8;
-    doc.setLineWidth(0.1);
-    doc.setDrawColor(150, 150, 150);
-    campos.forEach((campo, index) => {
-      const x = margin + (index * larguraColuna);
-      doc.line(x, y - 2, x + larguraColuna, y - 2);
-      doc.line(x, y + alturaCampo - 1, x + larguraColuna, y + alturaCampo - 1);
-      if (index < colunas - 1) {
-        doc.line(x + larguraColuna, y - 2, x + larguraColuna, y + alturaCampo - 1);
-      }
-    });
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(6);
-    doc.setTextColor(102, 102, 102);
-    campos.forEach((campo, index) => {
-      const x = margin + (index * larguraColuna) + 2;
-      doc.text(campo.label.toUpperCase(), x, y);
-    });
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(8);
-    doc.setTextColor(0, 0, 0);
-    campos.forEach((campo, index) => {
-      const x = margin + (index * larguraColuna) + 2;
-      const texto = doc.splitTextToSize(campo.value || '-', larguraColuna - 4);
-      doc.text(texto, x, y + 4);
-    });
-    return y + alturaCampo + 2;
-  }
-
-  private verificarEspacoAdicionarPagina(doc: jsPDF, y: number, espacoNecessario: number, pageHeight: number, margin: number, pageWidth: number): { y: number; pagina: number } {
-    if (y + espacoNecessario > pageHeight - margin - 20) {
+  /**
+   * Adiciona nova pagina quando o espaco restante for insuficiente.
+   *
+   * @param doc documento em construcao
+   * @param y posicao vertical atual
+   * @param necessario altura necessaria para o proximo bloco
+   * @param ph altura da pagina
+   * @returns nova posicao vertical
+   */
+  private pdfQuebraPagina(doc: any, y: number, necessario: number, ph: number): number {
+    if (y + necessario > ph - 12) {
       doc.addPage();
-      this.adicionarCabecalhoPagina(doc, pageWidth);
-      return { y: 35, pagina: 1 };
+      return 8;
     }
-    return { y, pagina: 0 };
+    return y;
   }
 
-  private adicionarCabecalhoPagina(doc: jsPDF, pageWidth: number): void {
+  /**
+   * Desenha o cabecalho do documento.
+   *
+   * @param doc documento em construcao
+   * @param pw largura da pagina
+   * @param m margem lateral
+   * @param y posicao vertical inicial
+   */
+  private pdfCabecalho(doc: any, pw: number, m: number, y: number): void {
+    const w = pw - m * 2;
     doc.setFillColor(44, 62, 80);
-    doc.rect(0, 0, pageWidth, 25, 'F');
+    doc.rect(m, y - 4, w, 10, 'F');
+    doc.setFontSize(11.5);
     doc.setFont('helvetica', 'bold');
-    doc.setFontSize(14);
     doc.setTextColor(255, 255, 255);
-    doc.text('SOLICITAÇÃO DE EXAMES', pageWidth / 2, 16, { align: 'center' });
-    doc.setFontSize(8);
+    doc.text('SOLICITAÇÃO DE EXAMES', pw / 2, y + 1, { align: 'center' });
+    doc.setFontSize(7.5);
+    doc.setFont('helvetica', 'normal');
     doc.setTextColor(200, 200, 200);
-    doc.text(`Nº: ${this.codigoProntuario} - Continuação`, pageWidth / 2, 20, { align: 'center' });
-    doc.setTextColor(0, 0, 0);
+    doc.text(`Nº: ${this.codigoProntuario}`, pw / 2, y + 5, { align: 'center' });
   }
 
-  private hexToRgb(hex: string | null): { r: number; g: number; b: number } {
-    if (!hex) return { r: 0, g: 0, b: 0 };
-    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-    return result
-      ? { r: parseInt(result[1], 16), g: parseInt(result[2], 16), b: parseInt(result[3], 16) }
-      : { r: 0, g: 0, b: 0 };
+  /**
+   * Desenha o titulo de uma secao.
+   *
+   * @param doc documento em construcao
+   * @param titulo texto da secao
+   * @param m margem lateral
+   * @param y posicao vertical atual
+   * @param w largura util
+   * @returns nova posicao vertical
+   */
+  private pdfSecao(doc: any, titulo: string, m: number, y: number, w: number): number {
+    doc.setFillColor(107, 114, 128);
+    doc.rect(m, y, 2, 5, 'F');
+    doc.setFillColor(248, 249, 250);
+    doc.rect(m + 2, y, w - 2, 5, 'F');
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(107, 114, 128);
+    doc.text(titulo.toUpperCase(), m + 5, y + 3.5);
+    return y + 6;
+  }
+
+  /**
+   * Desenha uma tabela de celulas com rotulo em negrito.
+   *
+   * @param doc documento em construcao
+   * @param rows linhas com as celulas
+   * @param m margem lateral
+   * @param y posicao vertical atual
+   * @param w largura util
+   * @returns nova posicao vertical
+   */
+  private pdfTabela(doc: any, rows: any[][], m: number, y: number, w: number): number {
+    doc.setLineWidth(0.15);
+    doc.setDrawColor(180, 180, 180);
+
+    for (const row of rows) {
+      const totalSpan = row.reduce((s: number, c: any) => s + (c.span || 1), 0);
+      const colW = w / totalSpan;
+      let x = m;
+      let maxH = 4;
+
+      const processados: Array<{ x: number; cw: number; lines: string[] }> = [];
+      for (const cell of row) {
+        const cw = colW * (cell.span || 1);
+        const fullText = cell.t ? `${cell.b} ${cell.t}`.trim() : cell.b;
+        const lines = doc.splitTextToSize(fullText, cw - 2);
+        const h = Math.max(4.5, lines.length * 3.2 + 1);
+        maxH = Math.max(maxH, h);
+        processados.push({ x, cw, lines });
+        x += cw;
+      }
+
+      for (const p of processados) {
+        doc.rect(p.x, y, p.cw, maxH);
+      }
+
+      doc.setFontSize(8);
+      doc.setTextColor(30, 30, 30);
+      for (let ci = 0; ci < processados.length; ci++) {
+        const p = processados[ci];
+        const cell = row[ci];
+        let ty = y + 2.8;
+        for (let li = 0; li < p.lines.length; li++) {
+          if (li === 0 && cell.b && cell.t) {
+            doc.setFont('helvetica', 'bold');
+            doc.text(cell.b + ' ', p.x + 1, ty);
+            const bw = doc.getTextWidth(cell.b + ' ');
+            doc.setFont('helvetica', 'normal');
+            const rest = p.lines[0].substring(cell.b.length).trim();
+            doc.text(rest, p.x + 1 + bw, ty);
+          } else if (li === 0 && cell.b && !cell.t) {
+            doc.setFont('helvetica', 'bold');
+            doc.text(p.lines[0], p.x + 1, ty);
+          } else {
+            doc.setFont('helvetica', 'normal');
+            doc.text(p.lines[li], p.x + 1, ty);
+          }
+          ty += 3.2;
+        }
+      }
+
+      y += maxH;
+    }
+    return y;
+  }
+
+  /**
+   * Desenha um bloco de texto livre com altura minima, quebrando pagina se necessario.
+   *
+   * @param doc documento em construcao
+   * @param texto conteudo a ser impresso
+   * @param m margem lateral
+   * @param y posicao vertical atual
+   * @param w largura util
+   * @param ph altura da pagina
+   * @returns nova posicao vertical
+   */
+  private pdfBlocoTexto(doc: any, texto: string, m: number, y: number, w: number, ph: number): number {
+    doc.setFontSize(8.5);
+    doc.setFont('helvetica', 'normal');
+    const linhas = doc.splitTextToSize(texto, w - 4);
+    const alturaLinha = 3.6;
+    const cabemNaPagina = Math.max(1, Math.floor((ph - 14 - y - 4) / alturaLinha));
+
+    if (linhas.length <= cabemNaPagina) {
+      const altura = Math.max(30, linhas.length * alturaLinha + 4);
+      doc.setLineWidth(0.15);
+      doc.setDrawColor(180, 180, 180);
+      doc.rect(m, y, w, altura);
+      doc.setTextColor(30, 30, 30);
+      doc.text(linhas, m + 2, y + 4);
+      return y + altura;
+    }
+
+    let restantes = [...linhas];
+    let posicao = y;
+    while (restantes.length > 0) {
+      const cabem = Math.max(1, Math.floor((ph - 14 - posicao - 4) / alturaLinha));
+      const bloco = restantes.slice(0, cabem);
+      restantes = restantes.slice(cabem);
+
+      const altura = bloco.length * alturaLinha + 4;
+      doc.setLineWidth(0.15);
+      doc.setDrawColor(180, 180, 180);
+      doc.rect(m, posicao, w, altura);
+      doc.setTextColor(30, 30, 30);
+      doc.text(bloco, m + 2, posicao + 4);
+      posicao += altura;
+
+      if (restantes.length > 0) {
+        doc.addPage();
+        posicao = 8;
+      }
+    }
+    return posicao;
+  }
+
+  /**
+   * Desenha a faixa de aviso do documento.
+   *
+   * @param doc documento em construcao
+   * @param texto mensagem do aviso
+   * @param m margem lateral
+   * @param y posicao vertical atual
+   * @param w largura util
+   * @returns nova posicao vertical
+   */
+  private pdfAviso(doc: any, texto: string, m: number, y: number, w: number): number {
+    const altura = 5;
+    doc.setFillColor(248, 249, 250);
+    doc.rect(m, y, w, altura, 'F');
+    doc.setLineWidth(0.15);
+    doc.setDrawColor(180, 180, 180);
+    doc.rect(m, y, w, altura);
+    doc.setFontSize(7);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(107, 114, 128);
+    doc.text(texto, m + w / 2, y + 3.4, { align: 'center' });
+    return y + altura;
+  }
+
+  /**
+   * Desenha o rodape em todas as paginas do documento.
+   *
+   * @param doc documento em construcao
+   * @param pw largura da pagina
+   * @param ph altura da pagina
+   */
+  private pdfRodape(doc: any, pw: number, ph: number): void {
+    const total = doc.getNumberOfPages();
+    for (let i = 1; i <= total; i++) {
+      doc.setPage(i);
+      doc.setDrawColor(107, 114, 128);
+      doc.setLineWidth(0.3);
+      doc.line(10, ph - 10, pw - 10, ph - 10);
+      doc.setFontSize(7);
+      doc.setFont('helvetica', 'italic');
+      doc.setTextColor(156, 163, 175);
+      doc.text(
+        `Página ${i} de ${total} | Emitido em ${this.getDataAtual()} às ${this.getHoraAtual()} | Confidencial`,
+        pw / 2, ph - 7, { align: 'center' }
+      );
+    }
+  }
+
+  fechar(): void {
+    this.dialogRef.close();
   }
 }
+
