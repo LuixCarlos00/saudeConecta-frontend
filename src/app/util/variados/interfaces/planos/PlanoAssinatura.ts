@@ -11,6 +11,8 @@ export interface PlanoAssinatura {
   valorAdicionalProfissional: number | null;
   valorAdicionalSecretaria: number | null;
   ativo: boolean;
+  titulo?: string;
+  recursos?: string[];
 }
 
 export interface PlanoAssinaturaRequest {
@@ -24,6 +26,8 @@ export interface PlanoAssinaturaRequest {
   valorAdicionalAdmin: number | null;
   valorAdicionalProfissional: number | null;
   valorAdicionalSecretaria: number | null;
+  titulo?: string;
+  recursos?: string[];
 }
 
 export interface AssinaturaTenant {

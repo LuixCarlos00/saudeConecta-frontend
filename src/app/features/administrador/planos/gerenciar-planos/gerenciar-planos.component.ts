@@ -4,6 +4,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { PlanoApiService } from 'src/app/services/api/plano-api.service';
 import { PlanoAssinatura, PlanoAssinaturaRequest } from 'src/app/util/variados/interfaces/planos/PlanoAssinatura';
+import { PlanoDescricaoParserService } from 'src/app/services/plano-descricao-parser.service';
+import { ModalValoresAdicionaisComponent } from './modal-valores-adicionais/modal-valores-adicionais.component';
 
 @Component({
   selector: 'app-gerenciar-planos',
@@ -29,11 +31,13 @@ export class GerenciarPlanosComponent implements OnInit {
     private planoApiService: PlanoApiService,
     private fb: FormBuilder,
     private snackBar: MatSnackBar,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private parser: PlanoDescricaoParserService
   ) {
     this.planoForm = this.fb.group({
       nome: ['', Validators.required],
-      descricao: ['', Validators.required],
+      titulo: ['', Validators.required],
+      recursos: [''],
       tipo: ['', Validators.required],
       valorMensal: [0, [Validators.required, Validators.min(0)]],
       limiteAdminOrg: [null],
@@ -67,9 +71,48 @@ export class GerenciarPlanosComponent implements OnInit {
   abrirFormularioEdicao(plano: PlanoAssinatura): void {
     this.modoEdicao = true;
     this.planoEditandoId = plano.id;
+    
+    // Tenta usar titulo separado se disponível e limpo
+    let titulo = plano.titulo;
+    let recursosArray = plano.recursos || [];
+    
+    // Se não tiver titulo separado ou tiver formato antigo com "Recursos:", faz parse
+    if (!titulo || titulo.includes('Recursos:') || titulo.includes('[')) {
+      // Tenta extrair manualmente usando regex
+      if (plano.descricao) {
+        const tituloMatch = plano.descricao.match(/titulo:\s*(.+?)(?:\s*(?:Recursos:|$))/i);
+        if (tituloMatch && tituloMatch[1]) {
+          titulo = tituloMatch[1].trim();
+        }
+        
+        // Extrair recursos manualmente
+        const recursosMatch = plano.descricao.match(/Recursos:\s*(\[.*?\])/i);
+        if (recursosMatch && recursosMatch[1]) {
+          try {
+            recursosArray = JSON.parse(recursosMatch[1]);
+          } catch (e) {
+            recursosArray = [];
+          }
+        }
+      }
+      
+      // Se ainda não tiver, usa o parser como fallback
+      if (!titulo) {
+        const parsed = this.parser.parse(plano.descricao);
+        titulo = parsed.titulo || '';
+        if (recursosArray.length === 0) {
+          recursosArray = parsed.recursos || [];
+        }
+      }
+    }
+    
+    // Converter array de recursos para formato de quebra de linha (um por linha)
+    const recursosString = recursosArray.length > 0 ? recursosArray.join('\n') : '';
+    
     this.planoForm.patchValue({
       nome: plano.nome,
-      descricao: plano.descricao,
+      titulo: titulo,
+      recursos: recursosString,
       tipo: plano.tipo,
       valorMensal: plano.valorMensal,
       limiteAdminOrg: plano.limiteAdminOrg,
@@ -99,9 +142,22 @@ export class GerenciarPlanosComponent implements OnInit {
       return;
     }
 
+    // Converter string de recursos separada por quebra de linha para array
+    const recursosArray = this.planoForm.value.recursos 
+      ? this.planoForm.value.recursos.split('\n').map((r: string) => r.trim()).filter((r: string) => r.length > 0)
+      : [];
+
+    // Formatar a descrição usando titulo e recursos
+    const descricaoFormatada = this.parser.format(
+      this.planoForm.value.titulo,
+      recursosArray
+    );
+
     const request: PlanoAssinaturaRequest = {
       nome: this.planoForm.value.nome,
-      descricao: this.planoForm.value.descricao,
+      descricao: descricaoFormatada,
+      titulo: this.planoForm.value.titulo,
+      recursos: recursosArray,
       tipo: this.planoForm.value.tipo,
       valorMensal: this.planoForm.value.valorMensal,
       limiteAdminOrg: this.planoForm.value.limiteAdminOrg || null,
@@ -166,5 +222,76 @@ export class GerenciarPlanosComponent implements OnInit {
     if (control) {
       control.setValue(this.isLimiteIlimitado(campo) ? 1 : null);
     }
+  }
+
+  getRecursosResumo(recursos: string[] | undefined): string {
+    if (!recursos || recursos.length === 0) {
+      return 'Nenhum recurso';
+    }
+    if (recursos.length <= 2) {
+      return recursos.join(', ');
+    }
+    return `${recursos.slice(0, 2).join(', ')} e mais ${recursos.length - 2}`;
+  }
+
+  getRecursosFromPlano(plano: PlanoAssinatura): string[] {
+    if (plano.recursos && plano.recursos.length > 0) {
+      return plano.recursos;
+    }
+    // Fallback: parse da descrição se recursos não estiverem disponíveis
+    const parsed = this.parser.parse(plano.descricao);
+    return parsed.recursos || [];
+  }
+
+  getPlanoDescricao(plano: PlanoAssinatura): string {
+    // Se já tiver titulo separado, usa ele. Caso contrário, faz parse da descricao
+    if (plano.titulo && !plano.titulo.includes('Recursos:')) {
+      return plano.titulo;
+    }
+    // Fallback: parse da descricao se titulo estiver com formato antigo
+    const parsed = this.parser.parse(plano.descricao);
+    return parsed.titulo || plano.descricao;
+  }
+
+  getRecursosPreview(): string[] {
+    const recursosString = this.planoForm.value.recursos;
+    if (!recursosString) return [];
+    
+    // Parse por quebra de linha (um recurso por linha)
+    return recursosString
+      .split('\n')
+      .map((r: string) => r.trim())
+      .filter((r: string) => r.length > 0);
+  }
+
+  onTituloChange(): void {
+    // Método para quando o título for alterado (pode ser usado para validações ou updates)
+  }
+
+  onRecursosChange(): void {
+    // Método para quando os recursos forem alterados (pode ser usado para validações ou updates)
+  }
+
+  isPlanoDestaqueTipo(tipo: string): boolean {
+    return tipo === 'PROFISSIONAL';
+  }
+
+  isPlanoDestaque(plano: PlanoAssinatura): boolean {
+    return this.isPlanoDestaqueTipo(plano.tipo);
+  }
+
+  abrirModalValores(): void {
+    const dialogRef = this.dialog.open(ModalValoresAdicionaisComponent, {
+      width: '90%',
+      maxWidth: '1200px',
+      maxHeight: '90vh',
+      data: { planos: this.planos }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.carregarPlanos();
+      }
+    });
   }
 }

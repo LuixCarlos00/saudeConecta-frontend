@@ -1,5 +1,8 @@
 import { Component, OnInit, HostListener } from '@angular/core';
 import { Router } from '@angular/router';
+import { PlanoApiService } from 'src/app/services/api/plano-api.service';
+import { PlanoAssinatura } from 'src/app/util/variados/interfaces/planos/PlanoAssinatura';
+import { PlanoDescricaoParserService } from 'src/app/services/plano-descricao-parser.service';
 
 @Component({
   selector: 'app-landing-page',
@@ -10,6 +13,7 @@ export class LandingPageComponent implements OnInit {
   isScrolled = false;
   mobileMenuOpen = false;
   activeAccordion: number | null = null;
+  isLoadingPlanos = true;
 
   funcionalidades = [
     {
@@ -123,68 +127,68 @@ export class LandingPageComponent implements OnInit {
     }
   ];
 
-  planos = [
-    {
-      nome: 'Starter',
-      preco: 149,
-      descricao: 'Ideal para consultórios e profissionais autônomos',
-      limites: {
-        adminOrg: 1,
-        profissionais: 2,
-        secretarias: 1
+  planos: PlanoAssinatura[] = [];
+
+  constructor(
+    private router: Router,
+    private planoApiService: PlanoApiService,
+    private parser: PlanoDescricaoParserService
+  ) {}
+
+  ngOnInit(): void {
+    this.carregarPlanos();
+  }
+
+  carregarPlanos(): void {
+    this.isLoadingPlanos = true;
+    this.planoApiService.listarPlanosAtivos().subscribe({
+      next: (planos) => {
+        this.planos = planos;
+        this.isLoadingPlanos = false;
       },
-      recursos: [
-        'Agendamento online completo',
-        'Prontuário médico e odontológico',
-        'Odontograma digital',
-        'Cadastro ilimitado de pacientes',
-        'Dashboard com gráficos',
-        'Geração de PDF (receitas e exames)',
-        'Notificações por e-mail',      ],
-      destaque: false
-    },
-    {
-      nome: 'Profissional',
-      preco: 279,
-      descricao: 'Perfeito para clínicas em crescimento',
-      limites: {
-        adminOrg: 2,
-        profissionais: 8,
-        secretarias: 4
-      },
-      recursos: [
-        'Tudo do plano Starter',
-        'Relatórios e métricas avançadas',
-        'Mensageria com rastreio de falhas',
-        'Link direto ao WhatsApp do paciente',
-        'Suporte prioritário por e-mail (24h)'
-      ],
-      destaque: true
-    },
-    {
-      nome: 'Business',
-      preco: 549,
-      descricao: 'Para clínicas de médio e grande porte',
-      limites: {
-        adminOrg: 5,
-        profissionais: 20,
-        secretarias: 10
-      },
-      recursos: [
-        'Tudo do plano Profissional',
-        'Profissionais ilimitados',
-        'Secretárias ilimitadas',
-        'Gerente de conta dedicado',
-        'Treinamento da equipe incluso',
-        'Suporte prioritário por e-mail (12h)'
-      ],
-      destaque: false
+      error: (err) => {
+        console.error('Erro ao carregar planos:', err);
+        this.isLoadingPlanos = false;
+      }
+    });
+  }
+
+  // Helper methods para compatibilidade com template HTML existente
+  getPlanoPreco(plano: PlanoAssinatura): number {
+    return plano.valorMensal;
+  }
+
+  getPlanoDescricao(plano: PlanoAssinatura): string {
+    // Se já tiver titulo separado, usa ele. Caso contrário, faz parse da descricao
+    if (plano.titulo && !plano.titulo.includes('Recursos:')) {
+      return plano.titulo;
     }
-  ];
+    // Fallback: parse da descricao se titulo estiver com formato antigo
+    const parsed = this.parser.parse(plano.descricao);
+    return parsed.titulo || plano.descricao;
+  }
 
-  constructor(private router: Router) {}
+  getPlanoRecursos(plano: PlanoAssinatura): string[] {
+    // Se já tiver recursos separados, usa eles. Caso contrário, faz parse da descricao
+    if (plano.recursos && plano.recursos.length > 0) {
+      return plano.recursos;
+    }
+    // Fallback: parse da descricao se recursos estiverem vazios
+    const parsed = this.parser.parse(plano.descricao);
+    return parsed.recursos || [];
+  }
 
-  ngOnInit(): void {}
+  getPlanoLimites(plano: PlanoAssinatura): any {
+    return {
+      adminOrg: plano.limiteAdminOrg,
+      profissionais: plano.limiteProfissional,
+      secretarias: plano.limiteSecretaria
+    };
+  }
+
+  isPlanoDestaque(plano: PlanoAssinatura): boolean {
+    return plano.tipo === 'PROFISSIONAL';
+  }
 
   @HostListener('window:scroll', [])
   onWindowScroll() {
