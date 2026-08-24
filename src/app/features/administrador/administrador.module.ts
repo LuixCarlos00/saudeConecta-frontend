@@ -155,7 +155,7 @@ const routes: Routes = [
     SuporteComponent,
     GestaoChamadosComponent,
     TrocaSenhaComponent,
-    
+
     // Pipes
     FilterPipe
   ],

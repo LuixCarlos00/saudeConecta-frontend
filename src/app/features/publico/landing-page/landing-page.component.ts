@@ -133,14 +133,7 @@ export class LandingPageComponent implements OnInit {
         profissionais: 2,
         secretarias: 1
       },
-      recursos: [
-        'Agendamento online completo',
-        'Prontuário médico e odontológico',
-        'Odontograma digital',
-        'Cadastro ilimitado de pacientes',
-        'Dashboard com gráficos',
-        'Geração de PDF (receitas e exames)',
-        'Notificações por e-mail',      ],
+      recursos: [],
       destaque: false
     },
     {
@@ -152,13 +145,7 @@ export class LandingPageComponent implements OnInit {
         profissionais: 8,
         secretarias: 4
       },
-      recursos: [
-        'Tudo do plano Starter',
-        'Relatórios e métricas avançadas',
-        'Mensageria com rastreio de falhas',
-        'Link direto ao WhatsApp do paciente',
-        'Suporte prioritário por e-mail (24h)'
-      ],
+      recursos: [      ],
       destaque: true
     },
     {
@@ -170,14 +157,7 @@ export class LandingPageComponent implements OnInit {
         profissionais: 20,
         secretarias: 10
       },
-      recursos: [
-        'Tudo do plano Profissional',
-        'Profissionais ilimitados',
-        'Secretárias ilimitadas',
-        'Gerente de conta dedicado',
-        'Treinamento da equipe incluso',
-        'Suporte prioritário por e-mail (12h)'
-      ],
+      recursos: [      ],
       destaque: false
     }
   ];

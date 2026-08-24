@@ -1,0 +1,102 @@
+<div class="historico-container">
+  <div class="header">
+    <h2>Histórico de Alterações de Dados Pessoais</h2>
+    <p class="subtitle">Apenas SUPER_ADMIN pode acessar este histórico</p>
+  </div>
+
+  <!-- Filtros -->
+  <div class="filtros-card">
+    <div class="filtro-tipo">
+      <label>
+        <input type="radio" name="filtroTipo" value="usuario" [(ngModel)]="filtroTipo">
+        Buscar por Usuário
+      </label>
+      <label>
+        <input type="radio" name="filtroTipo" value="entidade" [(ngModel)]="filtroTipo">
+        Buscar por Entidade
+      </label>
+    </div>
+
+    <div *ngIf="filtroTipo === 'usuario'" class="filtro-inputs">
+      <div class="input-group">
+        <label for="idUsuario">ID do Usuário:</label>
+        <input type="number" id="idUsuario" [(ngModel)]="filtroIdUsuario" placeholder="Digite o ID do usuário">
+      </div>
+    </div>
+
+    <div *ngIf="filtroTipo === 'entidade'" class="filtro-inputs">
+      <div class="input-group">
+        <label for="entidade">Tipo de Entidade:</label>
+        <select id="entidade" [(ngModel)]="filtroEntidade">
+          <option value="PACIENTE">Paciente</option>
+          <option value="PROFISSIONAL">Profissional</option>
+          <option value="ADMIN">Administrador</option>
+          <option value="SECRETARIA">Secretária</option>
+          <option value="ORGANIZACAO">Organização</option>
+          <option value="ENDERECO">Endereço</option>
+        </select>
+      </div>
+      <div class="input-group">
+        <label for="idEntidade">ID da Entidade:</label>
+        <input type="number" id="idEntidade" [(ngModel)]="filtroIdEntidade" placeholder="Digite o ID da entidade">
+      </div>
+    </div>
+
+    <div class="botoes">
+      <button class="btn btn-primary" (click)="buscarHistorico()" [disabled]="loading">
+        <span *ngIf="loading">Buscando...</span>
+        <span *ngIf="!loading">Buscar Histórico</span>
+      </button>
+      <button class="btn btn-secondary" (click)="carregarHistoricoRecentes()" [disabled]="loading">
+        Recarregar Recentes
+      </button>
+      <button class="btn btn-secondary" (click)="limparFiltros()" [disabled]="loading">Limpar</button>
+    </div>
+  </div>
+
+  <!-- Mensagens de erro -->
+  <div *ngIf="error" class="alert alert-error">
+    <span class="alert-icon">⚠️</span>
+    {{ error }}
+  </div>
+
+  <!-- Tabela de histórico -->
+  <div *ngIf="historico.length > 0" class="tabela-container">
+    <table class="tabela-historico">
+      <thead>
+        <tr>
+          <th>Data/Hora</th>
+          <th>Organização ID</th>
+          <th>Entidade</th>
+          <th>ID Entidade</th>
+          <th>Campo</th>
+          <th>Valor Anterior</th>
+          <th>Valor Novo</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of historico">
+          <td>{{ formatarData(item.criadoEm) }}</td>
+          <td>{{ item.organizacaoId }}</td>
+          <td>{{ getEntidadeLabel(item.entidade) }}</td>
+          <td>{{ item.idEntidade }}</td>
+          <td class="campo-nome">{{ getCampoLabel(item.campo) }}</td>
+          <td class="valor-anterior">{{ item.valorAnterior || '-' }}</td>
+          <td class="valor-novo">{{ item.valorNovo || '-' }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Mensagem quando não há dados -->
+  <div *ngIf="!loading && !error && historico.length === 0 && (filtroIdUsuario || filtroIdEntidade)" class="alert alert-info">
+    <span class="alert-icon">ℹ️</span>
+    Nenhum registro de histórico encontrado para os filtros informados.
+  </div>
+
+  <!-- Mensagem inicial -->
+  <div *ngIf="!loading && !error && historico.length === 0 && !filtroIdUsuario && !filtroIdEntidade" class="alert alert-info">
+    <span class="alert-icon">ℹ️</span>
+    Selecione os filtros e clique em "Buscar Histórico" para visualizar as alterações.
+  </div>
+</div>
