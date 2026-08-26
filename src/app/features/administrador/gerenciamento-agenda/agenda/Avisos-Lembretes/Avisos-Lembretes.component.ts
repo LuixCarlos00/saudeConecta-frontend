@@ -27,7 +27,6 @@ export class AvisosLembretesComponent implements OnInit {
   }
 
   ngOnInit() {
-    console.log('Dados recebidos:', this.data);
     this.AvisoLembreteForm = this.form.group({
       destinatario: [''],
       mensagem: [''],

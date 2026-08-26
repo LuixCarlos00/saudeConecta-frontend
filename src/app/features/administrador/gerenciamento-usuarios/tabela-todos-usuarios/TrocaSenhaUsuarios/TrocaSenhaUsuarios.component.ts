@@ -19,7 +19,6 @@ export class TrocaSenhaUsuariosComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    console.log(this.elements);
   }
 
   /** Calcula a força da senha (0-100) */

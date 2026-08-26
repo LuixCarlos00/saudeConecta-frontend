@@ -36,7 +36,6 @@ export class PrescricaoDentistaComponent implements OnInit {
 
   ngOnInit() {
     const p = this.data;
-    console.log('Dados recebidos para impressão (prescrição dentista):', p);
 
     // ── Profissional ─────────────────────────────────────────────────────────
     const prof = p.profissional as any;
@@ -64,16 +63,6 @@ export class PrescricaoDentistaComponent implements OnInit {
 
     // ── Identificação ─────────────────────────────────────────────────────────
     this.codigoProntuario = String(p.codigo ?? p.codigoProntuario ?? '000000');
-
-    console.log('Dados para PDF (prescrição dentista):', {
-      nomeDentista: this.nomeDentista,
-      cro: this.cro,
-      nomePaciente: this.nomePaciente,
-      cpfPaciente: this.cpfPaciente,
-      tituloPrescricao: this.tituloPrescricao,
-      dataPrescricao: this.dataPrescricao,
-      codigoProntuario: this.codigoProntuario,
-    });
   }
 
   GerarPDF() {

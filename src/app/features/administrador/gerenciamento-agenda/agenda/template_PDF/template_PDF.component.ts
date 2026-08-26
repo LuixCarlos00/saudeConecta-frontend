@@ -58,14 +58,10 @@ export class Template_PDFComponent implements OnInit, AfterViewInit {
     private pacienteApiService: PacienteApiService,
     private snackBar: MatSnackBar
   ) {
-    console.log('Dados recebidos para PDF:', this.data);
 
     // Armazena os dados da consulta
     this.consulta = this.data;
     this.activeDate = this.criarDataComTimeZone(this.consulta.dataHora?.split('T')[0]);
-
-    console.log('Consulta:', this.consulta);
-    console.log('ActiveDate:', this.activeDate);
 
     // Inicializa configuração de campos com deep copy para evitar mutação
     this.configuracaoCampos = this.clonarConfiguracaoPadrao();
@@ -91,13 +87,11 @@ export class Template_PDFComponent implements OnInit, AfterViewInit {
     if (this.consulta.profissionalId) {
       this.profissionalApiService.buscarClinicoIdByOrg(this.consulta.profissionalId).subscribe(
         (profissional: any) => {
-          console.log('Profissional encontrado:', profissional);
           this.profissional = profissional;
           profissionalCarregado = true;
           verificarCarregamentoCompleto();
         },
         (error) => {
-          console.error('Erro ao buscar profissional:', error);
           profissionalCarregado = true;
           verificarCarregamentoCompleto();
         }
@@ -111,7 +105,6 @@ export class Template_PDFComponent implements OnInit, AfterViewInit {
     if (this.consulta.pacienteId) {
       this.pacienteApiService.buscarrPacientebyOrg(this.consulta.pacienteId).subscribe(
         (paciente: any) => {
-          console.log('Paciente encontrado:', paciente);
           this.paciente = paciente;
           pacienteCarregado = true;
           verificarCarregamentoCompleto();

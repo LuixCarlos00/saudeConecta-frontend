@@ -226,7 +226,7 @@ export class NovaConsultaComponent implements OnInit {
           this.atualizarHorarios();
         },
         (error) => {
-          console.log(error);
+          console.warn(error);
         }
       );
     }
@@ -324,7 +324,6 @@ export class NovaConsultaComponent implements OnInit {
         }
 
         this.consultaApi.cadastrarConsultaByOrg(consult).subscribe((response) => {
-          console.log('Resposta da API:', response);
           const texto: string = `O cadastro da consulta foi realizado com sucesso.\nCodigo de consulta: ${response.id} `;
           Swal.fire({
             icon: 'success',

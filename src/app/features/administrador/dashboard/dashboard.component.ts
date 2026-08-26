@@ -64,10 +64,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   private carregarEstatisticasAdmin(): void {
-    console.log('Carregando estatísticas para dashboard administrativo');
     this.carregandoEstatisticas = true;
     const organizacaoId = this.tokenService.obterOrganizacaoId();
-    console.log('Carregando estatísticas para organização ID:', organizacaoId);
     if (organizacaoId) {// Se o usuario tiver um ID de organização, carrega as estatísticas específicas da organização
       forkJoin({
         consultasHoje: this.consultaApiService.buscarEstatisticasConsultasHojePorOrganizacao(organizacaoId),
@@ -110,12 +108,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   private carregarEstatisticasMedico(): void {
-    console.log('Carregando estatísticas para dashboard profissional');
     this.carregandoEstatisticas = true;
     const usuarioLogado = this.tokenService.getUsuarioLogado();
-    console.log('Usuário logado:', usuarioLogado);
     if (!usuarioLogado?.id) {
-      console.error('Usuário não logado');
       this.carregandoEstatisticas = false;
       return;
     }

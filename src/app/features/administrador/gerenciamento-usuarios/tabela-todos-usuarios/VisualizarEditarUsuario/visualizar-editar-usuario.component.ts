@@ -140,7 +140,6 @@ export class VisualizarEditarUsuarioComponent implements OnInit {
   }
 
   private carregarDados(): void {
-    console.log(this.data);
     this.isLoading = true;
     const codigo = this.data.usuario.codigo;
 
@@ -466,7 +465,6 @@ export class VisualizarEditarUsuarioComponent implements OnInit {
    * Envia os dados atualizados para o backend de acordo com a categoria
    */
   private enviarDadosParaBackend(codigo: number, dadosAtualizados: any): void {
-    console.log('Dados a serem enviados para o backend:', dadosAtualizados);
     const servicosMap: Record<string, Observable<any>> = {
       'Paciente': this.pacienteApiService.atualizarPacientebyOrg(codigo, dadosAtualizados),
       'Clinico': this.profissionalApiService.atualizarClinicoIdByOrg(codigo, dadosAtualizados),

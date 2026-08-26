@@ -38,7 +38,6 @@ export class SolicitacaoExamesDentistaComponent implements OnInit {
 
   ngOnInit() {
     const p = this.data;
-    console.log('Dados recebidos para impressão (dentista):', p);
 
     // ── Profissional ─────────────────────────────────────────────────────────
     // O profissional do dentista tem `registroConselho` em vez de `conselho`
@@ -71,20 +70,6 @@ export class SolicitacaoExamesDentistaComponent implements OnInit {
 
     // ── Identificação ─────────────────────────────────────────────────────────
     this.codigoProntuario = String(p.codigo ?? p.codigoProntuario ?? '000000');
-
-    console.log('Dados para PDF (dentista):', {
-      nomeDentista: this.nomeDentista,
-      cro: this.cro,
-      emailDentista: this.emailDentista,
-      telefoneDentista: this.telefoneDentista,
-      nomePaciente: this.nomePaciente,
-      cpfPaciente: this.cpfPaciente,
-      dataSolicitacao: this.dataSolicitacao,
-      tituloExame: this.tituloExame,
-      procedimentos: this.procedimentos,
-      dataExame: this.dataExame,
-      codigoProntuario: this.codigoProntuario,
-    });
   }
 
   GerarPDF() {

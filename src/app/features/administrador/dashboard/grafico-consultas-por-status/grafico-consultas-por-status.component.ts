@@ -171,7 +171,6 @@ export class GraficoConsultasPorStatusComponent implements OnInit, OnDestroy {
   }
 
   private handleSucesso(dados: any[]): void {
-    console.log('dados ', dados)
     this.processarDados(dados || []);
     this.criarGrafico();
   }

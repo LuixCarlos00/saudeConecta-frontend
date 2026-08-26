@@ -107,7 +107,6 @@ export class GraficoAgendamentosDiasSemanasMesComponent implements OnInit, OnDes
     let request$;
     if (idMedicoFiltro) {
       // Profissional: busca apenas seus agendamentos
-      console.log('filtos', idMedicoFiltro, paramentrosBusca, dataFim);
       request$ = this.consultaApiService.pesquisarClinicasEmIntervaloDeDatas(
         idMedicoFiltro, paramentrosBusca, dataFim,"ALL"
       );
@@ -147,8 +146,6 @@ export class GraficoAgendamentosDiasSemanasMesComponent implements OnInit, OnDes
   fetchConsultasPersonalizadas(): void {
     const dataInicio: Date = this.IntervaloDeDatas?.get('start')?.value;
     const dataFim: Date = this.IntervaloDeDatas?.get('end')?.value;
-    console.log('dataInicio', dataInicio)
-    console.log('dataFim', dataFim)
     if (!dataInicio || !dataFim) return;
 
     this.isLoading = true;
@@ -157,8 +154,6 @@ export class GraficoAgendamentosDiasSemanasMesComponent implements OnInit, OnDes
 
     const DataFimFormatada = dataFim.toISOString().split('T')[0];
     const DataInicioFormatada = dataInicio.toISOString().split('T')[0];
-    console.log('DataFimFormatada', DataFimFormatada)
-    console.log('DataInicioFormatada', DataInicioFormatada)
     // Determina o ID do médico para filtrar (input ou usuário logado)
     const idMedicoFiltro = this.medicoId || (this.isMedico ? this.usuarioLogadoId : null);
 

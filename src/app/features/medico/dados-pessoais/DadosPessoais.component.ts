@@ -102,7 +102,6 @@ export class DadosPessoaisComponent implements OnInit, OnDestroy {
       .buscarPerfilCompleto(this.UsuarioLogado.id)
       .subscribe({
         next: (dados) => {
-          console.log('dados', dados);
           this.tipoUsuario = dados.tipoUsuario || '';
           this.isProfissional = dados.tipoUsuario === 'PROFISSIONAL';
           this.isAdmin = dados.tipoUsuario === 'ADMIN_ORG';
@@ -215,7 +214,6 @@ export class DadosPessoaisComponent implements OnInit, OnDestroy {
   }
 
   private carregarDadosAdmin(admin: any): void {
-    console.log('Carregando dados do administrador:', admin);
     this.IdRegistro = admin.id;
 
     this.dadosPessoaisForm.patchValue({
@@ -313,7 +311,6 @@ export class DadosPessoaisComponent implements OnInit, OnDestroy {
     }
 
     const dadosAtualizados = this.prepararDadosProfissional();
-    console.log('Dados preparados para atualização do profissional:', dadosAtualizados);
     this.profissionalApiService
       .atualizarClinicoIdByOrg(this.IdRegistro, dadosAtualizados)
       .subscribe({
@@ -332,7 +329,6 @@ export class DadosPessoaisComponent implements OnInit, OnDestroy {
   }
 
   private salvarAdmin(): void {
-    console.log('Salvando dados do administrador...', this.dadosPessoaisForm);
     if (this.dadosPessoaisForm.invalid) {
       this.dadosPessoaisForm.markAllAsTouched();
 
@@ -345,7 +341,6 @@ export class DadosPessoaisComponent implements OnInit, OnDestroy {
     }
 
     const dadosAtualizados = this.prepararDadosAdmin();
-    console.log('Dados preparados para atualização do administrador:', dadosAtualizados);
     this.AdministradorApiService
       .atualizarAdmByOrg(this.IdRegistro, dadosAtualizados)
       .subscribe({

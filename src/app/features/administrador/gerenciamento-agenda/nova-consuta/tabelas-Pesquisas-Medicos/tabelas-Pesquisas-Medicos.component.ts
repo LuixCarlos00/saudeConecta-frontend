@@ -28,7 +28,6 @@ export class TabelasPesquisasMedicosComponent implements OnInit {
 
   ngOnInit(): void {
     this.dataSource = this.data;
-    console.log('data source', this.dataSource);
   }
 
   /**

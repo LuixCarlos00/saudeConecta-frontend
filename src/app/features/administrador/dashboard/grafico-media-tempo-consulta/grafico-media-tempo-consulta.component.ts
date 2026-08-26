@@ -104,9 +104,7 @@ export class GraficoMediaTempoConsultaComponent implements OnInit, OnDestroy {
       this.errorMessage = 'Usuário não identificado.';
       return;
     }
-  console.log('usuario', usuario)
     this.usuarioLogadoId = usuario.id;
-
     this.fetchDados(this.diaSelecionado);
   }
 

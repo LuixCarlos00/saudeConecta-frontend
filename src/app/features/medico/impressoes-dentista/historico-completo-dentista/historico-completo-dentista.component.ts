@@ -32,8 +32,6 @@ export class HistoricoCompletoDentistaComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    console.log('Histórico Dentista - dados recebidos:', this.data);
-
     this.tokenService.decodificaToken();
     this.tokenService.UsuarioLogadoValue$.subscribe((dados) => {
       if (dados) { this.UsuarioLogado = dados; }
@@ -42,7 +40,6 @@ export class HistoricoCompletoDentistaComponent implements OnInit {
     this.consultaApiService
       .BuscandoHistoricoDeConsultasDoPaciente_dentista(this.data.pacienteId)
       .subscribe((data: HistoricoCompletoDentistaResponse[]) => {
-        console.log('Histórico dental recebido:', data);
         this.historico = data || [];
 
         if (this.historico.length > 0) {

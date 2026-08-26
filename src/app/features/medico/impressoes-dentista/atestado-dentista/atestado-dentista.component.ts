@@ -37,7 +37,6 @@ export class AtestadoDentistaComponent implements OnInit {
 
   ngOnInit() {
     const p = this.data;
-    console.log('Dados recebidos para impressão (atestado dentista):', p);
 
     // ── Profissional ─────────────────────────────────────────────────────────
     const prof = p.profissional as any;
@@ -73,18 +72,6 @@ export class AtestadoDentistaComponent implements OnInit {
 
     // ── Identificação ─────────────────────────────────────────────────────────
     this.codigoProntuario = String(p.codigo ?? p.codigoProntuario ?? '000000');
-
-    console.log('Dados para PDF (atestado dentista):', {
-      nomeDentista: this.nomeDentista,
-      cro: this.cro,
-      nomePaciente: this.nomePaciente,
-      cpfPaciente: this.cpfPaciente,
-      dataNascimento: this.dataNascimento,
-      dataConsulta: this.dataConsulta,
-      horarioConsulta: this.horarioConsulta,
-      diaSemana: this.diaSemana,
-      codigoProntuario: this.codigoProntuario,
-    });
   }
 
   getDataAtual(): string {

@@ -32,7 +32,6 @@ export class HistoricoCompletoComponent implements OnInit {
 
 
   ngOnInit() {
-    console.log('Dados recebidos:', this.data);
     this.tokenService.decodificaToken();
     this.tokenService.UsuarioLogadoValue$.subscribe((dados) => {
       if (dados) {
@@ -43,8 +42,6 @@ export class HistoricoCompletoComponent implements OnInit {
     this.consultaApiService.BuscandoHistoricoDeConsultasDoPaciente(
       this.data.pacienteId
     ).subscribe((data: HistoricoCompletoResponse[]) => {
-      console.log('Histórico recebido:', data);
-
       // Backend retorna array direto com todos os dados incluindo prontuários
       this.historico = data || [];
 

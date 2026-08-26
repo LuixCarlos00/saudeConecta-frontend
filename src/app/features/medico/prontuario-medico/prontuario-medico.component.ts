@@ -94,7 +94,6 @@ export class ProntuarioMedicoComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe((consulta) => {
         this.Consulta = consulta;
-        console.log(this.Consulta);
       });
 
     this.filtrandoDadosCid();
@@ -126,7 +125,6 @@ export class ProntuarioMedicoComponent implements OnInit, OnDestroy {
   }
 
   concluido() {
-    console.log(this.Consulta);
     this.Prontuario = {} as any;
 
     this.Prontuario.altura = this.altura;
@@ -172,7 +170,6 @@ export class ProntuarioMedicoComponent implements OnInit, OnDestroy {
   }
 
   finalizarProntuario(): void {
-    console.log('Dados do prontuário a serem salvos:', this.Prontuario);
 
     this.prontuarioApi.cadastrarProntuarioMedico(this.Prontuario)
       .pipe(takeUntil(this.destroy$))

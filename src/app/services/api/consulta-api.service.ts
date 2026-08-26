@@ -131,7 +131,6 @@ export class ConsultaApiService {
 
   pesquisarEspecialidadeEmIntervaloDeDatas(inicio: string, fim: string, especialidade: string, status: string): Observable<Consultav2[]> {
     const especialidadeEncoded = encodeURIComponent(especialidade);
-    console.log('pesquisando especialidade em intervalo de datas', { inicio, fim, especialidade, status });
     return this.http.get<Consultav2[]>(
       `${this.apiUrl}/especialidade/intervalo?especialidade=${especialidadeEncoded}&dataInicial=${inicio}&dataFinal=${fim}&status=${status}`
     );

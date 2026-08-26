@@ -31,10 +31,6 @@ export class ImprimirPrescricaoComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public data: Prontuario) {}
 
   ngOnInit() {
-    console.log('data', this.data);
-
-    // Extrair dados do prontuário
-
     // Dados do profissional
     this.nomeMedico = this.data.profissional?.nome?.trim() || '';
     this.crm = this.data.profissional?.conselho?.trim() || '';

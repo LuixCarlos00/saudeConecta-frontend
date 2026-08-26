@@ -60,8 +60,6 @@ export class ImprimirRegistroComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    console.log('data', this.data);
-
     // Extrair dados do prontuário
     this.data = this.data;
 

@@ -198,7 +198,6 @@ export class TabelaAgendaMedicoComponent implements OnInit {
 
   BuscarDadosDeAgendaDoMedicoDoDia() {
     this.consultaApiService.buscarAgendaMedico(this.UsuarioLogado.id).subscribe((dados) => {
-      console.log('dados', dados);
 
       let novaConsulta: Consulta[] = [];
       for (let i = 0; i < dados.length; i++) {
