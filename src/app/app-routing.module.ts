@@ -30,6 +30,9 @@ import { MensageriaComponent } from './features/administrador/mensageria/mensage
 import { GerenciarPlanosComponent } from './features/administrador/planos/gerenciar-planos/gerenciar-planos.component';
 import { ListaPlanosComponent } from './features/administrador/planos/lista-planos/lista-planos.component';
 import { DetalheAssinaturaComponent } from './features/administrador/planos/detalhe-assinatura/detalhe-assinatura.component';
+ 
+import { HistoricoDadosPessoaisComponent } from './features/administrador/historico-dados-pessoais/historico-dados-pessoais.component';
+ 
 
 // ========== FEATURES MÉDICO ==========
 import { DadosPessoaisComponent } from './features/medico/dados-pessoais/DadosPessoais.component';
@@ -75,7 +78,11 @@ const routes: Routes = [
   { path: 'gerenciar-planos', component: GerenciarPlanosComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: [Role.SUPER_ADMIN] } },
   // { path: 'planos', component: ListaPlanosComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: [Role.ADMIN] } }, // Removido temporariamente
   { path: 'minha-assinatura', component: DetalheAssinaturaComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: [Role.ADMIN, Role.SECRETARY] } },
+ 
 
+  // ========== ROTAS DE HISTÓRICO ==========
+  { path: 'historico-dados-pessoais', component: HistoricoDadosPessoaisComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: [Role.SUPER_ADMIN] } },
+ 
   // ========== ROTAS APENAS MÉDICO ==========
   { path: 'dadospessoais', component: DadosPessoaisComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: [Role.DOCTOR, Role.SECRETARY] } },
   { path: 'startconsulta', component: ProntuarioMedicoComponent, canActivate: [AuthGuard, RoleGuard, ProntuarioGuard], data: { roles: [Role.DOCTOR] } },

@@ -13,6 +13,7 @@ export interface PlanoAssinatura {
   ativo: boolean;
   titulo?: string;
   recursos?: string[];
+
 }
 
 export interface PlanoAssinaturaRequest {
@@ -28,6 +29,7 @@ export interface PlanoAssinaturaRequest {
   valorAdicionalSecretaria: number | null;
   titulo?: string;
   recursos?: string[];
+
 }
 
 export interface AssinaturaTenant {
