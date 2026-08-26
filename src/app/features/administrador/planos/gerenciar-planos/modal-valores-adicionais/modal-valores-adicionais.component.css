@@ -1,0 +1,102 @@
+.modal-description {
+  font-size: 16px;
+  color: var(--text-secondary, #6b7280);
+  margin: 0 0 24px 0;
+  text-align: center;
+}
+
+.planos-valores-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 24px;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.plano-valores-card {
+  background: #f8f9fa;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #e9ecef;
+}
+
+.plano-card-header {
+  background: linear-gradient(135deg, #0066CC 0%, #0052a3 100%);
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.plano-card-header h3 {
+  font-size: 18px;
+  font-weight: 700;
+  color: white;
+  margin: 0;
+}
+
+.plano-card-header .tipo-badge {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.valores-list {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.valor-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 12px;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.valor-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary, #111827);
+}
+
+.valor-label i {
+  color: #0066CC;
+  font-size: 16px;
+}
+
+.valor-input {
+  width: 120px;
+}
+
+.valor-input mat-form-field {
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .planos-valores-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .valor-item {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .valor-input {
+    width: 100%;
+  }
+}

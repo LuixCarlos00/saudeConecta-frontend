@@ -136,15 +136,6 @@
         </button>
       </li>
 
-      <!-- Histórico de Dados Pessoais - Super Admin apenas (ROOT) -->
-      <li class="nav-item" *ngIf="ControleAcessoService.isSuperAdmin()"
-        [class.active]="activeRoute === 'HistoricoDadosPessoais'">
-        <button class="nav-link" (click)="navigateTo('HistoricoDadosPessoais')" title="Histórico de Dados Pessoais">
-          <i class="fa-solid fa-clock-rotate-left nav-icon"></i>
-          <span class="nav-text">Histórico de Dados</span>
-        </button>
-      </li>
-
       <!-- Suporte - Todos exceto Super Admin -->
       <li class="nav-item" *ngIf="!ControleAcessoService.isSuperAdmin()"
         [class.active]="activeRoute === 'Suporte'">

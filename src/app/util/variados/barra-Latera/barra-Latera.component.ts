@@ -88,7 +88,6 @@ export class BarraLateraComponent implements OnInit, OnDestroy {
       '/gerenciar-planos': 'GerenciarPlanos',
       '/minha-assinatura': 'MinhaAssinatura',
       '/gestao-chamados': 'GestaoChamados',
-      '/historico-dados-pessoais': 'HistoricoDadosPessoais',
       '/relatorios': 'Relatorios',
       '/suporte': 'Suporte'
     };
@@ -163,7 +162,6 @@ export class BarraLateraComponent implements OnInit, OnDestroy {
       'GerenciarPlanos': 'gerenciar-planos',
       'MinhaAssinatura': 'minha-assinatura',
       'GestaoChamados': 'gestao-chamados',
-      'HistoricoDadosPessoais': 'historico-dados-pessoais',
       'Relatorios': 'relatorios'
     };
 

@@ -73,6 +73,8 @@ import { ListaPlanosComponent } from './planos/lista-planos/lista-planos.compone
 import { DetalheAssinaturaComponent } from './planos/detalhe-assinatura/detalhe-assinatura.component';
 import { ModalPixComponent } from './planos/modal-pix/modal-pix.component';
 import { GerenciarPlanosComponent } from './planos/gerenciar-planos/gerenciar-planos.component';
+ import { ModalValoresAdicionaisComponent } from './planos/gerenciar-planos/modal-valores-adicionais/modal-valores-adicionais.component';
+ 
 
 // Componentes de Suporte
 import { SobreComponent } from './sobre/sobre.component';
@@ -149,13 +151,15 @@ const routes: Routes = [
     DetalheAssinaturaComponent,
     ModalPixComponent,
     GerenciarPlanosComponent,
+     ModalValoresAdicionaisComponent,
+ 
     
     // Componentes de Suporte
     SobreComponent,
     SuporteComponent,
     GestaoChamadosComponent,
     TrocaSenhaComponent,
-
+ 
     // Pipes
     FilterPipe
   ],
