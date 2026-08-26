@@ -234,7 +234,6 @@ export class CadastroPacienteComponent implements OnInit, OnDestroy {
     // Preparar payload com limpeza de dados
     const dadosCompletos = this.prepararPayload();
 
-    console.log('Dados completos para cadastro:', dadosCompletos);
 
     this.pacienteApi.cadastrarPacientebyOrg(dadosCompletos).subscribe({
       next: () => {

@@ -22,7 +22,6 @@ export class TabelaEditarMedicosConsultasComponent implements OnInit {
 
   ngOnInit() {
     this.dataSource = this.dadosMedicos;
-    console.log(this.dataSource);
   }
 
   // Método helper para obter especialidades formatadas

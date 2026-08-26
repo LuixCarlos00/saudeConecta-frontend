@@ -32,7 +32,6 @@ export class HistoricoCompletoMedicoComponent implements OnInit {
 
 
   ngOnInit() {
-    console.log('Dados recebidos:', this.data);
     this.tokenService.decodificaToken();
     this.tokenService.UsuarioLogadoValue$.subscribe((dados) => {
       if (dados) {
@@ -43,7 +42,6 @@ export class HistoricoCompletoMedicoComponent implements OnInit {
     this.consultaApiService.BuscandoHistoricoDeConsultasDoPaciente(
       this.data.pacienteId
     ).subscribe((data: any[]) => {
-      console.log('Histórico recebido:', data);
 
       // Backend já filtra por perfil (Admin: todos | Profissional: apenas seus registros médicos)
       this.historico = (data || []).filter(item => item.tipoProntuario?.toUpperCase() !== 'DENTISTA');
@@ -163,7 +161,6 @@ export class HistoricoCompletoMedicoComponent implements OnInit {
 
         // ── Planejamentos ──
         if (it.planejamentos && Array.isArray(it.planejamentos) && it.planejamentos.length > 0) {
-          console.log('Gerando planejamentos no PDF:', it.planejamentos); // Debug
           y = this.pdfQuebraPagina(doc, y, 10, pw, ph, m);
           y = this.pdfSecao(doc, 'PLANEJAMENTOS TERAPÊUTICOS', m, y, w);
           const rows = it.planejamentos.map((p: any) => [

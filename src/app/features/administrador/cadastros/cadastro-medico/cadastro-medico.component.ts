@@ -337,7 +337,6 @@ export class CadastroMedicoComponent implements OnInit, OnDestroy {
     }
 
     this.isLoading = true;
-    console.log(dadosCompletos);
     this.profissionalApiService.cadastraClinicoByOrg(dadosCompletos).subscribe({
       next: () => {
         this.isLoading = false;

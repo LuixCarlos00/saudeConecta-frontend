@@ -311,8 +311,6 @@ export class AuthService implements OnDestroy {
    */
   getUserProfile(): string {
     const user = this.getCurrentUser();
-    console.log('AuthService - getCurrentUser:', user);
-    console.log('AuthService - perfil:', user?.perfil);
     return user?.perfil ?? '';
   }
 
@@ -321,7 +319,6 @@ export class AuthService implements OnDestroy {
    */
   hasProfile(profile: string): boolean {
     const currentProfile = this.getUserProfile();
-    console.log(`AuthService - hasProfile(${profile}): currentProfile="${currentProfile}", result=${currentProfile === profile}`);
     return currentProfile === profile;
   }
 

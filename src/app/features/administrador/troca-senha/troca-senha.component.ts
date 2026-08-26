@@ -86,7 +86,6 @@ export class TrocaSenhaComponent implements OnInit {
 
           },
           (error: any) => {
-            console.log(error);
             Swal.fire({
               icon: 'error',
               title: 'Oops...',

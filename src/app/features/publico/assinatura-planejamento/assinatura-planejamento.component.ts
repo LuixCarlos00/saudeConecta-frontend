@@ -38,7 +38,6 @@ export class AssinaturaPlanejamentoComponent implements OnInit {
 
   ngOnInit(): void {
     this.token = this.route.snapshot.paramMap.get('token') || '';
-    console.log('Token recebido:', this.token);
     if (!this.token) {
       this.erro = 'Link inválido. Token não encontrado.';
       this.loading = false;
@@ -51,7 +50,6 @@ export class AssinaturaPlanejamentoComponent implements OnInit {
   carregarPlanejamento(): void {
     this.questionarioApiService.buscarPlanejamento(this.token).subscribe({
       next: (resp) => {
-        console.log('Dados do planejamento:', resp);
         this.pacienteNome = resp?.pacienteNome || '';
         this.profissionalNome = resp?.profissionalNome || '';
         this.clinicaNome = resp?.clinicaNome || '';

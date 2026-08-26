@@ -112,8 +112,6 @@ export class AlertToastContainerComponent implements OnInit, OnDestroy {
   }
 
   onActionClick(alert: MedicalAlert, action: string): void {
-    // Emite evento para ser tratado pelo componente pai ou serviço
-    console.log('Alert action:', action, alert);
     
     // Fecha o alerta após ação (exceto críticos)
     if (alert.type !== 'critical') {

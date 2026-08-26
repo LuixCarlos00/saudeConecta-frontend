@@ -168,7 +168,6 @@ export class TabelaAgendaMedicoComponent implements OnInit {
 
   BuscarDadosDeAgendaDoMedicoDoDia() {
     this.consultaApiService.buscarAgendaMedico(this.UsuarioLogado.id).subscribe((dados) => {
-      console.log('dados', dados);
 
       if (!dados || dados.length === 0) {
         Swal.fire('Nenhuma consulta encontrada', 'Tente novamente', 'warning');

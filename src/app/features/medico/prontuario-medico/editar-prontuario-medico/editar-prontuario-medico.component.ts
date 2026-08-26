@@ -73,7 +73,6 @@ export class EditarProntuarioMedicoComponent implements OnInit, OnDestroy, After
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (prontuario) => {
-          console.log('prontuario',prontuario);
           this.prontuarioData = prontuario;
           this.prontuarioId = prontuario.codigoProntuario || null;
           this.carregando = false;

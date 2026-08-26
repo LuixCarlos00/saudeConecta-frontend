@@ -78,15 +78,12 @@ export class QuestionarioSaudeComponent implements OnInit {
   carregarQuestionario(): void {
     this.questionarioApi.buscarQuestionario(this.token).subscribe({
       next: (resp) => {
-        console.log('Resposta do questionário:', resp);
         this.pacienteNome = resp?.pacienteNome || '';
         this.profissionalNome = resp?.profissionalNome || '';
         this.clinicaNome = resp?.clinicaNome || '';
         this.dataConsulta = resp?.dataConsulta ? new Date(resp.dataConsulta) : null;
 
-        console.log('Paciente:', this.pacienteNome);
-        console.log('Profissional:', this.profissionalNome);
-        console.log('Clinica:', this.clinicaNome);
+
         if (resp?.respondido) {
           this.enviado = true;
         }
@@ -168,7 +165,6 @@ export class QuestionarioSaudeComponent implements OnInit {
       assinaturaBase64: this.obterAssinaturaBase64()
     };
 
-    console.log('Payload para envio:', payload);
     this.questionarioApi.responderQuestionario(payload).subscribe({
       next: () => {
         this.enviado = true;

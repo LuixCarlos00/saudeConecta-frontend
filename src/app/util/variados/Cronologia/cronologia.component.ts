@@ -193,7 +193,6 @@ export class CronologiaComponent implements OnInit {
 
   VerificaTipoDePesquisa(): void {
     const filtros = this.obterFiltros();
-console.log(filtros);
     if (!this.validarFiltros(filtros)) {
       Swal.fire('Atenção', 'Selecione pelo menos um filtro para pesquisar.', 'warning');
       return;

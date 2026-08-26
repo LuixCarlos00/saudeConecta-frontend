@@ -83,11 +83,9 @@ export class AgendaMedicoGerenciamentoComponent implements OnInit, OnDestroy {
     try {
       const dados = await this.buscarConsultasPorPeriodo();
       if (Array.isArray(dados)) {
-        console.log('Dados brutos recebidos do backend:', dados);
         const tipoVisualizacao: TipoVisualizacao = this.Finalizadas ? 'REALIZADA' : 'CONFIRMADA';  // STATUS_FINALIZADAS cobre REALIZADA e PAGO
         const consultasFiltradas = this.filtrarConsultasPorTipo(dados, tipoVisualizacao);
         this.dataSource = [...consultasFiltradas];
-        console.log('this.dataSource', this.dataSource);
       }
     } catch (error) {
       console.error(error);
@@ -110,7 +108,6 @@ export class AgendaMedicoGerenciamentoComponent implements OnInit, OnDestroy {
     const dados = await this.tabelaAgendaMedicoService
       .buscarAgendaMedico(usuarioID, this.tipoPeriodoSelecionado)
       .toPromise();
-    console.log('Consultas recebidas do backend:', dados);
     if (!dados) { return []; }
     this.allConsultas = dados;
     return dados;
@@ -160,7 +157,6 @@ export class AgendaMedicoGerenciamentoComponent implements OnInit, OnDestroy {
   }
 
   IniciarConsulta(element: any) {
-    console.log('IniciarConsulta - elemento selecionado:', element);
     const dataFormatada = element.dataHora
       ? new Date(element.dataHora).toLocaleDateString('pt-BR')
       : 'Não informada';

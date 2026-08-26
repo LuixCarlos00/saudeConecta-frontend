@@ -92,7 +92,6 @@ export class RegistroConsultaDentistaComponent implements OnInit {
 
   ngOnInit() {
     const p = this.data;
-    console.log('Dados recebidos para impressão (registro dentista):', p);
 
     // ── Profissional ─────────────────────────────────────────────────────────
     const prof = p.profissional as any;

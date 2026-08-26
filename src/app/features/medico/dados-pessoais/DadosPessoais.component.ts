@@ -149,7 +149,6 @@ export class DadosPessoaisComponent implements OnInit, OnDestroy {
       .buscarPerfilCompleto(this.UsuarioLogado.id)
       .subscribe({
         next: (dados) => {
-          console.log('dados', dados);
           this.tipoUsuario = dados.tipoUsuario || '';
           this.isProfissional = dados.tipoUsuario === 'CLINICO';
           this.isAdmin = dados.tipoUsuario === 'GESTOR';
@@ -436,7 +435,6 @@ export class DadosPessoaisComponent implements OnInit, OnDestroy {
     }
 
     const dadosAtualizados = this.prepararDadosProfissional();
-    console.log('Dados preparados para atualização do profissional:', dadosAtualizados);
     this.profissionalApiService
       .atualizarClinicoIdByOrg(this.IdRegistro, dadosAtualizados)
       .subscribe({

@@ -61,7 +61,6 @@ export class EditarConsultasComponent implements OnInit {
   }
 
   async ngOnInit() {
-    console.log('Dados recebidos para edição:', this.consulta);
 
     this.inicializarFormulario();
     await this.carregarDadosIniciais();
@@ -94,7 +93,6 @@ export class EditarConsultasComponent implements OnInit {
       // Carregar dados do médico
       const medico = await this.profissionalApiService.buscarClinicoIdByOrg(this.consulta.profissionalId).toPromise();
       if (medico) {
-        console.log('Dados do médico carregados:', medico);
         this.medicoSelecionado = medico;
       }
     } catch (error) {
@@ -289,7 +287,6 @@ export class EditarConsultasComponent implements OnInit {
         .buscarHorariosOcupadosByOrg(this.consulta.profissionalId, data)
         .toPromise();
 
-      console.log('Horários ocupados recebidos:', horariosOcupados);
 
       // Remove o horário da consulta sendo editada (para que ele apareça como disponível)
       const horarioAtual = this.formatarHorario(new Date(this.consulta.dataHora));
@@ -554,7 +551,6 @@ export class EditarConsultasComponent implements OnInit {
 
   private executarEdicao(): void {
     const consultaAtualizada = this.montarObjetoConsulta();
-    console.log('Objeto de consulta a ser enviado para edição:', consultaAtualizada);
     this.consultaApi.atualizarConsultabyOrg(this.consulta.id, consultaAtualizada).subscribe({
       next: () => this.exibirSucessoEdicao(),
       error: (erro) => this.exibirErroEdicao(erro)

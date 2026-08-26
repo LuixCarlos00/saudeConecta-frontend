@@ -32,7 +32,6 @@ export class HistoricoCompletoDentistaComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    console.log('Histórico Dentista - dados recebidos:', this.data);
 
     this.tokenService.decodificaToken();
     this.tokenService.UsuarioLogadoValue$.subscribe((dados) => {
@@ -42,7 +41,6 @@ export class HistoricoCompletoDentistaComponent implements OnInit {
     this.consultaApiService
       .BuscandoHistoricoDeConsultasDoPaciente(this.data.pacienteId)
       .subscribe((data: any[]) => {
-        console.log('Histórico dental recebido:', data);
         // Backend já filtra por perfil (Admin: todos | Profissional: apenas seus registros odontológicos)
         this.historico = (data || []).filter(item => item.tipoProntuario?.toUpperCase() !== 'MEDICO');
 

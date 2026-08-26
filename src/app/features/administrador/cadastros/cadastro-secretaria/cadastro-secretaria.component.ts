@@ -143,7 +143,6 @@ export class CadastroSecretariaComponent implements OnInit, OnDestroy {
       next: () => {
         const endTime = Date.now();
         const duration = endTime - startTime;
-        console.log(`Cadastro concluído em ${duration}ms`);
 
         this.isLoading = false;
         Swal.fire({

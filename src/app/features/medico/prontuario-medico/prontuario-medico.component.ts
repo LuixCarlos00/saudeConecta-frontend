@@ -148,7 +148,6 @@ export class ProntuarioMedicoComponent implements OnInit, OnDestroy, AfterViewIn
       consulta: this.Consulta.id,
     };
 
-    console.log('Payload completo:', payload);
     this.finalizarProntuario(payload);
   }
 

@@ -21,7 +21,6 @@ export class TabelaEditarPacienteConsultasComponent implements OnInit {
   ngOnInit() {
 
     this.dataSource = this.dadosPaciente;
-    console.log('Dados recebidos na tabela:', this.dataSource);
   }
 
 

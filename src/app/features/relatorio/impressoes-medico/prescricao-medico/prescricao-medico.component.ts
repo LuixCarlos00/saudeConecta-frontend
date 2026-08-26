@@ -32,7 +32,6 @@ export class PrescricaoMedicoComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public data: Prontuario) {}
 
   ngOnInit() {
-    console.log('data', this.data);
 
     // Extrair dados do prontuário
 

@@ -387,22 +387,12 @@ export class NovaConsultaComponent implements OnInit {
   //======================================================================
 
   async marcarConsulta() {
-    console.log('Iniciando processo de marcação de consulta...', this.FormularioConsulta);
     const input_Forma_Pagamento = this.transformaFormaPagamento();
     const input_HORA = this.FormularioConsulta.get('Hora')?.value;
     const input_OBSERVACAO = this.FormularioConsulta.get('observacao')?.value;
     const input_VALOR = this.FormularioConsulta.get('valor')?.value; // NOVO
     const dataAtual = new Date().toISOString().split('T')[0];
 
-    console.log('Dados para cadastro da consulta:', {
-      input_Forma_Pagamento,
-      input_HORA,
-      input_OBSERVACAO,
-      input_VALOR,
-      DataSelecionada: this.DataSelecionada,
-      Medico: this.Medico,
-      Paciente: this.Paciente
-    });
 
 
     if (this.Medico && this.Paciente && this.DataSelecionada &&
@@ -434,7 +424,6 @@ export class NovaConsultaComponent implements OnInit {
         }
 
         this.consultaApi.cadastrarConsultaByOrg(consult).subscribe((response) => {
-          console.log('Resposta da API:', response);
           const texto: string = `O cadastro da consulta foi realizado com sucesso.\nCodigo de consulta: ${response.id} `;
           Swal.fire({
             icon: 'success',

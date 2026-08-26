@@ -72,7 +72,6 @@ export class RegistroConsulataMedicoComponent implements OnInit {
 
   ngOnInit(): void {
     const p = this.data;
-    console.log('Dados recebidos para impressão (registro médico):', p);
 
     // ── Profissional ──
     const prof = p.profissional as any;

@@ -57,7 +57,6 @@ export class GerenciarPlanosComponent implements OnInit {
     this.isLoading = true;
     this.planoApiService.listarPlanosAtivos().subscribe({
       next: (planos) => {
-          console.log(planos);
         this.planos = planos;
         this.isLoading = false;
       },

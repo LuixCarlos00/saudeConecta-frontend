@@ -273,7 +273,6 @@ export class TabelaTodosUsuariosComponent implements OnInit, OnDestroy {
   }
 
   private deletar(usuario: UsuarioUnificado): void {
-      console.log("usuario deletar", usuario.dadosOriginais)
     const element = usuario.dadosOriginais;
     let request$;
     // Escolhe o endpoint correto dependendo do tipo de usuário
@@ -446,7 +445,6 @@ export class TabelaTodosUsuariosComponent implements OnInit, OnDestroy {
 
   abrirAssociarPlano(usuario: UsuarioUnificado): void {
     if (usuario.categoria !== 'Administrador') return;
-console.log(usuario);
     const admin = usuario.dadosOriginais as any;
     const organizacaoId = admin.organizacaoId || admin.organizacao?.id;
     const nomeOrganizacao = usuario.nomeOrganizacao || 'Organização';
@@ -455,7 +453,6 @@ console.log(usuario);
       this.mostrarErro('ID da organização não encontrado.');
       return;
     }
-console.log(organizacaoId, nomeOrganizacao);
     const dialogRef = this.dialog.open(ModalAssociarPlanoComponent, {
       width: '700px',
       data: { organizacaoId, nomeOrganizacao },

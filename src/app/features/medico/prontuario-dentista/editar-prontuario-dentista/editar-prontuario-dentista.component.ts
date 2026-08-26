@@ -73,7 +73,6 @@ export class EditarProntuarioDentistaComponent implements OnInit, OnDestroy, Aft
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (prontuario) => {
-            console.log(prontuario);
           this.prontuarioData = prontuario;
           this.prontuarioId = prontuario.codigo;
           this.carregando = false;

@@ -92,7 +92,6 @@ export class MensageriaComponent implements OnInit, OnDestroy {
       )
       .subscribe({
         next: (page: PageResponse<MensageriaResponse>) => {
-            console.log(page);
           this.mensagens = page.content;
           this.totalElementos = page.totalElements;
           this.totalPaginas = page.totalPages;
@@ -127,8 +126,7 @@ export class MensageriaComponent implements OnInit, OnDestroy {
 
   abrirDetalhe(mensagem: MensageriaResponse): void {
     try {
-      console.log('Abrindo detalhe da mensagem:', mensagem.id);
-      
+
       // Validação básica dos dados
       if (!mensagem || !mensagem.id) {
         console.error('Mensagem inválida:', mensagem);
@@ -139,7 +137,6 @@ export class MensageriaComponent implements OnInit, OnDestroy {
       this.mensagemSelecionada = mensagem;
       this.mostrarDetalhe = true;
       
-      console.log('Modal aberto com sucesso');
     } catch (error) {
       console.error('Erro ao abrir detalhe:', error);
       this.erro = 'Erro ao abrir detalhes da mensagem.';
@@ -150,7 +147,6 @@ export class MensageriaComponent implements OnInit, OnDestroy {
   fecharDetalhe(): void {
     this.mensagemSelecionada = null;
     this.mostrarDetalhe = false;
-    console.log('Modal fechado');
   }
 
   marcarComoNotificado(mensagem: MensageriaResponse): void {

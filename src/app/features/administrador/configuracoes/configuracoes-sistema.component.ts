@@ -80,7 +80,6 @@ export class ConfiguracoesSistemaComponent implements OnInit, OnDestroy {
     // O backend extrai o usuário do JWT — nenhum parâmetro extra no frontend
     this.configuracaoGraficoService.listarConfiguracoes().subscribe({
       next: (configs) => {
-        console.log('Configurações carregadas:', configs);
         if (!configs || configs.length === 0) {
           this.inicializarConfiguracoesAutomaticamente();
         } else {
@@ -187,7 +186,6 @@ export class ConfiguracoesSistemaComponent implements OnInit, OnDestroy {
     this.loadingCards = true;
     this.configuracaoCardService.listarConfiguracoes().subscribe({
       next: (configs) => {
-        console.log('Configurações carregadas:', configs);
         if (!configs || configs.length === 0) {
           this.inicializarConfiguracoesCardsAutomaticamente();
         } else {
@@ -315,19 +313,16 @@ export class ConfiguracoesSistemaComponent implements OnInit, OnDestroy {
     this.tokenSvc.decodificaToken();
     const usuario = this.tokenSvc.getUsuarioLogado();
     if (!usuario?.id) {
-      console.log('Usuário sem ID');
       return;
     }
 
     this.usuarioApiService.buscarPerfilCompleto(usuario.id).subscribe({
       next: (dados: any) => {
-        console.log('Dados do perfil:', dados);
         if (dados.profissional?.id) {
           this.isProfissional = true;
           this.profissionalId = dados.profissional.id;
         } else {
           this.isProfissional = false;
-          console.log('Profissional ID não encontrado');
         }
       },
       error: (error) => {
