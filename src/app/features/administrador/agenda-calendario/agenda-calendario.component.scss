@@ -12,6 +12,101 @@ $text-muted: #64748b;
 $radius:     10px;
 $shadow:     0 2px 12px rgba(0,0,0,.08);
 
+// ── Dropdown Configuration ─────────────────────────────────
+.nova-consulta-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.dropdown-config {
+  position: relative;
+}
+
+.btn-dropdown-config {
+  width: 32px;
+  height: 32px;
+  border: 1px solid $border;
+  background: $surface;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: $text-muted;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    background: $bg;
+    color: $text;
+  }
+  
+  &.active {
+    background: $primary;
+    color: white;
+    border-color: $primary;
+  }
+  
+  i {
+    font-size: 12px;
+    transition: transform 0.2s ease;
+  }
+  
+  &.active i {
+    transform: rotate(180deg);
+  }
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: $radius;
+  box-shadow: $shadow;
+  min-width: 220px;
+  padding: 8px 0;
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-8px);
+  transition: all 0.2s ease;
+  
+  &.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  margin: 0;
+  
+  &:hover {
+    background: $bg;
+  }
+  
+  input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    accent-color: $primary;
+  }
+  
+  span {
+    font-size: 14px;
+    color: $text;
+    user-select: none;
+  }
+}
+
 // ── Status colors ──────────────────────────────────────────
 $status: (
   agendada:   #f97316,
@@ -1371,6 +1466,12 @@ $pulse-delay: $seg * 0.8;
     box-shadow: 0 0 0 3px rgba(37,99,235,.10);
     background: #fff;
   }
+
+  &.tooltip-ativo {
+    border-color: #22c55e;
+    background: #dcfce7;
+    color: #15803d;
+  }
   &:disabled { opacity: .55; cursor: not-allowed; }
 }
 
@@ -1404,6 +1505,14 @@ $pulse-delay: $seg * 0.8;
     background: #f1f5f9;
     border-color: #d1d9e0;
     transform: translateY(-1px);
+  }
+
+  &.tooltip-ativo {
+    background: #dcfce7;
+    border-color: #22c55e;
+    color: #15803d;
+
+    i { color: #15803d; }
   }
 
   &--success {

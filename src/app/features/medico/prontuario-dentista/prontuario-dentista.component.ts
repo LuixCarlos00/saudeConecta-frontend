@@ -160,7 +160,7 @@ export class ProntuarioDentistaComponent implements OnInit, OnDestroy, AfterView
         next: () => {
           this.errorHandler.showSuccessToast('Prontuário odontológico finalizado com sucesso');
           this.stopTimer();
-          setTimeout(() => this.router.navigate(['/Agenda-Medico']), 1500);
+          setTimeout(() => this.router.navigate(['/agenda-calendario']), 1500);
         },
         error: (error) => {
           console.error('Erro ao cadastrar prontuário odontológico:', error);

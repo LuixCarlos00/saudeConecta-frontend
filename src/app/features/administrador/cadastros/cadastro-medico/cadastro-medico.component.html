@@ -199,26 +199,18 @@
               <label class="field-label">
                 <span class="req">*</span> Especialidade
               </label>
-              <div class="field-row">
-                <div class="field-row__input">
-                  <select class="field-input field-select" formControlName="especialidade"
-                    [class.input--error]="FormularioMedico.get('especialidade')?.invalid && FormularioMedico.get('especialidade')?.touched">
-                    <option value="" disabled>
-                      {{ isLoadingEspecialidades ? 'Carregando especialidades...' : 'Selecione a especialidade' }}
-                    </option>
-                    <option *ngFor="let especialidade of especialidades" [value]="especialidade.nome">
-                      {{ especialidade.nome }}
-                    </option>
-                  </select>
-                  <div class="field-error"
-                    *ngIf="FormularioMedico.get('especialidade')?.invalid && FormularioMedico.get('especialidade')?.touched">
-                    ⚠️ Selecione uma especialidade.
-                  </div>
-                </div>
-                <button type="button" class="btn-icon"
-                  (click)="abrirModalNovaEspecialidade()" title="Adicionar nova especialidade">
-                  <i class="fa-solid fa-plus"></i>
-                </button>
+              <select class="field-input field-select" formControlName="especialidade"
+                [class.input--error]="FormularioMedico.get('especialidade')?.invalid && FormularioMedico.get('especialidade')?.touched">
+                <option value="" disabled>
+                  {{ isLoadingEspecialidades ? 'Carregando especialidades...' : 'Selecione a especialidade' }}
+                </option>
+                <option *ngFor="let especialidade of especialidades" [value]="especialidade.nome">
+                  {{ especialidade.nome }}
+                </option>
+              </select>
+              <div class="field-error"
+                *ngIf="FormularioMedico.get('especialidade')?.invalid && FormularioMedico.get('especialidade')?.touched">
+                ⚠️ Selecione uma especialidade.
               </div>
             </div>
 
@@ -418,38 +410,3 @@
   </div>
 
 </div>
-
-<!-- Modal: Nova Especialidade -->
-  <div class="modal-overlay" *ngIf="mostrarModalNovaEspecialidade" (click)="fecharModalNovaEspecialidade()">
-    <div class="modal-dialog" (click)="$event.stopPropagation()">
-      <div class="modal-header">
-        <h3 class="modal-title">
-          <i class="fa-solid fa-plus-circle"></i>
-          Nova Especialidade
-        </h3>
-        <button type="button" class="modal-close" (click)="fecharModalNovaEspecialidade()">
-          <i class="fa-solid fa-times"></i>
-        </button>
-      </div>
-      <div class="modal-body">
-        <div class="field-group">
-          <label class="field-label">
-            <span class="req">*</span> Nome da Especialidade
-          </label>
-          <input type="text" class="field-input" [(ngModel)]="novaEspecialidadeNome"
-            placeholder="Ex: Cardiologia Pediátrica" maxlength="100" (keyup.enter)="criarNovaEspecialidade()">
-          <div class="field-hint">Use apenas letras e acentos do português. Ex: Cardiologia Pediátrica.</div>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn-cancelar" (click)="fecharModalNovaEspecialidade()">
-          <i class="fa-solid fa-times"></i> Cancelar
-        </button>
-        <button type="button" class="btn-confirmar"
-          [disabled]="!novaEspecialidadeNome || isLoading" (click)="criarNovaEspecialidade()">
-          <i class="fa-solid" [ngClass]="isLoading ? 'fa-spinner fa-spin' : 'fa-check'"></i>
-          {{ isLoading ? 'Criando...' : 'Criar Especialidade' }}
-        </button>
-      </div>
-    </div>
-  </div>

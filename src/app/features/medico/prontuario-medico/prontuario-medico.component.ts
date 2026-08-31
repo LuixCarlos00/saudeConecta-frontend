@@ -42,7 +42,7 @@ export class ProntuarioMedicoComponent implements OnInit, OnDestroy, AfterViewIn
   seconds = 0;
   interval: ReturnType<typeof setInterval> | null = null;
   isPaused = false;
-  Consulta: Consultav2 = {} as Consultav2;
+  Consulta: Consultav2 | null = null;
   FinalizarConsulta = false;
 
   private readonly destroy$ = new Subject<void>();
@@ -144,8 +144,8 @@ export class ProntuarioMedicoComponent implements OnInit, OnDestroy, AfterViewIn
       tempoDuracao: `${this.minutes}:${String(this.seconds).padStart(2, '0')}`,
 
       // Relacionamentos
-      codigoMedico: this.Consulta.profissionalId,
-      consulta: this.Consulta.id,
+      codigoMedico: this.Consulta?.profissionalId || null,
+      consulta: this.Consulta?.id || null,
     };
 
     this.finalizarProntuario(payload);
@@ -158,7 +158,7 @@ export class ProntuarioMedicoComponent implements OnInit, OnDestroy, AfterViewIn
         next: () => {
           this.errorHandler.showSuccessToast('Prontuário médico finalizado com sucesso');
           this.stopTimer();
-          setTimeout(() => this.router.navigate(['/Agenda-Medico']), 1500);
+          setTimeout(() => this.router.navigate(['/agenda-calendario']), 1500);
         },
         error: (error) => {
           console.error('Erro ao cadastrar prontuário médico:', error);
