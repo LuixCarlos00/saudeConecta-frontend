@@ -158,7 +158,7 @@ export class ProntuarioMedicoComponent implements OnInit, OnDestroy, AfterViewIn
         next: () => {
           this.errorHandler.showSuccessToast('Prontuário médico finalizado com sucesso');
           this.stopTimer();
-          setTimeout(() => this.router.navigate(['/Agenda-Medico']), 1500);
+          setTimeout(() => this.router.navigate(['/agenda-calendario']), 1500);
         },
         error: (error) => {
           console.error('Erro ao cadastrar prontuário médico:', error);

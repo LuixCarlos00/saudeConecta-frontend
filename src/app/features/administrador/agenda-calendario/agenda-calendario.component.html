@@ -21,8 +21,8 @@
           </button>
           <div class="dropdown-menu" [class.show]="dropdownConfigAberto" (click)="$event.stopPropagation()">
             <label class="dropdown-item">
-              <input type="checkbox" [(ngModel)]="pularParaAgendado" (change)="atualizarConfiguracaoFluxo()">
-              <span>Cadastrar direto como Agendado</span>
+              <input type="checkbox" [(ngModel)]="pularParaConfirmado" (change)="atualizarConfiguracaoFluxo()">
+              <span>Cadastrar direto como Confirmada</span>
             </label>
           </div>
         </div>
@@ -455,6 +455,8 @@
 
         <ng-container *ngIf="consultaSelecionada.status === 'AGENDADA'">
           <select id="drw-status-sel" class="drw-select"
+            [attr.title]="mensagemTooltipStatus || 'Alterar status da consulta'"
+            [class.tooltip-ativo]="mensagemTooltipStatus"
             (change)="alterarStatusDrawer($any($event.target).value); $any($event.target).value = ''">
             <option value="">Agendada (atual)</option>
             <option value="CONFIRMADA">Confirmar</option>
@@ -464,6 +466,8 @@
 
         <ng-container *ngIf="consultaSelecionada.status === 'CONFIRMADA'">
           <select id="drw-status-sel" class="drw-select"
+            [attr.title]="mensagemTooltipStatus || 'Alterar status da consulta'"
+            [class.tooltip-ativo]="mensagemTooltipStatus"
             (change)="alterarStatusDrawer($any($event.target).value); $any($event.target).value = ''">
             <option value="">Confirmada (atual)</option>
             <option value="AGENDADA">Voltar para Agendada</option>
@@ -474,6 +478,8 @@
 
         <ng-container *ngIf="consultaSelecionada.status === 'REALIZADA'">
           <select id="drw-status-sel" class="drw-select"
+            [attr.title]="mensagemTooltipStatus || 'Alterar status da consulta'"
+            [class.tooltip-ativo]="mensagemTooltipStatus"
             (change)="alterarStatusDrawer($any($event.target).value); $any($event.target).value = ''">
             <option value="">Realizada (atual)</option>
             <option value="PAGO">Marcar como Pago</option>
@@ -499,7 +505,8 @@
           <button class="drw-acao-btn"
                   *ngIf="consultaSelecionada.status === 'CONFIRMADA' && !questionariosRespondidos.has(consultaSelecionada.id)"
                   (click)="gerarLinkQuestionarioDrawer()"
-                  title="Gerar Link do Questionário de Saúde">
+                  [attr.title]="mensagemTooltipQuestionario || 'Gerar Link do Questionário de Saúde'"
+                  [class.tooltip-ativo]="mensagemTooltipQuestionario">
             <i class="fa-solid fa-clipboard-list"></i>
             <span>Questionário</span>
           </button>

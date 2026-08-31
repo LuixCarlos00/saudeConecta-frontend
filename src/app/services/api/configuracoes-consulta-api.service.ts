@@ -6,7 +6,7 @@ import { environment } from 'src/environments/environment';
 export interface ConfiguracoesConsulta {
   id?: number;
   organizacaoId?: number;
-  pularParaAgendado: boolean;
+  pularParaConfirmado: boolean;
   descricao: string;
   createdAt?: string;
   updatedAt?: string;
@@ -41,7 +41,7 @@ export class ConfiguracoesConsultaApiService {
     return this.http.put<ConfiguracoesConsulta>(`${this.apiUrl}/atual`, configuracao);
   }
 
-  devePularParaAgendado(): Observable<boolean> {
-    return this.http.get<boolean>(`${this.apiUrl}/deve-pular-agendado`);
+  devePularParaConfirmado(): Observable<boolean> {
+    return this.http.get<boolean>(`${this.apiUrl}/deve-pular-confirmado`);
   }
 }

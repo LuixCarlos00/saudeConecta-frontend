@@ -96,9 +96,13 @@ export class AgendaCalendarioComponent implements OnInit, OnDestroy {
 
   // Configuração de fluxo de consulta
   dropdownConfigAberto = false;
-  pularParaAgendado = false;
+  pularParaConfirmado = false;
   configuracaoFluxo: ConfiguracoesConsulta | null = null;
-  
+
+  // Mensagens de tooltip
+  mensagemTooltipQuestionario = '';
+  mensagemTooltipStatus = '';
+
   // Referência para o event listener
   private dropdownClickListener: any;
 
@@ -521,45 +525,28 @@ export class AgendaCalendarioComponent implements OnInit, OnDestroy {
     const c = this.consultaSelecionada;
     if (!c || novoStatus === c.status) return;
 
-    const statusConfig: Record<string, any> = {
-      CONFIRMADA: { title: 'Confirmar consulta?',   text: `Consulta de ${c.pacienteNome} será marcada como CONFIRMADA.`, confirmText: 'Sim, confirmar!',  confirmColor: '#06b6d4' },
-      CANCELADA:  { title: 'Cancelar consulta?',    text: `Consulta de ${c.pacienteNome} será CANCELADA.`,               confirmText: 'Sim, cancelar!',   confirmColor: '#ef4444', requiresMotivo: true },
-      AGENDADA:   { title: 'Voltar para Agendada?', text: `Consulta de ${c.pacienteNome} voltará para AGENDADA.`,         confirmText: 'Sim, voltar!',     confirmColor: '#f97316' },
-      PAGO:       { title: 'Marcar como Pago?',     text: `Consulta de ${c.pacienteNome} será marcada como PAGO.`,        confirmText: 'Sim, marcar!',     confirmColor: '#4f46e5' },
-    };
-
-    const cfg = statusConfig[novoStatus];
-    if (!cfg) return;
-
-    const executar = (motivo?: string) => {
-      this.consultaService.alterarStatusConsulta(c.id, novoStatus, motivo)
-        .pipe(takeUntil(this.destroy$))
-        .subscribe({
-          next: () => {
-            Swal.fire('Sucesso', `Status alterado para ${this.STATUS_LABELS[novoStatus]}.`, 'success');
-            this.fecharPopover();
-            this.carregarConsultas();
-          },
-          error: () => Swal.fire('Erro', 'Não foi possível alterar o status.', 'error'),
-        });
-    };
-
-    if (cfg.requiresMotivo) {
-      Swal.fire({
-        title: cfg.title, text: cfg.text, icon: 'question',
-        input: 'textarea', inputLabel: 'Motivo do cancelamento',
-        inputPlaceholder: 'Informe o motivo...',
-        inputValidator: (v) => (!v || v.trim().length < 3) ? 'Informe o motivo (mínimo 3 caracteres).' : null,
-        showCancelButton: true, confirmButtonColor: cfg.confirmColor,
-        cancelButtonColor: '#6b7280', confirmButtonText: cfg.confirmText, cancelButtonText: 'Cancelar',
-      }).then(r => { if (r.isConfirmed && r.value) executar(r.value); });
-    } else {
-      Swal.fire({
-        title: cfg.title, text: cfg.text, icon: 'question',
-        showCancelButton: true, confirmButtonColor: cfg.confirmColor,
-        cancelButtonColor: '#6b7280', confirmButtonText: cfg.confirmText, cancelButtonText: 'Cancelar',
-      }).then(r => { if (r.isConfirmed) executar(); });
-    }
+    this.consultaService.alterarStatusConsulta(c.id, novoStatus)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => {
+          this.mensagemTooltipStatus = `Status alterado para ${this.STATUS_LABELS[novoStatus]}`;
+          this.cdr.markForCheck();
+          this.fecharPopover();
+          this.carregarConsultas();
+          setTimeout(() => {
+            this.mensagemTooltipStatus = '';
+            this.cdr.markForCheck();
+          }, 3000);
+        },
+        error: () => {
+          this.mensagemTooltipStatus = 'Erro ao alterar status';
+          this.cdr.markForCheck();
+          setTimeout(() => {
+            this.mensagemTooltipStatus = '';
+            this.cdr.markForCheck();
+          }, 3000);
+        }
+      });
   }
 
   podeEditar(consulta: Consultav2): boolean {
@@ -574,11 +561,11 @@ export class AgendaCalendarioComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (config) => {
           this.configuracaoFluxo = config;
-          this.pularParaAgendado = config.pularParaAgendado;
+          this.pularParaConfirmado = config.pularParaConfirmado;
           this.cdr.markForCheck();
         },
         error: () => {
-          this.pularParaAgendado = false;
+          this.pularParaConfirmado = false;
           this.cdr.markForCheck();
         }
       });
@@ -592,9 +579,9 @@ export class AgendaCalendarioComponent implements OnInit, OnDestroy {
 
   atualizarConfiguracaoFluxo(): void {
     const configuracao: ConfiguracoesConsulta = {
-      pularParaAgendado: this.pularParaAgendado,
-      descricao: this.pularParaAgendado 
-        ? 'Fluxo acelerado - cadastro direto como Agendado' 
+      pularParaConfirmado: this.pularParaConfirmado,
+      descricao: this.pularParaConfirmado 
+        ? 'Fluxo acelerado - cadastro direto como Confirmada' 
         : 'Fluxo normal - cadastro padrão'
     };
 
@@ -607,15 +594,15 @@ export class AgendaCalendarioComponent implements OnInit, OnDestroy {
           this.cdr.markForCheck();
           Swal.fire(
             'Sucesso', 
-            this.pularParaAgendado 
-              ? 'Configuração atualizada: novas consultas serão cadastradas diretamente como Agendado' 
+            this.pularParaConfirmado 
+              ? 'Configuração atualizada: novas consultas serão cadastradas diretamente como Confirmada' 
               : 'Configuração atualizada: fluxo normal de cadastro restaurado', 
             'success'
           );
         },
         error: () => {
           Swal.fire('Erro', 'Não foi possível atualizar a configuração.', 'error');
-          this.pularParaAgendado = !this.pularParaAgendado;
+          this.pularParaConfirmado = !this.pularParaConfirmado;
           this.cdr.markForCheck();
         }
       });
@@ -798,7 +785,6 @@ export class AgendaCalendarioComponent implements OnInit, OnDestroy {
           if (resp?.respondido) {
             this.questionariosRespondidos.add(element.id);
             this.cdr.markForCheck();
-            Swal.fire('Aviso', 'O questionário de saúde já foi respondido e assinado pelo paciente.', 'info');
             return;
           }
           this.executarGeracaoLinkQuestionario(element);
@@ -815,24 +801,29 @@ export class AgendaCalendarioComponent implements OnInit, OnDestroy {
           const baseUrl = window.location.origin;
           const link = `${baseUrl}/#/questionario-saude/${resp.token}`;
           navigator.clipboard.writeText(link).then(() => {
-            Swal.fire({
-              icon: 'success', title: 'Link Gerado!',
-              html: `<p style="font-size:0.9rem;">Link copiado para a área de transferência.</p>
-                     <input type="text" value="${link}" readonly
-                       style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px;margin-top:8px;font-size:0.82rem;" />`,
-              confirmButtonText: 'OK'
-            });
+            this.mensagemTooltipQuestionario = 'Link copiado para a área de transferência!';
+            this.cdr.markForCheck();
+            setTimeout(() => {
+              this.mensagemTooltipQuestionario = '';
+              this.cdr.markForCheck();
+            }, 3000);
           }).catch(() => {
-            Swal.fire({
-              icon: 'info', title: 'Link Gerado',
-              html: `<p style="font-size:0.9rem;">Copie o link abaixo e envie ao paciente:</p>
-                     <input type="text" value="${link}" readonly
-                       style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px;margin-top:8px;font-size:0.82rem;" />`,
-              confirmButtonText: 'OK'
-            });
+            this.mensagemTooltipQuestionario = 'Não foi possível copiar automaticamente';
+            this.cdr.markForCheck();
+            setTimeout(() => {
+              this.mensagemTooltipQuestionario = '';
+              this.cdr.markForCheck();
+            }, 3000);
           });
         },
-        error: () => Swal.fire('Erro', 'Não foi possível gerar o link do questionário.', 'error')
+        error: () => {
+          this.mensagemTooltipQuestionario = 'Erro ao gerar link';
+          this.cdr.markForCheck();
+          setTimeout(() => {
+            this.mensagemTooltipQuestionario = '';
+            this.cdr.markForCheck();
+          }, 3000);
+        }
       });
   }
 
