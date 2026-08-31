@@ -153,7 +153,8 @@
       <app-aba-planejamento-medico
         [profissionalId]="Consulta?.profissionalId"
         [consultaId]="Consulta?.id"
-        [pacienteId]="Consulta?.pacienteId">
+        [pacienteId]="Consulta?.pacienteId"
+        *ngIf="Consulta">
       </app-aba-planejamento-medico>
     </div>
 

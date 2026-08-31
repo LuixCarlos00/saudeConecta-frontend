@@ -36,8 +36,6 @@ export class VisualizarEditarUsuarioComponent implements OnInit {
   isLoadingEspecialidades = false;
   isEditMode = false;
   dadosOriginais: any = {};
-  mostrarModalNovaEspecialidade = false;
-  novaEspecialidadeNome = '';
   tipoProfissionalSelecionado: string = 'MEDICO';
   isSuperAdmin = false;
 
@@ -395,61 +393,9 @@ export class VisualizarEditarUsuarioComponent implements OnInit {
     this.carregarEspecialidades();
   }
 
-  abrirModalNovaEspecialidade() {
-    this.mostrarModalNovaEspecialidade = true;
-    this.novaEspecialidadeNome = '';
-  }
 
-  fecharModalNovaEspecialidade() {
-    this.mostrarModalNovaEspecialidade = false;
-    this.novaEspecialidadeNome = '';
-  }
 
-  criarNovaEspecialidade() {
-    if (!this.novaEspecialidadeNome || this.novaEspecialidadeNome.trim() === '') {
-      Swal.fire({
-        icon: 'warning',
-        title: 'Campo obrigatório',
-        text: 'Por favor, informe o nome da especialidade.',
-      });
-      return;
-    }
 
-    this.isLoading = true;
-    const tipoProfissionalId = this.tipoProfissionalSelecionado === 'DENTISTA' ? 2 : 1;
-
-    const request = {
-      tipoProfissionalId: tipoProfissionalId,
-      nome: this.novaEspecialidadeNome.trim(),
-      codigo: this.novaEspecialidadeNome.trim().toUpperCase().replace(/\s+/g, '_')
-    };
-
-    this.especialidadeService.criar(request).pipe(takeUntil(this.destroy$)).subscribe({
-      next: (novaEspecialidade) => {
-        this.isLoading = false;
-        this.especialidades.push(novaEspecialidade);
-        this.formulario.patchValue({ especialidade: novaEspecialidade.nome });
-        this.fecharModalNovaEspecialidade();
-
-        Swal.fire({
-          icon: 'success',
-          title: 'Sucesso!',
-          text: 'Especialidade criada com sucesso.',
-          timer: 2000,
-          showConfirmButton: false
-        });
-      },
-      error: (error) => {
-        this.isLoading = false;
-        console.error('Erro ao criar especialidade:', error);
-        Swal.fire({
-          icon: 'error',
-          title: 'Erro',
-          text: 'Não foi possível criar a especialidade. Verifique se já existe uma especialidade com este nome.',
-        });
-      }
-    });
-  }
 
   private mapearDadosAdminCompleto(dados: any): any {
     return {

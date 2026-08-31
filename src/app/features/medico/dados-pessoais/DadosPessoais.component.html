@@ -475,10 +475,6 @@
                       {{ especialidade.nome }}
                     </option>
                   </select>
-                  <button type="button" class="btn btn-secondary" (click)="abrirModalNovaEspecialidade()"
-                    style="padding: 8px 12px; min-width: auto;">
-                    <i class="fa-solid fa-plus"></i>
-                  </button>
                 </div>
               </div>
 
@@ -547,43 +543,6 @@
           </div>
         </div>
       </form>
-    </div>
-  </div>
-</div>
-
-<!-- Modal: Nova Especialidade -->
-<div class="modal-overlay" *ngIf="mostrarModalEspecialidade" (click)="fecharModalEspecialidade()">
-  <div class="modal-dialog" (click)="$event.stopPropagation()">
-    <div class="modal-header">
-      <h3 class="modal-title">
-        <i class="fa-solid fa-plus-circle"></i>
-        Nova Especialidade
-      </h3>
-      <button type="button" class="modal-close" (click)="fecharModalEspecialidade()">
-        <i class="fa-solid fa-times"></i>
-      </button>
-    </div>
-
-    <div class="modal-body">
-      <div class="cadastro-field">
-        <label class="cadastro-field__label">
-          <span class="cadastro-field__required">*</span> Nome da Especialidade
-        </label>
-        <input type="text" class="cadastro-field__input" [(ngModel)]="novaEspecialidadeNome"
-          placeholder="Ex: Cardiologia Pediátrica" maxlength="100" (keyup.enter)="criarNovaEspecialidade()">
-      </div>
-    </div>
-
-    <div class="modal-footer">
-      <button type="button" class="cadastro-btn cadastro-btn--secondary" (click)="fecharModalEspecialidade()">
-        <i class="fa-solid fa-times"></i>
-        Cancelar
-      </button>
-      <button type="button" class="cadastro-btn cadastro-btn--primary" [disabled]="!novaEspecialidadeNome || isLoading"
-        (click)="criarNovaEspecialidade()">
-        <i class="fa-solid" [ngClass]="isLoading ? 'fa-spinner fa-spin' : 'fa-check'"></i>
-        {{ isLoading ? 'Criando...' : 'Criar Especialidade' }}
-      </button>
     </div>
   </div>
 </div>

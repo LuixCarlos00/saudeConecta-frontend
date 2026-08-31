@@ -10,10 +10,23 @@
       <span class="subtitulo">{{ tituloAtual }} </span>
 
 
-      <button class="btn-nova-consulta" *ngIf="controleAcesso.isAdmin() || controleAcesso.isRecepcionista()" (click)="abrirNovaConsulta($event)">
-        <i class="fa-solid fa-plus"></i>
-        Nova Consulta
-      </button>
+      <div class="nova-consulta-wrapper" *ngIf="controleAcesso.isAdmin() || controleAcesso.isRecepcionista()">
+        <button class="btn-nova-consulta" (click)="abrirNovaConsulta($event)">
+          <i class="fa-solid fa-plus"></i>
+          Nova Consulta
+        </button>
+        <div class="dropdown-config">
+          <button class="btn-dropdown-config" (click)="toggleDropdownConfig($event)" [class.active]="dropdownConfigAberto">
+            <i class="fa-solid fa-chevron-down"></i>
+          </button>
+          <div class="dropdown-menu" [class.show]="dropdownConfigAberto" (click)="$event.stopPropagation()">
+            <label class="dropdown-item">
+              <input type="checkbox" [(ngModel)]="pularParaAgendado" (change)="atualizarConfiguracaoFluxo()">
+              <span>Cadastrar direto como Agendado</span>
+            </label>
+          </div>
+        </div>
+      </div>
 
       <!-- Legenda -->
       <div class="legenda-header">

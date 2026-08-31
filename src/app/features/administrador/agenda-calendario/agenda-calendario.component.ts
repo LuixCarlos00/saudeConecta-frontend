@@ -15,6 +15,7 @@ import { RelatorioService } from 'src/app/features/relatorio/relatorio.service';
 import { ProntuarioDentistaApiService } from 'src/app/services/api/prontuario-dentista-api.service';
 import { ProntuarioApiService } from 'src/app/services/api/prontuario-api.service';
 import { PlanejamentoTerapeuticoApiService } from 'src/app/services/api/planejamento-terapeutico-api.service';
+import { ConfiguracoesConsultaApiService, ConfiguracoesConsulta } from 'src/app/services/api/configuracoes-consulta-api.service';
 
 export type TipoVisualizacao = 'mes' | 'semana' | 'dia';
 
@@ -93,6 +94,14 @@ export class AgendaCalendarioComponent implements OnInit, OnDestroy {
   UsuarioLogado: Usuario = { id: 0, aud: '', exp: '', iss: '', sub: '', nome: '' };
   private dadosCarregados = false;
 
+  // Configuração de fluxo de consulta
+  dropdownConfigAberto = false;
+  pularParaAgendado = false;
+  configuracaoFluxo: ConfiguracoesConsulta | null = null;
+  
+  // Referência para o event listener
+  private dropdownClickListener: any;
+
   readonly STATUS_LABELS: Record<string, string> = {
     AGENDADA: 'Agendada',
     CONFIRMADA: 'Confirmada',
@@ -124,10 +133,12 @@ export class AgendaCalendarioComponent implements OnInit, OnDestroy {
     private prontuarioApiService: ProntuarioApiService,
     private planejamentoApi: PlanejamentoTerapeuticoApiService,
     private router: Router,
+    private configuracoesConsultaService: ConfiguracoesConsultaApiService,
   ) {}
 
   ngOnInit(): void {
     this.atualizarTitulo();
+    this.carregarConfiguracaoFluxo();
     this.tokenService.UsuarioLogadoValue$
       .pipe(
         filter(u => !!u && !!u.id),
@@ -150,11 +161,23 @@ export class AgendaCalendarioComponent implements OnInit, OnDestroy {
       .subscribe(dados => {
         if (dados) { this.carregarConsultas(); }
       });
+
+    // Fechar dropdown ao clicar fora
+    this.dropdownClickListener = () => {
+      if (this.dropdownConfigAberto) {
+        this.dropdownConfigAberto = false;
+        this.cdr.markForCheck();
+      }
+    };
+    document.addEventListener('click', this.dropdownClickListener);
   }
 
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+    if (this.dropdownClickListener) {
+      document.removeEventListener('click', this.dropdownClickListener);
+    }
   }
 
   // ========== CARREGAMENTO ==========
@@ -541,6 +564,61 @@ export class AgendaCalendarioComponent implements OnInit, OnDestroy {
 
   podeEditar(consulta: Consultav2): boolean {
     return consulta?.status === 'AGENDADA';
+  }
+
+  // ========== CONFIGURAÇÃO DE FLUXO DE CONSULTA ==========
+
+  carregarConfiguracaoFluxo(): void {
+    this.configuracoesConsultaService.buscarConfiguracaoAtual()
+      .pipe(take(1), takeUntil(this.destroy$))
+      .subscribe({
+        next: (config) => {
+          this.configuracaoFluxo = config;
+          this.pularParaAgendado = config.pularParaAgendado;
+          this.cdr.markForCheck();
+        },
+        error: () => {
+          this.pularParaAgendado = false;
+          this.cdr.markForCheck();
+        }
+      });
+  }
+
+  toggleDropdownConfig(event: MouseEvent): void {
+    event.stopPropagation();
+    this.dropdownConfigAberto = !this.dropdownConfigAberto;
+    this.cdr.markForCheck();
+  }
+
+  atualizarConfiguracaoFluxo(): void {
+    const configuracao: ConfiguracoesConsulta = {
+      pularParaAgendado: this.pularParaAgendado,
+      descricao: this.pularParaAgendado 
+        ? 'Fluxo acelerado - cadastro direto como Agendado' 
+        : 'Fluxo normal - cadastro padrão'
+    };
+
+    this.configuracoesConsultaService.atualizarConfiguracaoAtual(configuracao)
+      .pipe(take(1), takeUntil(this.destroy$))
+      .subscribe({
+        next: (config) => {
+          this.configuracaoFluxo = config;
+          this.dropdownConfigAberto = false;
+          this.cdr.markForCheck();
+          Swal.fire(
+            'Sucesso', 
+            this.pularParaAgendado 
+              ? 'Configuração atualizada: novas consultas serão cadastradas diretamente como Agendado' 
+              : 'Configuração atualizada: fluxo normal de cadastro restaurado', 
+            'success'
+          );
+        },
+        error: () => {
+          Swal.fire('Erro', 'Não foi possível atualizar a configuração.', 'error');
+          this.pularParaAgendado = !this.pularParaAgendado;
+          this.cdr.markForCheck();
+        }
+      });
   }
 
   deletarConsultaDrawer(): void {
