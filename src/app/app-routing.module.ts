@@ -11,6 +11,8 @@ import { LandingPageGuard } from './features/publico/landing-page/guards/landing
 import { LoginComponent } from './features/publico/login/login.component';
 import { GuardaRotasLogin } from './features/publico/login/guards/GuardaRotasLogin';
 import { RecuperaCadastroComponent } from './features/publico/recupera-cadastro/recupera-cadastro/recupera-cadastro.component';
+import { CadastroSaasComponent } from './features/publico/cadastro-saas/cadastro-saas.component';
+import { AssinaturaRetornoComponent } from './features/publico/assinatura-retorno/assinatura-retorno.component';
 
 // ========== FEATURES ADMINISTRADOR ==========
 import { DashboardComponent } from './features/administrador/dashboard/dashboard.component';
@@ -53,6 +55,9 @@ const routes: Routes = [
   // ========== ROTAS PÚBLICAS ==========
   { path: 'login', component: LoginComponent, canActivate: [GuardaRotasLogin] },
   { path: 'recuperaCadastro', component: RecuperaCadastroComponent },
+  { path: 'cadastro', component: CadastroSaasComponent },
+  { path: 'assinatura/sucesso', component: AssinaturaRetornoComponent, data: { situacao: 'sucesso' } },
+  { path: 'assinatura/pendente', component: AssinaturaRetornoComponent, data: { situacao: 'pendente' } },
   { path: 'questionario-saude/:token', component: QuestionarioSaudeComponent },
   { path: 'assinatura-planejamento/:token', component: AssinaturaPlanejamentoComponent },
 

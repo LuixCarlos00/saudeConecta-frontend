@@ -1,0 +1,17 @@
+<div class="retorno">
+  <div class="retorno__card" [class.retorno__card--pendente]="situacao === 'pendente'">
+    <i class="fa-solid" [ngClass]="situacao === 'sucesso' ? 'fa-circle-check' : 'fa-clock'"></i>
+
+    <h1>{{ titulo }}</h1>
+    <p>{{ mensagem }}</p>
+
+    <div class="retorno__acoes">
+      <button type="button" class="btn-primario" (click)="irParaMinhaAssinatura()">
+        Ver minha assinatura
+      </button>
+      <button type="button" class="btn-secundario" (click)="irParaLogin()">
+        Ir para o login
+      </button>
+    </div>
+  </div>
+</div>

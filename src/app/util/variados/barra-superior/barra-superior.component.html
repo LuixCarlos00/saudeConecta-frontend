@@ -17,37 +17,38 @@
     <span class="notification-bell-wrapper" *ngIf="ControleAcessoService.isAdmin()">
       <button
         class="notification-bell"
-        [class.notification-bell--active]="cobrancaPendente && !assinaturaInadimplente"
+        [class.notification-bell--active]="trialPendenteAtivacao && !assinaturaInadimplente"
         (click)="toggleNotificacaoCobranca()"
-        [attr.aria-label]="cobrancaPendente ? 'Você tem uma cobrança pendente' : 'Notificações'">
+        [attr.aria-label]="trialPendenteAtivacao ? 'Seu período gratuito está terminando' : 'Notificações'">
         <i class="fa-solid fa-bell"></i>
-        <span class="notification-bell__dot" *ngIf="cobrancaPendente && !assinaturaInadimplente"></span>
+        <span class="notification-bell__dot" *ngIf="trialPendenteAtivacao && !assinaturaInadimplente"></span>
       </button>
 
-      <!-- Dropdown com a mensagem de cobrança pendente -->
-      <div class="notification-dropdown" *ngIf="mostrarNotificacaoCobranca && cobrancaPendente && !assinaturaInadimplente">
+      <!-- Dropdown com o aviso de fim do período gratuito -->
+      <div class="notification-dropdown" *ngIf="mostrarNotificacaoCobranca && trialPendenteAtivacao && !assinaturaInadimplente">
         <div class="banner-cobranca-pendente">
           <div class="banner-cobranca-pendente__icon">
-            <i class="fa-solid fa-receipt"></i>
+            <i class="fa-solid fa-credit-card"></i>
           </div>
           <div class="banner-cobranca-pendente__content">
-            <strong>Cobrança mensal gerada</strong>
+            <strong>Período gratuito em andamento</strong>
             <p>
-              Sua cobrança de <strong>{{ cobrancaPendente.valorTotal | currency:'BRL' }}</strong> vence em <strong>{{ cobrancaPendente.dataVencimentoPix | date:'dd/MM/yyyy' }}</strong>. Você tem até essa data para realizar o pagamento.
+              Seu teste gratuito termina em <strong>{{ assinatura?.dataVencimento | date:'dd/MM/yyyy' }}</strong>.
+              Ative a assinatura para continuar usando o sistema sem interrupções.
             </p>
             <p class="banner-cobranca-pendente__prazo">
               <i class="fa-solid fa-clock"></i>
-              <span *ngIf="diasRestantesPagamento > 0">
-                <strong>{{ diasRestantesPagamento }}</strong> {{ diasRestantesPagamento === 1 ? 'dia restante' : 'dias restantes' }} para pagamento
+              <span *ngIf="diasRestantesTrial > 0">
+                <strong>{{ diasRestantesTrial }}</strong> {{ diasRestantesTrial === 1 ? 'dia restante' : 'dias restantes' }} de teste gratuito
               </span>
-              <span *ngIf="diasRestantesPagamento === 0" class="banner-cobranca-pendente__urgente">
-                Vence hoje! Pague para evitar a inadimplência
+              <span *ngIf="diasRestantesTrial === 0" class="banner-cobranca-pendente__urgente">
+                Termina hoje! Ative para evitar o bloqueio do acesso
               </span>
             </p>
           </div>
           <button class="banner-cobranca-pendente__action" (click)="navegarPara('/minha-assinatura')">
-            <i class="fa-solid fa-qrcode"></i>
-            Ver QR Code Pix
+            <i class="fa-solid fa-credit-card"></i>
+            Ativar assinatura
           </button>
         </div>
       </div>

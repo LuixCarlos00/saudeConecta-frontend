@@ -51,6 +51,13 @@ export interface AssinaturaTenant {
   qtdProfissionalExtra: number;
   qtdSecretariaExtra: number;
   valorAdicionalPerfis: number;
+  mpPreapprovalId: string | null;
+  mpStatus: string | null;
+  mpInitPoint: string | null;
+  mpPayerEmail: string | null;
+  cortesia: boolean;
+  dataCancelamento: string | null;
+  canceladoPor: string | null;
   criadoEm: string;
 }
 
@@ -67,12 +74,49 @@ export interface CobrancaTenant {
   planoNome: string;
   valorTotal: number;
   status: string;
-  pixCopiaECola: string;
-  pixQrcodeBase64: string;
-  txid: string;
-  dataVencimentoPix: string;
+  formaPagamento: string | null;
+  mpPaymentId: string | null;
+  motivoRecusa: string | null;
+  txid: string | null;
   dataPagamento: string | null;
   criadaEm: string;
+}
+
+/** Link do checkout hospedado do Mercado Pago para ativar a assinatura. */
+export interface LinkPagamento {
+  preapprovalId: string;
+  initPoint: string;
+  payerEmail: string;
+  valorMensal: number;
+}
+
+/** Payload do auto-cadastro público (landing page). */
+export interface CadastroSaasRequest {
+  tipoPessoa: string;
+  nome: string;
+  cpf: string;
+  cargo?: string;
+  email: string;
+  nomeClinica?: string;
+  razaoSocial?: string;
+  cnpj?: string;
+  tipoClinica?: string;
+  emailClinica?: string;
+  telefone?: string;
+  cep: string;
+  uf: string;
+  municipio: string;
+  bairro?: string;
+  rua: string;
+  numero: number;
+  complemento?: string;
+  planoId: number;
+}
+
+export interface CadastroSaasResponse {
+  organizacaoId: number;
+  adminId: number;
+  mensagem: string;
 }
 
 export interface CustomizarPlanoTenantRequest {

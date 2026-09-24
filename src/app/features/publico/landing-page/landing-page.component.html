@@ -58,7 +58,7 @@
         <h1>Transforme a gestão da sua <span class="highlight">clínica médica</span></h1>
         <p>Sistema completo para agendamento, prontuário eletrônico e gestão de pacientes. Simplifique processos e ofereça uma experiência excepcional.</p>
         <div class="hero-buttons">
-          <button class="btn-primary" (click)="scrollToSection('planos')">
+          <button class="btn-primary" (click)="navegarParaCadastro()">
             Começar Gratuitamente
             <i class="fa-solid fa-arrow-right"></i>
           </button>
@@ -365,7 +365,8 @@
               {{ recurso }}
             </li>
           </ul>
-          <button class="btn-plano" [class.btn-destaque]="isPlanoDestaque(plano)">
+          <button class="btn-plano" [class.btn-destaque]="isPlanoDestaque(plano)"
+                  (click)="navegarParaCadastro(plano.id)">
             Começar Agora
           </button>
         </div>
@@ -373,7 +374,7 @@
 
       <div class="planos-nota">
         <i class="fa-solid fa-infinity"></i>
-        <span>Pacientes ilimitados em todos os planos • 14 dias grátis para testar</span>
+        <span>Pacientes ilimitados em todos os planos • 30 dias grátis para testar, sem cartão</span>
       </div>
     </div>
   </section>

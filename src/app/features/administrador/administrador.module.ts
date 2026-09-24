@@ -71,7 +71,6 @@ import { MensageriaComponent } from './mensageria/mensageria.component';
 // Componentes de Planos
 import { ListaPlanosComponent } from './planos/lista-planos/lista-planos.component';
 import { DetalheAssinaturaComponent } from './planos/detalhe-assinatura/detalhe-assinatura.component';
-import { ModalPixComponent } from './planos/modal-pix/modal-pix.component';
 import { GerenciarPlanosComponent } from './planos/gerenciar-planos/gerenciar-planos.component';
  import { ModalValoresAdicionaisComponent } from './planos/gerenciar-planos/modal-valores-adicionais/modal-valores-adicionais.component';
  
@@ -149,7 +148,6 @@ const routes: Routes = [
     // Componentes de Planos
     ListaPlanosComponent,
     DetalheAssinaturaComponent,
-    ModalPixComponent,
     GerenciarPlanosComponent,
      ModalValoresAdicionaisComponent,
  

@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { AssinaturaTenant, AssinaturaTenantRequest, CustomizarPlanoTenantRequest, LimitesPlano } from 'src/app/util/variados/interfaces/planos/PlanoAssinatura';
+import { AssinaturaTenant, AssinaturaTenantRequest, CobrancaTenant, CustomizarPlanoTenantRequest, LimitesPlano, LinkPagamento } from 'src/app/util/variados/interfaces/planos/PlanoAssinatura';
 import { environment } from 'src/environments/environment';
 
 @Injectable({
@@ -47,6 +47,30 @@ export class AssinaturaApiService {
    */
   minhaAssinatura(): Observable<AssinaturaTenant> {
     return this.http.get<AssinaturaTenant>(`${this.apiUrl}/minha-assinatura`);
+  }
+
+  /**
+   * Gera (ou reaproveita) o link do checkout hospedado do Mercado Pago.
+   * @returns Observable com o init_point e o e-mail exigido pelo Mercado Pago
+   */
+  gerarLinkPagamento(): Observable<LinkPagamento> {
+    return this.http.post<LinkPagamento>(`${this.apiUrl}/minha-assinatura/gerar-link-pagamento`, {});
+  }
+
+  /**
+   * Cancela a assinatura da própria organização.
+   * @returns Observable void
+   */
+  cancelarMinhaAssinatura(): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/minha-assinatura`);
+  }
+
+  /**
+   * Histórico de cobranças da organização do usuário logado.
+   * @returns Observable com a lista de cobranças
+   */
+  historico(): Observable<CobrancaTenant[]> {
+    return this.http.get<CobrancaTenant[]>(`${this.apiUrl}/minha-assinatura/historico`);
   }
 
   /**
@@ -100,5 +124,15 @@ export class AssinaturaApiService {
    */
   cancelar(id: number): Observable<void> {
     return this.http.patch<void>(`${this.apiUrl}/${id}/cancelar`, {});
+  }
+
+  /**
+   * Marca ou remove a condição de cortesia da assinatura (SUPER_ADMIN).
+   * @param id ID da assinatura
+   * @param cortesia true para isentar de cobrança
+   * @returns Observable com a assinatura atualizada
+   */
+  definirCortesia(id: number, cortesia: boolean): Observable<AssinaturaTenant> {
+    return this.http.patch<AssinaturaTenant>(`${this.apiUrl}/${id}/cortesia?cortesia=${cortesia}`, {});
   }
 }

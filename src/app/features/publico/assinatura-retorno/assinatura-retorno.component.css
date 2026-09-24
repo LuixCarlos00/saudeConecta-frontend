@@ -1,0 +1,77 @@
+.retorno {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 70vh;
+  padding: 24px;
+}
+
+.retorno__card {
+  max-width: 520px;
+  text-align: center;
+  padding: 40px 32px;
+  border: 1px solid #e9ecef;
+  border-top: 4px solid #40c057;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+}
+
+.retorno__card--pendente {
+  border-top-color: #ffc107;
+}
+
+.retorno__card i {
+  font-size: 48px;
+  color: #40c057;
+}
+
+.retorno__card--pendente i {
+  color: #f59f00;
+}
+
+.retorno__card h1 {
+  margin: 16px 0 10px;
+  font-size: 22px;
+  color: #1a1a2e;
+}
+
+.retorno__card p {
+  margin: 0;
+  color: #5f5f5f;
+  line-height: 1.6;
+}
+
+.retorno__acoes {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 28px;
+}
+
+.btn-primario,
+.btn-secundario {
+  padding: 12px 22px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+
+.btn-primario {
+  background: linear-gradient(135deg, #00d9ff 0%, #00a8cc 100%);
+  color: #fff;
+}
+
+.btn-secundario {
+  background: #fff;
+  border-color: #ced4da;
+  color: #495057;
+}
+
+@media (max-width: 480px) {
+  .retorno__acoes {
+    flex-direction: column;
+  }
+}

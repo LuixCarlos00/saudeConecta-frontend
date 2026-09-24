@@ -15,15 +15,6 @@ export class CobrancaApiService {
   constructor(private http: HttpClient) { }
 
   /**
-   * Gera uma nova cobrança Pix para a assinatura.
-   * @param assinaturaId ID da assinatura
-   * @returns Observable com a cobrança gerada (inclui dados Pix)
-   */
-  gerarCobranca(assinaturaId: number): Observable<CobrancaTenant> {
-    return this.http.post<CobrancaTenant>(`${this.apiUrl}/gerar/${assinaturaId}`, {});
-  }
-
-  /**
    * Lista cobranças da organização do usuário logado.
    * @returns Observable com lista de cobranças
    */
@@ -65,14 +56,5 @@ export class CobrancaApiService {
    */
   confirmarPagamento(cobrancaId: number): Observable<CobrancaTenant> {
     return this.http.patch<CobrancaTenant>(`${this.apiUrl}/${cobrancaId}/confirmar-pagamento`, {});
-  }
-
-  /**
-   * Busca cobrança pelo txid.
-   * @param txid identificador da transação Pix
-   * @returns Observable com a cobrança
-   */
-  buscarPorTxid(txid: string): Observable<CobrancaTenant> {
-    return this.http.get<CobrancaTenant>(`${this.apiUrl}/txid/${txid}`);
   }
 }

@@ -82,7 +82,7 @@
                   <th>Data</th>
                   <th>Plano</th>
                   <th>Valor</th>
-                  <th>Vencimento</th>
+                  <th>Pagamento</th>
                   <th>Status</th>
                   <th>Ações</th>
                 </tr>
@@ -92,7 +92,7 @@
                   <td>{{ cobranca.criadaEm | date:'dd/MM/yyyy' }}</td>
                   <td>{{ cobranca.planoNome }}</td>
                   <td>{{ formatarValor(cobranca.valorTotal) }}</td>
-                  <td>{{ cobranca.dataVencimentoPix | date:'dd/MM/yyyy' }}</td>
+                  <td>{{ cobranca.dataPagamento ? (cobranca.dataPagamento | date:'dd/MM/yyyy') : '—' }}</td>
                   <td>
                     <span class="status-badge" [ngClass]="getStatusClass(cobranca.status)">
                       {{ cobranca.status }}
