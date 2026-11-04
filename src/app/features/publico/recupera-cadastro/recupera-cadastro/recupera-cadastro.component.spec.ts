@@ -4,6 +4,7 @@ import { By } from '@angular/platform-browser';
 import { DebugElement } from '@angular/core';
 
 import { RecuperaCadastroComponent } from './recupera-cadastro.component';
+import { IMPORTS_TESTE_PADRAO, PROVIDERS_TESTE_PADRAO, SCHEMAS_TESTE_PADRAO } from '../../../../testing/configuracao-teste';
 
 describe('RecuperaCadastroComponent', () => {
   let component: RecuperaCadastroComponent;
@@ -11,7 +12,10 @@ describe('RecuperaCadastroComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ RecuperaCadastroComponent ]
+      declarations: [RecuperaCadastroComponent],
+      imports: IMPORTS_TESTE_PADRAO,
+      providers: PROVIDERS_TESTE_PADRAO,
+      schemas: SCHEMAS_TESTE_PADRAO
     })
     .compileComponents();
   }));

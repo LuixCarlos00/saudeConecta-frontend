@@ -4,6 +4,7 @@ import { By } from '@angular/platform-browser';
 import { DebugElement } from '@angular/core';
 
 import { TabelaTodosUsuariosComponent } from './tabela-todos-usuarios.component';
+import { IMPORTS_TESTE_PADRAO, PROVIDERS_TESTE_PADRAO, SCHEMAS_TESTE_PADRAO } from '../../../../testing/configuracao-teste';
 
 describe('TabelaTodosUsuariosComponent', () => {
   let component: TabelaTodosUsuariosComponent;
@@ -11,7 +12,10 @@ describe('TabelaTodosUsuariosComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ TabelaTodosUsuariosComponent ]
+      declarations: [TabelaTodosUsuariosComponent],
+      imports: IMPORTS_TESTE_PADRAO,
+      providers: PROVIDERS_TESTE_PADRAO,
+      schemas: SCHEMAS_TESTE_PADRAO
     })
     .compileComponents();
   }));
