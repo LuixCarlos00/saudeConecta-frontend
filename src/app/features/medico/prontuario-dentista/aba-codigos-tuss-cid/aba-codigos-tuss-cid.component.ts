@@ -1,9 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
-import { Tuss_terminologia_Unificada_Saude_Suplementar } from 'src/app/util/variados/options/tuss-Terminologia-unificada-saude-splementar';
-import { Cid_codigo_internaciona_doecas } from 'src/app/util/variados/options/cid-codigo-internaciona-doecas';
+import { CodigosTussCidService } from 'src/app/services/codigos/codigos-tuss-cid.service';
 
 @Component({
   selector: 'app-aba-codigos-tuss-cid',
@@ -15,6 +14,7 @@ import { Cid_codigo_internaciona_doecas } from 'src/app/util/variados/options/ci
 export class AbaCodigosTussCidComponent {
 
   private readonly MAX_AUTOCOMPLETE_RESULTS = 15;
+  private readonly codigosService = inject(CodigosTussCidService);
 
   // ── Registros TUSS ──
   tussSelecionados: any[] = [];
@@ -41,12 +41,12 @@ export class AbaCodigosTussCidComponent {
   cidExameResultados: any[] = [];
 
   // ── TUSS ──
-  filtrarTuss(): void {
+  async filtrarTuss(): Promise<void> {
     const termo = this.buscaTuss?.trim().toLowerCase();
     if (!termo || termo.length < 2) { this.tussResultados = []; return; }
-    this.tussResultados = Tuss_terminologia_Unificada_Saude_Suplementar
-      .filter(item => item.codigo.toLowerCase().includes(termo) || item.descricao.toLowerCase().includes(termo))
-      .slice(0, this.MAX_AUTOCOMPLETE_RESULTS);
+    const resultados = await this.codigosService.buscarTuss(termo, this.MAX_AUTOCOMPLETE_RESULTS);
+    // Descarta resposta atrasada se o usuário já digitou outra coisa durante o carregamento.
+    if (this.buscaTuss?.trim().toLowerCase() === termo) { this.tussResultados = resultados; }
   }
 
   adicionarTuss(item: any): void {
@@ -69,12 +69,12 @@ export class AbaCodigosTussCidComponent {
   }
 
   // ── CID ──
-  filtrarCid(): void {
+  async filtrarCid(): Promise<void> {
     const termo = this.buscaCid?.trim().toLowerCase();
     if (!termo || termo.length < 2) { this.cidResultados = []; return; }
-    this.cidResultados = Cid_codigo_internaciona_doecas
-      .filter(item => item.codigo.toLowerCase().includes(termo) || item.label.toLowerCase().includes(termo))
-      .slice(0, this.MAX_AUTOCOMPLETE_RESULTS);
+    const resultados = await this.codigosService.buscarCid(termo, this.MAX_AUTOCOMPLETE_RESULTS);
+    // Descarta resposta atrasada se o usuário já digitou outra coisa durante o carregamento.
+    if (this.buscaCid?.trim().toLowerCase() === termo) { this.cidResultados = resultados; }
   }
 
   adicionarCid(item: any): void {
@@ -97,12 +97,12 @@ export class AbaCodigosTussCidComponent {
   }
 
   // ── Solicitação de Exame — TUSS ──
-  filtrarTussExame(): void {
+  async filtrarTussExame(): Promise<void> {
     const termo = this.buscaTussExame?.trim().toLowerCase();
     if (!termo || termo.length < 2) { this.tussExameResultados = []; return; }
-    this.tussExameResultados = Tuss_terminologia_Unificada_Saude_Suplementar
-      .filter(item => item.codigo.toLowerCase().includes(termo) || item.descricao.toLowerCase().includes(termo))
-      .slice(0, this.MAX_AUTOCOMPLETE_RESULTS);
+    const resultados = await this.codigosService.buscarTuss(termo, this.MAX_AUTOCOMPLETE_RESULTS);
+    // Descarta resposta atrasada se o usuário já digitou outra coisa durante o carregamento.
+    if (this.buscaTussExame?.trim().toLowerCase() === termo) { this.tussExameResultados = resultados; }
   }
 
   adicionarTussExame(item: any): void {
@@ -120,12 +120,12 @@ export class AbaCodigosTussCidComponent {
   }
 
   // ── Solicitação de Exame — CID ──
-  filtrarCidExame(): void {
+  async filtrarCidExame(): Promise<void> {
     const termo = this.buscaCidExame?.trim().toLowerCase();
     if (!termo || termo.length < 2) { this.cidExameResultados = []; return; }
-    this.cidExameResultados = Cid_codigo_internaciona_doecas
-      .filter(item => item.codigo.toLowerCase().includes(termo) || item.label.toLowerCase().includes(termo))
-      .slice(0, this.MAX_AUTOCOMPLETE_RESULTS);
+    const resultados = await this.codigosService.buscarCid(termo, this.MAX_AUTOCOMPLETE_RESULTS);
+    // Descarta resposta atrasada se o usuário já digitou outra coisa durante o carregamento.
+    if (this.buscaCidExame?.trim().toLowerCase() === termo) { this.cidExameResultados = resultados; }
   }
 
   adicionarCidExame(item: any): void {
