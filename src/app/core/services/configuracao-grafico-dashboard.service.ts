@@ -45,4 +45,9 @@ export class ConfiguracaoGraficoDashboardService {
   resetarConfiguracoesParaPadrao(): Observable<void> {
     return this.http.post<void>(`${this.baseUrl}/resetar`, {});
   }
+
+  /** Inicializa configurações para primeiro acesso (todos desativados). */
+  inicializarConfiguracoes(): Observable<ConfiguracaoGraficoDashboard[]> {
+    return this.http.post<ConfiguracaoGraficoDashboard[]>(`${this.baseUrl}/inicializar`, {});
+  }
 }

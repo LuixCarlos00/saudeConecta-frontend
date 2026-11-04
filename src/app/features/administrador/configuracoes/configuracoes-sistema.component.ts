@@ -1,10 +1,10 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ThemeService, ThemeType, ThemeConfig, Theme } from 'src/app/services/theme/theme.service';
+import { ConfiguracaoGraficoDashboardService } from 'src/app/core/services/configuracao-grafico-dashboard.service';
 import {
-  ConfiguracaoGraficoService,
-  ConfiguracaoGraficoResponse,
+  ConfiguracaoGraficoDashboard,
   AtualizarConfiguracaoGraficoRequest
-} from 'src/app/services/api/configuracao-grafico.service';
+} from 'src/app/shared/models/configuracao-grafico-dashboard.interface';
 import {
   ConfiguracaoCardService,
   ConfiguracaoCardResponse,
@@ -27,7 +27,7 @@ export class ConfiguracoesSistemaComponent implements OnInit, OnDestroy {
   availableThemes: ThemeConfig[] = [];
   currentTheme: ThemeType = 'light';
   activeTab = 'graficos';
-  configuracoes: ConfiguracaoGraficoResponse[] = [];
+  configuracoes: ConfiguracaoGraficoDashboard[] = [];
   configuracoesCards: ConfiguracaoCardResponse[] = [];
   loading = false;
   loadingCards = false;
@@ -48,7 +48,7 @@ export class ConfiguracoesSistemaComponent implements OnInit, OnDestroy {
 
   constructor(
     public themeService: ThemeService,
-    private configuracaoGraficoService: ConfiguracaoGraficoService,
+    private configuracaoGraficoService: ConfiguracaoGraficoDashboardService,
     private configuracaoCardService: ConfiguracaoCardService,
     private procedimentoPadraoService: ProcedimentoPadraoApiService,
     private usuarioApiService: UsuarioApiService,
@@ -114,7 +114,7 @@ export class ConfiguracoesSistemaComponent implements OnInit, OnDestroy {
     });
   }
 
-  toggleGrafico(config: ConfiguracaoGraficoResponse): void {
+  toggleGrafico(config: ConfiguracaoGraficoDashboard): void {
     const request: AtualizarConfiguracaoGraficoRequest = {
       tipoGrafico: config.tipoGrafico,
       ativo: !config.ativo,

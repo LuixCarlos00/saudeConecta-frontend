@@ -15,7 +15,7 @@ import { tokenService } from 'src/app/util/Token/Token.service';
 import { AuthApiService } from 'src/app/services/api/auth-api.service';
 import { Usuario } from 'src/app/util/variados/interfaces/usuario/usuario';
 import { async, take, filter } from 'rxjs';
-import { DialogService } from 'src/app/util/variados/dialogo-confirmação/dialog.service';
+import { DialogService } from 'src/app/util/variados/dialogo-confirmacao/dialog.service';
 import { Profissional } from 'src/app/util/variados/interfaces/medico/Profissional';
 import { CadastroPacienteComponent } from '../../cadastros/cadastro-paciente/cadastro-paciente.component';
 import { idFormaPagamentoPorRotulo } from 'src/app/shared/constants/forma-pagamento.constant';

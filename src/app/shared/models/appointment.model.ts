@@ -13,22 +13,12 @@ export interface Appointment {
   date: string;
   observations: string;
   createdAt: string;
-  paymentMethod: PaymentMethod;
+  /** id da forma de pagamento (ver shared/constants/forma-pagamento.constant.ts) */
+  paymentMethod: number;
   status: AppointmentStatus;
   adminId: number;
   doctor?: Doctor;
   patient?: Patient;
-}
-
-/**
- * Forma de pagamento
- */
-export enum PaymentMethod {
-  CASH = 1,
-  CREDIT_CARD = 2,
-  DEBIT_CARD = 3,
-  PIX = 4,
-  HEALTH_INSURANCE = 5
 }
 
 /**
@@ -116,7 +106,7 @@ export function mapAppointmentFromApi(response: AppointmentApiResponse): Appoint
     date: response.ConData ?? response.conData ?? '',
     observations: response.ConObservacoes ?? response.conObservacoes ?? '',
     createdAt: response.ConDataCriacao ?? response.conDataCriacao ?? '',
-    paymentMethod: (response.ConFormaPagamento ?? response.conFormaPagamento ?? PaymentMethod.CASH) as PaymentMethod,
+    paymentMethod: response.ConFormaPagamento ?? response.conFormaPagamento ?? 0,
     status: (response.ConStatus ?? response.conStatus ?? AppointmentStatus.SCHEDULED) as AppointmentStatus,
     adminId: response.ConAdm ?? response.conAdm ?? 0
   };

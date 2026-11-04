@@ -69,7 +69,7 @@ npm start
 ## 💻 Desenvolvimento
 
 ```bash
-# Servidor de desenvolvimento (com proxy para API)
+# Servidor de desenvolvimento
 npm start
 # Acesse: http://localhost:4200
 
@@ -92,10 +92,6 @@ export const environment = {
   apiUrl: 'http://localhost:8080'  // URL do backend
 };
 ```
-
-### Proxy
-
-O arquivo `src/proxy.conf.json` configura o proxy para o backend durante desenvolvimento.
 
 ## 🔐 Autenticação
 

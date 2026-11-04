@@ -1,74 +1,57 @@
-import { Usuario } from './../variados/interfaces/usuario/usuario';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, map } from 'rxjs';
-
+import { BehaviorSubject } from 'rxjs';
 import { jwtDecode } from 'jwt-decode';
-import { HttpClient } from '@angular/common/http';
-import { Paciente } from '../variados/interfaces/paciente/paciente';
-import { Adiministrador } from '../variados/interfaces/administrado/adiministrador';
-import { Medico } from '../variados/interfaces/medico/medico';
-import * as jwt_decode from 'jwt-decode';
-import { ApiUrlService } from 'src/app/services/api/api-url.service';
 
-const KEY: string = 'authToken';
+import { AuthService } from 'src/app/core/services/auth.service';
 
+/**
+ * Fachada fina de compatibilidade sobre o AuthService.
+ *
+ * O armazenamento do token (chave 'authToken') é do AuthService; este serviço só
+ * mantém a API antiga (usada em ~20 componentes) e o payload completo do JWT
+ * (inclui campos como `nome`, que o DecodedToken do AuthService não tipa).
+ * Código novo deve usar o AuthService diretamente.
+ */
 @Injectable({ providedIn: 'root' })
 export class tokenService {
-  //
-  //
-  //
-
-  constructor(
-    private apiUrl_Global : ApiUrlService
-  ) {
-   this.apiUrl = this.apiUrl_Global.getUrl()
-  }
-
-  private apiUrl = '';
-
   private UsuarioLogadoSubject = new BehaviorSubject<any | null>(null);
   UsuarioLogadoValue$ = this.UsuarioLogadoSubject.asObservable();
 
+  constructor(private authService: AuthService) {}
+
   /**
-   * Retorna o usuário logado de forma síncrona
+   * Retorna o usuário logado (payload do JWT) de forma síncrona.
+   * @returns payload decodificado ou null se ainda não decodificado
    */
   getUsuarioLogado(): any | null {
     return this.UsuarioLogadoSubject.getValue();
   }
 
-
-  private Usuario = {
-    id: 0,
-    login: '',
-    senha: '',
-    roles: '',
-  };
-
-
-  retornaToken() {
-    return localStorage.getItem(KEY) ?? '';
+  /**
+   * Retorna o token salvo (delegado ao AuthService).
+   * @returns token ou string vazia
+   */
+  retornaToken(): string {
+    return this.authService.getToken();
   }
 
+  /**
+   * Indica se há token salvo (delegado ao AuthService).
+   * @returns true se existe token
+   */
   possuiToken(): boolean {
-    const token = localStorage.getItem(KEY);
-    if (token) {
-      return true;
-    } else {
-      return false;
-    }
+    return this.authService.hasToken();
   }
 
-
-
+  /**
+   * Decodifica o token atual e publica o payload em UsuarioLogadoValue$.
+   */
   public decodificaToken(): void {
     const token = this.retornaToken();
     if (token) {
-      const Usuario = jwt_decode.jwtDecode(token) as Usuario;
-      this.UsuarioLogadoSubject.next(Usuario);
+      this.UsuarioLogadoSubject.next(jwtDecode<any>(token));
     }
   }
-
-
 
   obterAutorizacao(): string {
     this.decodificaToken();
@@ -93,5 +76,4 @@ export class tokenService {
     const usuario = this.UsuarioLogadoSubject.getValue();
     return usuario ? usuario.nome : null;
   }
-
 }

@@ -12,7 +12,7 @@ import { ConsultaStateService } from 'src/app/services/state/consulta-state.serv
 import { PacienteApiService } from 'src/app/services/api/paciente-api.service';
 import { ProfissionalApiService } from 'src/app/services/api/profissional-api.service';
 import { tokenService } from 'src/app/util/Token/Token.service';
-import { DialogService } from 'src/app/util/variados/dialogo-confirmação/dialog.service';
+import { DialogService } from 'src/app/util/variados/dialogo-confirmacao/dialog.service';
 import { TabelaDePacientesComponent } from '../../administrador/gerenciamento-agenda/nova-consuta/tabela-de-pacientes/tabela-de-pacientes.component';
 import { TabelasPesquisasMedicosComponent } from '../../administrador/gerenciamento-agenda/nova-consuta/tabelas-Pesquisas-Medicos/tabelas-Pesquisas-Medicos.component';
 import { CadastroPacienteComponent } from '../../administrador/cadastros/cadastro-paciente/cadastro-paciente.component';

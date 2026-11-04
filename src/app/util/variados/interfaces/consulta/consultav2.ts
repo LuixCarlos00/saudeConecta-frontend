@@ -34,8 +34,3 @@ export enum StatusConsulta {
   FALTOU = 'FALTOU',
   REMARCADA = 'REMARCADA'
 }
-export enum FormaPagamento {
-  PARTICULAR = 1,
-  CONVENIO = 2,
-  PIX = 3
-}

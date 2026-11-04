@@ -9,7 +9,7 @@ import { PageEvent } from '@angular/material/paginator';
 import { MatDialog } from '@angular/material/dialog';
 import Swal from 'sweetalert2';
 import { ObservacoesComponent } from 'src/app/features/administrador/gerenciamento-agenda/agenda/Observacoes/Observacoes.component';
-import { DialogService } from 'src/app/util/variados/dialogo-confirmação/dialog.service';
+import { DialogService } from 'src/app/util/variados/dialogo-confirmacao/dialog.service';
 import { Router } from '@angular/router';
 import { formatarDataLocal } from '../../../shared/utils/data-local';
 

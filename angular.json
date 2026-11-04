@@ -79,7 +79,6 @@
               "buildTarget": "saudeConecta:build:production"
             },
             "development": {
-              "proxyConfig": "src/proxy.conf.json",
               "buildTarget": "saudeConecta:build:development"
             }
           },

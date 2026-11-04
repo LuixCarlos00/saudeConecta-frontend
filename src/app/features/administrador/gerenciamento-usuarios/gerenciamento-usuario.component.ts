@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subject, asapScheduler, observeOn, takeUntil } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { FiltroStateService } from 'src/app/services/state/filtro-state.service';
-import { DialogService } from 'src/app/util/variados/dialogo-confirmação/dialog.service';
+import { DialogService } from 'src/app/util/variados/dialogo-confirmacao/dialog.service';
 import { CadastroMedicoComponent } from '../cadastros/cadastro-medico/cadastro-medico.component';
 import { CadastroPacienteComponent } from '../cadastros/cadastro-paciente/cadastro-paciente.component';
 import { CadastroSecretariaComponent } from '../cadastros/cadastro-secretaria/cadastro-secretaria.component';
