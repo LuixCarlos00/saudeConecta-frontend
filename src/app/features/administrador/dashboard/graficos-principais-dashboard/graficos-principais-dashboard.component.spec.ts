@@ -64,3 +64,61 @@ describe('GraficosPrincipaisDashboardComponent - fetchConsultasPersonalizadas', 
     expect(component.hasErrorConsultas).toBeTrue();
   });
 });
+
+describe('GraficosPrincipaisDashboardComponent - fetchAgendamentosPersonalizados', () => {
+  let component: GraficosPrincipaisDashboardComponent;
+  let buscar: jasmine.Spy;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      declarations: [GraficosPrincipaisDashboardComponent],
+      imports: IMPORTS_TESTE_PADRAO,
+      providers: PROVIDERS_TESTE_PADRAO,
+      schemas: SCHEMAS_TESTE_PADRAO
+    }).compileComponents();
+
+    component = TestBed.createComponent(GraficosPrincipaisDashboardComponent).componentInstance;
+    buscar = jasmine.createSpy('buscarPorIntervaloDeDatas');
+    (component as any).consultaApiService = { buscarPorIntervaloDeDatas: buscar };
+    spyOn(component, 'criarGraficoAgendamentos' as any);
+    spyOn(console, 'error');
+  });
+
+  function definirIntervalo(inicio: Date | null, fim: Date | null): void {
+    component.IntervaloDeDatasAgendamentos = new FormGroup({
+      start: new FormControl(inicio),
+      end: new FormControl(fim),
+    });
+  }
+
+  it('início > fim: avisa e NÃO chama o back', () => {
+    definirIntervalo(new Date(2026, 10, 10), new Date(2026, 10, 1));
+    component.fetchAgendamentosPersonalizados();
+    expect(buscar).not.toHaveBeenCalled();
+    expect(component.hasErrorAgendamentos).toBeTrue();
+    expect(component.errorMessageAgendamentos).toContain('data inicial');
+    expect(component.isLoadingAgendamentos).toBeFalse();
+  });
+
+  it('liga o loading durante a requisição e desliga ao concluir (sucesso)', () => {
+    const resposta$ = new Subject<any[]>();
+    buscar.and.returnValue(resposta$);
+    definirIntervalo(new Date(2026, 10, 1), new Date(2026, 10, 10));
+
+    component.fetchAgendamentosPersonalizados();
+    expect(component.isLoadingAgendamentos).toBeTrue();
+    expect(buscar).toHaveBeenCalledWith('2026-11-01', '2026-11-10');
+
+    resposta$.next([]);
+    resposta$.complete();
+    expect(component.isLoadingAgendamentos).toBeFalse();
+  });
+
+  it('desliga o loading em caso de erro', () => {
+    buscar.and.returnValue(throwError(() => ({ status: 500 })));
+    definirIntervalo(new Date(2026, 10, 1), new Date(2026, 10, 10));
+    component.fetchAgendamentosPersonalizados();
+    expect(component.isLoadingAgendamentos).toBeFalse();
+    expect(component.hasErrorAgendamentos).toBeTrue();
+  });
+});

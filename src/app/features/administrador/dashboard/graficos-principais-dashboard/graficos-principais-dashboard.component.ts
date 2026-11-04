@@ -658,6 +658,12 @@ export class GraficosPrincipaisDashboardComponent implements OnInit, OnChanges, 
 
     if (!dataInicio || !dataFim) return;
 
+    if (dataInicio > dataFim) {
+      this.hasErrorAgendamentos = true;
+      this.errorMessageAgendamentos = 'A data inicial não pode ser maior que a data final.';
+      return;
+    }
+
     this.isLoadingAgendamentos = true;
     this.hasErrorAgendamentos = false;
     this.diaSelecionadoAgendamentos = 0;
@@ -681,19 +687,20 @@ export class GraficosPrincipaisDashboardComponent implements OnInit, OnChanges, 
       );
 
     request$
-      .pipe(takeUntil(this.destroy$))
+      .pipe(
+        takeUntil(this.destroy$),
+        finalize(() => this.isLoadingAgendamentos = false)
+      )
       .subscribe({
         next: (dados) => {
           this.TodasAgendamentos = dados || [];
           this.apurandoDadosAgendamentos();
           this.criarGraficoAgendamentos();
-          this.isLoadingAgendamentos = false;
         },
         error: (error) => {
           console.error('Erro ao buscar agendamentos:', error);
           this.hasErrorAgendamentos = true;
           this.errorMessageAgendamentos = 'Erro ao carregar dados personalizados.';
-          this.isLoadingAgendamentos = false;
         }
       });
   }

@@ -8,7 +8,7 @@ import { PacienteApiService } from 'src/app/services/api/paciente-api.service';
 import { AdministradorApiService } from 'src/app/services/api/administrador-api.service';
 import { SecretariaApiService } from 'src/app/services/api/secretaria-api.service';
 import { FiltroStateService } from 'src/app/services/state/filtro-state.service';
-import { DialogService } from 'src/app/util/variados/dialogo-confirmação/dialog.service';
+import { DialogService } from 'src/app/util/variados/dialogo-confirmacao/dialog.service';
 import { TrocaSenhaUsuariosComponent } from './TrocaSenhaUsuarios/TrocaSenhaUsuarios.component';
 import { VisualizarEditarUsuarioComponent } from './VisualizarEditarUsuario/visualizar-editar-usuario.component';
 
@@ -469,6 +469,17 @@ export class TabelaTodosUsuariosComponent implements OnInit, OnDestroy {
         this.carregarUsuarios();
       }
     });
+  }
+
+  /**
+   * Indica se o usuário logado pode excluir o item da tabela.
+   * Administradores só podem ser excluídos por quem tem ROLE_ADMIN (o back responde 403 aos demais).
+   *
+   * @param usuario Usuário unificado da tabela
+   * @returns true se a exclusão for permitida ao logado
+   */
+  podeExcluir(usuario: UsuarioUnificado): boolean {
+    return usuario.categoria !== 'Administrador' || this.controleAcessoService.podeGerenciarAdministrador();
   }
 
   isAdministrador(usuario: UsuarioUnificado): boolean {

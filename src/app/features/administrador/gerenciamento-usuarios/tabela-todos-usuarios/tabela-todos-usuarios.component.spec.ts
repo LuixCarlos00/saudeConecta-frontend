@@ -29,4 +29,20 @@ describe('TabelaTodosUsuariosComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  describe('podeExcluir', () => {
+    const admin: any = { categoria: 'Administrador' };
+    const paciente: any = { categoria: 'Paciente' };
+
+    it('bloqueia exclusão de Administrador sem ROLE_ADMIN', () => {
+      spyOn(component.controleAcessoService, 'podeGerenciarAdministrador').and.returnValue(false);
+      expect(component.podeExcluir(admin)).toBeFalse();
+      expect(component.podeExcluir(paciente)).toBeTrue();
+    });
+
+    it('permite exclusão de Administrador com ROLE_ADMIN', () => {
+      spyOn(component.controleAcessoService, 'podeGerenciarAdministrador').and.returnValue(true);
+      expect(component.podeExcluir(admin)).toBeTrue();
+    });
+  });
 });

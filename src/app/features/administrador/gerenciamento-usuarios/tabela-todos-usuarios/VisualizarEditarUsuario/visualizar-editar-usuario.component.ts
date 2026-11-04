@@ -38,6 +38,8 @@ export class VisualizarEditarUsuarioComponent implements OnInit {
   dadosOriginais: any = {};
   tipoProfissionalSelecionado: string = 'MEDICO';
   isSuperAdmin = false;
+  /** false quando o logado não pode editar este registro (ex.: Administrador sem ROLE_ADMIN). */
+  podeEditar = true;
 
   constructor(
     public dialogRef: MatDialogRef<VisualizarEditarUsuarioComponent>,
@@ -52,6 +54,7 @@ export class VisualizarEditarUsuarioComponent implements OnInit {
   ) {
     this.categoria = data.usuario.categoria;
     this.isSuperAdmin = this.controleAcessoService.isSuperAdmin();
+    this.podeEditar = this.categoria !== 'Administrador' || this.controleAcessoService.podeGerenciarAdministrador();
   }
 
   ngOnInit(): void {

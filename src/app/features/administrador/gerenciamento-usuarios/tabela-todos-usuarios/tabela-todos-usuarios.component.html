@@ -115,7 +115,7 @@
               <span>{{ usuario.status ? 'Bloquear usuário' : 'Desbloquear usuário' }}</span>
             </button>
 
-            <button mat-menu-item class="menu-item-danger" *ngIf="!isProprioUsuario(usuario)" (click)="confirmarDelecao(usuario)">
+            <button mat-menu-item class="menu-item-danger" *ngIf="!isProprioUsuario(usuario) && podeExcluir(usuario)" (click)="confirmarDelecao(usuario)">
               <i class="fa-solid fa-trash menu-item-icon"></i>
               <span>Excluir usuário</span>
             </button>

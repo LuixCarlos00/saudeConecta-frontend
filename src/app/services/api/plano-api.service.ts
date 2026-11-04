@@ -40,15 +40,6 @@ export class PlanoApiService {
   }
 
   /**
-   * Cria um novo plano (SUPER_ADMIN).
-   * @param request dados do plano
-   * @returns Observable com o plano criado
-   */
-  criarPlano(request: PlanoAssinaturaRequest): Observable<PlanoAssinatura> {
-    return this.http.post<PlanoAssinatura>(this.apiUrl, request);
-  }
-
-  /**
    * Atualiza um plano existente (SUPER_ADMIN).
    * @param id ID do plano
    * @param request dados atualizados

@@ -65,6 +65,16 @@ export class ControleAcessoApiService {
     return this.possuiRole('ROLE_RECEPCIONISTA');
   }
 
+  /**
+   * Indica se o usuário logado pode editar/excluir um Administrador.
+   * O back exige ROLE_ADMIN (ROOT e GESTOR) nesses endpoints; ASSISTENTE/CLINICO recebem 403.
+   *
+   * @returns true para Super Admin ou ROLE_ADMIN
+   */
+  podeGerenciarAdministrador(): boolean {
+    return this.isSuperAdmin() || this.isAdmin();
+  }
+
   // ========== VERIFICAÇÕES DE PERMISSÃO POR MENU ==========
 
   // Menu Usuários: Super Admin, Admin
