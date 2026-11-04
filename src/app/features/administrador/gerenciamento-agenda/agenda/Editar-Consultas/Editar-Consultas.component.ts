@@ -7,6 +7,7 @@ import { PacienteApiService } from 'src/app/services/api/paciente-api.service';
 import { Paciente } from 'src/app/util/variados/interfaces/paciente/paciente';
 import { HoradaConsulta } from 'src/app/util/variados/options/options';
 import Swal from 'sweetalert2';
+import { FORMAS_PAGAMENTO, rotuloFormaPagamento } from 'src/app/shared/constants/forma-pagamento.constant';
 import { Profissional } from 'src/app/util/variados/interfaces/medico/Profissional';
 
 interface ConsultaEdit {
@@ -30,12 +31,15 @@ interface ConsultaEdit {
 }
 
 
+const DURACAO_PADRAO_MINUTOS = 30;
+
 @Component({
   selector: 'app-Editar-Consultas',
   templateUrl: './Editar-Consultas.component.html',
   styleUrls: ['./Editar-Consultas.component.css'],
 })
 export class EditarConsultasComponent implements OnInit {
+  readonly formasPagamento = FORMAS_PAGAMENTO;
 
   FormGroupConsulta!: FormGroup;
   Hora: any[] = [];
@@ -288,10 +292,11 @@ export class EditarConsultasComponent implements OnInit {
         .toPromise();
 
 
-      // Remove o horário da consulta sendo editada (para que ele apareça como disponível)
+      // O horário da consulta editada só é liberado na data original; em outra data ele não pertence a ela
+      const mesmaDataOriginal = data === this.formatarDataParaInput(new Date(this.consulta.dataHora));
       const horarioAtual = this.formatarHorario(new Date(this.consulta.dataHora));
       const ocupadosFiltrados = (horariosOcupados || []).filter(
-        horario => horario.substring(0, 5) !== horarioAtual
+        horario => !mesmaDataOriginal || horario.substring(0, 5) !== horarioAtual
       );
 
       const novoIntervalo = this.medicoSelecionado?.tempoConsultaMinutos;
@@ -357,11 +362,8 @@ export class EditarConsultasComponent implements OnInit {
       })
       .sort((a, b) => a - b);
 
-    // Deduz o intervalo antigo pela diferença entre horários consecutivos
-    let intervaloAntigo = novoIntervalo;
-    if (ocupadosMinutos.length >= 2) {
-      intervaloAntigo = ocupadosMinutos[1] - ocupadosMinutos[0];
-    }
+    // O back só devolve o início dos horários ocupados; a duração vem do tempo de consulta do profissional
+    const intervaloAntigo = novoIntervalo > 0 ? novoIntervalo : DURACAO_PADRAO_MINUTOS;
 
     // Monta grupos contíguos de horários ocupados
     const gruposOcupados: { inicio: number; fim: number }[] = [];
@@ -470,14 +472,21 @@ export class EditarConsultasComponent implements OnInit {
   }
 
   private obterTextoPagamento(id: number): string {
-    const formasPagamento: Record<number, string> = {
-      1: 'Dinheiro',
-      2: 'Convênio',
-      3: 'PIX'
-    };
-    return formasPagamento[id] || 'Não informado';
+    return rotuloFormaPagamento(id);
   }
 
+  /** Classes do ícone Font Awesome de cada forma de pagamento (id da tabela forma_pagamento). */
+  iconeFormaPagamento(id: number): string {
+    const icones: Record<number, string> = {
+      1: 'fa-solid fa-user',
+      2: 'fa-solid fa-hospital',
+      3: 'fa-solid fa-credit-card',
+      4: 'fa-solid fa-credit-card',
+      5: 'fa-brands fa-pix',
+      6: 'fa-solid fa-money-bill-wave',
+    };
+    return icones[id] ?? 'fa-solid fa-credit-card';
+  }
 
   private construirHtmlConfirmacao(formValues: any, formaPagamento: string): string {
     return `

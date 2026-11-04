@@ -4,6 +4,7 @@ import { By } from '@angular/platform-browser';
 import { DebugElement } from '@angular/core';
 
 import { TabelaEditarPacienteConsultasComponent } from './tabela-editar-Paciente-Consultas.component';
+import { IMPORTS_TESTE_PADRAO, PROVIDERS_TESTE_PADRAO, SCHEMAS_TESTE_PADRAO } from '../../../../../../testing/configuracao-teste';
 
 describe('TabelaEditarPacienteConsultasComponent', () => {
   let component: TabelaEditarPacienteConsultasComponent;
@@ -11,7 +12,10 @@ describe('TabelaEditarPacienteConsultasComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ TabelaEditarPacienteConsultasComponent ]
+      declarations: [TabelaEditarPacienteConsultasComponent],
+      imports: IMPORTS_TESTE_PADRAO,
+      providers: PROVIDERS_TESTE_PADRAO,
+      schemas: SCHEMAS_TESTE_PADRAO
     })
     .compileComponents();
   }));
@@ -19,6 +23,7 @@ describe('TabelaEditarPacienteConsultasComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(TabelaEditarPacienteConsultasComponent);
     component = fixture.componentInstance;
+    component.dadosPaciente = [];
     fixture.detectChanges();
   });
 

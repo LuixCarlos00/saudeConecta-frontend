@@ -173,35 +173,10 @@
       </div>
 
       <div class="payment-options">
-        <label class="payment-option">
-          <input formControlName="formaPagamento" type="radio" [value]="1">
-          <i class="fa-solid fa-money-bill-wave"></i>
-          <span>Dinheiro</span>
-        </label>
-        <label class="payment-option">
-          <input formControlName="formaPagamento" type="radio" [value]="2">
-          <i class="fa-solid fa-hospital"></i>
-          <span>Convênio</span>
-        </label>
-        <label class="payment-option">
-          <input formControlName="formaPagamento" type="radio" [value]="3">
-          <i class="fa-brands fa-pix"></i>
-          <span>PIX</span>
-        </label>
-        <label class="payment-option">
-          <input formControlName="formaPagamento" type="radio" [value]="4">
-          <i class="fa-solid fa-user"></i>
-          <span>Particular</span>
-        </label>
-        <label class="payment-option">
-          <input formControlName="formaPagamento" type="radio" [value]="5">
-          <i class="fa-solid fa-credit-card"></i>
-          <span>Crédito</span>
-        </label>
-        <label class="payment-option">
-          <input formControlName="formaPagamento" type="radio" [value]="6">
-          <i class="fa-solid fa-credit-card"></i>
-          <span>Débito</span>
+        <label class="payment-option" *ngFor="let forma of formasPagamento">
+          <input formControlName="formaPagamento" type="radio" [value]="forma.id">
+          <i [ngClass]="iconeFormaPagamento(forma.id)"></i>
+          <span>{{ forma.rotulo }}</span>
         </label>
       </div>
       <span class="error-message"

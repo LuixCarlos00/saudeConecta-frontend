@@ -16,6 +16,7 @@ import { TabelaDePacientesComponent } from '../../administrador/gerenciamento-ag
 import { TabelasPesquisasMedicosComponent } from '../../administrador/gerenciamento-agenda/nova-consuta/tabelas-Pesquisas-Medicos/tabelas-Pesquisas-Medicos.component';
 import { CadastroPacienteComponent } from '../../administrador/cadastros/cadastro-paciente/cadastro-paciente.component';
 import { Consultav2 } from 'src/app/util/variados/interfaces/consulta/consultav2';
+import { idFormaPagamentoPorRotulo } from 'src/app/shared/constants/forma-pagamento.constant';
 
 export interface AgendarConsultaData {
   /** Quando passado, o componente opera em modo edição */
@@ -409,6 +410,8 @@ export class AgendarConsultaComponent implements OnInit {
     const obs  = this.FormularioConsulta.get('observacao')?.value;
     const val  = this.FormularioConsulta.get('valor')?.value;
     const data = this.FormularioConsulta.get('date')?.value;
+    // NaN (campo vazio) mantém o valor original; 0 é um valor válido
+    const valorInformado = parseFloat(val);
 
     const payload: any = {
       id:               this.consultaOriginal.id,
@@ -419,7 +422,7 @@ export class AgendarConsultaComponent implements OnInit {
       duracaoMinutos:   this.Medico?.tempoConsultaMinutos || this.consultaOriginal.duracaoMinutos || null,
       observacoes:      obs,
       formaPagamentoId: fp || this.consultaOriginal.formaPagamentoId,
-      valor:            parseFloat(val) || this.consultaOriginal.valor
+      valor:            Number.isNaN(valorInformado) ? this.consultaOriginal.valor : valorInformado
     };
 
     this.consultaApi.atualizarConsultabyOrg(this.consultaOriginal.id, payload).subscribe(
@@ -446,12 +449,7 @@ export class AgendarConsultaComponent implements OnInit {
   }
 
   private _transformaFormaPagamento(): number {
-    const v = this.FormularioConsulta.get('Pagamento')?.value;
-    const map: Record<string, number> = {
-      'Particular': 1, 'Convênio': 2, 'Cartão de Crédito': 3,
-      'Cartão de Débito': 4, 'PIX': 5, 'Dinheiro': 6
-    };
-    return map[v] ?? 0;
+    return idFormaPagamentoPorRotulo(this.FormularioConsulta.get('Pagamento')?.value);
   }
 
   private _limpar(): void {

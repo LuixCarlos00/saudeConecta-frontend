@@ -3,3 +3,4 @@
  */
 export * from './roles.constant';
 export * from './api-endpoints.constant';
+export * from './forma-pagamento.constant';

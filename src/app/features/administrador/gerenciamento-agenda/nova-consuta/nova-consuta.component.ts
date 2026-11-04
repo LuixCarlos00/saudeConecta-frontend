@@ -18,7 +18,10 @@ import { async } from 'rxjs';
 import { DialogService } from 'src/app/util/variados/dialogo-confirmação/dialog.service';
 import { Profissional } from 'src/app/util/variados/interfaces/medico/Profissional';
 import { CadastroPacienteComponent } from '../../cadastros/cadastro-paciente/cadastro-paciente.component';
+import { idFormaPagamentoPorRotulo } from 'src/app/shared/constants/forma-pagamento.constant';
 const STATUS_AGENDADAS = ['AGENDADA'];
+
+const DURACAO_PADRAO_MINUTOS = 30;
 
 @Component({
   selector: 'app-nova-consulta',
@@ -280,11 +283,8 @@ export class NovaConsultaComponent implements OnInit {
       .map(h => this.convertToDateObject(h.substring(0, 5)))
       .sort((a, b) => a.getTime() - b.getTime());
 
-    // Deduz o intervalo antigo pela diferença entre horários consecutivos
-    let intervaloAntigo = novoIntervalo;
-    if (ocupados.length >= 2) {
-      intervaloAntigo = (ocupados[1].getTime() - ocupados[0].getTime()) / 60000;
-    }
+    // O back só devolve o início dos horários ocupados; a duração vem do tempo de consulta do profissional
+    const intervaloAntigo = novoIntervalo > 0 ? novoIntervalo : DURACAO_PADRAO_MINUTOS;
 
     // Monta blocos ocupados e mescla em grupos contíguos
     // Cada grupo contíguo representa uma sequência ininterrupta de consultas
@@ -478,33 +478,9 @@ export class NovaConsultaComponent implements OnInit {
 
 
 
-  transformaFormaPagamento() {
-    const pagamentoValue = this.FormularioConsulta.get('Pagamento')?.value;
-    let FornaPAgamento: number;
-
-    switch (pagamentoValue) {
-      case 'Particular':
-        return (FornaPAgamento = 1);
-        break;
-      case 'Convênio':
-        return (FornaPAgamento = 2);
-        break;
-      case 'Cartão de Crédito':
-        return (FornaPAgamento = 3);
-        break;
-      case 'Cartão de Débito':
-        return (FornaPAgamento = 4);
-        break;
-      case 'PIX':
-        return (FornaPAgamento = 5);
-      case 'Dinheiro':
-        return (FornaPAgamento = 6);
-      default:
-        return (FornaPAgamento = 0); // Valor padrão, caso nenhuma das opções seja selecionada
-    }
+  transformaFormaPagamento(): number {
+    return idFormaPagamentoPorRotulo(this.FormularioConsulta.get('Pagamento')?.value);
   }
-
-
 
   getPrimeiraEspecialidade(profissional: any): string {
     if (!profissional.especialidades || profissional.especialidades.length === 0) {
