@@ -29,4 +29,21 @@ describe('GerenciamentoUsuarioComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('recarregarDados pede recarga uma vez e o loading acompanha carregando$ (sem setTimeout)', async () => {
+    const filtro = (component as any).filtroStateService;
+    const recargas: boolean[] = [];
+    filtro.recarregar$.subscribe((v: boolean) => recargas.push(v));
+
+    component.recarregarDados();
+    expect(recargas).toEqual([true]);
+    expect(component.isLoading).toBeFalse();
+
+    filtro.setCarregando(true);
+    await new Promise((r) => setTimeout(r));
+    expect(component.isLoading).toBeTrue();
+    filtro.setCarregando(false);
+    await new Promise((r) => setTimeout(r));
+    expect(component.isLoading).toBeFalse();
+  });
 });

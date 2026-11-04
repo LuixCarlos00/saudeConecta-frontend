@@ -9,6 +9,7 @@ import { EspecialidadeApiService, EspecialidadeResponse } from 'src/app/services
 import { ConsultaStateService } from 'src/app/services/state/consulta-state.service';
 import { Profissional } from '../interfaces/medico/Profissional';
 import { ControleAcessoApiService } from 'src/app/services/api/controle-acesso-api.service';
+import { formatarDataLocal } from '../../../shared/utils/data-local';
 
 interface FiltrosPesquisa {
   medico: Profissional | null;
@@ -337,7 +338,7 @@ export class CronologiaComponent implements OnInit {
   }
 
   private formatarData(data: Date): string {
-    return data.toISOString().split('T')[0];
+    return formatarDataLocal(data);
   }
 
   fecharDialog(): void {

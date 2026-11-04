@@ -2,6 +2,7 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { jsPDF } from 'jspdf';
 import { Prontuario } from 'src/app/util/variados/interfaces/Prontuario/Prontuario';
+import { formatarDataLocal } from '../../../../shared/utils/data-local';
 
 @Component({
   selector: 'app-AtestadoMedico',
@@ -10,7 +11,7 @@ import { Prontuario } from 'src/app/util/variados/interfaces/Prontuario/Prontuar
 })
 export class AtestadoMedicoComponent implements OnInit {
   prontuario: Prontuario = {} as Prontuario;
-  dataAtual = new Date().toISOString().split('T')[0];
+  dataAtual = formatarDataLocal(new Date());
 
   // Dados do profissional
   nomeMedico: string = '';

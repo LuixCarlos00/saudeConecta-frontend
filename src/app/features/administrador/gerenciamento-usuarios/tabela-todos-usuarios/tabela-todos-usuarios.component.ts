@@ -1,6 +1,6 @@
 import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { Subject, takeUntil } from 'rxjs';
+import { Subject, finalize, takeUntil } from 'rxjs';
 import Swal from 'sweetalert2';
 
 import { UsuarioApiService } from 'src/app/services/api/usuario-api.service';
@@ -120,8 +120,12 @@ export class TabelaTodosUsuariosComponent implements OnInit, OnDestroy {
 
   carregarUsuarios(): void {
     this.isLoading = true;
+    this.filtroStateService.setCarregando(true);
     this.usuarioApiService.buscarTodosAgrupados()
-      .pipe(takeUntil(this.destroy$))
+      .pipe(
+        takeUntil(this.destroy$),
+        finalize(() => this.filtroStateService.setCarregando(false))
+      )
       .subscribe({
         next: (data: any) => {
           if (this.controleAcessoService.isSuperAdmin()) {

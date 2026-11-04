@@ -24,4 +24,44 @@ describe('LoginComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  describe('handleLoginError', () => {
+    let handler: any;
+    beforeEach(() => {
+      handler = (component as any).errorHandler;
+      spyOn(handler, 'showError');
+      spyOn(handler, 'showWarning');
+      spyOn(console, 'error');
+    });
+
+    it('401 mostra "Email ou senha inválidos"', () => {
+      (component as any).handleLoginError({ status: 401 });
+      expect(handler.showError).toHaveBeenCalledWith('Email ou senha inválidos');
+    });
+
+    it('403 com mensagem do back mostra aviso de acesso bloqueado', () => {
+      (component as any).handleLoginError({ status: 403, error: { message: 'Conta bloqueada' } });
+      expect(handler.showWarning).toHaveBeenCalledWith('Conta bloqueada', 'Acesso bloqueado');
+    });
+
+    it('403 sem mensagem mostra "Email ou senha inválidos"', () => {
+      (component as any).handleLoginError({ status: 403 });
+      expect(handler.showError).toHaveBeenCalledWith('Email ou senha inválidos');
+    });
+
+    it('status 0 mostra "Sem conexão com o servidor"', () => {
+      (component as any).handleLoginError({ status: 0 });
+      expect(handler.showError).toHaveBeenCalledWith('Sem conexão com o servidor');
+    });
+
+    it('5xx mostra "Erro no servidor, tente novamente"', () => {
+      (component as any).handleLoginError({ status: 503 });
+      expect(handler.showError).toHaveBeenCalledWith('Erro no servidor, tente novamente');
+    });
+
+    it('outro status (ex.: 400) mostra mensagem do back se houver', () => {
+      (component as any).handleLoginError({ status: 400, error: { message: 'Perfil inválido' } });
+      expect(handler.showError).toHaveBeenCalledWith('Perfil inválido');
+    });
+  });
 });

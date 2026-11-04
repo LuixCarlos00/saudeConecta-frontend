@@ -1,3 +1,4 @@
+import { filter, take } from 'rxjs';
 import { Consultav2 } from 'src/app/util/variados/interfaces/consulta/consultav2';
 import { ConsultaApiService } from 'src/app/services/api/consulta-api.service';
 import { ProntuarioStateService } from 'src/app/services/state/prontuario-state.service';
@@ -10,6 +11,7 @@ import Swal from 'sweetalert2';
 import { ObservacoesComponent } from 'src/app/features/administrador/gerenciamento-agenda/agenda/Observacoes/Observacoes.component';
 import { DialogService } from 'src/app/util/variados/dialogo-confirmação/dialog.service';
 import { Router } from '@angular/router';
+import { formatarDataLocal } from '../../../shared/utils/data-local';
 
 @Component({
   selector: 'app-tabela-agenda-medico',
@@ -44,7 +46,7 @@ export class TabelaAgendaMedicoComponent implements OnInit {
     private route: Router
   ) {
     this.tokenService.decodificaToken();
-    this.tokenService.UsuarioLogadoValue$.subscribe((Usuario) => {
+    this.tokenService.UsuarioLogadoValue$.pipe(filter(Boolean), take(1)).subscribe((Usuario) => {
       if (Usuario) {
         this.UsuarioLogado = Usuario;
       }
@@ -105,7 +107,7 @@ export class TabelaAgendaMedicoComponent implements OnInit {
     const isDateMatch = (d1: string, d2: string) => {
       const parse = (s: string) => { const d = new Date(s); return isNaN(d.getTime()) ? null : d; };
       const p1 = parse(d1); const p2 = parse(d2);
-      return p1 && p2 ? p1.toISOString().split('T')[0] === p2.toISOString().split('T')[0] : false;
+      return p1 && p2 ? formatarDataLocal(p1) === formatarDataLocal(p2) : false;
     };
 
     const isTimeMatch = (t1: string, t2: string) => {

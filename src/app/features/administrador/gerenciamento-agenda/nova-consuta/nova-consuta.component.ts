@@ -14,11 +14,12 @@ import { ConsultaStateService } from 'src/app/services/state/consulta-state.serv
 import { tokenService } from 'src/app/util/Token/Token.service';
 import { AuthApiService } from 'src/app/services/api/auth-api.service';
 import { Usuario } from 'src/app/util/variados/interfaces/usuario/usuario';
-import { async } from 'rxjs';
+import { async, take, filter } from 'rxjs';
 import { DialogService } from 'src/app/util/variados/dialogo-confirmação/dialog.service';
 import { Profissional } from 'src/app/util/variados/interfaces/medico/Profissional';
 import { CadastroPacienteComponent } from '../../cadastros/cadastro-paciente/cadastro-paciente.component';
 import { idFormaPagamentoPorRotulo } from 'src/app/shared/constants/forma-pagamento.constant';
+import { formatarDataLocal } from '../../../../shared/utils/data-local';
 const STATUS_AGENDADAS = ['AGENDADA'];
 
 const DURACAO_PADRAO_MINUTOS = 30;
@@ -121,7 +122,7 @@ export class NovaConsultaComponent implements OnInit {
     private tokenService: tokenService,
     private DialogService: DialogService
   ) {
-    this.tokenService.UsuarioLogadoValue$.subscribe((UsuarioLogado) => {
+    this.tokenService.UsuarioLogadoValue$.pipe(filter(Boolean), take(1)).subscribe((UsuarioLogado) => {
       if (UsuarioLogado) this.UsuarioLogado = UsuarioLogado;
     });
   }
@@ -391,7 +392,7 @@ export class NovaConsultaComponent implements OnInit {
     const input_HORA = this.FormularioConsulta.get('Hora')?.value;
     const input_OBSERVACAO = this.FormularioConsulta.get('observacao')?.value;
     const input_VALOR = this.FormularioConsulta.get('valor')?.value; // NOVO
-    const dataAtual = new Date().toISOString().split('T')[0];
+    const dataAtual = formatarDataLocal(new Date());
 
 
 
@@ -459,9 +460,12 @@ export class NovaConsultaComponent implements OnInit {
           }
         );
       } catch (error) {
-        console.error('Erro ao verificar consultas:', error);
-        this.DialogService.JaexisteDadosCAdastradosComEssesParamentros();
-        this.FormularioConsulta.reset();
+        console.error('Erro ao verificar disponibilidade:', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Erro',
+          text: 'Não foi possível verificar a disponibilidade do horário. Tente novamente.',
+        });
       }
     } else {
       Swal.fire({

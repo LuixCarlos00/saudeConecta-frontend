@@ -23,6 +23,7 @@ import {
   numeroEnderecoValidator,
   antiInjectionValidator,
 } from 'src/app/util/validators/form-validators';
+import { extrairMensagemErro } from '../../../../shared/utils/mensagem-erro-http';
 
 @Component({
   selector: 'app-cadastro-paciente',
@@ -303,16 +304,20 @@ export class CadastroPacienteComponent implements OnInit, OnDestroy {
   private handleHttpError(error: any) {
     let errorMessage = 'Erro desconhecido ao realizar o cadastro.';
 
-    if (error.error) {
-      if (error.error.includes && error.error.includes('Duplicate entry') && error.error.includes('paciente.PaciEmail_UNIQUE')) {
-        errorMessage = 'Já existe um paciente registrado com esse email.';
-      } else if (error.error.includes && error.error.includes('Duplicate entry') && error.error.includes('paciente.PaciCpf_UNIQUE')) {
-        errorMessage = 'Já existe um paciente registrado com esse CPF.';
-      } else if (error.error.includes && error.error.includes('Duplicate entry') && error.error.includes('paciente.PaciRg_UNIQUE')) {
-        errorMessage = 'Já existe um paciente registrado com esse RG.';
-      } else {
-        errorMessage = typeof error.error === 'string' ? error.error : 'Erro ao processar cadastro.';
-      }
+    const mensagemBack = extrairMensagemErro(error);
+
+    if (mensagemBack?.includes('Duplicate entry') && mensagemBack.includes('paciente.PaciEmail_UNIQUE')) {
+      errorMessage = 'Já existe um paciente registrado com esse email.';
+    } else if (mensagemBack?.includes('Duplicate entry') && mensagemBack.includes('paciente.PaciCpf_UNIQUE')) {
+      errorMessage = 'Já existe um paciente registrado com esse CPF.';
+    } else if (mensagemBack?.includes('Duplicate entry') && mensagemBack.includes('paciente.PaciRg_UNIQUE')) {
+      errorMessage = 'Já existe um paciente registrado com esse RG.';
+    } else if (mensagemBack) {
+      errorMessage = mensagemBack;
+    } else if (error.status === 0) {
+      errorMessage = 'Sem conexão com o servidor.';
+    } else if (error.status >= 500) {
+      errorMessage = 'Erro no servidor, tente novamente.';
     }
 
     Swal.fire({

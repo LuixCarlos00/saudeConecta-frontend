@@ -16,6 +16,7 @@ import { ProntuarioDentistaApiService } from 'src/app/services/api/prontuario-de
 import { ProntuarioApiService } from 'src/app/services/api/prontuario-api.service';
 import { PlanejamentoTerapeuticoApiService } from 'src/app/services/api/planejamento-terapeutico-api.service';
 import { ConfiguracoesConsultaApiService, ConfiguracoesConsulta } from 'src/app/services/api/configuracoes-consulta-api.service';
+import { formatarDataLocal } from '../../../shared/utils/data-local';
 
 export type TipoVisualizacao = 'mes' | 'semana' | 'dia';
 
@@ -392,10 +393,7 @@ export class AgendaCalendarioComponent implements OnInit, OnDestroy {
    * @returns Data no formato YYYY-MM-DD
    */
   private formatarDataParaApi(data: Date): string {
-    const ano = data.getFullYear();
-    const mes = (data.getMonth() + 1).toString().padStart(2, '0');
-    const dia = data.getDate().toString().padStart(2, '0');
-    return `${ano}-${mes}-${dia}`;
+    return formatarDataLocal(data);
   }
 
   // ========== NAVEGAÇÃO ==========

@@ -13,6 +13,7 @@ import { AbaIdentificacaoMedicoComponent } from '../aba-identificacao-medico/aba
 import { AbaExameObjetivoMedicoComponent } from '../aba-exame-objetivo-medico/aba-exame-objetivo-medico.component';
 import { AbaCodigosTussCidMedicoComponent } from '../aba-codigos-tuss-cid-medico/aba-codigos-tuss-cid-medico.component';
 import { AbaPlanejamentoMedicoComponent } from '../aba-planejamento-medico/aba-planejamento-medico.component';
+import { formatarDataLocal } from '../../../../shared/utils/data-local';
 
 @Component({
   selector: 'app-editar-prontuario-medico',
@@ -147,7 +148,7 @@ export class EditarProntuarioMedicoComponent implements OnInit, OnDestroy, After
      planejamentos: planejamentosComPaciente,
      codigoMedico: this.consulta.profissionalId,
      consulta: this.consulta.id,
-     dataFinalizado: new Date().toISOString().split('T')[0],
+     dataFinalizado: formatarDataLocal(new Date()),
    };
 
    this.prontuarioApi.atualizarProntuarioMedico(this.prontuarioId!, payload)

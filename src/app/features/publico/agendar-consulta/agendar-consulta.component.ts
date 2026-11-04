@@ -1,3 +1,4 @@
+import { filter, take } from 'rxjs';
 import { Component, OnInit, Inject, Optional, ElementRef, ViewChild } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { MatDialog, MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
@@ -79,7 +80,7 @@ export class AgendarConsultaComponent implements OnInit {
     private dialogService: DialogService,
     @Optional() @Inject(MAT_DIALOG_DATA) public data: AgendarConsultaData
   ) {
-    this.tokenService.UsuarioLogadoValue$.subscribe(u => {
+    this.tokenService.UsuarioLogadoValue$.pipe(filter(Boolean), take(1)).subscribe(u => {
       if (u) this.UsuarioLogado = u;
     });
   }
@@ -396,9 +397,9 @@ export class AgendarConsultaComponent implements OnInit {
         },
         () => Swal.fire({ icon: 'error', title: 'Erro', text: 'Não foi possível agendar a consulta.' })
       );
-    } catch {
-      this.dialogService.JaexisteDadosCAdastradosComEssesParamentros();
-      this.FormularioConsulta.reset();
+    } catch (error) {
+      console.error('Erro ao verificar disponibilidade:', error);
+      Swal.fire({ icon: 'error', title: 'Erro', text: 'Não foi possível verificar a disponibilidade do horário. Tente novamente.' });
     }
   }
 

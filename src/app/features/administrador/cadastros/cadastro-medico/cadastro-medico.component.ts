@@ -29,6 +29,7 @@ import {
   formacaoValidator,
   antiInjectionValidator,
 } from 'src/app/util/validators/form-validators';
+import { extrairMensagemErro } from '../../../../shared/utils/mensagem-erro-http';
 
 
 @Component({
@@ -309,22 +310,22 @@ export class CadastroMedicoComponent implements OnInit, OnDestroy {
     let titulo = 'Erro';
     let icone: 'error' | 'warning' = 'error';
 
+    const mensagemBack = extrairMensagemErro(error);
+
     if (error.status === 422 && error.error?.message) {
       icone = 'warning';
       titulo = 'Limite do plano atingido';
       errorMessage = error.error.message;
-    } else if (error.status === 409 && error.error?.includes && error.error.includes('CPF já cadastrado no sistema')) {
-      errorMessage = 'CPF já cadastrado no sistema. Por favor, verifique os dados.';
-    } else if (error.status === 409 && error.error?.includes && error.error.includes('Email já cadastrado no sistema como')) {
-      if (error.error.includes('Email já cadastrado no sistema')) {
-        errorMessage = 'Email já cadastrado no sistema. Por favor, utilize outro email.';
-      } else if (error.error.includes('Duplicate entry') && error.error.includes('medico.MedEmail_UNIQUE')) {
-        errorMessage = 'Já existe um Médico registrado com esse email.';
-      } else if (error.error.includes('Duplicate entry') && error.error.includes('medico.MedCrm_UNIQUE')) {
-        errorMessage = 'Já existe um Médico registrado com esse CRM.';
-      } else {
-        errorMessage = typeof error.error === 'string' ? error.error : 'Erro ao processar cadastro.';
-      }
+    } else if (mensagemBack?.includes('Duplicate entry') && mensagemBack.includes('medico.MedEmail_UNIQUE')) {
+      errorMessage = 'Já existe um Médico registrado com esse email.';
+    } else if (mensagemBack?.includes('Duplicate entry') && mensagemBack.includes('medico.MedCrm_UNIQUE')) {
+      errorMessage = 'Já existe um Médico registrado com esse CRM.';
+    } else if (mensagemBack) {
+      errorMessage = mensagemBack;
+    } else if (error.status === 0) {
+      errorMessage = 'Sem conexão com o servidor.';
+    } else if (error.status >= 500) {
+      errorMessage = 'Erro no servidor, tente novamente.';
     }
 
     Swal.fire({

@@ -7,6 +7,7 @@ import { PlanejamentoTerapeuticoApiService } from 'src/app/services/api/planejam
 import { ErrorHandlerService } from 'src/app/core/services/error-handler.service';
 import { ProntuarioApiService } from 'src/app/services/api/prontuario-api.service';
 import { Prontuario, PlanejamentoTerapeutico } from 'src/app/util/variados/interfaces/Prontuario/Prontuario';
+import { formatarDataLocal } from '../../../../shared/utils/data-local';
 
 @Component({
   selector: 'app-aba-planejamento-medico',
@@ -135,7 +136,7 @@ export class AbaPlanejamentoMedicoComponent implements OnChanges, OnDestroy {
       prontuarioId: null as any,
       consultaId: this.consultaId,
       pacienteId: this.pacienteId,
-      dataProcedimento: this.novoPlanejamento.dataProcedimento || new Date().toISOString().split('T')[0],
+      dataProcedimento: this.novoPlanejamento.dataProcedimento || formatarDataLocal(new Date()),
       procedimentoRealizado: this.novoPlanejamento.procedimentoRealizado,
       valor: this.novoPlanejamento.valor
     };
@@ -201,7 +202,7 @@ export class AbaPlanejamentoMedicoComponent implements OnChanges, OnDestroy {
    * Retorna os dados da aba para composição do payload de finalização.
    */
   getDados(): any {
-    const today = new Date().toISOString().split('T')[0];
+    const today = formatarDataLocal(new Date());
     return {
       planejamentos: this.planejamentos
         .map(p => ({

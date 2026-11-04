@@ -15,6 +15,7 @@ import { ProntuarioDentistaApiService } from 'src/app/services/api/prontuario-de
 import { ProntuarioApiService } from 'src/app/services/api/prontuario-api.service';
 import { PlanejamentoTerapeuticoApiService } from 'src/app/services/api/planejamento-terapeutico-api.service';
 import { RelatorioService } from 'src/app/features/relatorio/relatorio.service';
+import { formatarDataLocal } from '../../../../shared/utils/data-local';
     
 type TipoVisualizacao = 'AGENDADA' | 'REALIZADA';
 type TipoPeriodo = 'diario' | 'semanal' | 'mensal' | 'anual';
@@ -78,13 +79,13 @@ export class AgendaComponent implements OnInit, OnDestroy {
     this.buscarDadosParaTabela();
     this.FormularioAgenda = this.formBuilder.group({ busca: [''] });
 
-    this.consultaState.dadosCronologia$.subscribe((dados) => {
+    this.consultaState.dadosCronologia$.pipe(takeUntil(this.destroy$)).subscribe((dados) => {
       if (!this.emModoBuscaLocal && dados && (Array.isArray(dados) || 'alteracao' in dados)) {
         this.processarDadosCronologia(dados);
       }
     });
 
-    this.consultaState.cadastroRealizado$.subscribe((dados) => {
+    this.consultaState.cadastroRealizado$.pipe(takeUntil(this.destroy$)).subscribe((dados) => {
       if (dados) { this.Recarregar(); }
     });
   }
@@ -143,10 +144,7 @@ export class AgendaComponent implements OnInit, OnDestroy {
    * @returns Data no formato YYYY-MM-DD
    */
   private formatarDataParaApi(data: Date): string {
-    const ano = data.getFullYear();
-    const mes = (data.getMonth() + 1).toString().padStart(2, '0');
-    const dia = data.getDate().toString().padStart(2, '0');
-    return `${ano}-${mes}-${dia}`;
+    return formatarDataLocal(data);
   }
 
   private async buscarConsultasPorPeriodo(): Promise<any[] | undefined> {

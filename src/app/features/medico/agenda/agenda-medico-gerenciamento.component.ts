@@ -15,6 +15,7 @@ import { Consultav2 } from 'src/app/util/variados/interfaces/consulta/consultav2
 import { EditarProntuarioMedicoComponent } from '../prontuario-medico/editar-prontuario-medico/editar-prontuario-medico.component';
 import { Subject, takeUntil } from 'rxjs';
 import { RelatorioService } from 'src/app/features/relatorio/relatorio.service';
+import { formatarDataLocal } from '../../../shared/utils/data-local';
  
 type TipoVisualizacao = 'CONFIRMADA' | 'REALIZADA' | 'PAGO';
 type TipoPeriodo = 'diario' | 'semanal' | 'mensal' | 'anual';
@@ -274,7 +275,7 @@ export class AgendaMedicoGerenciamentoComponent implements OnInit, OnDestroy {
         const isDateMatch = (d1: string, d2: string) => {
           const parse = (s: string) => { const d = new Date(s); return isNaN(d.getTime()) ? null : d; };
           const p1 = parse(d1); const p2 = parse(d2);
-          return p1 && p2 ? p1.toISOString().split('T')[0] === p2.toISOString().split('T')[0] : false;
+          return p1 && p2 ? formatarDataLocal(p1) === formatarDataLocal(p2) : false;
         };
 
         const isTimeMatch = (t1: string, t2: string) => {

@@ -16,6 +16,7 @@ import { AbaCodigosTussCidMedicoComponent } from './aba-codigos-tuss-cid-medico/
 import { AbaHistoricoMedicoComponent } from './aba-historico-medico/aba-historico-medico.component';
 import { AbaPlanejamentoMedicoComponent } from './aba-planejamento-medico/aba-planejamento-medico.component';
 import { AbaQuestionarioSaudeComponent } from './aba-questionario-saude/aba-questionario-saude.component';
+import { formatarDataLocal } from '../../../shared/utils/data-local';
 
 @Component({
   selector: 'app-prontuario-medico',
@@ -118,7 +119,7 @@ export class ProntuarioMedicoComponent implements OnInit, OnDestroy, AfterViewIn
   }
 
   private concluido(): void {
-    const today = new Date().toISOString().split('T')[0];
+    const today = formatarDataLocal(new Date());
 
     const dadosIdentificacao = this.abaIdentificacao?.getDados() || {};
     const dadosExame = this.abaExameObjetivo?.getDados() || {};

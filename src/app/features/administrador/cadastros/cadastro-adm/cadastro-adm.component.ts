@@ -9,6 +9,7 @@ import { FiltroStateService } from 'src/app/services/state/filtro-state.service'
 import { cpfValidator } from 'src/app/util/validators/cpf-form.validator';
 import { CpfValidator } from 'src/app/util/validators/cpf.validator';
 import { getFieldError } from 'src/app/util/validators/field-errors';
+import { extrairMensagemErro } from '../../../../shared/utils/mensagem-erro-http';
 
 @Component({
   selector: 'app-cadastro-adm',
@@ -162,20 +163,22 @@ export class CadastroAdmComponent implements OnInit, OnDestroy {
     let titulo = 'Erro';
     let icone: 'error' | 'warning' = 'error';
 
+    const mensagemBack = extrairMensagemErro(error);
+
     if (error.status === 422 && error.error?.message) {
       icone = 'warning';
       titulo = 'Limite do plano atingido';
       errorMessage = error.error.message;
+    } else if (mensagemBack?.includes('Duplicate entry') && mensagemBack.includes('administrador.AdmEmail_UNIQUE')) {
+      errorMessage = 'Já existe um(a) administrador(a) registrado com esse email.';
+    } else if (mensagemBack) {
+      errorMessage = mensagemBack;
     } else if (error.status === 409) {
-      errorMessage = 'CPF já cadastrado no sistema. Por favor, verifique os dados.';
-    } else if (error.error) {
-      if (error.error.includes && error.error.includes('Email já cadastrado no sistema')) {
-        errorMessage = 'Email já cadastrado no sistema. Por favor, utilize outro email.';
-      } else if (error.error.includes && error.error.includes('Duplicate entry') && error.error.includes('administrador.AdmEmail_UNIQUE')) {
-        errorMessage = 'Já existe um(a) administrador(a) registrado com esse email.';
-      } else {
-        errorMessage = typeof error.error === 'string' ? error.error : 'Erro ao processar cadastro.';
-      }
+      errorMessage = 'Já existe um cadastro com esses dados. Por favor, verifique as informações.';
+    } else if (error.status === 0) {
+      errorMessage = 'Sem conexão com o servidor.';
+    } else if (error.status >= 500) {
+      errorMessage = 'Erro no servidor, tente novamente.';
     }
 
     Swal.fire({

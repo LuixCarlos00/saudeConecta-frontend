@@ -1,4 +1,5 @@
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
+import { parseDataLocal } from '../../shared/utils/data-local';
 
 // ─── Regex Padrões ────────────────────────────────────────────────────────────
 
@@ -155,8 +156,8 @@ export function dataNascimentoValidator(idadeMin = 18, idadeMax = 100): Validato
     const valor = control.value;
     if (!valor) return null;
 
-    const data = new Date(valor);
-    if (isNaN(data.getTime())) return { dataInvalida: true };
+    const data = converterParaDataLocal(valor);
+    if (!data || isNaN(data.getTime())) return { dataInvalida: true };
 
     const hoje = new Date();
     hoje.setHours(0, 0, 0, 0);
@@ -370,6 +371,16 @@ export function cnpjValidator(): ValidatorFn {
 }
 
 /**
+ * Converte o valor do controle em Date local. Strings 'yyyy-MM-dd' são lidas no
+ * fuso local (new Date('yyyy-MM-dd') seria UTC e recuaria um dia no Brasil).
+ */
+function converterParaDataLocal(valor: unknown): Date | null {
+  if (valor instanceof Date) return valor;
+  if (typeof valor === 'string') return parseDataLocal(valor) ?? new Date(valor);
+  return new Date(valor as any);
+}
+
+/**
  * Valida data de nascimento para paciente:
  * - Não pode ser no futuro
  * - Idade entre 0 e 120 anos
@@ -379,8 +390,8 @@ export function dataNascimentoPacienteValidator(): ValidatorFn {
     const valor = control.value;
     if (!valor) return null;
 
-    const data = new Date(valor);
-    if (isNaN(data.getTime())) return { dataInvalida: true };
+    const data = converterParaDataLocal(valor);
+    if (!data || isNaN(data.getTime())) return { dataInvalida: true };
 
     const hoje = new Date();
     hoje.setHours(0, 0, 0, 0);

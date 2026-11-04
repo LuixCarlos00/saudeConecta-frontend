@@ -5,6 +5,7 @@ import { Subject, takeUntil } from 'rxjs';
 import { ProcedimentoPadraoApiService } from 'src/app/services/api/procedimento-padrao-api.service';
 import { PlanejamentoTerapeuticoApiService } from 'src/app/services/api/planejamento-terapeutico-api.service';
 import { ErrorHandlerService } from 'src/app/core/services/error-handler.service';
+import { formatarDataLocal } from '../../../../shared/utils/data-local';
 
 @Component({
   selector: 'app-aba-planejamento',
@@ -106,7 +107,7 @@ export class AbaPlanejamentoComponent implements OnChanges, OnDestroy {
       prontuarioDentistaId: null as any,
       consultaId: this.consultaId,
       pacienteId: this.pacienteId,
-      dataProcedimento: this.novoPlanejamento.dataProcedimento || new Date().toISOString().split('T')[0],
+      dataProcedimento: this.novoPlanejamento.dataProcedimento || formatarDataLocal(new Date()),
       procedimentoRealizado: this.novoPlanejamento.procedimentoRealizado,
       valor: this.novoPlanejamento.valor
     };
@@ -173,7 +174,7 @@ export class AbaPlanejamentoComponent implements OnChanges, OnDestroy {
    * Retorna os dados da aba para composição do payload de finalização.
    */
   getDados(): any {
-    const today = new Date().toISOString().split('T')[0];
+    const today = formatarDataLocal(new Date());
     return {
       planejamentos: this.planejamentos
         .filter(p => p._local)

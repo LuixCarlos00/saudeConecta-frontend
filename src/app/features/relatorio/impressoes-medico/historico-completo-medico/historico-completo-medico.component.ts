@@ -1,3 +1,4 @@
+import { filter, take } from 'rxjs';
 import { ConsultaApiService } from 'src/app/services/api/consulta-api.service';
 import { tokenService } from 'src/app/util/Token/Token.service';
 import { Component, Inject, OnInit } from '@angular/core';
@@ -6,6 +7,7 @@ import { jsPDF } from 'jspdf';
 import { Usuario } from 'src/app/util/variados/interfaces/usuario/usuario';
 import { Consultav2 } from 'src/app/util/variados/interfaces/consulta/consultav2';
 import { HistoricoCompletoResponse } from 'src/app/util/variados/interfaces/historico/historico-completo-response.interface';
+import { formatarDataLocal } from '../../../../shared/utils/data-local';
 
 @Component({
   selector: 'app-historico-completo-medico',
@@ -33,7 +35,7 @@ export class HistoricoCompletoMedicoComponent implements OnInit {
 
   ngOnInit() {
     this.tokenService.decodificaToken();
-    this.tokenService.UsuarioLogadoValue$.subscribe((dados) => {
+    this.tokenService.UsuarioLogadoValue$.pipe(filter(Boolean), take(1)).subscribe((dados) => {
       if (dados) {
         this.UsuarioLogado = dados;
       }
@@ -193,8 +195,8 @@ export class HistoricoCompletoMedicoComponent implements OnInit {
     this.pdfRodape(doc, pw, ph);
 
     const nome = this.pacienteInfo
-      ? `Historico_Medico_${this.pacienteInfo.nome.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`
-      : `Historico_Medico_${new Date().toISOString().split('T')[0]}.pdf`;
+      ? `Historico_Medico_${this.pacienteInfo.nome.replace(/\s+/g, '_')}_${formatarDataLocal(new Date())}.pdf`
+      : `Historico_Medico_${formatarDataLocal(new Date())}.pdf`;
     doc.save(nome);
   }
 

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 export enum FiltroCategoria {
@@ -19,7 +19,9 @@ export class FiltroStateService {
 
   private categoriaSubject = new BehaviorSubject<FiltroCategoria>(FiltroCategoria.TODOS);
   private searchTextSubject = new BehaviorSubject<string>('');
-  private recarregarSubject = new BehaviorSubject<boolean>(false);
+  // Subject (sem replay): recarga é um evento; um BehaviorSubject reemitia `true` antigo e causava carga dupla.
+  private recarregarSubject = new Subject<boolean>();
+  private carregandoSubject = new BehaviorSubject<boolean>(false);
   private statusFiltroSubject = new BehaviorSubject<string>('');
 
   readonly categoria$: Observable<FiltroCategoria> = this.categoriaSubject.asObservable().pipe(
@@ -32,6 +34,8 @@ export class FiltroStateService {
   );
 
   readonly recarregar$: Observable<boolean> = this.recarregarSubject.asObservable();
+  /** Indica se a tabela de usuários está carregando (alimentado pela própria tabela). */
+  readonly carregando$: Observable<boolean> = this.carregandoSubject.asObservable();
   readonly statusFiltro$: Observable<string> = this.statusFiltroSubject.asObservable();
 
   setCategoria(categoria: FiltroCategoria): void {
@@ -44,6 +48,10 @@ export class FiltroStateService {
 
   setRecarregar(valor: boolean): void {
     this.recarregarSubject.next(valor);
+  }
+
+  setCarregando(valor: boolean): void {
+    this.carregandoSubject.next(valor);
   }
 
   setStatusFiltro(status: string): void {

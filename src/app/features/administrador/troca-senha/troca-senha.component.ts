@@ -13,7 +13,7 @@ import { el } from 'date-fns/locale';
 import { tokenService } from "src/app/util/Token/Token.service";
 import { Adiministrador } from 'src/app/util/variados/interfaces/administrado/adiministrador';
 import Swal from 'sweetalert2';
-import { map, take } from 'rxjs';
+import { map, take, filter } from 'rxjs';
 import { Usuario } from 'src/app/util/variados/interfaces/usuario/usuario';
 import { UsuarioApiService } from 'src/app/services/api/usuario-api.service';
 
@@ -39,7 +39,7 @@ export class TrocaSenhaComponent implements OnInit {
     private tokenService: tokenService
   ) {
     this.tokenService.decodificaToken();
-    this.tokenService.UsuarioLogadoValue$.subscribe((paciente) => {
+    this.tokenService.UsuarioLogadoValue$.pipe(filter(Boolean), take(1)).subscribe((paciente) => {
       if (paciente) {
 
         this.UsuarioLogado = paciente;

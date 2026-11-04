@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Subject, asapScheduler, observeOn, takeUntil } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { FiltroStateService } from 'src/app/services/state/filtro-state.service';
 import { DialogService } from 'src/app/util/variados/dialogo-confirmação/dialog.service';
@@ -18,7 +19,8 @@ import Swal from 'sweetalert2';
   templateUrl: './gerenciamento-usuario.component.html',
   styleUrls: ['./gerenciamento-usuario.component.css'],
 })
-export class GerenciamentoUsuarioComponent implements OnInit {
+export class GerenciamentoUsuarioComponent implements OnInit, OnDestroy {
+  private destroy$ = new Subject<void>();
   radioValue: number = 0;
   searchText: string = '';
   isLoading: boolean = false;
@@ -36,6 +38,15 @@ export class GerenciamentoUsuarioComponent implements OnInit {
     const role = this.tokenSvc.obterAutorizacao();
     this.isSuperAdmin = isSuperAdmin(role);
     this.carregarLimites();
+    // asapScheduler: a tabela filha liga o loading durante o ciclo de detecção do pai (evita NG0100).
+    this.filtroStateService.carregando$
+      .pipe(observeOn(asapScheduler), takeUntil(this.destroy$))
+      .subscribe((carregando) => this.isLoading = carregando);
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   carregarLimites(): void {
@@ -54,15 +65,9 @@ export class GerenciamentoUsuarioComponent implements OnInit {
     return limite === null ? 'Ilimitado' : `${limite}`;
   }
 
+  /** Pede a recarga da tabela; o loading vem de `carregando$`, ligado à requisição real. */
   recarregarDados() {
-    this.isLoading = true;
     this.filtroStateService.setRecarregar(true);
-
-    // Reset do loading após um pequeno delay
-    setTimeout(() => {
-      this.isLoading = false;
-      this.filtroStateService.setRecarregar(false);
-    }, 1000);
   }
 
   PesquisaDados() {

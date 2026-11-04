@@ -17,6 +17,7 @@ import { AbaPlanejamentoComponent } from './aba-planejamento/aba-planejamento.co
 import { AbaCodigosTussCidComponent } from './aba-codigos-tuss-cid/aba-codigos-tuss-cid.component';
 import { AbaQuestionarioSaudeComponent } from './aba-questionario-saude/aba-questionario-saude.component';
 import { AbaHistoricoComponent } from './aba-historico/aba-historico.component';
+import { formatarDataLocal } from '../../../shared/utils/data-local';
 
 @Component({
   selector: 'app-prontuario-dentista',
@@ -119,7 +120,7 @@ export class ProntuarioDentistaComponent implements OnInit, OnDestroy, AfterView
   }
 
   private concluido(): void {
-    const today = new Date().toISOString().split('T')[0];
+    const today = formatarDataLocal(new Date());
 
     const dadosIdentificacao = this.abaIdentificacao?.getDados() || {};
     const dadosExame = this.abaExameObjetivo?.getDados() || {};

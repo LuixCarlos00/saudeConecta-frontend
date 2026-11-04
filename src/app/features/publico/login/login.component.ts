@@ -139,8 +139,14 @@ export class LoginComponent implements OnInit, OnDestroy {
 
     if (error.status === 403 && error.error?.message) {
       this.errorHandler.showWarning(error.error.message, 'Acesso bloqueado');
-    } else {
+    } else if (error.status === 401 || error.status === 403) {
       this.errorHandler.showError('Email ou senha inválidos');
+    } else if (error.status === 0) {
+      this.errorHandler.showError('Sem conexão com o servidor');
+    } else if (error.status >= 500) {
+      this.errorHandler.showError('Erro no servidor, tente novamente');
+    } else {
+      this.errorHandler.showError(error.error?.message || 'Não foi possível realizar o login');
     }
   }
 
