@@ -9,6 +9,7 @@ import { HoradaConsulta } from 'src/app/util/variados/options/options';
 import Swal from 'sweetalert2';
 import { FORMAS_PAGAMENTO, rotuloFormaPagamento } from 'src/app/shared/constants/forma-pagamento.constant';
 import { Profissional } from 'src/app/util/variados/interfaces/medico/Profissional';
+import { escaparHtml } from 'src/app/shared/utils/escapar-html';
 
 interface ConsultaEdit {
   id: number;
@@ -496,11 +497,11 @@ export class EditarConsultasComponent implements OnInit {
         <div style="display: grid; gap: 8px;">
           <div style="display: flex; gap: 8px;">
             <span style="color: #6b7280; min-width: 80px;">Médico:</span>
-            <strong style="color: #1f2937;">${this.consulta.profissionalNome}</strong>
+            <strong style="color: #1f2937;">${escaparHtml(this.consulta.profissionalNome)}</strong>
           </div>
           <div style="display: flex; gap: 8px;">
             <span style="color: #6b7280; min-width: 80px;">Paciente:</span>
-            <strong style="color: #1f2937;">${this.consulta.pacienteNome}</strong>
+            <strong style="color: #1f2937;">${escaparHtml(this.consulta.pacienteNome)}</strong>
           </div>
           <div style="display: flex; gap: 8px;">
             <span style="color: #6b7280; min-width: 80px;">Data:</span>
@@ -508,7 +509,7 @@ export class EditarConsultasComponent implements OnInit {
           </div>
           <div style="display: flex; gap: 8px;">
             <span style="color: #6b7280; min-width: 80px;">Horário:</span>
-            <strong style="color: #1f2937;">${formValues.horario}</strong>
+            <strong style="color: #1f2937;">${escaparHtml(formValues.horario)}</strong>
           </div>
           <div style="display: flex; gap: 8px;">
             <span style="color: #6b7280; min-width: 80px;">Valor:</span>
@@ -516,13 +517,13 @@ export class EditarConsultasComponent implements OnInit {
           </div>
           <div style="display: flex; gap: 8px;">
             <span style="color: #6b7280; min-width: 80px;">Pagamento:</span>
-            <strong style="color: #1f2937;">${formaPagamento}</strong>
+            <strong style="color: #1f2937;">${escaparHtml(formaPagamento)}</strong>
           </div>
         </div>
         ${formValues.observacao ? `
           <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid #e5e7eb;">
             <span style="color: #6b7280; font-size: 13px;">Observação:</span>
-            <p style="margin: 4px 0 0 0; color: #374151; font-size: 13px;">${formValues.observacao}</p>
+            <p style="margin: 4px 0 0 0; color: #374151; font-size: 13px;">${escaparHtml(formValues.observacao)}</p>
           </div>
         ` : ''}
       </div>

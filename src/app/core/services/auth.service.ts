@@ -410,11 +410,4 @@ export class AuthService implements OnDestroy {
      }
 
   // ========== Métodos de API ==========
-
-  /**
-   * Verifica se um usuário existe
-   */
-  checkUserExists(username: string): Observable<any> {
-    return this.http.get(`${this.apiUrl}${API_ENDPOINTS.AUTH.CHECK_USER}/${username}`);
-  }
 }

@@ -5,6 +5,9 @@ import { catchError } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 
+/** Rotas do front acessíveis sem login: um 401 nelas não deve expulsar o paciente para o login. */
+const ROTAS_PUBLICAS = ['/cadastro', '/recuperaCadastro', '/assinatura', '/questionario-saude', '/assinatura-planejamento'];
+
 /**
  * Interceptor para tratamento global de erros HTTP
  */
@@ -20,7 +23,7 @@ export class ErrorInterceptor implements HttpInterceptor {
     return next.handle(request).pipe(
       catchError((error: HttpErrorResponse) => {
         // Trata erros de autenticação
-        if (error.status === 401) {
+        if (error.status === 401 && !this.isPublicRequest(request)) {
           this.handleUnauthorized();
         }
 
@@ -33,6 +36,16 @@ export class ErrorInterceptor implements HttpInterceptor {
         return throwError(() => error);
       })
     );
+  }
+
+  /**
+   * Indica se o 401 veio de chamada /publico/** ou ocorreu em uma rota pública do front.
+   * Compara por segmento para não confundir '/cadastro' com '/cadastroadmin'.
+   */
+  private isPublicRequest(request: HttpRequest<any>): boolean {
+    if (request.url.includes('/publico/')) return true;
+    const caminho = this.router.url.split(/[?#]/)[0];
+    return ROTAS_PUBLICAS.some(rota => caminho === rota || caminho.startsWith(rota + '/'));
   }
 
   /**

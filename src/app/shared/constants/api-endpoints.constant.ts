@@ -8,7 +8,6 @@ export const API_ENDPOINTS = {
   AUTH: {
     LOGIN: '/Home/login',
     REGISTER: '/Home/cadastralogin',
-    CHECK_USER: '/Home/buscarUsuarioExistente',
     BLOCK_USER: '/Home/bloquearUsuario/usuario',
     BLOCK_PATIENT: '/Home/bloquearPaciente/usuario',
     DELETE_USER: '/Home/deletarPorId',

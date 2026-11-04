@@ -15,6 +15,7 @@ import { RoleGuard } from './guards/role.guard';
 import { AuthInterceptor } from './interceptors/auth.interceptor';
 import { ErrorInterceptor } from './interceptors/error.interceptor';
 import { NgrokInterceptor } from './interceptors/ngrok.interceptor';
+import { environment } from '../../environments/environment';
 
 /**
  * Módulo Core - Singleton services, guards e interceptors
@@ -39,11 +40,12 @@ import { NgrokInterceptor } from './interceptors/ngrok.interceptor';
     RoleGuard,
 
     // Interceptors (ordem importa!)
-    {
+    // Header do ngrok só faz sentido em desenvolvimento
+    ...(environment.production ? [] : [{
       provide: HTTP_INTERCEPTORS,
       useClass: NgrokInterceptor,
       multi: true
-    },
+    }]),
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,

@@ -18,7 +18,7 @@ export class ApiInterceptor implements HttpInterceptor {
     const token = this.tokenService.retornaToken();
 
     // Verifica se a requisição é para o endpoint de login
-    if (req.url.endsWith('/Home/login') || req.url.endsWith('/Home/buscarUsuarioExistente')) {
+    if (req.url.endsWith('/Home/login')) {
       // Se for uma requisição de login, não adicionar o token
       return next.handle(req);
     }

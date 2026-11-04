@@ -39,7 +39,7 @@ export class ProntuarioGuard implements CanActivate {
         confirmButtonText: 'Ir para Agenda',
         confirmButtonColor: '#667eea'
       }).then(() => {
-        this.router.navigate(['/Agenda-Medico']);
+        this.router.navigate(['/agenda-calendario']);
       });
       
       return false;
@@ -54,7 +54,7 @@ export class ProntuarioGuard implements CanActivate {
         confirmButtonText: 'Voltar',
         confirmButtonColor: '#667eea'
       }).then(() => {
-        this.router.navigate(['/Agenda-Medico']);
+        this.router.navigate(['/agenda-calendario']);
       });
       
       return false;

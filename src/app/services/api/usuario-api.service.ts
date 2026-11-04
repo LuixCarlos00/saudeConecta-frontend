@@ -47,9 +47,6 @@ export class UsuarioApiService {
     return this.http.put<void>(`${this.apiUrl}/trocarSenharUsuariobyOrg/${usuarioId}`, { senhaNova: novaSenha });
   }
 
-  verificarLoginDisponivel(login: string): Observable<boolean> {
-    return this.http.get<boolean>(`${this.apiUrl}/buscarUsuarioExistente/${login}`);
-  }
 
   buscarPerfilCompleto(id: number): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/buscarPerfilCompleto/${id}`);

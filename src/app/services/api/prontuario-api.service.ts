@@ -27,9 +27,6 @@ export class ProntuarioApiService {
     return this.http.put<Prontuario>(`${this.apiUrl}/atualizarProntuarioMedico/${id}`, prontuario);
   }
 
-  buscarPorId(id: number): Observable<Prontuario> {
-    return this.http.get<Prontuario>(`${this.apiUrl}/buscarId/${id}`);
-  }
 
   buscarProntuarioById(consultaId: number): Observable<Prontuario> {
     return this.http.get<Prontuario>(`${this.apiUrl}/buscarProntuarioById/${consultaId}`);

@@ -46,6 +46,7 @@ export class RoleGuard implements CanActivate {
       if (userRole === role) return true;
       
       // Para roles multi-tenant - verifica se contém a role
+      if (role === Role.SUPER_ADMIN && userRole.includes('ROLE_SUPER_ADMIN')) return true;
       if (role === Role.ADMIN && (userRole.includes('ROLE_ADMIN') || userRole.includes('ROLE_SUPER_ADMIN'))) return true;
       if (role === Role.DOCTOR && (userRole.includes('ROLE_Medico') || userRole.includes('ROLE_PROFISSIONAL'))) return true;
       if (role === Role.SECRETARY && (userRole.includes('ROLE_Secretaria') || userRole.includes('ROLE_RECEPCIONISTA'))) return true;

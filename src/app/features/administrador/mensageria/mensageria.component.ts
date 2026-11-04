@@ -1,5 +1,5 @@
-import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
-import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { Component, OnInit, OnDestroy, HostListener, SecurityContext } from '@angular/core';
+import { DomSanitizer } from '@angular/platform-browser';
 import { Subject } from 'rxjs';
 import { takeUntil, finalize } from 'rxjs/operators';
 import {
@@ -242,9 +242,14 @@ export class MensageriaComponent implements OnInit, OnDestroy {
     return trimmed.startsWith('<!DOCTYPE') || trimmed.startsWith('<html');
   }
 
-  sanitizarHtml(conteudo: string): SafeHtml {
-    if (!conteudo) return this.sanitizer.bypassSecurityTrustHtml('');
-    return this.sanitizer.bypassSecurityTrustHtml(conteudo);
+  /**
+   * Remove scripts, handlers inline (onerror etc.) e demais conteúdo perigoso do HTML vindo da API.
+   * @param conteudo HTML bruto da mensagem
+   * @returns HTML sanitizado (string vazia se não houver conteúdo)
+   */
+  sanitizarHtml(conteudo: string): string {
+    if (!conteudo) return '';
+    return this.sanitizer.sanitize(SecurityContext.HTML, conteudo) ?? '';
   }
 
   truncateHtml(conteudo: string): string {
@@ -269,7 +274,8 @@ export class MensageriaComponent implements OnInit, OnDestroy {
     if (!htmlContent) return '';
     
     // Cria um blob com o conteúdo HTML
-    const blob = new Blob([htmlContent], { type: 'text/html' });
+    // Sanitiza antes de gerar o blob: o conteúdo vem da API e não é confiável
+    const blob = new Blob([this.sanitizarHtml(htmlContent)], { type: 'text/html' });
     const url = URL.createObjectURL(blob);
     
     // Retorna a URL segura
