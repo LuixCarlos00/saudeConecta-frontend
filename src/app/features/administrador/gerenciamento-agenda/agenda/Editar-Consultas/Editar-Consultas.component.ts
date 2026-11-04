@@ -2,7 +2,8 @@ import { ProfissionalApiService } from 'src/app/services/api/profissional-api.se
 import { Component, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { ConsultaApiService } from 'src/app/services/api/consulta-api.service';
+import { extrairMensagemErro } from 'src/app/shared/utils/mensagem-erro-http';
+import { ConsultaApiService, HorarioOcupado } from 'src/app/services/api/consulta-api.service';
 import { PacienteApiService } from 'src/app/services/api/paciente-api.service';
 import { Paciente } from 'src/app/util/variados/interfaces/paciente/paciente';
 import { HoradaConsulta } from 'src/app/util/variados/options/options';
@@ -288,8 +289,9 @@ export class EditarConsultasComponent implements OnInit {
     this.Hora = [];
 
     try {
+      const novoIntervalo = this.medicoSelecionado?.tempoConsultaMinutos;
       const horariosOcupados = await this.consultaApi
-        .buscarHorariosOcupadosByOrg(this.consulta.profissionalId, data)
+        .buscarHorariosOcupadosComDuracao(this.consulta.profissionalId, data, novoIntervalo || DURACAO_PADRAO_MINUTOS)
         .toPromise();
 
 
@@ -297,14 +299,12 @@ export class EditarConsultasComponent implements OnInit {
       const mesmaDataOriginal = data === this.formatarDataParaInput(new Date(this.consulta.dataHora));
       const horarioAtual = this.formatarHorario(new Date(this.consulta.dataHora));
       const ocupadosFiltrados = (horariosOcupados || []).filter(
-        horario => !mesmaDataOriginal || horario.substring(0, 5) !== horarioAtual
+        horario => !mesmaDataOriginal || horario.inicio.substring(0, 5) !== horarioAtual
       );
-
-      const novoIntervalo = this.medicoSelecionado?.tempoConsultaMinutos;
 
       if (!novoIntervalo) {
         // Sem tempo de consulta definido: usa horários padrão e filtra os ocupados
-        const ocupadosFormatados = ocupadosFiltrados.map(h => h.substring(0, 5));
+        const ocupadosFormatados = ocupadosFiltrados.map(h => h.inicio.substring(0, 5));
         this.Hora = [...HoradaConsulta].filter(
           h => !ocupadosFormatados.includes(h.value.substring(0, 5))
         );
@@ -343,9 +343,9 @@ export class EditarConsultasComponent implements OnInit {
    * (ex.: fim do último bloco ocupado) e avançam com o novo intervalo.
    *
    * @param novoIntervalo Novo tempo de consulta em minutos
-   * @param horariosOcupados Lista de horários ocupados no formato "HH:mm:ss" ou "HH:mm"
+   * @param horariosOcupados Blocos ocupados: início "HH:mm:ss" e duração real em minutos
    */
-  private gerarHorariosRespeitandoOcupados(novoIntervalo: number, horariosOcupados: string[]): void {
+  private gerarHorariosRespeitandoOcupados(novoIntervalo: number, horariosOcupados: HorarioOcupado[]): void {
     const inicioExpediente = 8 * 60;  // 08:00 em minutos
     const fimExpediente = 18 * 60;    // 18:00 em minutos
 
@@ -358,18 +358,18 @@ export class EditarConsultasComponent implements OnInit {
     // Converte horários ocupados para minutos e ordena
     const ocupadosMinutos = horariosOcupados
       .map(h => {
-        const partes = h.substring(0, 5).split(':');
-        return parseInt(partes[0]) * 60 + parseInt(partes[1]);
+        const partes = h.inicio.substring(0, 5).split(':');
+        return {
+          inicio: parseInt(partes[0]) * 60 + parseInt(partes[1]),
+          duracao: h.duracaoMinutos > 0 ? h.duracaoMinutos : DURACAO_PADRAO_MINUTOS,
+        };
       })
-      .sort((a, b) => a - b);
-
-    // O back só devolve o início dos horários ocupados; a duração vem do tempo de consulta do profissional
-    const intervaloAntigo = novoIntervalo > 0 ? novoIntervalo : DURACAO_PADRAO_MINUTOS;
+      .sort((a, b) => a.inicio - b.inicio);
 
     // Monta grupos contíguos de horários ocupados
     const gruposOcupados: { inicio: number; fim: number }[] = [];
-    for (const inicio of ocupadosMinutos) {
-      const fim = inicio + intervaloAntigo;
+    for (const { inicio, duracao } of ocupadosMinutos) {
+      const fim = inicio + duracao;
       const ultimoGrupo = gruposOcupados[gruposOcupados.length - 1];
       if (ultimoGrupo && inicio <= ultimoGrupo.fim) {
         ultimoGrupo.fim = fim > ultimoGrupo.fim ? fim : ultimoGrupo.fim;
@@ -581,7 +581,7 @@ export class EditarConsultasComponent implements OnInit {
 
   private exibirErroEdicao(erro: any): void {
     console.error('Erro ao editar consulta:', erro);
-    const mensagem = erro?.error?.message || 'Não foi possível editar a consulta. Tente novamente.';
+    const mensagem = extrairMensagemErro(erro) || 'Não foi possível editar a consulta. Tente novamente.';
 
     Swal.fire({
       icon: 'error',

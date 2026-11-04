@@ -9,7 +9,8 @@ import { PacienteApiService } from 'src/app/services/api/paciente-api.service';
 import { TabelaDePacientesComponent } from './tabela-de-pacientes/tabela-de-pacientes.component';
 import Swal from 'sweetalert2';
 import { HoradaConsulta } from 'src/app/util/variados/options/options';
-import { ConsultaApiService } from 'src/app/services/api/consulta-api.service';
+import { extrairMensagemErro } from 'src/app/shared/utils/mensagem-erro-http';
+import { ConsultaApiService, HorarioOcupado } from 'src/app/services/api/consulta-api.service';
 import { ConsultaStateService } from 'src/app/services/state/consulta-state.service';
 import { tokenService } from 'src/app/util/Token/Token.service';
 import { AuthApiService } from 'src/app/services/api/auth-api.service';
@@ -242,13 +243,12 @@ export class NovaConsultaComponent implements OnInit {
       }
 
       // Busca os horários já ocupados e gera os novos slots respeitando as consultas existentes
-      this.consultaApi.buscarHorariosOcupadosByOrg(this.Medico.id!, selectedDate as any).subscribe(
+      this.consultaApi.buscarHorariosOcupadosComDuracao(
+        this.Medico.id!, selectedDate as any, this.Medico.tempoConsultaMinutos || DURACAO_PADRAO_MINUTOS
+      ).subscribe(
         (data) => {
-          this.horariosDisponiveis = data;
-          this.generateAvailableTimesRespeitandoOcupados(
-            this.Medico.tempoConsultaMinutos!,
-            this.horariosDisponiveis
-          );
+          this.horariosDisponiveis = data.map(o => o.inicio);
+          this.generateAvailableTimesRespeitandoOcupados(this.Medico.tempoConsultaMinutos!, data);
         },
         (error) => {
           console.error('Erro ao buscar horários ocupados:', error);
@@ -267,9 +267,9 @@ export class NovaConsultaComponent implements OnInit {
    * (ex.: fim do último bloco ocupado) e avançam com o novo intervalo.
    *
    * @param novoIntervalo Novo tempo de consulta em minutos
-   * @param horariosOcupados Lista de horários ocupados no formato "HH:mm:ss" ou "HH:mm"
+   * @param horariosOcupados Blocos ocupados: início "HH:mm:ss" e duração real em minutos
    */
-  generateAvailableTimesRespeitandoOcupados(novoIntervalo: number, horariosOcupados: string[]) {
+  generateAvailableTimesRespeitandoOcupados(novoIntervalo: number, horariosOcupados: HorarioOcupado[]) {
     const startTime = this.convertToDateObject('08:00');
     const endTime = this.convertToDateObject('18:00');
 
@@ -281,17 +281,17 @@ export class NovaConsultaComponent implements OnInit {
 
     // Converte horários ocupados para objetos Date e ordena
     const ocupados = horariosOcupados
-      .map(h => this.convertToDateObject(h.substring(0, 5)))
-      .sort((a, b) => a.getTime() - b.getTime());
-
-    // O back só devolve o início dos horários ocupados; a duração vem do tempo de consulta do profissional
-    const intervaloAntigo = novoIntervalo > 0 ? novoIntervalo : DURACAO_PADRAO_MINUTOS;
+      .map(h => ({
+        inicio: this.convertToDateObject(h.inicio.substring(0, 5)),
+        duracao: h.duracaoMinutos > 0 ? h.duracaoMinutos : DURACAO_PADRAO_MINUTOS,
+      }))
+      .sort((a, b) => a.inicio.getTime() - b.inicio.getTime());
 
     // Monta blocos ocupados e mescla em grupos contíguos
     // Cada grupo contíguo representa uma sequência ininterrupta de consultas
     const gruposOcupados: { inicio: Date; fim: Date }[] = [];
-    for (const inicio of ocupados) {
-      const fim = new Date(inicio.getTime() + intervaloAntigo * 60000);
+    for (const { inicio, duracao } of ocupados) {
+      const fim = new Date(inicio.getTime() + duracao * 60000);
       const ultimoGrupo = gruposOcupados[gruposOcupados.length - 1];
       if (ultimoGrupo && inicio.getTime() <= ultimoGrupo.fim.getTime()) {
         // Extende o grupo existente
@@ -455,7 +455,7 @@ export class NovaConsultaComponent implements OnInit {
             Swal.fire({
               icon: 'error',
               title: 'Oops...',
-              text: 'Algo deu errado. Tente novamente mais tarde.',
+              text: extrairMensagemErro(error) || 'Algo deu errado. Tente novamente mais tarde.',
             });
           }
         );

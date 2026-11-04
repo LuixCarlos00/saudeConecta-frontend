@@ -1,12 +1,18 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, catchError, map } from 'rxjs';
 import { Consultav2 } from 'src/app/util/variados/interfaces/consulta/consultav2';
 import { HistoricoCompletoPacienteResponse } from 'src/app/util/variados/interfaces/historico/historico-completo-paciente-response.interface';
 import { environment } from 'src/environments/environment';
 import { EstatisticasDashboardAdminOrg } from './dashboard-api.service';
 
 
+
+/** Intervalo realmente ocupado por uma consulta: início "HH:mm:ss" e duração em minutos. */
+export interface HorarioOcupado {
+  inicio: string;
+  duracaoMinutos: number;
+}
 
 export interface ConsultaEstatisticas {
   consultasHoje: number;
@@ -124,6 +130,29 @@ export class ConsultaApiService {
     );
   }
  
+
+  /** Horários ocupados com a duração real de cada consulta. */
+  buscarHorariosOcupadosDetalhadoByOrg(medicoId: number, data: string): Observable<HorarioOcupado[]> {
+    return this.http.get<HorarioOcupado[]>(
+      `${this.apiUrl}/horarios-ocupados-detalhado`, { params: { medicoId, data } }
+    );
+  }
+
+  /**
+   * Busca os blocos ocupados pelo endpoint detalhado. Se ele falhar, cai no endpoint antigo
+   * (só inícios) assumindo a duração informada para cada consulta.
+   *
+   * @param medicoId id do profissional
+   * @param data data no formato yyyy-MM-dd
+   * @param duracaoFallbackMinutos duração assumida no fallback (tempo de consulta do profissional ou 30)
+   */
+  buscarHorariosOcupadosComDuracao(medicoId: number, data: string, duracaoFallbackMinutos: number): Observable<HorarioOcupado[]> {
+    return this.buscarHorariosOcupadosDetalhadoByOrg(medicoId, data).pipe(
+      catchError(() => this.buscarHorariosOcupadosByOrg(medicoId, data).pipe(
+        map(inicios => (inicios || []).map(inicio => ({ inicio, duracaoMinutos: duracaoFallbackMinutos })))
+      ))
+    );
+  }
 
   alterarStatusConsulta(id: number, status: string, motivo?: string): Observable<Consultav2> {
     let url = `${this.apiUrl}/${id}/status?status=${status.toUpperCase()}`;

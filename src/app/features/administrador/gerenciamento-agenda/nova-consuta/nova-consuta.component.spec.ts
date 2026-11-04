@@ -34,11 +34,30 @@ describe('NovaConsultaComponent', () => {
 
   it('3.7: usa o tempo de consulta do médico como duração dos horários ocupados', () => {
     // Ocupados 09:00 e 11:00 com consultas de 30 min: 10:00 deve continuar livre.
-    component.generateAvailableTimesRespeitandoOcupados(30, ['09:00:00', '11:00:00']);
+    component.generateAvailableTimesRespeitandoOcupados(30, [
+      { inicio: '09:00:00', duracaoMinutos: 30 }, { inicio: '11:00:00', duracaoMinutos: 30 }]);
     const horas = component.Hora.map((h: any) => h.value);
     expect(horas).toContain('10:00');
     expect(horas).not.toContain('09:00');
     expect(horas).not.toContain('11:00');
+  });
+
+  it('bloqueia o intervalo real de uma consulta longa (60 min) com slots de 30', () => {
+    component.generateAvailableTimesRespeitandoOcupados(30, [{ inicio: '09:00:00', duracaoMinutos: 60 }]);
+    const horas = component.Hora.map((h: any) => h.value);
+    expect(horas).not.toContain('09:00');
+    expect(horas).not.toContain('09:30');
+    expect(horas).toContain('10:00');
+  });
+
+  it('busca horários ocupados pela fonte detalhada usando o tempo do médico como fallback', () => {
+    const buscar = jasmine.createSpy('buscarHorariosOcupadosComDuracao')
+      .and.returnValue(of([{ inicio: '09:00:00', duracaoMinutos: 60 }]));
+    (component as any).consultaApi = { buscarHorariosOcupadosComDuracao: buscar };
+    component.Medico = { id: 1, tempoConsultaMinutos: 20 } as any;
+    component.verificarCondicoesParaConsulta(new Date('2026-11-10T12:00:00'));
+    expect(buscar).toHaveBeenCalledWith(1, jasmine.anything(), 20);
+    expect(component.Hora.map((h: any) => h.value)).not.toContain('09:20');
   });
 
   it('transformaFormaPagamento deve usar os ids do banco', () => {
@@ -73,6 +92,20 @@ describe('NovaConsultaComponent', () => {
       expect(cadastrar).not.toHaveBeenCalled();
       expect(Swal.fire).toHaveBeenCalledWith(jasmine.objectContaining({ icon: 'error' }));
       expect(component.FormularioConsulta.get('Hora')?.value).toBe('09:00');
+    });
+
+    it('erro 409/400 ao criar consulta mostra a mensagem do back', async () => {
+      verificar.and.returnValue(of(false));
+      cadastrar.and.returnValue(throwError(() => ({ status: 409, error: 'Conflito de horario' })));
+      await component.marcarConsulta();
+      expect(Swal.fire).toHaveBeenCalledWith(jasmine.objectContaining({ icon: 'error', text: 'Conflito de horario' }));
+    });
+
+    it('erro 500 sem corpo ao criar consulta usa mensagem padrão', async () => {
+      verificar.and.returnValue(of(false));
+      cadastrar.and.returnValue(throwError(() => ({ status: 500 })));
+      await component.marcarConsulta();
+      expect(Swal.fire).toHaveBeenCalledWith(jasmine.objectContaining({ text: 'Algo deu errado. Tente novamente mais tarde.' }));
     });
 
     it('horário ocupado (true) mostra aviso de duplicidade e limpa o form', async () => {

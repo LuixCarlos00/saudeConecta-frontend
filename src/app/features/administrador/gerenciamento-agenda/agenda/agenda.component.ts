@@ -6,6 +6,7 @@ import { ConsultaStateService } from 'src/app/services/state/consulta-state.serv
 import { MatDialog } from '@angular/material/dialog';
 import { CronologiaComponent } from 'src/app/util/variados/Cronologia/cronologia.component';
 import Swal from 'sweetalert2';
+import { extrairMensagemErro } from 'src/app/shared/utils/mensagem-erro-http';
 import { EditarConsultasComponent } from './Editar-Consultas/Editar-Consultas.component';
 import { ObservacoesComponent } from './Observacoes/Observacoes.component';
 import { Consultav2 } from 'src/app/util/variados/interfaces/consulta/consultav2';
@@ -380,7 +381,7 @@ Editar(consulta: any) {
           'REALIZADA': 'Realizada',
           'PAGO': 'Paga'
         };
-        Swal.fire('Erro', `Não foi possível alterar a consulta para ${statusLabels[status].toLowerCase()}.`, 'error');
+        Swal.fire('Erro', extrairMensagemErro(err) || `Não foi possível alterar a consulta para ${statusLabels[status].toLowerCase()}.`, 'error');
       },
     });
   }
@@ -515,7 +516,7 @@ Editar(consulta: any) {
           Swal.fire({
             icon: 'error',
             title: 'Erro na alteração',
-            text: 'Não foi possível realizar a alteração. Tente novamente.',
+            text: extrairMensagemErro(error) || 'Não foi possível realizar a alteração. Tente novamente.',
             confirmButtonColor: '#dc2626'
           });
         }

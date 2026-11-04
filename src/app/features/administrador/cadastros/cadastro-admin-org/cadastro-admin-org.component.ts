@@ -10,6 +10,7 @@ import { AdministradorApiService } from 'src/app/services/api/administrador-api.
 import { FiltroStateService } from 'src/app/services/state/filtro-state.service';
 import { CpfValidator } from 'src/app/util/validators/cpf.validator';
 import { cpfValidator } from 'src/app/util/validators/cpf-form.validator';
+import { extrairMensagemErro } from '../../../../shared/utils/mensagem-erro-http';
 import { getFieldError } from 'src/app/util/validators/field-errors';
 import {
   nomeCompletoValidator,
@@ -293,12 +294,10 @@ export class CadastroAdminOrgComponent implements OnInit, OnDestroy {
     return n.replace(/(\d{5})(\d+)/, '$1-$2');
   } 
   private handleHttpError(error: any): void {
-    let msg = 'Erro desconhecido ao realizar o cadastro.';
-    if (error.status === 409) {
-      msg = typeof error.error === 'string' ? error.error : 'CPF ou CNPJ já cadastrado no sistema.';
-    } else if (error.error && typeof error.error === 'string') {
-      msg = error.error;
-    }
+    const padrao = error.status === 409
+      ? 'CPF ou CNPJ já cadastrado no sistema.'
+      : 'Erro desconhecido ao realizar o cadastro.';
+    const msg = extrairMensagemErro(error) || padrao;
     Swal.fire({ icon: 'error', title: 'Erro', text: msg });
   }
 }

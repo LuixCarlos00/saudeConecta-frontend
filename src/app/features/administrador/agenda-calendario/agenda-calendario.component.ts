@@ -3,6 +3,7 @@ import { Subject, takeUntil, take, filter, Observable } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
+import { extrairMensagemErro } from 'src/app/shared/utils/mensagem-erro-http';
 import { ConsultaApiService } from 'src/app/services/api/consulta-api.service';
 import { ConsultaStateService } from 'src/app/services/state/consulta-state.service';
 import { ProntuarioStateService } from 'src/app/services/state/prontuario-state.service';
@@ -536,8 +537,8 @@ export class AgendaCalendarioComponent implements OnInit, OnDestroy {
             this.cdr.markForCheck();
           }, 3000);
         },
-        error: () => {
-          this.mensagemTooltipStatus = 'Erro ao alterar status';
+        error: (erro) => {
+          this.mensagemTooltipStatus = extrairMensagemErro(erro) || 'Erro ao alterar status';
           this.cdr.markForCheck();
           setTimeout(() => {
             this.mensagemTooltipStatus = '';

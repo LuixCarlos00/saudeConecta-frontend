@@ -1,6 +1,7 @@
 /* tslint:disable:no-unused-variable */
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
+import Swal from 'sweetalert2';
 import { By } from '@angular/platform-browser';
 import { DebugElement } from '@angular/core';
 
@@ -54,7 +55,7 @@ describe('EditarConsultasComponent', () => {
   describe('horários disponíveis', () => {
     function prepararBusca(ocupados: string[]) {
       (component as any).consultaApi = {
-        buscarHorariosOcupadosByOrg: () => of(ocupados),
+        buscarHorariosOcupadosComDuracao: () => of(ocupados.map(inicio => ({ inicio, duracaoMinutos: 30 }))),
       };
       component.consulta = { ...component.consulta, profissionalId: 1, dataHora: '2026-05-10T09:00:00' } as any;
       component.medicoSelecionado = null;
@@ -70,13 +71,38 @@ describe('EditarConsultasComponent', () => {
       expect(component.Hora.map((h: any) => h.value.substring(0, 5))).not.toContain('09:00');
     });
 
-    it('3.7: usa o tempo de consulta do profissional como duração dos horários ocupados', () => {
-      // Ocupados 09:00 e 11:00 com consultas de 30 min: 10:00 deve continuar livre.
-      (component as any).gerarHorariosRespeitandoOcupados(30, ['09:00:00', '11:00:00']);
+    it('3.7: usa a duração real de cada bloco ocupado', () => {
+      // 09:00 e 11:00 com 30 min: 10:00 continua livre.
+      (component as any).gerarHorariosRespeitandoOcupados(30, [
+        { inicio: '09:00:00', duracaoMinutos: 30 }, { inicio: '11:00:00', duracaoMinutos: 30 }]);
       const horas = component.Hora.map((h: any) => h.value);
       expect(horas).toContain('10:00');
       expect(horas).not.toContain('09:00');
       expect(horas).not.toContain('11:00');
+    });
+
+    it('bloqueia o intervalo real de uma consulta longa (60 min) mesmo com slots de 30', () => {
+      (component as any).gerarHorariosRespeitandoOcupados(30, [{ inicio: '09:00:00', duracaoMinutos: 60 }]);
+      const horas = component.Hora.map((h: any) => h.value);
+      expect(horas).not.toContain('09:00');
+      expect(horas).not.toContain('09:30');
+      expect(horas).toContain('10:00');
+    });
+  });
+
+  describe('erro ao editar consulta', () => {
+    it('mostra a mensagem do back (409/400) quando existir', () => {
+      spyOn(Swal, 'fire');
+      spyOn(console, 'error');
+      (component as any).exibirErroEdicao({ status: 409, error: 'Conflito de horario' });
+      expect(Swal.fire).toHaveBeenCalledWith(jasmine.objectContaining({ text: 'Conflito de horario' }));
+    });
+
+    it('sem corpo (500) usa mensagem padrão', () => {
+      spyOn(Swal, 'fire');
+      spyOn(console, 'error');
+      (component as any).exibirErroEdicao({ status: 500 });
+      expect(Swal.fire).toHaveBeenCalledWith(jasmine.objectContaining({ text: 'Não foi possível editar a consulta. Tente novamente.' }));
     });
   });
 });

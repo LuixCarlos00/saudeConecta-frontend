@@ -1,5 +1,6 @@
 /* tslint:disable:no-unused-variable */
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { throwError } from 'rxjs';
 import { By } from '@angular/platform-browser';
 import { DebugElement } from '@angular/core';
 
@@ -43,6 +44,30 @@ describe('TabelaTodosUsuariosComponent', () => {
     it('permite exclusão de Administrador com ROLE_ADMIN', () => {
       spyOn(component.controleAcessoService, 'podeGerenciarAdministrador').and.returnValue(true);
       expect(component.podeExcluir(admin)).toBeTrue();
+    });
+  });
+
+  describe('executarAlteracaoStatus', () => {
+    const usuario: any = { categoria: 'Administrador', dadosOriginais: { id: 1, usuarioId: 7 } };
+
+    beforeEach(() => {
+      spyOn(console, 'error');
+      spyOn(component as any, 'mostrarErro');
+      spyOn(component as any, 'obterCodigoUsuario').and.returnValue(7);
+    });
+
+    it('422 (limite do plano) mostra a mensagem do back ao reativar', () => {
+      spyOn((component as any).usuarioApiService, 'bloquearUsuariobyOrg')
+        .and.returnValue(throwError(() => ({ status: 422, error: { message: 'Limite do plano atingido' } })));
+      (component as any).executarAlteracaoStatus(usuario, 1);
+      expect((component as any).mostrarErro).toHaveBeenCalledWith('Limite do plano atingido');
+    });
+
+    it('erro sem corpo usa mensagem padrão', () => {
+      spyOn((component as any).usuarioApiService, 'bloquearUsuariobyOrg')
+        .and.returnValue(throwError(() => ({ status: 500 })));
+      (component as any).executarAlteracaoStatus(usuario, 1);
+      expect((component as any).mostrarErro).toHaveBeenCalledWith('Erro ao alterar status do usuário.');
     });
   });
 });

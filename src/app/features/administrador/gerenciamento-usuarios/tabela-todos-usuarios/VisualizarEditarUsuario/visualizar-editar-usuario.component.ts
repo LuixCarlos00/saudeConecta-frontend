@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Observable, Subject, takeUntil } from 'rxjs';
 import Swal from 'sweetalert2';
+import { extrairMensagemErro } from 'src/app/shared/utils/mensagem-erro-http';
 
 import { PacienteApiService } from 'src/app/services/api/paciente-api.service';
 import { ProfissionalApiService } from 'src/app/services/api/profissional-api.service';
@@ -538,7 +539,7 @@ export class VisualizarEditarUsuarioComponent implements OnInit {
     Swal.fire({
       icon: 'error',
       title: 'Erro',
-      text: 'Não foi possível atualizar os dados. Tente novamente.',
+      text: extrairMensagemErro(error) || 'Não foi possível atualizar os dados. Tente novamente.',
       showCloseButton: true
     });
   }

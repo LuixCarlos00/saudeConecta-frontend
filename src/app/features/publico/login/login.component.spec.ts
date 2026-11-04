@@ -39,6 +39,11 @@ describe('LoginComponent', () => {
       expect(handler.showError).toHaveBeenCalledWith('Email ou senha inválidos');
     });
 
+    it('401 com {error} do back mostra a mensagem do back', () => {
+      (component as any).handleLoginError({ status: 401, error: { error: 'Usuario bloqueado' } });
+      expect(handler.showError).toHaveBeenCalledWith('Usuario bloqueado');
+    });
+
     it('403 com mensagem do back mostra aviso de acesso bloqueado', () => {
       (component as any).handleLoginError({ status: 403, error: { message: 'Conta bloqueada' } });
       expect(handler.showWarning).toHaveBeenCalledWith('Conta bloqueada', 'Acesso bloqueado');

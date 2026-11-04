@@ -17,6 +17,7 @@ import { Secretaria } from 'src/app/util/variados/interfaces/secretaria/secretar
 import { Paciente } from 'src/app/util/variados/interfaces/paciente/paciente';
 import { ProfissionalApiService } from 'src/app/services/api/profissional-api.service';
 import { is } from 'date-fns/locale';
+import { extrairMensagemErro } from 'src/app/shared/utils/mensagem-erro-http';
 import { Profissional } from 'src/app/util/variados/interfaces/medico/Profissional';
 import { ControleAcessoApiService } from 'src/app/services/api/controle-acesso-api.service';
 import { ModalAssociarPlanoComponent } from './modal-associar-plano/modal-associar-plano.component';
@@ -413,7 +414,7 @@ export class TabelaTodosUsuariosComponent implements OnInit, OnDestroy {
       },
       error: (error) => {
         console.error('Erro ao alterar status:', error);
-        this.mostrarErro('Erro ao alterar status do usuário.');
+        this.mostrarErro(extrairMensagemErro(error) || 'Erro ao alterar status do usuário.');
       }
     });
   }

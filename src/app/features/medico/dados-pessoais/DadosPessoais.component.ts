@@ -8,6 +8,7 @@ import { CepApiService } from 'src/app/services/api/cep-api.service';
 import { tokenService } from 'src/app/util/Token/Token.service';
 import { Subscription } from 'rxjs';
 import Swal from 'sweetalert2';
+import { extrairMensagemErro } from 'src/app/shared/utils/mensagem-erro-http';
 import { EspecialidadeApiService } from "../../../services/api/especialidade-api.service";
 import { ufOptions } from '../../../util/variados/options/options';
 import { getFieldError } from 'src/app/util/validators/field-errors';
@@ -446,7 +447,7 @@ export class DadosPessoaisComponent implements OnInit, OnDestroy {
           Swal.fire({
             icon: 'error',
             title: 'Erro ao salvar',
-            text: 'Não foi possível atualizar os dados. Tente novamente.',
+            text: extrairMensagemErro(error) || 'Não foi possível atualizar os dados. Tente novamente.',
           });
         },
       });
@@ -478,7 +479,7 @@ export class DadosPessoaisComponent implements OnInit, OnDestroy {
           Swal.fire({
             icon: 'error',
             title: 'Erro ao salvar',
-            text: 'Não foi possível atualizar os dados. Tente novamente.',
+            text: extrairMensagemErro(error) || 'Não foi possível atualizar os dados. Tente novamente.',
           });
         },
       });
@@ -508,7 +509,7 @@ export class DadosPessoaisComponent implements OnInit, OnDestroy {
           Swal.fire({
             icon: 'error',
             title: 'Erro ao salvar',
-            text: 'Não foi possível atualizar os dados. Tente novamente.',
+            text: extrairMensagemErro(error) || 'Não foi possível atualizar os dados. Tente novamente.',
           });
         },
       });
