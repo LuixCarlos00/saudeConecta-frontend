@@ -10,7 +10,6 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { RelatorioModule } from 'src/app/features/relatorio/relatorio.module';
 
 // Componentes de Agenda
-import { AgendaMedicoGerenciamentoComponent } from './agenda/agenda-medico-gerenciamento.component';
 import { TabelaAgendaMedicoComponent } from './tabela-agenda/tabela-agenda-medico.component';
 
 // Componentes de Dados Pessoais
@@ -46,7 +45,6 @@ const routes: Routes = [
 @NgModule({
   declarations: [
     // Componentes de Agenda
-    AgendaMedicoGerenciamentoComponent,
     TabelaAgendaMedicoComponent,
     
     // Componentes de Dados Pessoais

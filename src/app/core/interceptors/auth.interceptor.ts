@@ -8,8 +8,7 @@ import { API_ENDPOINTS } from '../../shared/constants/api-endpoints.constant';
  * Endpoints que não requerem autenticação
  */
 const PUBLIC_ENDPOINTS: string[] = [
-  API_ENDPOINTS.AUTH.LOGIN,
-  API_ENDPOINTS.AUTH.REGISTER
+  API_ENDPOINTS.AUTH.LOGIN
 ];
 
 /**

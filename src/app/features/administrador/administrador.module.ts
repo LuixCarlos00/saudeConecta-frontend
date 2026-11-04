@@ -76,7 +76,6 @@ import { GerenciarPlanosComponent } from './planos/gerenciar-planos/gerenciar-pl
  
 
 // Componentes de Suporte
-import { SobreComponent } from './sobre/sobre.component';
 import { SuporteComponent } from './suporte/suporte.component';
 import { GestaoChamadosComponent } from './suporte/gestao-chamados/gestao-chamados.component';
 import { TrocaSenhaComponent } from './troca-senha/troca-senha.component';
@@ -153,7 +152,6 @@ const routes: Routes = [
  
     
     // Componentes de Suporte
-    SobreComponent,
     SuporteComponent,
     GestaoChamadosComponent,
     TrocaSenhaComponent,

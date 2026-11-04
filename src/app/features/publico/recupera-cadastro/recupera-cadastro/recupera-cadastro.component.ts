@@ -2,7 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthApiService } from 'src/app/services/api/auth-api.service';
- import Swal from 'sweetalert2';
+import Swal from 'sweetalert2';
+import { extrairMensagemErro } from 'src/app/shared/utils/mensagem-erro-http';
+
+const MENSAGEM_NEUTRA = 'Se o e-mail estiver cadastrado, você receberá as instruções para recuperar a senha.';
 
 @Component({
   selector: 'app-recupera-cadastro',
@@ -14,6 +17,8 @@ export class RecuperaCadastroComponent implements OnInit {
   FormularioEmail!: FormGroup;
   isLoading: boolean = false;
   emailEnviado: boolean = false;
+  /** Mensagem neutra exibida após o envio (não revela se o e-mail existe). */
+  mensagemSucesso: string = MENSAGEM_NEUTRA;
 
   constructor(
     private router: Router,
@@ -36,13 +41,14 @@ export class RecuperaCadastroComponent implements OnInit {
     this.isLoading = true;
 
     this.authService.esqueciMinhaSenha({ email }).subscribe({
-      next: () => {
+      next: (resposta) => {
         this.isLoading = false;
         this.emailEnviado = true;
+        this.mensagemSucesso = resposta?.message || MENSAGEM_NEUTRA;
         Swal.fire({
           icon: 'success',
-          title: 'Email enviado!',
-          text: 'Verifique sua caixa de entrada. Uma nova senha foi enviada para o seu email.',
+          title: 'Solicitação recebida',
+          text: this.mensagemSucesso,
           confirmButtonColor: '#00d9ff'
         });
       },
@@ -51,7 +57,7 @@ export class RecuperaCadastroComponent implements OnInit {
         Swal.fire({
           icon: 'error',
           title: 'Erro',
-          text: erro.error?.message || 'Email não encontrado ou erro ao enviar. Verifique se o email está correto.',
+          text: extrairMensagemErro(erro) || 'Não foi possível processar a solicitação. Tente novamente em instantes.',
           confirmButtonColor: '#00d9ff'
         });
       }

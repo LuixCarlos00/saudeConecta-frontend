@@ -7,8 +7,7 @@
 export const API_ENDPOINTS = {
   // Autenticação
   AUTH: {
-    LOGIN: '/Home/login',
-    REGISTER: '/Home/cadastralogin'
+    LOGIN: '/Home/login'
   }
 } as const;
 
