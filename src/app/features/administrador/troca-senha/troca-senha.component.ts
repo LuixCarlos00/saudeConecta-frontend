@@ -93,7 +93,7 @@ export class TrocaSenhaComponent implements OnInit {
             });
           }
         );
-      } {
+      } else {
         Swal.fire({
           icon: 'error',
           title: 'Oops...',
