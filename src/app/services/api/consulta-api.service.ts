@@ -57,6 +57,13 @@ export class ConsultaApiService {
 
   constructor(private http: HttpClient) { }
 
+  /**
+   * Busca uma consulta pelo ID (GET /consultas/{id}); o formato é o mesmo `Consultav2` usado pela agenda.
+   * @param id ID da consulta
+   */
+  buscarPorId(id: number): Observable<Consultav2> {
+    return this.http.get<Consultav2>(`${this.apiUrl}/${id}`);
+  }
 
 
 

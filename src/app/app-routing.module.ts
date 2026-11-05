@@ -84,7 +84,9 @@ const routes: Routes = [
   // ========== ROTAS APENAS MÉDICO ==========
   { path: 'dadospessoais', component: DadosPessoaisComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: [Role.DOCTOR, Role.SECRETARY] } },
   { path: 'startconsulta', component: ProntuarioMedicoComponent, canActivate: [AuthGuard, RoleGuard, ProntuarioGuard], data: { roles: [Role.DOCTOR] } },
+  { path: 'startconsulta/:consultaId', component: ProntuarioMedicoComponent, canActivate: [AuthGuard, RoleGuard, ProntuarioGuard], data: { roles: [Role.DOCTOR] } },
   { path: 'startconsulta-dentista', component: ProntuarioDentistaComponent, canActivate: [AuthGuard, RoleGuard, ProntuarioGuard], data: { roles: [Role.DOCTOR] } },
+  { path: 'startconsulta-dentista/:consultaId', component: ProntuarioDentistaComponent, canActivate: [AuthGuard, RoleGuard, ProntuarioGuard], data: { roles: [Role.DOCTOR] } },
   { path: 'Prontuario', component: ProntuarioComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: [Role.DOCTOR] } },
   { path: 'agenda-calendario', component: AgendaCalendarioComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: [Role.ADMIN, Role.DOCTOR, Role.SECRETARY] } },
 

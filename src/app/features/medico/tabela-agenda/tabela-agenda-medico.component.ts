@@ -71,7 +71,7 @@ export class TabelaAgendaMedicoComponent implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
         this.prontuarioStateService.setConsulta(element);
-        this.navegarParaProntuario();
+        this.navegarParaProntuario(element.id);
       } else {
         this.BuscarDadosDeAgendaDoMedicoDoDia();
       }
@@ -82,14 +82,14 @@ export class TabelaAgendaMedicoComponent implements OnInit {
 
   AbrirConsulta(element: any) {
     this.prontuarioStateService.setConsulta(element);
-    this.navegarParaProntuario();
+    this.navegarParaProntuario(element.id);
   }
 
-  private navegarParaProntuario(): void {
+  private navegarParaProntuario(consultaId: number): void {
     if (this.UsuarioLogado.tipoProfissional === 'DENTISTA') {
-      this.route.navigate(['startconsulta-dentista']);
+      this.route.navigate(['startconsulta-dentista', consultaId]);
     } else {
-      this.route.navigate(['startconsulta']);
+      this.route.navigate(['startconsulta', consultaId]);
     }
   }
 

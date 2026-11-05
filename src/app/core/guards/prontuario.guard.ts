@@ -1,12 +1,24 @@
 import { Injectable } from '@angular/core';
-import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
+import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router, UrlTree } from '@angular/router';
+import { Observable, catchError, map, of, switchMap } from 'rxjs';
+import { ConsultaApiService } from 'src/app/services/api/consulta-api.service';
 import { ProntuarioStateService } from 'src/app/services/state/prontuario-state.service';
+import { tokenService } from 'src/app/util/Token/Token.service';
 import Swal from 'sweetalert2';
 
+/** Status em que a consulta já foi encerrada e não aceita mais atendimento. */
+const STATUS_ENCERRADOS = ['REALIZADA', 'PAGO', 'CANCELADA'];
+
+const TEXTO_ACESSO_NEGADO =
+  'Para acessar o prontuário, você deve iniciar uma consulta através da agenda médica.';
+
 /**
- * Guard para proteger a rota do Prontuário Médico
- * Garante que o componente só seja acessado através do botão "Iniciar Consulta"
- * com dados válidos da consulta
+ * Guard para proteger a rota do Prontuário Médico/Odontológico.
+ *
+ * - Com consulta em memória (veio da agenda): libera e, se a URL não traz o id, redireciona para a rota com id.
+ * - Com `:consultaId` na URL e sem consulta em memória (F5, voltar, outro computador): carrega a consulta
+ *   pela API, confere que é do profissional logado e que não está encerrada, e põe no state.
+ * - Sem nada: bloqueia e manda para a agenda.
  */
 @Injectable({
   providedIn: 'root'
@@ -15,52 +27,97 @@ export class ProntuarioGuard implements CanActivate {
 
   constructor(
     private router: Router,
-    private prontuarioState: ProntuarioStateService
+    private prontuarioState: ProntuarioStateService,
+    private consultaApi: ConsultaApiService,
+    private token: tokenService
   ) {}
 
   canActivate(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
-  ): boolean {
-    
-    // Verificar se existe uma consulta no estado
+  ): boolean | UrlTree | Observable<boolean> {
+
     let consultaAtual: any = null;
-    
     this.prontuarioState.consulta$.subscribe(consulta => {
       consultaAtual = consulta;
     }).unsubscribe();
 
-    // Se não há consulta ou a consulta está vazia, bloquear acesso
-    if (!consultaAtual || !consultaAtual.id) {
-      Swal.fire({
-        icon: 'warning',
-        title: 'Acesso Negado',
-        text: 'Para acessar o prontuário, você deve iniciar uma consulta através da agenda médica.',
-        confirmButtonText: 'Ir para Agenda',
-        confirmButtonColor: '#667eea'
-      }).then(() => {
-        this.router.navigate(['/agenda-calendario']);
-      });
-      
-      return false;
+    const idDaUrl = Number(route.paramMap?.get('consultaId')) || null;
+    const memoriaValida = !!consultaAtual?.id && (!idDaUrl || consultaAtual.id === idDaUrl);
+
+    if (memoriaValida) {
+      return this.liberarComConsultaEmMemoria(consultaAtual, idDaUrl, route);
     }
 
-    // Verificar se a consulta tem os dados mínimos necessários
-    if (!consultaAtual.pacienteNome || !consultaAtual.profissionalId) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Dados Incompletos',
-        text: 'A consulta não possui todos os dados necessários. Por favor, inicie novamente.',
-        confirmButtonText: 'Voltar',
-        confirmButtonColor: '#667eea'
-      }).then(() => {
-        this.router.navigate(['/agenda-calendario']);
-      });
-      
-      return false;
+    if (idDaUrl) {
+      return this.carregarPelaApi(idDaUrl);
     }
 
-    // Tudo OK, permitir acesso
+    return this.bloquear('Acesso Negado', TEXTO_ACESSO_NEGADO);
+  }
+
+  /**
+   * Libera o acesso com a consulta do state; sem id na URL, redireciona para a rota com id.
+   */
+  private liberarComConsultaEmMemoria(consulta: any, idDaUrl: number | null, route: ActivatedRouteSnapshot): boolean | UrlTree {
+    if (!consulta.pacienteNome || !consulta.profissionalId) {
+      return this.bloquear(
+        'Dados Incompletos',
+        'A consulta não possui todos os dados necessários. Por favor, inicie novamente.',
+        'Voltar',
+        'error'
+      );
+    }
+    if (!idDaUrl) {
+      const base = route.routeConfig?.path?.startsWith('startconsulta-dentista')
+        ? 'startconsulta-dentista'
+        : 'startconsulta';
+      return this.router.createUrlTree([base, consulta.id]);
+    }
     return true;
+  }
+
+  /**
+   * Carrega a consulta da URL, valida dono e status, e a coloca no state.
+   */
+  private carregarPelaApi(consultaId: number): Observable<boolean> {
+    const usuarioId = this.token.obterUsuarioId();
+    return this.consultaApi.buscarPorId(consultaId).pipe(
+      switchMap(consulta => {
+        if (STATUS_ENCERRADOS.includes(String(consulta?.status))) {
+          return of(this.bloquear(
+            'Acesso Negado',
+            'Esta consulta já foi encerrada e não pode mais ser atendida. Abra outra consulta pela agenda.'
+          ));
+        }
+        if (!usuarioId) {
+          return of(this.bloquear('Acesso Negado', TEXTO_ACESSO_NEGADO));
+        }
+        // A rota por id não informa o usuário dono; a agenda do profissional logado é a prova de posse.
+        return this.consultaApi.buscarAgendaMedico(usuarioId, 'anual').pipe(
+          map(agenda => {
+            if (!agenda?.some(c => c.id === consulta.id)) {
+              return this.bloquear('Acesso Negado', TEXTO_ACESSO_NEGADO);
+            }
+            this.prontuarioState.setConsulta(consulta);
+            return true;
+          })
+        );
+      }),
+      catchError(() => of(this.bloquear('Acesso Negado', TEXTO_ACESSO_NEGADO)))
+    );
+  }
+
+  private bloquear(titulo: string, texto: string, botao = 'Ir para Agenda', icone: 'warning' | 'error' = 'warning'): false {
+    Swal.fire({
+      icon: icone,
+      title: titulo,
+      text: texto,
+      confirmButtonText: botao,
+      confirmButtonColor: '#667eea'
+    }).then(() => {
+      this.router.navigate(['/agenda-calendario']);
+    });
+    return false;
   }
 }

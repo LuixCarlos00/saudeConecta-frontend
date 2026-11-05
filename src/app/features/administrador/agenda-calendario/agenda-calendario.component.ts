@@ -693,9 +693,9 @@ export class AgendaCalendarioComponent implements OnInit, OnDestroy {
           }).then(() => {
             this.prontuarioState.changeConsulta(element);
             if (this.UsuarioLogado.tipoProfissional === 'MEDICO') {
-              this.router.navigate(['startconsulta']);
+              this.router.navigate(['startconsulta', element.id]);
             } else if (this.UsuarioLogado.tipoProfissional === 'DENTISTA') {
-              this.router.navigate(['startconsulta-dentista']);
+              this.router.navigate(['startconsulta-dentista', element.id]);
             }
           });
         }
