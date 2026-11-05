@@ -29,6 +29,17 @@
       </div>
     </div>
 
+    <!-- Aviso de clínica suspensa -->
+    <div *ngIf="suspensa" class="banner-trial banner-suspensa">
+      <mat-icon>block</mat-icon>
+      <div>
+        <strong>Assinatura suspensa</strong>
+        <p>O acesso ao sistema está bloqueado até a regularização do pagamento.
+          <ng-container *ngIf="podeGerenciarPagamento">Clique em Pagar para regularizar.</ng-container>
+        </p>
+      </div>
+    </div>
+
     <!-- Card da Assinatura -->
     <mat-card class="assinatura-card">
       <mat-card-header>
@@ -71,7 +82,7 @@
                 (click)="ativarAssinatura()"
                 [disabled]="gerandoLink">
           <mat-icon>credit_card</mat-icon>
-          {{ gerandoLink ? 'Gerando link...' : 'Ativar assinatura' }}
+          {{ gerandoLink ? 'Gerando link...' : (suspensa ? 'Pagar' : 'Ativar assinatura') }}
         </button>
 
         <button mat-stroked-button color="warn"

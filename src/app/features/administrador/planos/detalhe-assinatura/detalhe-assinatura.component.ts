@@ -3,6 +3,7 @@ import { AssinaturaApiService } from 'src/app/services/api/assinatura-api.servic
 import { ControleAcessoApiService } from 'src/app/services/api/controle-acesso-api.service';
 import { AssinaturaTenant, CobrancaTenant, LimitesPlano } from 'src/app/util/variados/interfaces/planos/PlanoAssinatura';
 import { diasCalendarioAte, formatarDataBr } from 'src/app/shared/utils/data-local';
+import { extrairCodigoErro } from 'src/app/shared/utils/mensagem-erro-http';
 import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
 
 @Component({
@@ -35,7 +36,12 @@ export class DetalheAssinaturaComponent implements OnInit {
     this.assinaturaApiService.minhaAssinatura().subscribe({
       next: (assinatura) => {
         this.assinatura = assinatura;
-        this.carregarLimites();
+        // SUSPENSA: o back só libera as rotas de pagamento; limites daria 403 à toa
+        if (assinatura.status === 'SUSPENSA') {
+          this.limites = null;
+        } else {
+          this.carregarLimites();
+        }
         this.carregarHistorico();
       },
       error: () => {
@@ -65,6 +71,11 @@ export class DetalheAssinaturaComponent implements OnInit {
   /** Assinatura ainda em período gratuito, aguardando cadastro do cartão. */
   get emTrial(): boolean {
     return this.assinatura?.status === 'TRIAL' && !this.assinatura?.cortesia;
+  }
+
+  /** Clínica suspensa por falta de pagamento: só esta tela e o pagamento funcionam. */
+  get suspensa(): boolean {
+    return this.assinatura?.status === 'SUSPENSA' && !this.isCortesia;
   }
 
   /** Assinatura isenta de cobrança, liberada manualmente pelo suporte. */
@@ -137,6 +148,15 @@ export class DetalheAssinaturaComponent implements OnInit {
       },
       error: (err) => {
         this.gerandoLink = false;
+        if (err.status === 409 && extrairCodigoErro(err) === 'PAGAMENTO_JA_RECEBIDO') {
+          // O back já renovou a assinatura: gerar outro link seria cobrar duas vezes
+          this.notificacao.fire({
+            icon: 'info',
+            title: 'Pagamento recebido',
+            text: 'O pagamento já foi recebido e sua assinatura foi renovada'
+          }).then(() => this.carregarDados());
+          return;
+        }
         this.notificacao.fire({
           icon: 'error',
           title: 'Erro',

@@ -66,6 +66,7 @@ describe('ErrorInterceptor (403 plano suspenso)', () => {
   let logout: jasmine.Spy;
   let navigate: jasmine.Spy;
   let papel = '[ROLE_ADMIN]';
+  let urlAtual = '/Dashboard';
   const MSG = 'O plano da sua organizacao esta suspenso. Regularize o pagamento.';
 
   beforeEach(() => {
@@ -80,7 +81,8 @@ describe('ErrorInterceptor (403 plano suspenso)', () => {
     http = TestBed.inject(HttpClient);
     ctrl = TestBed.inject(HttpTestingController);
     const router = TestBed.inject(Router);
-    spyOnProperty(router, 'url', 'get').and.returnValue('/Dashboard');
+    urlAtual = '/Dashboard';
+    spyOnProperty(router, 'url', 'get').and.callFake(() => urlAtual);
     navigate = spyOn(router, 'navigate').and.resolveTo(true);
     spyOn(Swal, 'fire').and.resolveTo({ isConfirmed: true } as any);
   });
@@ -117,5 +119,36 @@ describe('ErrorInterceptor (403 plano suspenso)', () => {
     dispara403({ message: 'Acesso negado' });
     expect(Swal.fire).not.toHaveBeenCalled();
     expect(navigate).not.toHaveBeenCalled();
+  });
+
+  it('com code PLANO_SEM_ACESSO reconhece mesmo sem a palavra suspenso na mensagem', () => {
+    papel = '[ROLE_ADMIN]';
+    dispara403({ code: 'PLANO_SEM_ACESSO', message: 'Regularize a assinatura para continuar.' });
+    expect(Swal.fire).toHaveBeenCalledTimes(1);
+    expect(navigate).toHaveBeenCalledWith(['/minha-assinatura']);
+    expect(logout).not.toHaveBeenCalled();
+  });
+
+  it('fallback: sem code, a mensagem de plano suspenso ainda é reconhecida', () => {
+    papel = '[ROLE_RECEPCIONISTA]';
+    dispara403({ message: MSG });
+    expect(navigate).toHaveBeenCalledWith(['/minha-assinatura']);
+  });
+
+  it('403 com outro code e mensagem comum não é tratado como plano', () => {
+    papel = '[ROLE_ADMIN]';
+    dispara403({ code: 'ACESSO_NEGADO', message: 'Acesso negado' });
+    expect(Swal.fire).not.toHaveBeenCalled();
+    expect(navigate).not.toHaveBeenCalled();
+  });
+
+  it('já em /minha-assinatura: não avisa nem navega (sem loop de redirect) e não faz logout', () => {
+    papel = '[ROLE_ADMIN]';
+    urlAtual = '/minha-assinatura';
+    dispara403({ code: 'PLANO_SEM_ACESSO', message: MSG });
+    dispara403({ code: 'PLANO_SEM_ACESSO', message: MSG });
+    expect(Swal.fire).not.toHaveBeenCalled();
+    expect(navigate).not.toHaveBeenCalled();
+    expect(logout).not.toHaveBeenCalled();
   });
 });

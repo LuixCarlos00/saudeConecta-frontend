@@ -27,3 +27,31 @@ export function extrairMensagemErro(error: any): string | null {
   const valores = Object.values(corpo).filter((v) => typeof v === 'string' && v) as string[];
   return valores.length ? valores.join('\n') : null;
 }
+
+/**
+ * Extrai o `code` do ErrorResponse do back (ex.: PLANO_SEM_ACESSO, PAGAMENTO_JA_RECEBIDO).
+ *
+ * @param error HttpErrorResponse (ou objeto equivalente)
+ * @returns O código quando o corpo é um objeto com `code` textual; senão null
+ */
+export function extrairCodigoErro(error: any): string | null {
+  const codigo = error?.error?.code;
+  return typeof codigo === 'string' && codigo.trim() ? codigo : null;
+}
+
+/** Texto exibido quando o back não conseguiu atualizar o valor no Mercado Pago (502 MP_VALOR_NAO_ATUALIZADO). */
+export const MENSAGEM_MP_VALOR_NAO_ATUALIZADO =
+  'Não foi possível atualizar o valor no Mercado Pago. Nenhuma alteração foi feita; tente novamente.';
+
+/**
+ * Mensagem de erro para trocar de plano ou customizar limites: o 502 `MP_VALOR_NAO_ATUALIZADO`
+ * ganha texto próprio; os demais usam a mensagem do back ou o texto padrão.
+ *
+ * @param error HttpErrorResponse da troca/customização
+ * @param padrao texto quando o back não trouxe mensagem
+ * @returns mensagem pronta para o usuário
+ */
+export function mensagemErroTrocaPlano(error: any, padrao: string): string {
+  if (extrairCodigoErro(error) === 'MP_VALOR_NAO_ATUALIZADO') { return MENSAGEM_MP_VALOR_NAO_ATUALIZADO; }
+  return extrairMensagemErro(error) || padrao;
+}

@@ -1,4 +1,4 @@
-import { extrairMensagemErro } from './mensagem-erro-http';
+import { extrairCodigoErro, extrairMensagemErro, MENSAGEM_MP_VALOR_NAO_ATUALIZADO, mensagemErroTrocaPlano } from './mensagem-erro-http';
 
 describe('extrairMensagemErro', () => {
   it('corpo string', () => expect(extrairMensagemErro({ error: ' CPF inválido ' })).toBe('CPF inválido'));
@@ -24,5 +24,21 @@ describe('extrairMensagemErro', () => {
     expect(extrairMensagemErro({ error: {} })).toBeNull();
     expect(extrairMensagemErro(undefined)).toBeNull();
     expect(extrairMensagemErro({ error: '  ' })).toBeNull();
+  });
+});
+
+describe('extrairCodigoErro e mensagemErroTrocaPlano', () => {
+  it('extrai o code do corpo; sem code devolve null', () => {
+    expect(extrairCodigoErro({ error: { code: 'PLANO_SEM_ACESSO' } })).toBe('PLANO_SEM_ACESSO');
+    expect(extrairCodigoErro({ error: { message: 'x' } })).toBeNull();
+    expect(extrairCodigoErro({ error: 'texto' })).toBeNull();
+    expect(extrairCodigoErro(null)).toBeNull();
+  });
+
+  it('502 MP_VALOR_NAO_ATUALIZADO usa o texto próprio; outros usam o back ou o padrão', () => {
+    expect(mensagemErroTrocaPlano({ error: { code: 'MP_VALOR_NAO_ATUALIZADO', message: 'interno' } }, 'padrão'))
+      .toBe(MENSAGEM_MP_VALOR_NAO_ATUALIZADO);
+    expect(mensagemErroTrocaPlano({ error: { message: 'Limite excedido' } }, 'padrão')).toBe('Limite excedido');
+    expect(mensagemErroTrocaPlano({}, 'padrão')).toBe('padrão');
   });
 });

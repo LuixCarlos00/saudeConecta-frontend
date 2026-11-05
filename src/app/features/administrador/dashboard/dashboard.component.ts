@@ -105,10 +105,14 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     this.themeSubscription = this.themeService.currentTheme$.subscribe(
       (theme) => this.isDarkMode = theme.isDark
     );
+    this.verificarStatusAssinatura();
+  }
+
+  /** Carrega os dados do painel; só roda com a assinatura em dia (SUSPENSA devolve 403 em todas). */
+  private carregarPainel(): void {
     this.carregarConfiguracoesGraficos();
     this.carregarConfiguracoesCards();
     this.carregarEstatisticas();
-    this.verificarStatusAssinatura();
   }
 
   ngAfterViewInit(): void {
@@ -243,6 +247,15 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.assinaturaApiService.minhaAssinatura().subscribe({
       next: (assinatura) => {
+        if (assinatura.status === 'SUSPENSA') {
+          // Sem acesso ao painel: evita a enxurrada de 403. Só quem pode abrir /minha-assinatura
+          // é levado para lá (os demais perfis cairiam no RoleGuard, que manda ao login).
+          if (this.authService.isOrgAdmin() || this.authService.isRecepcionista()) {
+            this.router.navigate(['/minha-assinatura']);
+          }
+          return;
+        }
+        this.carregarPainel();
         if (assinatura.status === 'INADIMPLENTE') {
           this.assinaturaInadimplente = true;
           const dataLimite = calcularDataSuspensao(assinatura.dataVencimento);
@@ -252,7 +265,10 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
           }
         }
       },
-      error: (err) => console.warn('Não foi possível verificar status da assinatura:', err)
+      error: (err) => {
+        console.warn('Não foi possível verificar status da assinatura:', err);
+        this.carregarPainel();
+      }
     });
   }
 

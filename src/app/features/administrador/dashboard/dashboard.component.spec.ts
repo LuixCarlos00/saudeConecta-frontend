@@ -1,7 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Component } from '@angular/core';
 import { By } from '@angular/platform-browser';
-import { EMPTY } from 'rxjs';
+import { EMPTY, of } from 'rxjs';
+import { Router } from '@angular/router';
+import { AuthService } from 'src/app/core/services/auth.service';
 
 import { DashboardComponent } from './dashboard.component';
 import { ControleAcessoApiService } from 'src/app/services/api/controle-acesso-api.service';
@@ -19,6 +21,9 @@ class DashboardPlataformaStubComponent {}
 describe('DashboardComponent (decisão entre painéis)', () => {
   let fixture: ComponentFixture<DashboardComponent>;
   let chamadas: string[];
+
+  let statusAssinatura = 'ATIVA';
+  let orgAdmin = true;
 
   function montar(superAdmin: boolean): void {
     // Perfil fixo; qualquer outra checagem de permissão responde false.
@@ -40,7 +45,10 @@ describe('DashboardComponent (decisão entre painéis)', () => {
       providers: [
         { provide: ControleAcessoApiService, useValue: acesso },
         { provide: DashboardApiService, useValue: stub('DashboardApiService') },
-        { provide: AssinaturaApiService, useValue: stub('AssinaturaApiService') },
+        { provide: AssinaturaApiService, useValue: {
+          minhaAssinatura: () => { chamadas.push('AssinaturaApiService.minhaAssinatura'); return of({ status: statusAssinatura }); }
+        } },
+        { provide: AuthService, useValue: { isOrgAdmin: () => orgAdmin, isRecepcionista: () => false, getOrganizacaoId: () => 1, getCurrentUser: () => null } },
         { provide: ConsultaApiService, useValue: stub('ConsultaApiService') },
         { provide: ProfissionalApiService, useValue: stub('ProfissionalApiService') },
         { provide: ConfiguracaoCardService, useValue: stub('ConfiguracaoCardService') },
@@ -49,6 +57,8 @@ describe('DashboardComponent (decisão entre painéis)', () => {
     });
     fixture = TestBed.createComponent(DashboardComponent);
   }
+
+  beforeEach(() => { statusAssinatura = 'ATIVA'; orgAdmin = true; });
 
   it('SUPER_ADMIN: mostra o painel da plataforma, esconde o da clínica e não chama as APIs de clínica', () => {
     montar(true);
@@ -64,5 +74,24 @@ describe('DashboardComponent (decisão entre painéis)', () => {
     expect(fixture.debugElement.query(By.css('app-dashboard-plataforma'))).toBeNull();
     expect(fixture.nativeElement.querySelector('.healthcare-content')).toBeTruthy();
     expect(chamadas.length).toBeGreaterThan(0);
+  });
+
+  it('assinatura SUSPENSA: não dispara as chamadas do painel (evita enxurrada de 403) e leva o ADMIN a /minha-assinatura', () => {
+    statusAssinatura = 'SUSPENSA';
+    montar(false);
+    const navigate = spyOn(TestBed.inject(Router), 'navigate').and.resolveTo(true);
+    fixture.detectChanges();
+    expect(chamadas).toEqual(['AssinaturaApiService.minhaAssinatura']);
+    expect(navigate).toHaveBeenCalledWith(['/minha-assinatura']);
+  });
+
+  it('assinatura SUSPENSA para perfil sem acesso à tela de pagamento: não carrega nem redireciona', () => {
+    statusAssinatura = 'SUSPENSA';
+    orgAdmin = false;
+    montar(false);
+    const navigate = spyOn(TestBed.inject(Router), 'navigate').and.resolveTo(true);
+    fixture.detectChanges();
+    expect(chamadas).toEqual(['AssinaturaApiService.minhaAssinatura']);
+    expect(navigate).not.toHaveBeenCalled();
   });
 });

@@ -6,6 +6,7 @@ import { Subject, takeUntil } from 'rxjs';
 // Core services
 import { AuthService } from 'src/app/core/services/auth.service';
 import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
+import { AssinaturaApiService } from 'src/app/services/api/assinatura-api.service';
 
 // Constants
 import { ALLOWED_ROLES, Role } from 'src/app/shared/constants/roles.constant';
@@ -33,7 +34,8 @@ export class LoginComponent implements OnInit, OnDestroy {
     private router: Router,
     private formBuilder: FormBuilder,
     private authService: AuthService,
-    private notificacao: NotificacaoService
+    private notificacao: NotificacaoService,
+    private assinaturaApi: AssinaturaApiService
   ) { }
 
   ngOnInit(): void {
@@ -120,10 +122,27 @@ export class LoginComponent implements OnInit, OnDestroy {
     const success = this.authService.handleLoginSuccess(token);
 
     if (success) {
-      this.router.navigate(['/Dashboard']);
+      this.navegarAposLogin();
     } else {
       this.notificacao.showError('Você não tem permissão para acessar esta página');
     }
+  }
+
+  /**
+   * Destino após o login. Clínica com assinatura SUSPENSA só consegue usar as rotas de pagamento
+   * (o resto devolve 403), então ADMIN e secretária vão direto para /minha-assinatura.
+   * Qualquer falha na consulta cai no Dashboard, o destino de sempre.
+   */
+  private navegarAposLogin(): void {
+    const podeVerAssinatura = this.authService.isOrgAdmin() || this.authService.isRecepcionista();
+    if (!podeVerAssinatura) {
+      this.router.navigate(['/Dashboard']);
+      return;
+    }
+    this.assinaturaApi.minhaAssinatura().subscribe({
+      next: (assinatura) => this.router.navigate([assinatura.status === 'SUSPENSA' ? '/minha-assinatura' : '/Dashboard']),
+      error: () => this.router.navigate(['/Dashboard'])
+    });
   }
 
   /**

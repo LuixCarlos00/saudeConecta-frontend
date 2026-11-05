@@ -3,6 +3,7 @@ import { PlanoApiService } from 'src/app/services/api/plano-api.service';
 import { AssinaturaApiService } from 'src/app/services/api/assinatura-api.service';
 import { PlanoAssinatura, AssinaturaTenant } from 'src/app/util/variados/interfaces/planos/PlanoAssinatura';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { mensagemErroTrocaPlano } from 'src/app/shared/utils/mensagem-erro-http';
 
 @Component({
   selector: 'app-lista-planos',
@@ -75,7 +76,7 @@ export class ListaPlanosComponent implements OnInit {
         this.snackBar.open(`Plano alterado para ${plano.nome}!`, 'Fechar', { duration: 3000 });
       },
       error: (err) => {
-        const msg = err.error?.message || 'Erro ao trocar plano';
+        const msg = mensagemErroTrocaPlano(err, 'Erro ao trocar plano');
         this.snackBar.open(msg, 'Fechar', { duration: 5000 });
       }
     });
