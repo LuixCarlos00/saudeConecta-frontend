@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpTestingController } from '@angular/common/http/testing';
 import { of } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { tokenService } from 'src/app/util/Token/Token.service';
+import { AuthService } from 'src/app/core/services/auth.service';
 import { IMPORTS_TESTE_PADRAO, PROVIDERS_TESTE_PADRAO, SCHEMAS_TESTE_PADRAO } from '../../../testing/configuracao-teste';
 import { AgendaCalendarioComponent } from './agenda-calendario.component';
 
@@ -19,14 +19,12 @@ describe('AgendaCalendarioComponent: Retomar atendimento', () => {
       providers: [
         ...PROVIDERS_TESTE_PADRAO,
         {
-          provide: tokenService,
+          provide: AuthService,
           useValue: {
-            UsuarioLogadoValue$: of({ id: 1, perfil }),
-            decodificaToken: () => {},
-            getUsuarioLogado: () => ({ id: 1, perfil }),
-            obterAutorizacao: () => 'ROLE_DOCTOR',
-            obterUsuarioId: () => 1,
-            obterOrganizacaoId: () => 1,
+            currentUser$: of({ id: 1, perfil }),
+            getCurrentUser: () => ({ id: 1, perfil }),
+            getUserRole: () => 'ROLE_DOCTOR',
+            getOrganizacaoId: () => 1,
           },
         },
       ],

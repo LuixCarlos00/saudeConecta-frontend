@@ -4,7 +4,7 @@ import { ConsultaApiService } from 'src/app/services/api/consulta-api.service';
 import { RascunhoAtendimentoApiService } from 'src/app/services/api/rascunho-atendimento-api.service';
 import { ProntuarioStateService } from 'src/app/services/state/prontuario-state.service';
 import { Usuario } from 'src/app/util/variados/interfaces/usuario/usuario';
-import { tokenService } from 'src/app/util/Token/Token.service';
+import { AuthService } from 'src/app/core/services/auth.service';
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { PageEvent } from '@angular/material/paginator';
 import { MatDialog } from '@angular/material/dialog';
@@ -41,7 +41,7 @@ export class TabelaAgendaMedicoComponent implements OnInit {
   };
 
   constructor(
-    private tokenService: tokenService,
+    private authService: AuthService,
     private consultaApiService: ConsultaApiService,
     public dialog: MatDialog,
     private prontuarioStateService: ProntuarioStateService,
@@ -49,8 +49,7 @@ export class TabelaAgendaMedicoComponent implements OnInit {
     private route: Router,
     private rascunhoApi: RascunhoAtendimentoApiService
   ) {
-    this.tokenService.decodificaToken();
-    this.tokenService.UsuarioLogadoValue$.pipe(filter(Boolean), take(1)).subscribe((Usuario) => {
+    this.authService.currentUser$.pipe(filter(Boolean), take(1)).subscribe((Usuario) => {
       if (Usuario) {
         this.UsuarioLogado = Usuario;
       }

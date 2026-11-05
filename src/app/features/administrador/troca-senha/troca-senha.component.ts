@@ -9,7 +9,7 @@ import { AdministradorApiService } from 'src/app/services/api/administrador-api.
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { el } from 'date-fns/locale';
-import { tokenService } from "src/app/util/Token/Token.service";
+import { AuthService } from 'src/app/core/services/auth.service';
 import { Adiministrador } from 'src/app/util/variados/interfaces/administrado/adiministrador';
 import Swal from 'sweetalert2';
 import { map, take, filter } from 'rxjs';
@@ -35,10 +35,9 @@ export class TrocaSenhaComponent implements OnInit {
     private form: FormBuilder,
     private administradorApiService: AdministradorApiService,
     private usuarioApiService: UsuarioApiService,
-    private tokenService: tokenService
+    private authService: AuthService
   ) {
-    this.tokenService.decodificaToken();
-    this.tokenService.UsuarioLogadoValue$.pipe(filter(Boolean), take(1)).subscribe((paciente) => {
+    this.authService.currentUser$.pipe(filter(Boolean), take(1)).subscribe((paciente) => {
       if (paciente) {
 
         this.UsuarioLogado = paciente;

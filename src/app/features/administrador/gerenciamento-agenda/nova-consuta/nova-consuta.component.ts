@@ -12,7 +12,7 @@ import { HoradaConsulta } from 'src/app/util/variados/options/options';
 import { extrairMensagemErro } from 'src/app/shared/utils/mensagem-erro-http';
 import { ConsultaApiService, HorarioOcupado } from 'src/app/services/api/consulta-api.service';
 import { ConsultaStateService } from 'src/app/services/state/consulta-state.service';
-import { tokenService } from 'src/app/util/Token/Token.service';
+import { AuthService } from 'src/app/core/services/auth.service';
 import { Usuario } from 'src/app/util/variados/interfaces/usuario/usuario';
 import { async, take, filter } from 'rxjs';
 import { DialogService } from 'src/app/util/variados/dialogo-confirmacao/dialog.service';
@@ -118,10 +118,10 @@ export class NovaConsultaComponent implements OnInit {
     private pacienteApi: PacienteApiService,
     private consultaApi: ConsultaApiService,
     private consultaState: ConsultaStateService,
-    private tokenService: tokenService,
+    private authService: AuthService,
     private DialogService: DialogService
   ) {
-    this.tokenService.UsuarioLogadoValue$.pipe(filter(Boolean), take(1)).subscribe((UsuarioLogado) => {
+    this.authService.currentUser$.pipe(filter(Boolean), take(1)).subscribe((UsuarioLogado) => {
       if (UsuarioLogado) this.UsuarioLogado = UsuarioLogado;
     });
   }

@@ -11,7 +11,7 @@ import { EditarConsultasComponent } from './Editar-Consultas/Editar-Consultas.co
 import { ObservacoesComponent } from './Observacoes/Observacoes.component';
 import { Consultav2 } from 'src/app/util/variados/interfaces/consulta/consultav2';
 import { Usuario } from 'src/app/util/variados/interfaces/usuario/usuario';
-import { tokenService } from 'src/app/util/Token/Token.service';
+import { AuthService } from 'src/app/core/services/auth.service';
 import { ProntuarioDentistaApiService } from 'src/app/services/api/prontuario-dentista-api.service';
 import { ProntuarioApiService } from 'src/app/services/api/prontuario-api.service';
 import { PlanejamentoTerapeuticoApiService } from 'src/app/services/api/planejamento-terapeutico-api.service';
@@ -62,7 +62,7 @@ export class AgendaComponent implements OnInit, OnDestroy {
     private consultaApi: ConsultaApiService,
     public dialog: MatDialog,
     private consultaState: ConsultaStateService,
-    private tokenService: tokenService,
+    private authService: AuthService,
     private prontuarioDentistaApiService: ProntuarioDentistaApiService,
     private prontuarioApiService: ProntuarioApiService,
     private planejamentoApi: PlanejamentoTerapeuticoApiService,
@@ -70,8 +70,7 @@ export class AgendaComponent implements OnInit, OnDestroy {
   ) { }
 
   async ngOnInit() {
-    this.tokenService.decodificaToken();
-    this.tokenService.UsuarioLogadoValue$
+    this.authService.currentUser$
       .pipe(takeUntil(this.destroy$))
       .subscribe((usuario) => {
         if (usuario?.id) { this.UsuarioLogado = usuario; }

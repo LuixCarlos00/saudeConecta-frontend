@@ -21,6 +21,7 @@ export interface DecodedToken {
   tipoUsuario?: number;
   perfil?: string;
   tipoProfissional?: string;
+  nome?: string;
 }
 
 /**

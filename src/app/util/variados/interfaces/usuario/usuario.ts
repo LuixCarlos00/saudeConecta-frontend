@@ -9,7 +9,7 @@ export interface Usuario {
 
   // Propriedades JWT (quando usado como token)
   aud?: string;
-  exp?: string;
+  exp?: string | number;
   iss?: string;
   sub?: string;
 }

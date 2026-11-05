@@ -5,7 +5,7 @@ import { ProfissionalApiService } from 'src/app/services/api/profissional-api.se
 import { SecretariaApiService } from 'src/app/services/api/secretaria-api.service';
 import { UsuarioApiService } from 'src/app/services/api/usuario-api.service';
 import { CepApiService } from 'src/app/services/api/cep-api.service';
-import { tokenService } from 'src/app/util/Token/Token.service';
+import { AuthService } from 'src/app/core/services/auth.service';
 import { Subscription } from 'rxjs';
 import Swal from 'sweetalert2';
 import { extrairMensagemErro } from 'src/app/shared/utils/mensagem-erro-http';
@@ -86,7 +86,7 @@ export class DadosPessoaisComponent implements OnInit, OnDestroy {
   getFieldError = getFieldError;
 
   constructor(
-    private tokenService: tokenService,
+    private authService: AuthService,
     private profissionalApiService: ProfissionalApiService,
     private secretariaApiService: SecretariaApiService,
     private usuarioApiService: UsuarioApiService,
@@ -136,8 +136,7 @@ export class DadosPessoaisComponent implements OnInit, OnDestroy {
       nacionalidade: ['', nacionalidadeValidator()],
     });
 
-    this.tokenService.decodificaToken();
-    this.tokenService.UsuarioLogadoValue$.subscribe((paciente) => {
+    this.authService.currentUser$.subscribe((paciente) => {
       if (paciente) this.UsuarioLogado = paciente;
     });
   }

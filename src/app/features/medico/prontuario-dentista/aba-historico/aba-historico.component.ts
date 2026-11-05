@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { Subject, takeUntil } from 'rxjs';
 import { ConsultaApiService } from 'src/app/services/api/consulta-api.service';
 import { IALocalService, ResumoClinico } from 'src/app/services/ia-local.service';
-import { tokenService } from 'src/app/util/Token/Token.service';
 
 type AbaResumo = 'visao' | 'vitais' | 'timeline' | 'recomendacoes';
 
@@ -31,8 +30,7 @@ export class AbaHistoricoComponent implements OnInit, OnDestroy {
 
   constructor(
     private consultaApi: ConsultaApiService,
-    private iaLocal: IALocalService,
-    private tokenSvc: tokenService
+    private iaLocal: IALocalService
   ) {}
 
   ngOnInit(): void {

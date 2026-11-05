@@ -8,7 +8,7 @@ import { CadastroPacienteComponent } from '../cadastros/cadastro-paciente/cadast
 import { CadastroSecretariaComponent } from '../cadastros/cadastro-secretaria/cadastro-secretaria.component';
 import { CadastroAdmComponent } from '../cadastros/cadastro-adm/cadastro-adm.component';
 import { CadastroAdminOrgComponent } from '../cadastros/cadastro-admin-org/cadastro-admin-org.component';
-import { tokenService } from 'src/app/util/Token/Token.service';
+import { AuthService } from 'src/app/core/services/auth.service';
 import { isSuperAdmin } from 'src/app/shared/constants/roles.constant';
 import { AssinaturaApiService } from 'src/app/services/api/assinatura-api.service';
 import { LimitesPlano } from 'src/app/util/variados/interfaces/planos/PlanoAssinatura';
@@ -30,12 +30,12 @@ export class GerenciamentoUsuarioComponent implements OnInit, OnDestroy {
   constructor(
     private filtroStateService: FiltroStateService,
     private dialog: MatDialog,
-    private tokenSvc: tokenService,
+    private authService: AuthService,
     private assinaturaApiService: AssinaturaApiService
   ) {}
 
   ngOnInit() {
-    const role = this.tokenSvc.obterAutorizacao();
+    const role = this.authService.getUserRole();
     this.isSuperAdmin = isSuperAdmin(role);
     this.carregarLimites();
     // asapScheduler: a tabela filha liga o loading durante o ciclo de detecção do pai (evita NG0100).

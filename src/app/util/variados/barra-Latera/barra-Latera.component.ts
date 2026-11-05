@@ -1,7 +1,6 @@
 import { ControleAcessoApiService } from 'src/app/services/api/controle-acesso-api.service';
 import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
-import { tokenService } from 'src/app/util/Token/Token.service';
 import { Usuario } from '../interfaces/usuario/usuario';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { ThemeService } from 'src/app/services/theme/theme.service';
@@ -38,7 +37,6 @@ export class BarraLateraComponent implements OnInit, OnDestroy {
   constructor(
     private authService: AuthService,
     private router: Router,
-    private tokenService: tokenService,
     public ControleAcessoService: ControleAcessoApiService,
     private themeService: ThemeService
   ) { }
@@ -46,7 +44,7 @@ export class BarraLateraComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
 
     // Observar dados do usuário
-    const userSub = this.tokenService.UsuarioLogadoValue$.subscribe((usuario) => {
+    const userSub = this.authService.currentUser$.subscribe((usuario) => {
       if (usuario) this.UsuarioLogado = usuario;
     });
     this.subscriptions.push(userSub);

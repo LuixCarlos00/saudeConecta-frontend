@@ -7,7 +7,7 @@ import Swal from 'sweetalert2';
 import { TrocaSenhaComponent } from './troca-senha.component';
 import { AdministradorApiService } from 'src/app/services/api/administrador-api.service';
 import { UsuarioApiService } from 'src/app/services/api/usuario-api.service';
-import { tokenService } from 'src/app/util/Token/Token.service';
+import { AuthService } from 'src/app/core/services/auth.service';
 
 describe('TrocaSenhaComponent', () => {
   const USUARIO_LOGADO_ID = 7;
@@ -19,9 +19,8 @@ describe('TrocaSenhaComponent', () => {
 
   beforeEach(async () => {
     usuarioApiService = jasmine.createSpyObj<UsuarioApiService>('UsuarioApiService', ['trocarSenharUsuariobyOrg']);
-    const tokenServiceMock = {
-      decodificaToken: () => {},
-      UsuarioLogadoValue$: of({ id: USUARIO_LOGADO_ID }),
+    const authServiceMock = {
+      currentUser$: of({ id: USUARIO_LOGADO_ID }),
     };
 
     await TestBed.configureTestingModule({
@@ -30,7 +29,7 @@ describe('TrocaSenhaComponent', () => {
       providers: [
         { provide: AdministradorApiService, useValue: {} },
         { provide: UsuarioApiService, useValue: usuarioApiService },
-        { provide: tokenService, useValue: tokenServiceMock },
+        { provide: AuthService, useValue: authServiceMock },
       ],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();

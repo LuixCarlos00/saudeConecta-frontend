@@ -1,7 +1,7 @@
 import { Component, ElementRef, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { tokenService } from 'src/app/util/Token/Token.service';
+import { AuthService } from 'src/app/core/services/auth.service';
 import { ControleAcessoApiService } from 'src/app/services/api/controle-acesso-api.service';
 import { AssinaturaApiService } from 'src/app/services/api/assinatura-api.service';
 import { AssinaturaTenant } from 'src/app/util/variados/interfaces/planos/PlanoAssinatura';
@@ -42,7 +42,7 @@ export class BarraSuperiorComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription[] = [];
 
   constructor(
-    private tokenService: tokenService,
+    private authService: AuthService,
     public ControleAcessoService: ControleAcessoApiService,
     private assinaturaApiService: AssinaturaApiService,
     private router: Router,
@@ -62,7 +62,7 @@ export class BarraSuperiorComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    const userSub = this.tokenService.UsuarioLogadoValue$.subscribe((usuario) => {
+    const userSub = this.authService.currentUser$.subscribe((usuario) => {
       if (usuario) this.UsuarioLogado = usuario;
     });
     this.subscriptions.push(userSub);

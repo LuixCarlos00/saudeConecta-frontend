@@ -10,9 +10,6 @@ import { ErrorHandlerService } from 'src/app/core/services/error-handler.service
 // Constants
 import { ALLOWED_ROLES, Role } from 'src/app/shared/constants/roles.constant';
 
-// Token service
-import { tokenService } from 'src/app/util/Token/Token.service';
-
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -36,8 +33,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     private router: Router,
     private formBuilder: FormBuilder,
     private authService: AuthService,
-    private errorHandler: ErrorHandlerService,
-    private tokenService: tokenService
+    private errorHandler: ErrorHandlerService
   ) { }
 
   ngOnInit(): void {

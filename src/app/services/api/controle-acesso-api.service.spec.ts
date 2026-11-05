@@ -2,17 +2,16 @@ import { TestBed } from '@angular/core/testing';
 import { BehaviorSubject } from 'rxjs';
 
 import { ControleAcessoApiService } from './controle-acesso-api.service';
-import { tokenService } from 'src/app/util/Token/Token.service';
+import { AuthService } from 'src/app/core/services/auth.service';
 
 describe('ControleAcessoApiService.podeGerenciarAdministrador', () => {
   function criarServico(aud: string): ControleAcessoApiService {
     TestBed.configureTestingModule({
       providers: [{
-        provide: tokenService,
+        provide: AuthService,
         useValue: {
-          decodificaToken: () => {},
-          UsuarioLogadoValue$: new BehaviorSubject<any>(null),
-          obterAutorizacao: () => aud,
+          currentUser$: new BehaviorSubject<any>(null),
+          getUserRole: () => aud,
         }
       }]
     });

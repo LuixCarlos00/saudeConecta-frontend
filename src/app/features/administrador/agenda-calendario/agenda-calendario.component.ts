@@ -7,7 +7,7 @@ import { extrairMensagemErro } from 'src/app/shared/utils/mensagem-erro-http';
 import { ConsultaApiService } from 'src/app/services/api/consulta-api.service';
 import { ConsultaStateService } from 'src/app/services/state/consulta-state.service';
 import { ProntuarioStateService } from 'src/app/services/state/prontuario-state.service';
-import { tokenService } from 'src/app/util/Token/Token.service';
+import { AuthService } from 'src/app/core/services/auth.service';
 import { ControleAcessoApiService } from 'src/app/services/api/controle-acesso-api.service';
 import { Consultav2, StatusConsulta } from 'src/app/util/variados/interfaces/consulta/consultav2';
 import { Usuario } from 'src/app/util/variados/interfaces/usuario/usuario';
@@ -133,7 +133,7 @@ export class AgendaCalendarioComponent implements OnInit, OnDestroy {
     private consultaService: ConsultaApiService,
     private consultaState: ConsultaStateService,
     private prontuarioState: ProntuarioStateService,
-    private tokenService: tokenService,
+    private authService: AuthService,
     public controleAcesso: ControleAcessoApiService,
     private dialog: MatDialog,
     private cdr: ChangeDetectorRef,
@@ -149,7 +149,7 @@ export class AgendaCalendarioComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.atualizarTitulo();
     this.carregarConfiguracaoFluxo();
-    this.tokenService.UsuarioLogadoValue$
+    this.authService.currentUser$
       .pipe(
         filter(u => !!u && !!u.id),
         take(1),

@@ -11,7 +11,7 @@ import { ConsultaApiService } from 'src/app/services/api/consulta-api.service';
 import { ConsultaStateService } from 'src/app/services/state/consulta-state.service';
 import { PacienteApiService } from 'src/app/services/api/paciente-api.service';
 import { ProfissionalApiService } from 'src/app/services/api/profissional-api.service';
-import { tokenService } from 'src/app/util/Token/Token.service';
+import { AuthService } from 'src/app/core/services/auth.service';
 import { DialogService } from 'src/app/util/variados/dialogo-confirmacao/dialog.service';
 import { TabelaDePacientesComponent } from '../../administrador/gerenciamento-agenda/nova-consuta/tabela-de-pacientes/tabela-de-pacientes.component';
 import { TabelasPesquisasMedicosComponent } from '../../administrador/gerenciamento-agenda/nova-consuta/tabelas-Pesquisas-Medicos/tabelas-Pesquisas-Medicos.component';
@@ -76,11 +76,11 @@ export class AgendarConsultaComponent implements OnInit {
     private profissionalApi: ProfissionalApiService,
     private consultaApi: ConsultaApiService,
     private consultaState: ConsultaStateService,
-    private tokenService: tokenService,
+    private authService: AuthService,
     private dialogService: DialogService,
     @Optional() @Inject(MAT_DIALOG_DATA) public data: AgendarConsultaData
   ) {
-    this.tokenService.UsuarioLogadoValue$.pipe(filter(Boolean), take(1)).subscribe(u => {
+    this.authService.currentUser$.pipe(filter(Boolean), take(1)).subscribe(u => {
       if (u) this.UsuarioLogado = u;
     });
   }

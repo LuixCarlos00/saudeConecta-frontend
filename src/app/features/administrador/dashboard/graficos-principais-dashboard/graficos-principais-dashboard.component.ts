@@ -4,7 +4,7 @@ import { Chart, registerables, ChartConfiguration } from 'chart.js';
 import { ConsultaApiService, SaldoFinanceiroResponse } from 'src/app/services/api/consulta-api.service';
 import { Subject, takeUntil, finalize } from 'rxjs';
 import { ControleAcessoApiService } from 'src/app/services/api/controle-acesso-api.service';
-import { tokenService } from 'src/app/util/Token/Token.service';
+import { AuthService } from 'src/app/core/services/auth.service';
 import { ProfissionalApiService } from 'src/app/services/api/profissional-api.service';
 import { formatarDataLocal } from '../../../../shared/utils/data-local';
 
@@ -224,7 +224,7 @@ export class GraficosPrincipaisDashboardComponent implements OnInit, OnChanges, 
     private consultaApiService: ConsultaApiService,
     private formBuilder: FormBuilder,
     private controleAcessoService: ControleAcessoApiService,
-    private tokenService: tokenService,
+    private authService: AuthService,
     private profissionalApiService: ProfissionalApiService
   ) { }
 
@@ -240,8 +240,7 @@ export class GraficosPrincipaisDashboardComponent implements OnInit, OnChanges, 
     });
 
     // Obtém dados do usuário logado
-    this.tokenService.decodificaToken();
-    const usuario = this.tokenService.getUsuarioLogado();
+    const usuario = this.authService.getCurrentUser();
     if (usuario) {
       this.usuarioLogadoId = usuario.id;
       this.organizacaoId = usuario.organizacaoId || null;
@@ -1158,8 +1157,7 @@ export class GraficosPrincipaisDashboardComponent implements OnInit, OnChanges, 
       return;
     }
 
-    this.tokenService.decodificaToken();
-    const usuario = this.tokenService.getUsuarioLogado();
+    const usuario = this.authService.getCurrentUser();
 
     if (!usuario?.id) {
       this.hasErrorMediaTempo = true;

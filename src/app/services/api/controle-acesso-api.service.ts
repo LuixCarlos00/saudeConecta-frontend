@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
-import { tokenService } from 'src/app/util/Token/Token.service';
+import { AuthService } from 'src/app/core/services/auth.service';
 
 export interface UsuarioLogado {
   id: number;
   aud: string;
-  exp: string;
+  exp: number;
   iss: string;
   sub: string;
 }
@@ -16,14 +16,13 @@ export class ControleAcessoApiService {
   UsuarioLogado: UsuarioLogado = {
     id: 0,
     aud: '',
-    exp: '',
+    exp: 0,
     iss: '',
     sub: '',
   };
 
-  constructor(private tokenService: tokenService) {
-    this.tokenService.decodificaToken();
-    this.tokenService.UsuarioLogadoValue$.subscribe((usuario) => {
+  constructor(private authService: AuthService) {
+    this.authService.currentUser$.subscribe((usuario) => {
       if (usuario) {
         this.UsuarioLogado = usuario;
       }
@@ -31,7 +30,7 @@ export class ControleAcessoApiService {
   }
 
   private possuiRole(role: string): boolean {
-    const autorizacao = this.tokenService.obterAutorizacao();
+    const autorizacao = this.authService.getUserRole();
     return autorizacao.includes(role);
   }
 

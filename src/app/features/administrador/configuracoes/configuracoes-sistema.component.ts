@@ -12,7 +12,6 @@ import {
 } from 'src/app/services/api/configuracao-card.service';
 import { ProcedimentoPadraoApiService } from 'src/app/services/api/procedimento-padrao-api.service';
 import { UsuarioApiService } from 'src/app/services/api/usuario-api.service';
-import { tokenService } from 'src/app/util/Token/Token.service';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { Subscription } from 'rxjs';
 import Swal from 'sweetalert2';
@@ -52,7 +51,6 @@ export class ConfiguracoesSistemaComponent implements OnInit, OnDestroy {
     private configuracaoCardService: ConfiguracaoCardService,
     private procedimentoPadraoService: ProcedimentoPadraoApiService,
     private usuarioApiService: UsuarioApiService,
-    private tokenSvc: tokenService,
     private authService: AuthService
   ) {
     this.availableThemes = this.themeService.availableThemes;
@@ -310,8 +308,7 @@ export class ConfiguracoesSistemaComponent implements OnInit, OnDestroy {
     }
 
     // Se for CLINICO, busca o ID do profissional
-    this.tokenSvc.decodificaToken();
-    const usuario = this.tokenSvc.getUsuarioLogado();
+    const usuario = this.authService.getCurrentUser();
     if (!usuario?.id) {
       return;
     }
