@@ -18,6 +18,7 @@ import { TabelasPesquisasMedicosComponent } from '../../administrador/gerenciame
 import { CadastroPacienteComponent } from '../../administrador/cadastros/cadastro-paciente/cadastro-paciente.component';
 import { Consultav2 } from 'src/app/util/variados/interfaces/consulta/consultav2';
 import { idFormaPagamentoPorRotulo } from 'src/app/shared/constants/forma-pagamento.constant';
+import { formatarDataLocal, formatarHoraLocal } from 'src/app/shared/utils/data-local';
 
 export interface AgendarConsultaData {
   /** Quando passado, o componente opera em modo edição */
@@ -122,13 +123,9 @@ export class AgendarConsultaComponent implements OnInit {
   private _preencherModoEdicao(c: Consultav2): void {
     const dataHora = c.dataHora ? new Date(c.dataHora) : null;
 
-    const data = dataHora
-      ? `${dataHora.getFullYear()}-${String(dataHora.getMonth() + 1).padStart(2, '0')}-${String(dataHora.getDate()).padStart(2, '0')}`
-      : '';
+    const data = dataHora ? formatarDataLocal(dataHora) : '';
 
-    const hora = dataHora
-      ? `${String(dataHora.getHours()).padStart(2, '0')}:${String(dataHora.getMinutes()).padStart(2, '0')}`
-      : '';
+    const hora = dataHora ? formatarHoraLocal(dataHora) : '';
 
     this.FormularioConsulta.patchValue({
       date: data,
@@ -328,7 +325,7 @@ export class AgendarConsultaComponent implements OnInit {
     for (const iv of intervalos) {
       let cur = new Date(iv.inicio.getTime());
       while (cur.getTime() + novoIntervalo * 60000 <= endTime.getTime() && cur.getTime() < iv.fim.getTime()) {
-        this.Hora.push({ value: this._fmtTime(cur), label: this._fmtTime(cur) });
+        this.Hora.push({ value: formatarHoraLocal(cur), label: formatarHoraLocal(cur) });
         cur = new Date(cur.getTime() + novoIntervalo * 60000);
       }
     }
@@ -339,7 +336,7 @@ export class AgendarConsultaComponent implements OnInit {
     const end = this._toDate('18:00');
     this.Hora = [];
     while (cur <= end) {
-      this.Hora.push({ value: this._fmtTime(cur), label: this._fmtTime(cur) });
+      this.Hora.push({ value: formatarHoraLocal(cur), label: formatarHoraLocal(cur) });
       cur = new Date(cur.getTime() + intervalo * 60000);
     }
   }
@@ -349,9 +346,6 @@ export class AgendarConsultaComponent implements OnInit {
     return new Date(2000, 0, 1, h, m, 0, 0);
   }
 
-  private _fmtTime(date: Date): string {
-    return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
-  }
 
   // ── Submissão ──────────────────────────────────────────
 

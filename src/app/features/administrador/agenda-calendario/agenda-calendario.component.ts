@@ -18,7 +18,7 @@ import { ProntuarioApiService } from 'src/app/services/api/prontuario-api.servic
 import { PlanejamentoTerapeuticoApiService } from 'src/app/services/api/planejamento-terapeutico-api.service';
 import { RascunhoAtendimentoApiService } from 'src/app/services/api/rascunho-atendimento-api.service';
 import { ConfiguracoesConsultaApiService, ConfiguracoesConsulta } from 'src/app/services/api/configuracoes-consulta-api.service';
-import { formatarDataLocal } from '../../../shared/utils/data-local';
+import { formatarDataLocal, formatarHoraLocal } from '../../../shared/utils/data-local';
 
 export type TipoVisualizacao = 'mes' | 'semana' | 'dia';
 
@@ -913,8 +913,7 @@ export class AgendaCalendarioComponent implements OnInit, OnDestroy {
 
   getHorario(dataHora: string): string {
     if (!dataHora) return '';
-    const d = new Date(dataHora);
-    return `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`;
+    return formatarHoraLocal(new Date(dataHora));
   }
 
   isStatusDone(etapa: string, statusAtual: string): boolean {

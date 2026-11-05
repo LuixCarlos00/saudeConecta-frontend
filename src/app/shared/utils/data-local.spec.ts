@@ -1,4 +1,4 @@
-import { diasCalendarioAte, formatarDataBr, formatarDataLocal, parseDataLocal } from './data-local';
+import { diasCalendarioAte, formatarDataBr, formatarDataLocal, formatarHoraLocal, parseDataLocal } from './data-local';
 
 describe('formatarDataLocal', () => {
   it('formata yyyy-MM-dd com zero à esquerda', () => {
@@ -75,5 +75,16 @@ describe('diasCalendarioAte', () => {
   it('devolve 0 para nulo ou inválido', () => {
     expect(diasCalendarioAte(null, hoje)).toBe(0);
     expect(diasCalendarioAte('x', hoje)).toBe(0);
+  });
+});
+
+describe('formatarHoraLocal', () => {
+  it('formata HH:mm com zero à esquerda', () => {
+    expect(formatarHoraLocal(new Date(2026, 0, 5, 9, 5))).toBe('09:05');
+  });
+
+  it('usa 24h e ignora segundos', () => {
+    expect(formatarHoraLocal(new Date(2026, 0, 5, 23, 59, 59))).toBe('23:59');
+    expect(formatarHoraLocal(new Date(2026, 0, 5, 0, 0))).toBe('00:00');
   });
 });

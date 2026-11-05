@@ -10,6 +10,7 @@ import {
   RascunhoAtendimentoResponse,
   TipoRascunho,
 } from 'src/app/util/variados/interfaces/Prontuario/RascunhoAtendimento';
+import { formatarHoraLocal } from 'src/app/shared/utils/data-local';
 
 /** Estado do salvamento automático, exibido no cabeçalho do atendimento. */
 export type EstadoAutosave = 'ocioso' | 'salvando' | 'salvo' | 'erro' | 'encerrado';
@@ -102,7 +103,7 @@ export class RascunhoAutosaveService {
   get mensagem(): string | null {
     switch (this.estado) {
       case 'salvando': return 'Salvando…';
-      case 'salvo': return this.salvoEm ? `Rascunho salvo às ${this.formatarHora(this.salvoEm)}` : null;
+      case 'salvo': return this.salvoEm ? `Rascunho salvo às ${formatarHoraLocal(this.salvoEm)}` : null;
       case 'erro': return 'Não foi possível salvar o rascunho';
       case 'encerrado': return 'Consulta encerrada: o rascunho não é mais salvo';
       default: return null;
@@ -368,9 +369,5 @@ export class RascunhoAutosaveService {
 
   private limparDebounce(): void {
     if (this.debounce) { clearTimeout(this.debounce); this.debounce = null; }
-  }
-
-  private formatarHora(data: Date): string {
-    return `${String(data.getHours()).padStart(2, '0')}:${String(data.getMinutes()).padStart(2, '0')}`;
   }
 }

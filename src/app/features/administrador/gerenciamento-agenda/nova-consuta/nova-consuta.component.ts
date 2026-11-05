@@ -19,7 +19,7 @@ import { DialogService } from 'src/app/util/variados/dialogo-confirmacao/dialog.
 import { Profissional } from 'src/app/util/variados/interfaces/medico/Profissional';
 import { CadastroPacienteComponent } from '../../cadastros/cadastro-paciente/cadastro-paciente.component';
 import { idFormaPagamentoPorRotulo } from 'src/app/shared/constants/forma-pagamento.constant';
-import { formatarDataLocal } from '../../../../shared/utils/data-local';
+import { formatarDataLocal, formatarHoraLocal } from '../../../../shared/utils/data-local';
 const STATUS_AGENDADAS = ['AGENDADA'];
 
 const DURACAO_PADRAO_MINUTOS = 30;
@@ -325,8 +325,8 @@ export class NovaConsultaComponent implements OnInit {
       while (currentTime.getTime() + novoIntervalo * 60000 <= endTime.getTime()
         && currentTime.getTime() < intervalo.fim.getTime()) {
         this.Hora.push({
-          value: this.formatTime(currentTime),
-          label: this.formatTime(currentTime),
+          value: formatarHoraLocal(currentTime),
+          label: formatarHoraLocal(currentTime),
         });
         currentTime = new Date(currentTime.getTime() + novoIntervalo * 60000);
       }
@@ -344,8 +344,8 @@ export class NovaConsultaComponent implements OnInit {
     while (currentTime <= endDateTime) {
       // Adiciona o horário formatado ao array
       this.Hora.push({
-        value: this.formatTime(currentTime),
-        label: this.formatTime(currentTime),
+        value: formatarHoraLocal(currentTime),
+        label: formatarHoraLocal(currentTime),
       });
       // Incrementa o tempo atual de acordo com o tempo de consulta
       currentTime = new Date(
@@ -366,12 +366,6 @@ export class NovaConsultaComponent implements OnInit {
         return !horariosDisponiveisFormatados.includes(horarioFormatado);
       });
     }
-  }
-
-  formatTime(date: Date): string {
-    const hours = date.getHours().toString().padStart(2, '0');
-    const minutes = date.getMinutes().toString().padStart(2, '0');
-    return `${hours}:${minutes}`;
   }
 
   convertToDateObject(timeString: string): Date {

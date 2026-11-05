@@ -13,6 +13,18 @@ export function formatarDataLocal(data: Date = new Date()): string {
 }
 
 /**
+ * Formata a hora no fuso LOCAL como 'HH:mm' (24h, com zero à esquerda).
+ *
+ * @param data Data/hora a formatar
+ * @returns String 'HH:mm'
+ */
+export function formatarHoraLocal(data: Date): string {
+  const horas = data.getHours().toString().padStart(2, '0');
+  const minutos = data.getMinutes().toString().padStart(2, '0');
+  return `${horas}:${minutos}`;
+}
+
+/**
  * Converte 'yyyy-MM-dd' em Date à meia-noite LOCAL (new Date('yyyy-MM-dd') seria UTC).
  *
  * @param texto Data no formato 'yyyy-MM-dd' (ignora sufixo de hora, se houver)

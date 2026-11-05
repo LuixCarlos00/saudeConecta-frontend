@@ -11,6 +11,7 @@ import Swal from 'sweetalert2';
 import { FORMAS_PAGAMENTO, rotuloFormaPagamento } from 'src/app/shared/constants/forma-pagamento.constant';
 import { Profissional } from 'src/app/util/variados/interfaces/medico/Profissional';
 import { escaparHtml } from 'src/app/shared/utils/escapar-html';
+import { formatarDataLocal, formatarHoraLocal } from 'src/app/shared/utils/data-local';
 
 interface ConsultaEdit {
   id: number;
@@ -108,8 +109,8 @@ export class EditarConsultasComponent implements OnInit {
 
   private preencherFormulario(): void {
     const dataHora = new Date(this.consulta.dataHora);
-    const dataFormatada = this.formatarDataParaInput(dataHora);
-    const horarioFormatado = this.formatarHorario(dataHora);
+    const dataFormatada = formatarDataLocal(dataHora);
+    const horarioFormatado = formatarHoraLocal(dataHora);
 
     this.FormGroupConsulta.patchValue({
       data: dataFormatada,
@@ -118,19 +119,6 @@ export class EditarConsultasComponent implements OnInit {
       formaPagamento: this.consulta.formaPagamentoId,
       valor: this.consulta.valor || 0, // PREENCHER VALOR
     });
-  }
-
-  private formatarDataParaInput(data: Date): string {
-    const ano = data.getFullYear();
-    const mes = String(data.getMonth() + 1).padStart(2, '0');
-    const dia = String(data.getDate()).padStart(2, '0');
-    return `${ano}-${mes}-${dia}`;
-  }
-
-  private formatarHorario(data: Date): string {
-    const horas = String(data.getHours()).padStart(2, '0');
-    const minutos = String(data.getMinutes()).padStart(2, '0');
-    return `${horas}:${minutos}`;
   }
 
   private formatarDataExibicao(dataInput: string): string {
@@ -296,8 +284,8 @@ export class EditarConsultasComponent implements OnInit {
 
 
       // O horário da consulta editada só é liberado na data original; em outra data ele não pertence a ela
-      const mesmaDataOriginal = data === this.formatarDataParaInput(new Date(this.consulta.dataHora));
-      const horarioAtual = this.formatarHorario(new Date(this.consulta.dataHora));
+      const mesmaDataOriginal = data === formatarDataLocal(new Date(this.consulta.dataHora));
+      const horarioAtual = formatarHoraLocal(new Date(this.consulta.dataHora));
       const ocupadosFiltrados = (horariosOcupados || []).filter(
         horario => !mesmaDataOriginal || horario.inicio.substring(0, 5) !== horarioAtual
       );
