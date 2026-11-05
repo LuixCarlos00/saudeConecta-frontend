@@ -111,6 +111,15 @@ export class AuthService implements OnDestroy {
   }
 
   /**
+   * Solicita a recuperação de senha por e-mail.
+   * @param dados objeto com o e-mail informado (ex.: `{ email }`)
+   * @returns resposta do back (pode trazer `message`)
+   */
+  esqueciMinhaSenha(dados: any): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/Home/esqueciMinhaSenha`, dados);
+  }
+
+  /**
    * Processa resposta de login bem-sucedido
    */
   handleLoginSuccess(token: string): boolean {

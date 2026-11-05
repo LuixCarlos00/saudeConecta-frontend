@@ -6,7 +6,6 @@ import {
   trigger,
 } from '@angular/animations';
 import { AdministradorApiService } from 'src/app/services/api/administrador-api.service';
-import { AuthApiService } from 'src/app/services/api/auth-api.service';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { el } from 'date-fns/locale';

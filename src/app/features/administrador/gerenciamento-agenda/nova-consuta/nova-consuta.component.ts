@@ -13,7 +13,6 @@ import { extrairMensagemErro } from 'src/app/shared/utils/mensagem-erro-http';
 import { ConsultaApiService, HorarioOcupado } from 'src/app/services/api/consulta-api.service';
 import { ConsultaStateService } from 'src/app/services/state/consulta-state.service';
 import { tokenService } from 'src/app/util/Token/Token.service';
-import { AuthApiService } from 'src/app/services/api/auth-api.service';
 import { Usuario } from 'src/app/util/variados/interfaces/usuario/usuario';
 import { async, take, filter } from 'rxjs';
 import { DialogService } from 'src/app/util/variados/dialogo-confirmacao/dialog.service';
@@ -119,7 +118,6 @@ export class NovaConsultaComponent implements OnInit {
     private pacienteApi: PacienteApiService,
     private consultaApi: ConsultaApiService,
     private consultaState: ConsultaStateService,
-    private authApi: AuthApiService,
     private tokenService: tokenService,
     private DialogService: DialogService
   ) {

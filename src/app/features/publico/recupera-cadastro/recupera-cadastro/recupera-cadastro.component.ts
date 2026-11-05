@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AuthApiService } from 'src/app/services/api/auth-api.service';
+import { AuthService } from 'src/app/core/services/auth.service';
 import Swal from 'sweetalert2';
 import { extrairMensagemErro } from 'src/app/shared/utils/mensagem-erro-http';
 
@@ -23,7 +23,7 @@ export class RecuperaCadastroComponent implements OnInit {
   constructor(
     private router: Router,
     private formBuilder: FormBuilder,
-    private authService: AuthApiService,
+    private authService: AuthService,
   ) {
 
   }

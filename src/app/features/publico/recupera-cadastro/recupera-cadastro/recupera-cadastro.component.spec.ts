@@ -5,7 +5,7 @@ import { DebugElement } from '@angular/core';
 
 import { of } from 'rxjs';
 import Swal from 'sweetalert2';
-import { AuthApiService } from 'src/app/services/api/auth-api.service';
+import { AuthService } from 'src/app/core/services/auth.service';
 import { RecuperaCadastroComponent } from './recupera-cadastro.component';
 import { IMPORTS_TESTE_PADRAO, PROVIDERS_TESTE_PADRAO, SCHEMAS_TESTE_PADRAO } from '../../../../testing/configuracao-teste';
 
@@ -41,7 +41,7 @@ describe('RecuperaCadastroComponent', () => {
 
     it('mostra a mensagem neutra do back sem afirmar que o e-mail existe', () => {
       const msg = 'Se o e-mail estiver cadastrado, voce recebera as instrucoes para recuperar a senha.';
-      spyOn(TestBed.inject(AuthApiService), 'esqueciMinhaSenha').and.returnValue(of({ message: msg }));
+      spyOn(TestBed.inject(AuthService), 'esqueciMinhaSenha').and.returnValue(of({ message: msg }));
       component.enviarEmail();
       expect(component.emailEnviado).toBeTrue();
       expect(component.mensagemSucesso).toBe(msg);
@@ -50,7 +50,7 @@ describe('RecuperaCadastroComponent', () => {
     });
 
     it('usa texto neutro quando a resposta não traz message', () => {
-      spyOn(TestBed.inject(AuthApiService), 'esqueciMinhaSenha').and.returnValue(of({}));
+      spyOn(TestBed.inject(AuthService), 'esqueciMinhaSenha').and.returnValue(of({}));
       component.enviarEmail();
       expect(component.mensagemSucesso).toContain('Se o e-mail estiver cadastrado');
     });
