@@ -95,16 +95,23 @@ export class ProntuarioMedicoComponent implements OnInit, OnDestroy, AfterViewIn
     this.tentarInicializarAbas();
   }
 
-  /** Tentativa de última hora de gravar ao fechar/recarregar a aba do navegador (best effort). */
-  @HostListener('window:beforeunload')
-  aoFecharJanela(): void {
+  /**
+   * F5/fechar a aba: tenta gravar (best effort) e, havendo alteração não salva, pede o aviso nativo
+   * do navegador. O texto é do navegador; returnValue só precisa existir.
+   */
+  @HostListener('window:beforeunload', ['$event'])
+  aoFecharJanela(evento: BeforeUnloadEvent): void {
     this.autosave.salvarAgora();
+    if (this.autosave.temAlteracaoNaoSalva) {
+      evento.preventDefault();
+      evento.returnValue = '';
+    }
   }
 
   ngOnDestroy(): void {
-    // Último PUT antes de sair; se o atendimento foi finalizado o autosave já está parado e nada é gravado.
-    this.autosave.salvarAgora();
-    this.autosave.parar();
+    // Último PUT antes de sair (sai mesmo com outro PUT em andamento); se o atendimento foi finalizado
+    // o autosave já está parado e nada é gravado.
+    this.autosave.sairDaTela();
     this.stopTimer();
     this.prontuarioState.limpar();
     this.destroy$.next();
@@ -117,6 +124,14 @@ export class ProntuarioMedicoComponent implements OnInit, OnDestroy, AfterViewIn
   private carregarRascunho(consulta: Consultav2 | null): void {
     if (!consulta?.id || this.rascunhoSolicitado) { return; }
     this.rascunhoSolicitado = true;
+    // O guard já baixou o rascunho (F5/link direto): usa esse, sem repetir o GET.
+    const preCarregado = this.prontuarioState.consumirRascunhoPreCarregado(consulta.id);
+    if (preCarregado) {
+      this.rascunhoInicial = preCarregado.rascunho;
+      this.rascunhoPronto = true;
+      this.tentarInicializarAbas();
+      return;
+    }
     this.rascunhoApi.buscar(consulta.id)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
@@ -218,20 +233,22 @@ export class ProntuarioMedicoComponent implements OnInit, OnDestroy, AfterViewIn
       confirmButtonColor: '#d33',
     }).then(result => {
       if (!result.isConfirmed) { return; }
-      this.autosave.parar(true);
-      this.rascunhoApi.descartar(consultaId)
-        .pipe(takeUntil(this.destroy$))
-        .subscribe({
-          next: () => {
-            this.limparAbas();
-            this.autosave.iniciar(this.configAutosave(consultaId), null);
-            this.errorHandler.showSuccessToast('Rascunho descartado');
-          },
-          error: (erro) => {
-            this.autosave.retomar();
-            this.errorHandler.showError(extrairMensagemErro(erro) || 'Não foi possível descartar o rascunho.');
-          },
-        });
+      // Espera um PUT em andamento terminar: se ele chegasse ao back depois do DELETE, recriaria o rascunho.
+      this.autosave.pararEAguardar().then(() => {
+        this.rascunhoApi.descartar(consultaId)
+          .pipe(takeUntil(this.destroy$))
+          .subscribe({
+            next: () => {
+              this.limparAbas();
+              this.autosave.iniciar(this.configAutosave(consultaId), null);
+              this.errorHandler.showSuccessToast('Rascunho descartado');
+            },
+            error: (erro) => {
+              this.autosave.retomar();
+              this.errorHandler.showError(extrairMensagemErro(erro) || 'Não foi possível descartar o rascunho.');
+            },
+          });
+      });
     });
   }
 
@@ -258,8 +275,12 @@ export class ProntuarioMedicoComponent implements OnInit, OnDestroy, AfterViewIn
   }
 
   private concluido(): void {
-    // Para o autosave antes de enviar: o back apaga o rascunho ao finalizar e não pode ser recriado depois.
-    this.autosave.parar(true);
+    // Para o autosave e espera o PUT em andamento antes de enviar: o back apaga o rascunho ao finalizar
+    // e ele não pode ser recriado (nem a versão local ficar velha se a finalização falhar).
+    this.autosave.pararEAguardar().then(() => this.enviarFinalizacao());
+  }
+
+  private enviarFinalizacao(): void {
     const today = formatarDataLocal(new Date());
 
     const dadosIdentificacao = this.abaIdentificacao?.getDados() || {};

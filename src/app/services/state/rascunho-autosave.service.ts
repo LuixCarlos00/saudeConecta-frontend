@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Subject, Subscription, firstValueFrom, race, timer } from 'rxjs';
 import Swal from 'sweetalert2';
 
 import { RascunhoAtendimentoApiService } from 'src/app/services/api/rascunho-atendimento-api.service';
@@ -30,6 +30,18 @@ export interface ConfigAutosave {
 export const INTERVALO_VERIFICACAO_MS = 2000;
 /** Tempo sem alterações antes de gravar. */
 export const DEBOUNCE_MS = 5000;
+/** Intervalo para gravar quando só o cronômetro mudou (médico conversando, sem digitar). */
+export const INTERVALO_TEMPO_MS = 60000;
+/** Espera máxima por um PUT em andamento antes de finalizar/descartar. */
+export const TIMEOUT_AGUARDAR_MS = 10000;
+
+/** Serializa com chaves ordenadas, para comparar JSON sem depender da ordem que o back devolve. */
+function canonico(valor: any): string {
+  return JSON.stringify(valor, (_chave, v) =>
+    v && typeof v === 'object' && !Array.isArray(v)
+      ? Object.keys(v).sort().reduce((o: any, k) => { o[k] = v[k]; return o; }, {})
+      : v);
+}
 
 /**
  * Salvamento automático do rascunho do atendimento, compartilhado por médico e dentista.
@@ -56,7 +68,17 @@ export class RascunhoAutosaveService {
   private parado = true;
   private emConflito = false;
   private emVoo: Subscription | null = null;
+  private emVooFim$ = new Subject<void>();
   private pendente = false;
+  /** Saindo da tela: o último PUT (e o pendente) ainda pode sair mesmo com o autosave parado. */
+  private saindo = false;
+  /**
+   * Conteúdo do PUT anterior ao atual desta aba. Se ele chegou ao back mas a resposta se perdeu
+   * (ou foi cancelada), o PUT seguinte leva 409 por causa dele: é o que reconhecemos no conflito.
+   */
+  private enviadoAnterior: { dados: string; tempo: number } | null = null;
+  private enviadoAtual: { dados: string; tempo: number } | null = null;
+  private ultimaGravacaoEm = 0;
   private intervalo: ReturnType<typeof setInterval> | null = null;
   private debounce: ReturnType<typeof setTimeout> | null = null;
 
@@ -65,6 +87,15 @@ export class RascunhoAutosaveService {
   /** Existe rascunho gravado no servidor para esta consulta. */
   get temRascunho(): boolean {
     return this.versao !== null;
+  }
+
+  /**
+   * Há digitação que ainda não chegou ao servidor (mudança nas abas, PUT em andamento ou pendente).
+   * Só o cronômetro não conta: ele muda sempre e faria o aviso de saída aparecer toda vez.
+   */
+  get temAlteracaoNaoSalva(): boolean {
+    if (!this.config || this.estado === 'encerrado') { return false; }
+    return !!this.emVoo || this.pendente || this.serializar() !== this.baseline;
   }
 
   /** Texto do indicador do cabeçalho, ou null quando não há nada a mostrar. */
@@ -85,7 +116,9 @@ export class RascunhoAutosaveService {
    * @param versaoInicial versão do rascunho carregado, ou null se não havia
    */
   iniciar(config: ConfigAutosave, versaoInicial: number | null): void {
-    this.parar(true);
+    this.parar();
+    this.pendente = false;
+    this.saindo = false;
     this.config = config;
     this.versao = versaoInicial;
     this.parado = false;
@@ -96,20 +129,35 @@ export class RascunhoAutosaveService {
     this.intervalo = setInterval(() => this.verificar(), INTERVALO_VERIFICACAO_MS);
   }
 
-  /**
-   * Para o autosave (nenhuma gravação nova sai depois disso).
-   * @param cancelarEmVoo true cancela um PUT ainda em andamento (ex.: antes de finalizar, para não
-   *        recriar o rascunho depois que o back o apagou); false deixa terminar (ex.: ao sair da tela).
-   */
-  parar(cancelarEmVoo = false): void {
+  /** Para o autosave: nenhuma gravação nova sai depois disso (um PUT em andamento termina sozinho). */
+  parar(): void {
     this.parado = true;
     if (this.intervalo) { clearInterval(this.intervalo); this.intervalo = null; }
     this.limparDebounce();
-    if (cancelarEmVoo && this.emVoo) {
-      this.emVoo.unsubscribe();
-      this.emVoo = null;
-      this.pendente = false;
-    }
+  }
+
+  /**
+   * Para o autosave e espera o PUT em andamento terminar. Usado antes de finalizar/descartar:
+   * cancelar no navegador não impede o back de gravar, e a versão local ficaria velha.
+   * @param timeoutMs espera máxima; passado o prazo segue mesmo assim
+   */
+  async pararEAguardar(timeoutMs = TIMEOUT_AGUARDAR_MS): Promise<void> {
+    this.parar();
+    this.pendente = false;
+    if (!this.emVoo) { return; }
+    await firstValueFrom(race(this.emVooFim$, timer(timeoutMs)));
+  }
+
+  /**
+   * Chamado ao destruir a tela: grava a última edição (inclusive se já há um PUT em andamento)
+   * e para. Se o autosave já estava parado (finalizado ou encerrado) não grava nada: o back
+   * apagou o rascunho e ele não pode ser recriado.
+   */
+  sairDaTela(): void {
+    if (this.parado) { return; }
+    this.salvarAgora();
+    this.saindo = true;
+    this.parar();
   }
 
   /** Volta a vigiar depois de um parar() (ex.: finalizar falhou e o profissional continua atendendo). */
@@ -133,6 +181,7 @@ export class RascunhoAutosaveService {
     this.baseline = this.serializar();
     this.ultimoVisto = this.baseline;
     this.tempoSalvo = this.config.tempoSegundos();
+    this.ultimaGravacaoEm = Date.now();
   }
 
   /**
@@ -140,7 +189,7 @@ export class RascunhoAutosaveService {
    * existente com cronômetro diferente): entrar e sair sem digitar não cria rascunho.
    */
   salvarAgora(): void {
-    if (this.parado || this.emConflito || !this.config) { return; }
+    if ((this.parado && !this.saindo) || this.emConflito || !this.config) { return; }
     this.limparDebounce();
     const instantaneo = this.serializar();
     const tempo = this.config.tempoSegundos();
@@ -151,6 +200,8 @@ export class RascunhoAutosaveService {
 
     const config = this.config;
     this.estado = 'salvando';
+    this.enviadoAnterior = this.enviadoAtual;
+    this.enviadoAtual = { dados: instantaneo, tempo };
     const inscricao = this.api.salvar(config.consultaId, {
       tipo: config.tipo,
       dados: JSON.parse(instantaneo),
@@ -159,9 +210,11 @@ export class RascunhoAutosaveService {
     }).subscribe({
       next: resposta => {
         this.emVoo = null;
+        this.emVooFim$.next();
         this.versao = resposta.versao;
         this.baseline = instantaneo;
         this.tempoSalvo = tempo;
+        this.ultimaGravacaoEm = Date.now();
         this.estado = 'salvo';
         this.salvoEm = new Date();
         this.detalheErro = null;
@@ -169,6 +222,7 @@ export class RascunhoAutosaveService {
       },
       error: (erro: HttpErrorResponse) => {
         this.emVoo = null;
+        this.emVooFim$.next();
         this.tratarErro(erro);
       },
     });
@@ -180,10 +234,17 @@ export class RascunhoAutosaveService {
   private verificar(): void {
     if (this.parado || this.emConflito || !this.config) { return; }
     const atual = this.serializar();
-    if (atual === this.ultimoVisto) { return; }
-    this.ultimoVisto = atual;
-    if (atual === this.baseline) { this.limparDebounce(); return; }
-    this.agendar();
+    if (atual !== this.ultimoVisto) {
+      this.ultimoVisto = atual;
+      if (atual === this.baseline) { this.limparDebounce(); } else { this.agendar(); }
+      return;
+    }
+    // Só o cronômetro andou: grava a cada INTERVALO_TEMPO_MS para o tempo não ficar parado no servidor.
+    const soTempo = atual === this.baseline && !this.debounce && !this.emVoo && this.versao !== null;
+    if (soTempo && Date.now() - this.ultimaGravacaoEm >= INTERVALO_TEMPO_MS
+        && this.config.tempoSegundos() !== this.tempoSalvo) {
+      this.salvarAgora();
+    }
   }
 
   private agendar(): void {
@@ -201,7 +262,8 @@ export class RascunhoAutosaveService {
   private tratarErro(erro: HttpErrorResponse): void {
     const codigo = erro?.error?.code;
     if (erro?.status === 409 && codigo === 'RASCUNHO_DESATUALIZADO') {
-      this.tratarDesatualizado();
+      // Parado (finalizando/saindo): não há como reconciliar nem avisar; o fluxo de saída segue.
+      if (!this.parado) { this.reconciliarConflito(); }
       return;
     }
     if (erro?.status === 409 && codigo === 'CONSULTA_ENCERRADA') {
@@ -216,9 +278,44 @@ export class RascunhoAutosaveService {
       return;
     }
     this.estado = 'erro';
-    this.detalheErro = extrairMensagemErro(erro);
+    this.detalheErro = extrairMensagemErro(erro)
+      || (erro?.status === 413 ? 'O rascunho é grande demais para ser salvo.' : null);
     // 413/422: o mesmo conteúdo seria recusado de novo; só tenta outra vez quando algo mudar.
-    if (erro?.status !== 413 && erro?.status !== 422) { this.agendar(); }
+    if (erro?.status !== 413 && erro?.status !== 422 && !this.parado) { this.agendar(); }
+  }
+
+  /**
+   * 409 de versão. Pode ser a própria aba: o PUT anterior chegou ao back, mas a resposta se perdeu.
+   * Busca o servidor; se ele guarda exatamente o conteúdo do PUT anterior desta aba, adota a versão
+   * dele em silêncio e grava o conteúdo atual. Só avisa quando outro lugar realmente alterou.
+   */
+  private reconciliarConflito(): void {
+    const config = this.config;
+    const enviado = this.enviadoAnterior;
+    if (!config) { return; }
+    this.emConflito = true;
+    this.limparDebounce();
+    this.api.buscar(config.consultaId).subscribe({
+      next: servidor => {
+        if (this.parado) { this.emConflito = false; return; }
+        if (servidor && enviado
+            && servidor.tempoAcumuladoSegundos === enviado.tempo
+            && canonico(servidor.dados) === canonico(JSON.parse(enviado.dados))) {
+          this.versao = servidor.versao;
+          this.baseline = enviado.dados;
+          this.tempoSalvo = enviado.tempo;
+          this.emConflito = false;
+          this.estado = 'salvo';
+          this.salvoEm = new Date();
+          this.detalheErro = null;
+          this.salvarAgora();
+        } else {
+          this.tratarDesatualizado();
+        }
+      },
+      // Sem resposta do servidor não dá para decidir: cai no aviso, que oferece recarregar.
+      error: () => { this.tratarDesatualizado(); },
+    });
   }
 
   /** 409 de versão: outra aba/computador salvou depois. A única saída é recarregar o que está no servidor. */

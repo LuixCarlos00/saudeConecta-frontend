@@ -140,6 +140,7 @@ describe('ProntuarioDentistaComponent: rascunho do atendimento', () => {
       fixture.detectChanges();
       tick(0);
       (component as any).concluido();
+      flushMicrotasks();
       expect(prontuarioApi.cadastrarProntuarioByOrg).toHaveBeenCalled();
       const payload = prontuarioApi.cadastrarProntuarioByOrg.calls.mostRecent().args[0] as any;
       expect(payload.tempoDuracao).toBe('12:34');
@@ -157,6 +158,7 @@ describe('ProntuarioDentistaComponent: rascunho do atendimento', () => {
       fixture.detectChanges();
       tick(0);
       (component as any).concluido();
+      flushMicrotasks();
       component.abaExameObjetivo.Diagnostico = 'continuei';
       tick(2000 + 5000);
       expect(rascunhoApi.salvar).toHaveBeenCalledTimes(1);

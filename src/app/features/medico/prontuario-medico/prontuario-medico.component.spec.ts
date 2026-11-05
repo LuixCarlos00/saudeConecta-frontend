@@ -1,6 +1,6 @@
 import { ComponentFixture, discardPeriodicTasks, fakeAsync, flushMicrotasks, TestBed, tick } from '@angular/core/testing';
 import { Router } from '@angular/router';
-import { of, throwError } from 'rxjs';
+import { of, Subject, throwError } from 'rxjs';
 import Swal from 'sweetalert2';
 
 import { ErrorHandlerService } from 'src/app/core/services/error-handler.service';
@@ -127,6 +127,49 @@ describe('ProntuarioMedicoComponent: rascunho do atendimento', () => {
       discardPeriodicTasks();
     }));
 
+    it('usa o rascunho pre-carregado pelo guard, sem repetir o GET', fakeAsync(() => {
+      TestBed.inject(ProntuarioStateService).setRascunhoPreCarregado(822, rascunho);
+      fixture.detectChanges();
+      tick(0);
+      expect(rascunhoApi.buscar).not.toHaveBeenCalled();
+      expect(component.abaExameObjetivo.queixaPrincipal).toBe('Dor');
+      expect(component.timer).toBe(754);
+      fixture.destroy();
+      discardPeriodicTasks();
+    }));
+
+    it('beforeunload com digitacao nao salva pede o aviso nativo; sem alteracao nao pede', fakeAsync(() => {
+      rascunhoApi.salvar.and.returnValue(new Subject<RascunhoAtendimentoResponse>());
+      fixture.detectChanges();
+      tick(0);
+      const limpo = new Event('beforeunload', { cancelable: true }) as BeforeUnloadEvent;
+      component.aoFecharJanela(limpo);
+      expect(limpo.defaultPrevented).toBeFalse();
+      component.abaExameObjetivo.diagnostico = 'Nao salvo ainda';
+      const sujo = new Event('beforeunload', { cancelable: true }) as BeforeUnloadEvent;
+      component.aoFecharJanela(sujo);
+      expect(sujo.defaultPrevented).toBeTrue();
+      expect(sujo.returnValue).toBeFalsy();
+      fixture.destroy();
+      discardPeriodicTasks();
+    }));
+
+    it('sair da tela com PUT em andamento ainda grava a ultima edicao', fakeAsync(() => {
+      const primeira$ = new Subject<RascunhoAtendimentoResponse>();
+      rascunhoApi.salvar.and.returnValues(primeira$, of({ ...rascunho, versao: 6 }));
+      fixture.detectChanges();
+      tick(0);
+      component.abaExameObjetivo.diagnostico = 'primeira';
+      component.autosave.salvarAgora();
+      component.abaExameObjetivo.diagnostico = 'ultima';
+      fixture.destroy();
+      primeira$.next({ ...rascunho, versao: 5 });
+      primeira$.complete();
+      expect(rascunhoApi.salvar).toHaveBeenCalledTimes(2);
+      expect(rascunhoApi.salvar.calls.mostRecent().args[1].dados.exame.diagnostico).toBe('ultima');
+      discardPeriodicTasks();
+    }));
+
     it('sair da tela dispara o ultimo PUT', fakeAsync(() => {
       fixture.detectChanges();
       tick(0);
@@ -141,6 +184,7 @@ describe('ProntuarioMedicoComponent: rascunho do atendimento', () => {
       fixture.detectChanges();
       tick(0);
       (component as any).concluido();
+      flushMicrotasks();
       expect(prontuarioApi.cadastrarProntuarioMedico).toHaveBeenCalled();
       const payload = prontuarioApi.cadastrarProntuarioMedico.calls.mostRecent().args[0] as any;
       expect(payload.tempoDuracao).toBe('12:34');
@@ -158,6 +202,7 @@ describe('ProntuarioMedicoComponent: rascunho do atendimento', () => {
       fixture.detectChanges();
       tick(0);
       (component as any).concluido();
+      flushMicrotasks();
       component.abaExameObjetivo.diagnostico = 'continuei';
       tick(2000 + 5000);
       expect(rascunhoApi.salvar).toHaveBeenCalledTimes(1);
