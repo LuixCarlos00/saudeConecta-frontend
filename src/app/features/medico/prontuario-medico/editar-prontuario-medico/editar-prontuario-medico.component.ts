@@ -3,10 +3,11 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Subject, takeUntil } from 'rxjs';
+import { extrairMensagemErro } from 'src/app/shared/utils/mensagem-erro-http';
 
 import { ProntuarioApiService } from 'src/app/services/api/prontuario-api.service';
 import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
-import { Consultav2 } from 'src/app/util/variados/interfaces/consulta/consultav2';
+import { ConsultaEdicao } from '../../consulta-edicao';
 
 import { AbaIdentificacaoMedicoComponent } from '../aba-identificacao-medico/aba-identificacao-medico.component';
 import { AbaExameObjetivoMedicoComponent } from '../aba-exame-objetivo-medico/aba-exame-objetivo-medico.component';
@@ -32,14 +33,14 @@ export class EditarProntuarioMedicoComponent implements OnInit, OnDestroy, After
   salvando = false;
   erro = '';
 
-  consulta: Consultav2;
+  consulta: ConsultaEdicao;
   private prontuarioData: any = null;
   private prontuarioId: number | null = null;
   private readonly destroy$ = new Subject<void>();
 
   constructor(
     private dialogRef: MatDialogRef<EditarProntuarioMedicoComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { consulta: Consultav2 },
+    @Inject(MAT_DIALOG_DATA) public data: { consulta: ConsultaEdicao },
     private prontuarioApi: ProntuarioApiService,
     private notificacao: NotificacaoService
   ) {
@@ -147,7 +148,8 @@ export class EditarProntuarioMedicoComponent implements OnInit, OnDestroy, After
      planejamentos: planejamentosComPaciente,
      codigoMedico: this.consulta.profissionalId,
      consulta: this.consulta.id,
-     dataFinalizado: formatarDataLocal(new Date()),
+     // Mantém a data em que a consulta foi finalizada: editar não é finalizar de novo
+     dataFinalizado: this.prontuarioData?.dataFinalizado || formatarDataLocal(new Date()),
    };
 
    this.prontuarioApi.atualizarProntuarioMedico(this.prontuarioId!, payload)
@@ -160,7 +162,7 @@ export class EditarProntuarioMedicoComponent implements OnInit, OnDestroy, After
        },
        error: (err) => {
          console.error('Erro ao atualizar prontuário:', err);
-         this.notificacao.showError('Erro ao salvar alterações do prontuário');
+         this.notificacao.showError(extrairMensagemErro(err) || 'Erro ao salvar alterações do prontuário');
          this.salvando = false;
        }
      });

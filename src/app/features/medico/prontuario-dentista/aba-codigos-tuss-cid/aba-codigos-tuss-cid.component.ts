@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 import { CodigosTussCidService } from 'src/app/services/codigos/codigos-tuss-cid.service';
+import { extrairItensCodigo, extrairItensSolicitacaoExame } from 'src/app/shared/utils/codigos-tuss-cid';
 
 @Component({
   selector: 'app-aba-codigos-tuss-cid',
@@ -168,9 +169,21 @@ export class AbaCodigosTussCidComponent {
     this.textoSolicitacaoExame = dados.solicitacaoExameTexto || '';
     // getDados() também devolve as listas selecionadas; sem elas (modo edição) mantém as atuais.
     if (Array.isArray(dados.tussSelecionados)) { this.tussSelecionados = [...dados.tussSelecionados]; }
+    else if (this.tussSelecionados.length === 0) {
+      // Edição: o back guarda só o texto. Sem reconstruir a lista, adicionar um código apagaria o texto salvo.
+      this.tussSelecionados = extrairItensCodigo(this.textoTuss);
+    }
     if (Array.isArray(dados.cidSelecionados)) { this.cidSelecionados = [...dados.cidSelecionados]; }
+    else if (this.cidSelecionados.length === 0) {
+      this.cidSelecionados = extrairItensCodigo(this.textoCid).map(i => ({ codigo: i.codigo, label: i.descricao }));
+    }
+    const exames = extrairItensSolicitacaoExame(this.textoSolicitacaoExame);
     if (Array.isArray(dados.tussExameSelecionados)) { this.tussExameSelecionados = [...dados.tussExameSelecionados]; }
+    else if (this.tussExameSelecionados.length === 0) { this.tussExameSelecionados = exames.tuss; }
     if (Array.isArray(dados.cidExameSelecionados)) { this.cidExameSelecionados = [...dados.cidExameSelecionados]; }
+    else if (this.cidExameSelecionados.length === 0) {
+      this.cidExameSelecionados = exames.cid.map(i => ({ codigo: i.codigo, label: i.descricao }));
+    }
   }
 
   /**
