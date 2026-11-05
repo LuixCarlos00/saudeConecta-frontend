@@ -14,7 +14,7 @@ import { Usuario } from 'src/app/util/variados/interfaces/usuario/usuario';
 import { AgendarConsultaComponent } from 'src/app/features/publico/agendar-consulta/agendar-consulta.component';
 import { RelatorioService } from 'src/app/features/relatorio/relatorio.service';
 import { ProntuarioDentistaApiService } from 'src/app/services/api/prontuario-dentista-api.service';
-import { ProntuarioApiService } from 'src/app/services/api/prontuario-api.service';
+import { AcoesConsultaService } from '../gerenciamento-agenda/acoes-consulta.service';
 import { PlanejamentoTerapeuticoApiService } from 'src/app/services/api/planejamento-terapeutico-api.service';
 import { RascunhoAtendimentoApiService } from 'src/app/services/api/rascunho-atendimento-api.service';
 import { ConfiguracoesConsultaApiService, ConfiguracoesConsulta } from 'src/app/services/api/configuracoes-consulta-api.service';
@@ -139,7 +139,7 @@ export class AgendaCalendarioComponent implements OnInit, OnDestroy {
     private cdr: ChangeDetectorRef,
     private relatorioService: RelatorioService,
     private prontuarioDentistaApiService: ProntuarioDentistaApiService,
-    private prontuarioApiService: ProntuarioApiService,
+    private acoesConsulta: AcoesConsultaService,
     private planejamentoApi: PlanejamentoTerapeuticoApiService,
     private router: Router,
     private configuracoesConsultaService: ConfiguracoesConsultaApiService,
@@ -198,7 +198,7 @@ export class AgendaCalendarioComponent implements OnInit, OnDestroy {
     this.carregando = true;
     this.cdr.markForCheck();
 
-    const dataRef = this.formatarDataParaApi(this.dataAtual);
+    const dataRef = formatarDataLocal(this.dataAtual);
     const request$ = this.tipoVisualizacao === 'dia'
       ? this.consultaService.buscarDoDiaAtual(dataRef)
       : this.tipoVisualizacao === 'semana'
@@ -211,9 +211,9 @@ export class AgendaCalendarioComponent implements OnInit, OnDestroy {
           this.extrairProfissionais();
           this.aplicarFiltros();
           if (this.filtroFinalizadas) {
-            this.verificarPlanejamentosAssinados();
+            this.acoesConsulta.verificarPlanejamentosAssinados(this.todasConsultas, this.planejamentosAssinados, this.destroy$, () => this.cdr.markForCheck());
           } else {
-            this.verificarQuestionariosRespondidos();
+            this.acoesConsulta.verificarQuestionariosRespondidos(this.todasConsultas, this.questionariosRespondidos, this.destroy$, () => this.cdr.markForCheck());
           }
           this.carregando = false;
           this.cdr.markForCheck();
@@ -383,23 +383,12 @@ export class AgendaCalendarioComponent implements OnInit, OnDestroy {
 
   private getInicioMes(): string {
     const d = new Date(this.dataAtual.getFullYear(), this.dataAtual.getMonth(), 1);
-    return this.formatarDataParaApi(d);
+    return formatarDataLocal(d);
   }
 
   private getFimMes(): string {
     const d = new Date(this.dataAtual.getFullYear(), this.dataAtual.getMonth() + 1, 0);
-    return this.formatarDataParaApi(d);
-  }
-
-  /**
-   * Formata uma data local no padrão YYYY-MM-DD, sem sofrer o deslocamento
-   * de fuso horário que `toISOString()` (baseado em UTC) causaria.
-   *
-   * @param data Data a ser formatada
-   * @returns Data no formato YYYY-MM-DD
-   */
-  private formatarDataParaApi(data: Date): string {
-    return formatarDataLocal(data);
+    return formatarDataLocal(d);
   }
 
   // ========== NAVEGAÇÃO ==========
@@ -732,75 +721,10 @@ export class AgendaCalendarioComponent implements OnInit, OnDestroy {
   }
 
   gerarWhatsAppDrawer(): string {
-    const c = this.consultaSelecionada;
-    if (!c?.pacienteTelefone) return '';
-    const telefone = this.formatarTelefoneWhatsApp(c.pacienteTelefone);
-    const mensagem = this.gerarMensagemWhatsApp(c);
-    return `https://wa.me/${telefone}?text=${encodeURIComponent(mensagem)}`;
-  }
-
-  private gerarMensagemWhatsApp(consulta: Consultav2): string {
-    const dataHora = new Date(consulta.dataHora);
-    const data = dataHora.toLocaleDateString('pt-BR');
-    const horario = dataHora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-    const paciente = consulta.pacienteNome || 'Paciente';
-    const medico = consulta.profissionalNome || 'Profissional';
-    return `Olá ${paciente}, tudo bem?\n\nGostaríamos de confirmar sua consulta com ${medico} no dia ${data} às ${horario}.\n\nPor favor, confirme sua presença respondendo esta mensagem.\n\nAtenciosamente,\nEquipe da Clínica.`;
-  }
-
-  private formatarTelefoneWhatsApp(telefone: string): string {
-    const numeros = telefone.replace(/\D/g, '');
-    return numeros.startsWith('55') ? numeros : '55' + numeros;
+    return this.acoesConsulta.gerarLinkWhatsApp(this.consultaSelecionada);
   }
 
   // ========== QUESTIONÁRIO E PLANEJAMENTO ==========
-
-  private buscarProntuarioMaisRecente(consulta: Consultav2): Observable<any> {
-    const tipo = this.relatorioService.detectarTipoProfissional(consulta);
-    if (tipo === 'DENTISTA') {
-      return this.prontuarioDentistaApiService.buscarProntuarioDentistaById(consulta.id);
-    }
-    return this.prontuarioApiService.buscarMaisRecentePorConsulta(consulta.id);
-  }
-
-  private extrairCodigoProntuario(prontuario: any): number | null {
-    return prontuario?.codigo ?? prontuario?.codigoProntuario ?? null;
-  }
-
-  private verificarPlanejamentosAssinados(): void {
-    const finalizadas = this.todasConsultas.filter(c => c.status === 'REALIZADA');
-    for (const consulta of finalizadas) {
-      if (!consulta?.id || this.planejamentosAssinados.has(consulta.id)) continue;
-      this.buscarProntuarioMaisRecente(consulta)
-        .pipe(takeUntil(this.destroy$))
-        .subscribe({
-          next: (prontuario: any) => {
-            const plans = prontuario?.planejamentosTerapeuticos || prontuario?.planejamentos || [];
-            if (plans.length > 0 && plans.every((p: any) => p.statusAssinatura === 'ASSINADO')) {
-              this.planejamentosAssinados.add(consulta.id);
-              this.cdr.markForCheck();
-            }
-          }
-        });
-    }
-  }
-
-  private verificarQuestionariosRespondidos(): void {
-    const confirmadas = this.todasConsultas.filter(c => c.status === 'CONFIRMADA');
-    for (const consulta of confirmadas) {
-      if (!consulta?.id || this.questionariosRespondidos.has(consulta.id)) continue;
-      this.prontuarioDentistaApiService.buscarQuestionarioSaude(consulta.id)
-        .pipe(takeUntil(this.destroy$))
-        .subscribe({
-          next: (resp: any) => {
-            if (resp?.respondido) {
-              this.questionariosRespondidos.add(consulta.id);
-              this.cdr.markForCheck();
-            }
-          }
-        });
-    }
-  }
 
   gerarLinkQuestionarioDrawer(): void {
     const element = this.consultaSelecionada;
@@ -858,11 +782,11 @@ export class AgendaCalendarioComponent implements OnInit, OnDestroy {
     const element = this.consultaSelecionada;
     if (!element?.id) return;
     const tipoProfissional = this.relatorioService.detectarTipoProfissional(element);
-    this.buscarProntuarioMaisRecente(element)
+    this.acoesConsulta.buscarProntuarioMaisRecente(element)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (prontuario: any) => {
-          const codigoProntuario = this.extrairCodigoProntuario(prontuario);
+          const codigoProntuario = this.acoesConsulta.extrairCodigoProntuario(prontuario);
           if (!codigoProntuario) {
             Swal.fire('Aviso', 'Nenhum prontuário encontrado para esta consulta.', 'warning');
             return;

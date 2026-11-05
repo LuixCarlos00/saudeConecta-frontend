@@ -13,7 +13,7 @@ import { Consultav2 } from 'src/app/util/variados/interfaces/consulta/consultav2
 import { Usuario } from 'src/app/util/variados/interfaces/usuario/usuario';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { ProntuarioDentistaApiService } from 'src/app/services/api/prontuario-dentista-api.service';
-import { ProntuarioApiService } from 'src/app/services/api/prontuario-api.service';
+import { AcoesConsultaService } from '../acoes-consulta.service';
 import { PlanejamentoTerapeuticoApiService } from 'src/app/services/api/planejamento-terapeutico-api.service';
 import { RelatorioService } from 'src/app/features/relatorio/relatorio.service';
 import { formatarDataLocal } from '../../../../shared/utils/data-local';
@@ -64,7 +64,7 @@ export class AgendaComponent implements OnInit, OnDestroy {
     private consultaState: ConsultaStateService,
     private authService: AuthService,
     private prontuarioDentistaApiService: ProntuarioDentistaApiService,
-    private prontuarioApiService: ProntuarioApiService,
+    private acoesConsulta: AcoesConsultaService,
     private planejamentoApi: PlanejamentoTerapeuticoApiService,
     private relatorioService: RelatorioService
   ) { }
@@ -110,9 +110,9 @@ export class AgendaComponent implements OnInit, OnDestroy {
         const tipo: TipoVisualizacao = this.Finalizadas ? 'REALIZADA' : 'AGENDADA';
         this.dataSource = this.filtrarConsultasPorTipo(dados, tipo);
         if (this.Finalizadas) {
-          this.verificarPlanejamentosAssinados();
+          this.acoesConsulta.verificarPlanejamentosAssinados(this.dataSource, this.planejamentosAssinados, this.destroy$);
         } else {
-          this.verificarQuestionariosRespondidos();
+          this.acoesConsulta.verificarQuestionariosRespondidos(this.dataSource, this.questionariosRespondidos, this.destroy$);
         }
       }
     } catch (error) {
@@ -136,19 +136,8 @@ export class AgendaComponent implements OnInit, OnDestroy {
     this.buscarDadosParaTabela();
   }
 
-  /**
-   * Formata uma data local no padrão YYYY-MM-DD, sem sofrer o deslocamento
-   * de fuso horário que `toISOString()` (baseado em UTC) causaria.
-   *
-   * @param data Data a ser formatada
-   * @returns Data no formato YYYY-MM-DD
-   */
-  private formatarDataParaApi(data: Date): string {
-    return formatarDataLocal(data);
-  }
-
   private async buscarConsultasPorPeriodo(): Promise<any[] | undefined> {
-    const dataRef = this.formatarDataParaApi(this.dataAtual);
+    const dataRef = formatarDataLocal(this.dataAtual);
     switch (this.tipoPeriodoSelecionado) {
       case 'diario': return this.consultaApi.buscarDoDiaAtual(dataRef).toPromise();
       case 'semanal': return this.consultaApi.buscarDaSemanaAtual(dataRef).toPromise();
@@ -526,51 +515,14 @@ Editar(consulta: any) {
   // Gerar Link do Planejamento Terapêutico
   // ─────────────────────────────────────────────────────────────────────────────
 
-  /**
-   * Busca o prontuário mais recente da consulta de acordo com o tipo de profissional.
-   * Dentista: usa ProntuarioDentistaApiService (retorna campo "codigo")
-   * Médico: usa ProntuarioApiService (retorna campo "codigoProntuario")
-   */
-  private buscarProntuarioMaisRecente(consulta: Consultav2): Observable<any> {
-    const tipo = this.relatorioService.detectarTipoProfissional(consulta);
-    if (tipo === 'DENTISTA') {
-      return this.prontuarioDentistaApiService.buscarProntuarioDentistaById(consulta.id);
-    }
-    return this.prontuarioApiService.buscarMaisRecentePorConsulta(consulta.id);
-  }
-
-  /**
-   * Extrai o ID do prontuário independente do tipo (dentista: "codigo", médico: "codigoProntuario")
-   */
-  private extrairCodigoProntuario(prontuario: any): number | null {
-    return prontuario?.codigo ?? prontuario?.codigoProntuario ?? null;
-  }
-
-  private verificarPlanejamentosAssinados(): void {
-    const finalizadas = this.dataSource.filter(c => c.status === 'REALIZADA');
-    for (const consulta of finalizadas) {
-      if (!consulta?.id || this.planejamentosAssinados.has(consulta.id)) continue;
-      this.buscarProntuarioMaisRecente(consulta)
-        .pipe(takeUntil(this.destroy$))
-        .subscribe({
-          next: (prontuario: any) => {
-            const plans = prontuario?.planejamentosTerapeuticos || prontuario?.planejamentos || [];
-            if (plans.length > 0 && plans.every((p: any) => p.statusAssinatura === 'ASSINADO')) {
-              this.planejamentosAssinados.add(consulta.id);
-            }
-          }
-        });
-    }
-  }
-
   gerarLinkPlanejamento(element: Consultav2): void {
     if (!element?.id) return;
     const tipoProfissional = this.relatorioService.detectarTipoProfissional(element);
-    this.buscarProntuarioMaisRecente(element)
+    this.acoesConsulta.buscarProntuarioMaisRecente(element)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (prontuario: any) => {
-          const codigoProntuario = this.extrairCodigoProntuario(prontuario);
+          const codigoProntuario = this.acoesConsulta.extrairCodigoProntuario(prontuario);
           if (!codigoProntuario) {
             Swal.fire('Aviso', 'Nenhum prontuário encontrado para esta consulta.', 'warning');
             return;
@@ -611,21 +563,6 @@ Editar(consulta: any) {
   // ─────────────────────────────────────────────────────────────────────────────
   // Gerar Link do Questionário de Saúde
   // ─────────────────────────────────────────────────────────────────────────────
-  private verificarQuestionariosRespondidos(): void {
-    const confirmadas = this.dataSource.filter(c => c.status === 'CONFIRMADA');
-    for (const consulta of confirmadas) {
-      if (!consulta?.id || this.questionariosRespondidos.has(consulta.id)) continue;
-      this.prontuarioDentistaApiService.buscarQuestionarioSaude(consulta.id)
-        .pipe(takeUntil(this.destroy$))
-        .subscribe({
-          next: (resp: any) => {
-            if (resp?.respondido) {
-              this.questionariosRespondidos.add(consulta.id);
-            }
-          }
-        });
-    }
-  }
 
   gerarLinkQuestionario(element: Consultav2): void {
     if (!element?.id) return;
@@ -692,36 +629,7 @@ Editar(consulta: any) {
    * @returns URL completa para wa.me com mensagem codificada
    */
   gerarLinkWhatsApp(consulta: Consultav2): string {
-    if (!consulta.pacienteTelefone) { return ''; }
-
-    const telefone = this.formatarTelefoneWhatsApp(consulta.pacienteTelefone);
-    const mensagem = this.gerarMensagemWhatsApp(consulta);
-    return `https://wa.me/${telefone}?text=${encodeURIComponent(mensagem)}`;
+    return this.acoesConsulta.gerarLinkWhatsApp(consulta);
   }
 
-  /**
-   * Gera a mensagem de confirmação de consulta com dados dinâmicos.
-   * @param consulta - Dados da consulta
-   * @returns Mensagem personalizada com nome, médico, data e horário
-   */
-  private gerarMensagemWhatsApp(consulta: Consultav2): string {
-    const dataHora = new Date(consulta.dataHora);
-    const data = dataHora.toLocaleDateString('pt-BR');
-    const horario = dataHora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-    const paciente = consulta.pacienteNome || 'Paciente';
-    const medico = consulta.profissionalNome || 'Profissional';
-
-    return `Olá ${paciente}, tudo bem?\n\nGostaríamos de confirmar sua consulta com ${medico} no dia ${data} às ${horario}.\n\nPor favor, confirme sua presença respondendo esta mensagem.\n\nAtenciosamente,\nEquipe da Clínica.`;
-  }
-
-  /**
-   * Formata o número de telefone para o padrão internacional brasileiro.
-   * Remove caracteres não numéricos e adiciona o código do país.
-   * @param telefone - Número de telefone em qualquer formato
-   * @returns Número formatado com código 55 do Brasil
-   */
-  private formatarTelefoneWhatsApp(telefone: string): string {
-    const numeros = telefone.replace(/\D/g, '');
-    return numeros.startsWith('55') ? numeros : '55' + numeros;
-  }
 }
