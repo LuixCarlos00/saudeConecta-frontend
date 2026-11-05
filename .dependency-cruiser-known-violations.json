@@ -1,0 +1,200 @@
+[
+  {
+    "type": "dependency",
+    "from": "src/app/features/administrador/administrador.module.ts",
+    "to": "src/app/features/publico/agendar-consulta/agendar-consulta.component.ts",
+    "unresolvedTo": "src/app/features/publico/agendar-consulta/agendar-consulta.component",
+    "dependencyTypes": [
+      "undetermined",
+      "import"
+    ],
+    "rule": {
+      "severity": "error",
+      "name": "feature-nao-importa-outra-feature"
+    }
+  },
+  {
+    "type": "dependency",
+    "from": "src/app/features/administrador/administrador.module.ts",
+    "to": "src/app/features/relatorio/relatorio.module.ts",
+    "unresolvedTo": "src/app/features/relatorio/relatorio.module",
+    "dependencyTypes": [
+      "undetermined",
+      "import"
+    ],
+    "rule": {
+      "severity": "error",
+      "name": "feature-nao-importa-outra-feature"
+    }
+  },
+  {
+    "type": "dependency",
+    "from": "src/app/features/administrador/agenda-calendario/agenda-calendario.component.ts",
+    "to": "src/app/features/publico/agendar-consulta/agendar-consulta.component.ts",
+    "unresolvedTo": "src/app/features/publico/agendar-consulta/agendar-consulta.component",
+    "dependencyTypes": [
+      "undetermined",
+      "import"
+    ],
+    "rule": {
+      "severity": "error",
+      "name": "feature-nao-importa-outra-feature"
+    }
+  },
+  {
+    "type": "dependency",
+    "from": "src/app/features/administrador/agenda-calendario/agenda-calendario.component.ts",
+    "to": "src/app/features/relatorio/relatorio.service.ts",
+    "unresolvedTo": "src/app/features/relatorio/relatorio.service",
+    "dependencyTypes": [
+      "undetermined",
+      "import"
+    ],
+    "rule": {
+      "severity": "error",
+      "name": "feature-nao-importa-outra-feature"
+    }
+  },
+  {
+    "type": "dependency",
+    "from": "src/app/features/administrador/gerenciamento-agenda/acoes-consulta.service.spec.ts",
+    "to": "src/app/features/relatorio/relatorio.service.ts",
+    "unresolvedTo": "src/app/features/relatorio/relatorio.service",
+    "dependencyTypes": [
+      "undetermined",
+      "import"
+    ],
+    "rule": {
+      "severity": "error",
+      "name": "feature-nao-importa-outra-feature"
+    }
+  },
+  {
+    "type": "dependency",
+    "from": "src/app/features/administrador/gerenciamento-agenda/acoes-consulta.service.ts",
+    "to": "src/app/features/relatorio/relatorio.service.ts",
+    "unresolvedTo": "src/app/features/relatorio/relatorio.service",
+    "dependencyTypes": [
+      "undetermined",
+      "import"
+    ],
+    "rule": {
+      "severity": "error",
+      "name": "feature-nao-importa-outra-feature"
+    }
+  },
+  {
+    "type": "dependency",
+    "from": "src/app/features/administrador/gerenciamento-agenda/agenda/agenda.component.ts",
+    "to": "src/app/features/relatorio/relatorio.service.ts",
+    "unresolvedTo": "src/app/features/relatorio/relatorio.service",
+    "dependencyTypes": [
+      "undetermined",
+      "import"
+    ],
+    "rule": {
+      "severity": "error",
+      "name": "feature-nao-importa-outra-feature"
+    }
+  },
+  {
+    "type": "dependency",
+    "from": "src/app/features/medico/medico.module.ts",
+    "to": "src/app/features/relatorio/relatorio.module.ts",
+    "unresolvedTo": "src/app/features/relatorio/relatorio.module",
+    "dependencyTypes": [
+      "undetermined",
+      "import"
+    ],
+    "rule": {
+      "severity": "error",
+      "name": "feature-nao-importa-outra-feature"
+    }
+  },
+  {
+    "type": "dependency",
+    "from": "src/app/features/medico/tabela-agenda/tabela-agenda-medico.component.ts",
+    "to": "src/app/features/administrador/gerenciamento-agenda/agenda/Observacoes/Observacoes.component.ts",
+    "unresolvedTo": "src/app/features/administrador/gerenciamento-agenda/agenda/Observacoes/Observacoes.component",
+    "dependencyTypes": [
+      "undetermined",
+      "import"
+    ],
+    "rule": {
+      "severity": "error",
+      "name": "feature-nao-importa-outra-feature"
+    }
+  },
+  {
+    "type": "dependency",
+    "from": "src/app/features/publico/agendar-consulta/agendar-consulta.component.ts",
+    "to": "src/app/features/administrador/cadastros/cadastro-paciente/cadastro-paciente.component.ts",
+    "unresolvedTo": "../../administrador/cadastros/cadastro-paciente/cadastro-paciente.component",
+    "dependencyTypes": [
+      "local",
+      "import"
+    ],
+    "rule": {
+      "severity": "error",
+      "name": "feature-nao-importa-outra-feature"
+    }
+  },
+  {
+    "type": "dependency",
+    "from": "src/app/features/publico/agendar-consulta/agendar-consulta.component.ts",
+    "to": "src/app/features/administrador/gerenciamento-agenda/nova-consuta/tabela-de-pacientes/tabela-de-pacientes.component.ts",
+    "unresolvedTo": "../../administrador/gerenciamento-agenda/nova-consuta/tabela-de-pacientes/tabela-de-pacientes.component",
+    "dependencyTypes": [
+      "local",
+      "import"
+    ],
+    "rule": {
+      "severity": "error",
+      "name": "feature-nao-importa-outra-feature"
+    }
+  },
+  {
+    "type": "dependency",
+    "from": "src/app/features/publico/agendar-consulta/agendar-consulta.component.ts",
+    "to": "src/app/features/administrador/gerenciamento-agenda/nova-consuta/tabelas-Pesquisas-Medicos/tabelas-Pesquisas-Medicos.component.ts",
+    "unresolvedTo": "../../administrador/gerenciamento-agenda/nova-consuta/tabelas-Pesquisas-Medicos/tabelas-Pesquisas-Medicos.component",
+    "dependencyTypes": [
+      "local",
+      "import"
+    ],
+    "rule": {
+      "severity": "error",
+      "name": "feature-nao-importa-outra-feature"
+    }
+  },
+  {
+    "type": "cycle",
+    "from": "src/app/features/administrador/gerenciamento-usuarios/tabela-todos-usuarios/tabela-todos-usuarios.component.ts",
+    "to": "src/app/features/administrador/gerenciamento-usuarios/tabela-todos-usuarios/VisualizarEditarUsuario/visualizar-editar-usuario.component.ts",
+    "unresolvedTo": "./VisualizarEditarUsuario/visualizar-editar-usuario.component",
+    "dependencyTypes": [
+      "local",
+      "import"
+    ],
+    "rule": {
+      "severity": "error",
+      "name": "sem-dependencia-circular"
+    },
+    "cycle": [
+      {
+        "name": "src/app/features/administrador/gerenciamento-usuarios/tabela-todos-usuarios/VisualizarEditarUsuario/visualizar-editar-usuario.component.ts",
+        "dependencyTypes": [
+          "local",
+          "import"
+        ]
+      },
+      {
+        "name": "src/app/features/administrador/gerenciamento-usuarios/tabela-todos-usuarios/tabela-todos-usuarios.component.ts",
+        "dependencyTypes": [
+          "local",
+          "import"
+        ]
+      }
+    ]
+  }
+]
