@@ -7,7 +7,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { TabelasPesquisasMedicosComponent } from './tabelas-Pesquisas-Medicos/tabelas-Pesquisas-Medicos.component';
 import { PacienteApiService } from 'src/app/services/api/paciente-api.service';
 import { TabelaDePacientesComponent } from './tabela-de-pacientes/tabela-de-pacientes.component';
-import Swal from 'sweetalert2';
+import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
 import { HoradaConsulta } from 'src/app/util/variados/options/options';
 import { extrairMensagemErro } from 'src/app/shared/utils/mensagem-erro-http';
 import { ConsultaApiService, HorarioOcupado } from 'src/app/services/api/consulta-api.service';
@@ -15,7 +15,6 @@ import { ConsultaStateService } from 'src/app/services/state/consulta-state.serv
 import { AuthService } from 'src/app/core/services/auth.service';
 import { Usuario } from 'src/app/util/variados/interfaces/usuario/usuario';
 import { async, take, filter } from 'rxjs';
-import { DialogService } from 'src/app/util/variados/dialogo-confirmacao/dialog.service';
 import { Profissional } from 'src/app/util/variados/interfaces/medico/Profissional';
 import { CadastroPacienteComponent } from '../../cadastros/cadastro-paciente/cadastro-paciente.component';
 import { idFormaPagamentoPorRotulo } from 'src/app/shared/constants/forma-pagamento.constant';
@@ -111,6 +110,7 @@ export class NovaConsultaComponent implements OnInit {
   }
 
   constructor(
+    private notificacao: NotificacaoService,
     private router: Router,
     private FormBuilder: FormBuilder,
     private profissionalApiService: ProfissionalApiService,
@@ -118,8 +118,7 @@ export class NovaConsultaComponent implements OnInit {
     private pacienteApi: PacienteApiService,
     private consultaApi: ConsultaApiService,
     private consultaState: ConsultaStateService,
-    private authService: AuthService,
-    private DialogService: DialogService
+    private authService: AuthService
   ) {
     this.authService.currentUser$.pipe(filter(Boolean), take(1)).subscribe((UsuarioLogado) => {
       if (UsuarioLogado) this.UsuarioLogado = UsuarioLogado;
@@ -154,7 +153,7 @@ export class NovaConsultaComponent implements OnInit {
         const dados = await this.pacienteApi.pesquisarComFiltro(FiltroPesquisa, pesquisa, 'ATIVO').toPromise();
         this.AbirTabela(dados, 'paciente');
       } catch (error) {
-        Swal.fire('Erro', 'Erro ao pesquisar pacientes', 'error');
+        this.notificacao.fire('Erro', 'Erro ao pesquisar pacientes', 'error');
       }
     }
     if (value === 'medico') {
@@ -168,7 +167,7 @@ export class NovaConsultaComponent implements OnInit {
         const dados = await this.profissionalApiService.pesquisarComFiltro(FiltroPesquisa, pesquisa, 'ATIVO').toPromise();
         this.AbirTabela(dados, 'medico');
       } catch (error) {
-        Swal.fire('Erro', 'Erro ao pesquisar médicos', 'error');
+        this.notificacao.fire('Erro', 'Erro ao pesquisar médicos', 'error');
       }
     }
   }
@@ -224,14 +223,14 @@ export class NovaConsultaComponent implements OnInit {
     this.horariosDisponiveis = [];
     if (this.Medico && selectedDate) {
       if (!this.Medico.tempoConsultaMinutos) {
-        Swal.fire({
+        this.notificacao.fire({
           icon: 'warning',
           title: 'Atenção',
           text: 'O médico ainda não informou o tempo de consulta. Portanto, serão utilizados os horários padrão.',
           showCloseButton: true,
         }).then((result) => {
           if (result.isConfirmed) {
-            Swal.fire({
+            this.notificacao.fire({
               text: 'É altamente recomendado que o tempo de consulta seja definido pelo médico para evitar problemas futuros.',
             });
           }
@@ -411,14 +410,14 @@ export class NovaConsultaComponent implements OnInit {
           this.Medico.id
         ).toPromise();
         if (dados) {
-          this.DialogService.JaexisteDadosCAdastradosComEssesParamentros();
+          this.notificacao.mostrarSnackbar('Ja Existe uma consulta marcadas para esse dia com esse horário.\nTente outro horário. Ou altere o dia.', 10000);
           this.FormularioConsulta.reset();
           return;
         }
 
         this.consultaApi.cadastrarConsultaByOrg(consult).subscribe((response) => {
           const texto: string = `O cadastro da consulta foi realizado com sucesso.\nCodigo de consulta: ${response.id} `;
-          Swal.fire({
+          this.notificacao.fire({
             icon: 'success',
             title: 'OK',
             text: texto,
@@ -444,7 +443,7 @@ export class NovaConsultaComponent implements OnInit {
         },
           (error) => {
             console.error('Erro ao criar consulta:', error);
-            Swal.fire({
+            this.notificacao.fire({
               icon: 'error',
               title: 'Oops...',
               text: extrairMensagemErro(error) || 'Algo deu errado. Tente novamente mais tarde.',
@@ -453,14 +452,14 @@ export class NovaConsultaComponent implements OnInit {
         );
       } catch (error) {
         console.error('Erro ao verificar disponibilidade:', error);
-        Swal.fire({
+        this.notificacao.fire({
           icon: 'error',
           title: 'Erro',
           text: 'Não foi possível verificar a disponibilidade do horário. Tente novamente.',
         });
       }
     } else {
-      Swal.fire({
+      this.notificacao.fire({
         icon: 'warning',
         title: 'Atenção',
         text: 'Por favor, preencha todos os campos obrigatórios.',

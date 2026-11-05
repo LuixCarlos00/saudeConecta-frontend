@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { finalize, Subject, takeUntil } from 'rxjs';
 
-import { ErrorHandlerService } from 'src/app/core/services/error-handler.service';
+import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
 import { ChamadoSuporteApiService } from 'src/app/services/api/chamado-suporte-api.service';
 import {
   ChamadoSuporteResponse,
@@ -57,7 +57,7 @@ export class GestaoChamadosComponent implements OnInit, OnDestroy {
 
   constructor(
     private chamadoSuporteApiService: ChamadoSuporteApiService,
-    private errorHandler: ErrorHandlerService
+    private notificacao: NotificacaoService
   ) { }
 
   ngOnInit(): void {
@@ -89,7 +89,7 @@ export class GestaoChamadosComponent implements OnInit, OnDestroy {
           this.totalPaginas = pagina.totalPages ?? 0;
           this.totalRegistros = pagina.totalElements ?? 0;
         },
-        error: (erro) => this.errorHandler.handleHttpError(erro, 'carregamento dos chamados')
+        error: (erro) => this.notificacao.handleHttpError(erro, 'carregamento dos chamados')
       });
   }
 
@@ -135,7 +135,7 @@ export class GestaoChamadosComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (detalhe) => this.chamadoSelecionado = detalhe,
-        error: (erro) => this.errorHandler.handleHttpError(erro, 'carregamento do chamado')
+        error: (erro) => this.notificacao.handleHttpError(erro, 'carregamento do chamado')
       });
   }
 
@@ -182,9 +182,9 @@ export class GestaoChamadosComponent implements OnInit, OnDestroy {
           this.chamados = this.chamados.map(item => item.id === atualizado.id ? atualizado : item);
           this.chamadoSelecionado = atualizado;
           this.fecharModalStatus();
-          this.errorHandler.showSuccessToast('Status atualizado. O autor foi notificado por email.');
+          this.notificacao.showSuccessToast('Status atualizado. O autor foi notificado por email.');
         },
-        error: (erro) => this.errorHandler.handleHttpError(erro, 'atualizacao do status')
+        error: (erro) => this.notificacao.handleHttpError(erro, 'atualizacao do status')
       });
   }
 

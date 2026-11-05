@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, Optional, ViewChild, ElementRef } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
-import Swal from 'sweetalert2';
+import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
 import { Router } from '@angular/router';
 import { MatDialogRef } from '@angular/material/dialog';
 import { ufOptions } from 'src/app/util/variados/options/options';
@@ -43,6 +43,7 @@ export class CadastroPacienteComponent implements OnInit, OnDestroy {
   @ViewChild('scrollArea', { static: false }) scrollArea!: ElementRef;
 
   constructor(
+    private notificacao: NotificacaoService,
     private form: FormBuilder,
     private route: Router,
     private pacienteApi: PacienteApiService,
@@ -179,22 +180,7 @@ export class CadastroPacienteComponent implements OnInit, OnDestroy {
    * @param mensagem Mensagem a ser exibida
    */
   private mostrarFeedbackCep(tipo: 'success' | 'error', mensagem: string) {
-    const Toast = Swal.mixin({
-      toast: true,
-      position: 'top-end',
-      showConfirmButton: false,
-      timer: 3000,
-      timerProgressBar: true,
-      didOpen: (toast) => {
-        toast.addEventListener('mouseenter', Swal.stopTimer);
-        toast.addEventListener('mouseleave', Swal.resumeTimer);
-      }
-    });
-
-    Toast.fire({
-      icon: tipo,
-      title: mensagem
-    });
+    this.notificacao.mostrarToast(tipo, mensagem);
   }
 
   ngOnDestroy(): void {
@@ -211,7 +197,7 @@ export class CadastroPacienteComponent implements OnInit, OnDestroy {
     this.FormularioEndereco.markAllAsTouched();
 
     if (!this.FormularioEndereco.valid || !this.FormularioPaciente.valid) {
-      Swal.fire({
+      this.notificacao.fire({
         icon: 'warning',
         title: 'Formulário incompleto',
         text: 'Por favor, preencha todos os campos obrigatórios corretamente.',
@@ -222,7 +208,7 @@ export class CadastroPacienteComponent implements OnInit, OnDestroy {
     const paci = this.FormularioPaciente.value;
 
     if (!paci.cpf || paci.cpf.length < 11) {
-      Swal.fire({
+      this.notificacao.fire({
         icon: 'warning',
         title: 'CPF inválido',
         text: 'O CPF é obrigatório e deve ser válido.',
@@ -239,7 +225,7 @@ export class CadastroPacienteComponent implements OnInit, OnDestroy {
     this.pacienteApi.cadastrarPacientebyOrg(dadosCompletos).subscribe({
       next: () => {
         this.isLoading = false;
-        Swal.fire({
+        this.notificacao.fire({
           icon: 'success',
           title: 'Sucesso!',
           text: 'Paciente cadastrado com sucesso.',
@@ -320,7 +306,7 @@ export class CadastroPacienteComponent implements OnInit, OnDestroy {
       errorMessage = 'Erro no servidor, tente novamente.';
     }
 
-    Swal.fire({
+    this.notificacao.fire({
       icon: 'error',
       title: 'Erro',
       text: errorMessage,

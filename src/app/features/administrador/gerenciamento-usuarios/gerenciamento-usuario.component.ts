@@ -2,7 +2,6 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subject, asapScheduler, observeOn, takeUntil } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { FiltroStateService } from 'src/app/services/state/filtro-state.service';
-import { DialogService } from 'src/app/util/variados/dialogo-confirmacao/dialog.service';
 import { CadastroMedicoComponent } from '../cadastros/cadastro-medico/cadastro-medico.component';
 import { CadastroPacienteComponent } from '../cadastros/cadastro-paciente/cadastro-paciente.component';
 import { CadastroSecretariaComponent } from '../cadastros/cadastro-secretaria/cadastro-secretaria.component';
@@ -11,7 +10,7 @@ import { CadastroAdminOrgComponent } from '../cadastros/cadastro-admin-org/cadas
 import { AuthService } from 'src/app/core/services/auth.service';
 import { AssinaturaApiService } from 'src/app/services/api/assinatura-api.service';
 import { LimitesPlano } from 'src/app/util/variados/interfaces/planos/PlanoAssinatura';
-import Swal from 'sweetalert2';
+import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
 
 @Component({
   selector: 'app-gerenciamento-usuario',
@@ -27,6 +26,7 @@ export class GerenciamentoUsuarioComponent implements OnInit, OnDestroy {
   limites: LimitesPlano | null = null;
 
   constructor(
+    private notificacao: NotificacaoService,
     private filtroStateService: FiltroStateService,
     private dialog: MatDialog,
     private authService: AuthService,
@@ -147,7 +147,7 @@ export class GerenciamentoUsuarioComponent implements OnInit, OnDestroy {
   }
 
   private exibirAlertaLimite(tipo: string, usado: number, limite: number | null): void {
-    Swal.fire({
+    this.notificacao.fire({
       icon: 'warning',
       title: 'Limite do plano atingido',
       html: `Você atingiu o limite de <b>${tipo}</b> do seu plano.<br>` +

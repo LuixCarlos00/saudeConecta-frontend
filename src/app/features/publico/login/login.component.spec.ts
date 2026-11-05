@@ -28,7 +28,7 @@ describe('LoginComponent', () => {
   describe('handleLoginError', () => {
     let handler: any;
     beforeEach(() => {
-      handler = (component as any).errorHandler;
+      handler = (component as any).notificacao;
       spyOn(handler, 'showError');
       spyOn(handler, 'showWarning');
       spyOn(console, 'error');

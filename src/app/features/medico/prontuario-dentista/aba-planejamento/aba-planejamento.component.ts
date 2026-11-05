@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Subject, takeUntil } from 'rxjs';
 import { ProcedimentoPadraoApiService } from 'src/app/services/api/procedimento-padrao-api.service';
 import { PlanejamentoTerapeuticoApiService } from 'src/app/services/api/planejamento-terapeutico-api.service';
-import { ErrorHandlerService } from 'src/app/core/services/error-handler.service';
+import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
 import { formatarDataLocal } from '../../../../shared/utils/data-local';
 
 @Component({
@@ -33,7 +33,7 @@ export class AbaPlanejamentoComponent implements OnChanges, OnDestroy {
   constructor(
     private procedimentoPadraoApi: ProcedimentoPadraoApiService,
     private planejamentoApi: PlanejamentoTerapeuticoApiService,
-    private errorHandler: ErrorHandlerService
+    private notificacao: NotificacaoService
   ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -70,7 +70,7 @@ export class AbaPlanejamentoComponent implements OnChanges, OnDestroy {
       );
       
       if (procedimentoExistente) {
-        this.errorHandler.showError('Este procedimento já está cadastrado no planejamento e não pode ser duplicado.');
+        this.notificacao.showError('Este procedimento já está cadastrado no planejamento e não pode ser duplicado.');
         event.target.value = ''; // Limpa select
         return;
       }
@@ -100,7 +100,7 @@ export class AbaPlanejamentoComponent implements OnChanges, OnDestroy {
 
   adicionarPlanejamento(): void {
     if (!this.novoPlanejamento.procedimentoRealizado.trim()) {
-      this.errorHandler.showError('Informe o procedimento realizado');
+      this.notificacao.showError('Informe o procedimento realizado');
       return;
     }
     const payload = {
@@ -130,9 +130,9 @@ export class AbaPlanejamentoComponent implements OnChanges, OnDestroy {
         .subscribe({
           next: () => {
             this.planejamentos.splice(index, 1);
-            this.errorHandler.showSuccessToast('Item removido');
+            this.notificacao.showSuccessToast('Item removido');
           },
-          error: () => this.errorHandler.showError('Erro ao remover item')
+          error: () => this.notificacao.showError('Erro ao remover item')
         });
     } else {
       this.planejamentos.splice(index, 1);
@@ -148,9 +148,9 @@ export class AbaPlanejamentoComponent implements OnChanges, OnDestroy {
           this.procedimentosPadrao.push(criado);
           this.novoProcedimentoPadrao = { nomeProcedimento: '', valorPadrao: 0 };
           this.mostrarFormProcedimento = false;
-          this.errorHandler.showSuccessToast('Procedimento cadastrado');
+          this.notificacao.showSuccessToast('Procedimento cadastrado');
         },
-        error: () => this.errorHandler.showError('Erro ao cadastrar procedimento')
+        error: () => this.notificacao.showError('Erro ao cadastrar procedimento')
       });
   }
 

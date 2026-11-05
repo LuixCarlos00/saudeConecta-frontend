@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { finalize, Subject, takeUntil } from 'rxjs';
 
-import { ErrorHandlerService } from 'src/app/core/services/error-handler.service';
+import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { ChamadoSuporteApiService } from 'src/app/services/api/chamado-suporte-api.service';
 import {
@@ -172,7 +172,7 @@ export class SuporteComponent implements OnInit, OnDestroy {
 
   constructor(
     private chamadoSuporteApiService: ChamadoSuporteApiService,
-    private errorHandler: ErrorHandlerService,
+    private notificacao: NotificacaoService,
     private authService: AuthService
   ) { }
 
@@ -207,7 +207,7 @@ export class SuporteComponent implements OnInit, OnDestroy {
           this.chamados = pagina.content ?? [];
           this.atualizarEstatisticas();
         },
-        error: (erro) => this.errorHandler.handleHttpError(erro, 'carregamento dos chamados')
+        error: (erro) => this.notificacao.handleHttpError(erro, 'carregamento dos chamados')
       });
   }
 
@@ -269,7 +269,7 @@ export class SuporteComponent implements OnInit, OnDestroy {
           this.chamadoSelecionado = detalhe;
           this.imagensChamado = (detalhe.anexos ?? []).map(anexo => this.montarAnexoVisualizacao(anexo.nomeArquivo, anexo.conteudoBase64));
         },
-        error: (erro) => this.errorHandler.handleHttpError(erro, 'carregamento do chamado')
+        error: (erro) => this.notificacao.handleHttpError(erro, 'carregamento do chamado')
       });
   }
 
@@ -348,7 +348,7 @@ export class SuporteComponent implements OnInit, OnDestroy {
           this.fecharModalChamado();
           this.exibirToast();
         },
-        error: (erro) => this.errorHandler.handleHttpError(erro, 'abertura do chamado')
+        error: (erro) => this.notificacao.handleHttpError(erro, 'abertura do chamado')
       });
   }
 
@@ -363,9 +363,9 @@ export class SuporteComponent implements OnInit, OnDestroy {
       .subscribe({
         next: () => {
           this.chamados = this.chamados.filter(item => item.id !== chamado.id);
-          this.errorHandler.showSuccessToast('Chamado excluido com sucesso');
+          this.notificacao.showSuccessToast('Chamado excluido com sucesso');
         },
-        error: (erro) => this.errorHandler.handleHttpError(erro, 'exclusao do chamado')
+        error: (erro) => this.notificacao.handleHttpError(erro, 'exclusao do chamado')
       });
   }
 

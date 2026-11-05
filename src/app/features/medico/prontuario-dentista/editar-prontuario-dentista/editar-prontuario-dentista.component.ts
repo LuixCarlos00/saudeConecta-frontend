@@ -3,10 +3,9 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Subject, takeUntil } from 'rxjs';
-import Swal from 'sweetalert2';
 
 import { ProntuarioDentistaApiService } from 'src/app/services/api/prontuario-dentista-api.service';
-import { ErrorHandlerService } from 'src/app/core/services/error-handler.service';
+import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
 import { Consultav2 } from 'src/app/util/variados/interfaces/consulta/consultav2';
 
 import { AbaIdentificacaoComponent } from '../aba-identificacao/aba-identificacao.component';
@@ -41,7 +40,7 @@ export class EditarProntuarioDentistaComponent implements OnInit, OnDestroy, Aft
     private dialogRef: MatDialogRef<EditarProntuarioDentistaComponent>,
     @Inject(MAT_DIALOG_DATA) public data: { consulta: Consultav2 },
     private prontuarioDentistaApi: ProntuarioDentistaApiService,
-    private errorHandler: ErrorHandlerService
+    private notificacao: NotificacaoService
   ) {
     this.consulta = data.consulta;
   }
@@ -105,11 +104,11 @@ export class EditarProntuarioDentistaComponent implements OnInit, OnDestroy, Aft
    */
   salvar(): void {
     if (!this.prontuarioId) {
-      this.errorHandler.showError('ID do prontuário não encontrado');
+      this.notificacao.showError('ID do prontuário não encontrado');
       return;
     }
 
-    Swal.fire({
+    this.notificacao.fire({
       icon: 'question',
       title: 'Confirmar edição',
       text: 'Deseja salvar as alterações no prontuário?',
@@ -149,12 +148,12 @@ export class EditarProntuarioDentistaComponent implements OnInit, OnDestroy, Aft
       .subscribe({
         next: () => {
           this.salvando = false;
-          this.errorHandler.showSuccessToast('Prontuário atualizado com sucesso');
+          this.notificacao.showSuccessToast('Prontuário atualizado com sucesso');
           this.dialogRef.close(true);
         },
         error: (err) => {
           console.error('Erro ao atualizar prontuário:', err);
-          this.errorHandler.showError('Erro ao salvar alterações do prontuário');
+          this.notificacao.showError('Erro ao salvar alterações do prontuário');
           this.salvando = false;
         }
       });

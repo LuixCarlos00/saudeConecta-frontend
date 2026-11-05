@@ -8,9 +8,8 @@ import { AuthService } from 'src/app/core/services/auth.service';
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { PageEvent } from '@angular/material/paginator';
 import { MatDialog } from '@angular/material/dialog';
-import Swal from 'sweetalert2';
+import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
 import { ObservacoesComponent } from 'src/app/features/administrador/gerenciamento-agenda/agenda/Observacoes/Observacoes.component';
-import { DialogService } from 'src/app/util/variados/dialogo-confirmacao/dialog.service';
 import { Router } from '@angular/router';
 import { formatarDataLocal } from '../../../shared/utils/data-local';
 
@@ -41,11 +40,11 @@ export class TabelaAgendaMedicoComponent implements OnInit {
   };
 
   constructor(
+    private notificacao: NotificacaoService,
     private authService: AuthService,
     private consultaApiService: ConsultaApiService,
     public dialog: MatDialog,
     private prontuarioStateService: ProntuarioStateService,
-    private DialogService: DialogService,
     private route: Router,
     private rascunhoApi: RascunhoAtendimentoApiService
   ) {
@@ -80,7 +79,7 @@ export class TabelaAgendaMedicoComponent implements OnInit {
 
 
   DesejaAbrirConsulta(element: any) {
-    Swal.fire({
+    this.notificacao.fire({
       title: 'Tem certeza que deseja abrir essa consulta?',
       icon: 'warning',
       showCancelButton: true,
@@ -154,7 +153,7 @@ export class TabelaAgendaMedicoComponent implements OnInit {
       this.LimparTabela();
       this.dataSource = resultadoFiltrado;
     } else {
-      this.DialogService.NaoFoiEncontradoConsultasComEssesParametros();
+      this.notificacao.mostrarSnackbar('Não foi encontrado consultas com esses parametros .Tente Novamente.', 50000);
       this.LimparTabela();
       this.BuscarDadosDeAgendaDoMedicoDoDia();
     }
@@ -191,7 +190,7 @@ export class TabelaAgendaMedicoComponent implements OnInit {
     this.consultaApiService.buscarAgendaMedico(this.UsuarioLogado.id).subscribe((dados) => {
 
       if (!dados || dados.length === 0) {
-        Swal.fire('Nenhuma consulta encontrada', 'Tente novamente', 'warning');
+        this.notificacao.fire('Nenhuma consulta encontrada', 'Tente novamente', 'warning');
         this.dataSource = [];
         this.filteredDataSource = [];
         return;

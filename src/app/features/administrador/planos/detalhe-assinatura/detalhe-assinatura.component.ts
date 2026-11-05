@@ -3,7 +3,7 @@ import { AssinaturaApiService } from 'src/app/services/api/assinatura-api.servic
 import { ControleAcessoApiService } from 'src/app/services/api/controle-acesso-api.service';
 import { AssinaturaTenant, CobrancaTenant, LimitesPlano } from 'src/app/util/variados/interfaces/planos/PlanoAssinatura';
 import { diasCalendarioAte, formatarDataBr } from 'src/app/shared/utils/data-local';
-import Swal from 'sweetalert2';
+import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
 
 @Component({
   selector: 'app-detalhe-assinatura',
@@ -20,6 +20,7 @@ export class DetalheAssinaturaComponent implements OnInit {
   cancelando = false;
 
   constructor(
+    private notificacao: NotificacaoService,
     private assinaturaApiService: AssinaturaApiService,
     private controleAcesso: ControleAcessoApiService
   ) {}
@@ -119,7 +120,7 @@ export class DetalheAssinaturaComponent implements OnInit {
     this.assinaturaApiService.gerarLinkPagamento().subscribe({
       next: (link) => {
         this.gerandoLink = false;
-        Swal.fire({
+        this.notificacao.fire({
           icon: 'info',
           title: 'Atenção ao e-mail do pagamento',
           html: `Use a conta Mercado Pago vinculada ao e-mail <strong>${link.payerEmail}</strong>.<br>
@@ -136,7 +137,7 @@ export class DetalheAssinaturaComponent implements OnInit {
       },
       error: (err) => {
         this.gerandoLink = false;
-        Swal.fire({
+        this.notificacao.fire({
           icon: 'error',
           title: 'Erro',
           text: err.error?.message || 'Não foi possível gerar o link de pagamento.'
@@ -152,7 +153,7 @@ export class DetalheAssinaturaComponent implements OnInit {
   cancelarAssinatura(): void {
     if (this.cancelando) return;
 
-    Swal.fire({
+    this.notificacao.fire({
       icon: 'warning',
       title: 'Cancelar assinatura?',
       html: `A cobrança automática será encerrada no Mercado Pago.<br>
@@ -164,7 +165,7 @@ export class DetalheAssinaturaComponent implements OnInit {
     }).then(primeira => {
       if (!primeira.isConfirmed) return;
 
-      Swal.fire({
+      this.notificacao.fire({
         icon: 'warning',
         title: 'Tem certeza?',
         text: 'Esta ação não pode ser desfeita. Para voltar a usar o sistema você precisará assinar novamente.',
@@ -185,7 +186,7 @@ export class DetalheAssinaturaComponent implements OnInit {
     this.assinaturaApiService.cancelarMinhaAssinatura().subscribe({
       next: () => {
         this.cancelando = false;
-        Swal.fire({
+        this.notificacao.fire({
           icon: 'success',
           title: 'Assinatura cancelada',
           text: 'A cobrança automática foi encerrada.'
@@ -193,7 +194,7 @@ export class DetalheAssinaturaComponent implements OnInit {
       },
       error: (err) => {
         this.cancelando = false;
-        Swal.fire({
+        this.notificacao.fire({
           icon: 'error',
           title: 'Erro',
           text: err.error?.message || 'Não foi possível cancelar a assinatura.'

@@ -3,10 +3,9 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
-import Swal from 'sweetalert2';
 
 import { ProntuarioStateService } from 'src/app/services/state/prontuario-state.service';
-import { ErrorHandlerService } from 'src/app/core/services/error-handler.service';
+import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
 import { Consultav2 } from '../../../util/variados/interfaces/consulta/consultav2';
 import { ProntuarioDentistaRequest } from '../../../util/variados/interfaces/Prontuario/ProntuarioDentista';
 import { ProntuarioDentistaApiService } from 'src/app/services/api/prontuario-dentista-api.service';
@@ -73,7 +72,7 @@ export class ProntuarioDentistaComponent implements OnInit, OnDestroy, AfterView
     private router: Router,
     private prontuarioDentistaApi: ProntuarioDentistaApiService,
     private prontuarioState: ProntuarioStateService,
-    private errorHandler: ErrorHandlerService,
+    private notificacao: NotificacaoService,
     private rascunhoApi: RascunhoAtendimentoApiService,
     public autosave: RascunhoAutosaveService
   ) { }
@@ -142,7 +141,7 @@ export class ProntuarioDentistaComponent implements OnInit, OnDestroy, AfterView
           this.tentarInicializarAbas();
         },
         error: (erro) => {
-          this.errorHandler.showError(
+          this.notificacao.showError(
             extrairMensagemErro(erro) || 'Não foi possível carregar o rascunho deste atendimento.'
           );
           this.rascunhoPronto = true;
@@ -162,7 +161,7 @@ export class ProntuarioDentistaComponent implements OnInit, OnDestroy, AfterView
     const rascunho = this.rascunhoInicial;
     if (rascunho) {
       this.aplicarRascunho(rascunho);
-      this.errorHandler.showSuccessToast('Atendimento retomado');
+      this.notificacao.showSuccessToast('Atendimento retomado');
     } else {
       // Observações da consulta só entram quando não há rascunho: não sobrescrevem o que o profissional digitou.
       this.preencherObservacoesConsulta(this.Consulta);
@@ -224,7 +223,7 @@ export class ProntuarioDentistaComponent implements OnInit, OnDestroy, AfterView
   descartarRascunho(): void {
     if (!this.Consulta?.id) { return; }
     const consultaId = this.Consulta.id;
-    Swal.fire({
+    this.notificacao.fire({
       icon: 'warning',
       title: 'Descartar rascunho?',
       text: 'Tudo o que foi digitado neste atendimento será apagado. Essa ação não pode ser desfeita.',
@@ -242,11 +241,11 @@ export class ProntuarioDentistaComponent implements OnInit, OnDestroy, AfterView
             next: () => {
               this.limparAbas();
               this.autosave.iniciar(this.configAutosave(consultaId), null);
-              this.errorHandler.showSuccessToast('Rascunho descartado');
+              this.notificacao.showSuccessToast('Rascunho descartado');
             },
             error: (erro) => {
               this.autosave.retomar();
-              this.errorHandler.showError(extrairMensagemErro(erro) || 'Não foi possível descartar o rascunho.');
+              this.notificacao.showError(extrairMensagemErro(erro) || 'Não foi possível descartar o rascunho.');
             },
           });
       });
@@ -258,7 +257,7 @@ export class ProntuarioDentistaComponent implements OnInit, OnDestroy, AfterView
   // =========================================================================
   finalizar(): void {
     this.FinalizarConsulta = true;
-    Swal.fire({
+    this.notificacao.fire({
       icon: 'warning',
       title: 'Atenção',
       text: 'Deseja finalizar a consulta odontológica?',
@@ -270,7 +269,7 @@ export class ProntuarioDentistaComponent implements OnInit, OnDestroy, AfterView
         this.concluido();
       } else {
         this.FinalizarConsulta = false;
-        Swal.fire({ icon: 'success', title: 'Retomando consulta', showConfirmButton: false, timer: 1500 });
+        this.notificacao.fire({ icon: 'success', title: 'Retomando consulta', showConfirmButton: false, timer: 1500 });
       }
     });
   }
@@ -321,7 +320,7 @@ export class ProntuarioDentistaComponent implements OnInit, OnDestroy, AfterView
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {
-          this.errorHandler.showSuccessToast('Prontuário odontológico finalizado com sucesso');
+          this.notificacao.showSuccessToast('Prontuário odontológico finalizado com sucesso');
           this.stopTimer();
           setTimeout(() => this.router.navigate(['/agenda-calendario']), 1500);
         },
@@ -330,12 +329,12 @@ export class ProntuarioDentistaComponent implements OnInit, OnDestroy, AfterView
           // Não religa o autosave (a consulta está encerrada) e volta para a agenda.
           if (error?.status === 409 && error?.error?.code === 'PRONTUARIO_JA_FINALIZADO') {
             this.stopTimer();
-            this.errorHandler.showError(extrairMensagemErro(error) || 'Esta consulta já foi finalizada.');
+            this.notificacao.showError(extrairMensagemErro(error) || 'Esta consulta já foi finalizada.');
             setTimeout(() => this.router.navigate(['/agenda-calendario']), 1500);
             return;
           }
           console.error('Erro ao cadastrar prontuário odontológico:', error);
-          this.errorHandler.showError(extrairMensagemErro(error) || 'Erro ao salvar prontuário');
+          this.notificacao.showError(extrairMensagemErro(error) || 'Erro ao salvar prontuário');
           this.FinalizarConsulta = false;
           this.autosave.retomar();
         },

@@ -3,7 +3,7 @@ import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest, HttpErrorResponse
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { Router } from '@angular/router';
-import Swal from 'sweetalert2';
+import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
 import { AuthService } from '../services/auth.service';
 import { extrairMensagemErro } from '../../shared/utils/mensagem-erro-http';
 
@@ -22,6 +22,7 @@ export class ErrorInterceptor implements HttpInterceptor {
   private avisoPlanoAberto = false;
 
   constructor(
+    private notificacao: NotificacaoService,
     private authService: AuthService,
     private router: Router
   ) {}
@@ -76,7 +77,7 @@ export class ErrorInterceptor implements HttpInterceptor {
     const papel = this.authService.getUserRole() ?? '';
     // Mesmos papéis que a rota /minha-assinatura aceita (ADMIN e secretária)
     const podePagar = /ROLE_ADMIN|ROLE_SUPER_ADMIN|ROLE_Secretaria|ROLE_RECEPCIONISTA/.test(papel);
-    Swal.fire({ icon: 'warning', title: 'Plano indisponível', text: mensagem }).finally(() => {
+    this.notificacao.fire({ icon: 'warning', title: 'Plano indisponível', text: mensagem }).finally(() => {
       setTimeout(() => (this.avisoPlanoAberto = false), DEBOUNCE_AVISO_MS);
     });
     if (podePagar && !this.router.url.startsWith('/minha-assinatura')) {

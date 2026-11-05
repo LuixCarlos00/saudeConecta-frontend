@@ -1,7 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Subject, Subscription, firstValueFrom, race, timer } from 'rxjs';
-import Swal from 'sweetalert2';
+import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
 
 import { RascunhoAtendimentoApiService } from 'src/app/services/api/rascunho-atendimento-api.service';
 import { extrairMensagemErro } from 'src/app/shared/utils/mensagem-erro-http';
@@ -83,7 +83,8 @@ export class RascunhoAutosaveService {
   private intervalo: ReturnType<typeof setInterval> | null = null;
   private debounce: ReturnType<typeof setTimeout> | null = null;
 
-  constructor(private api: RascunhoAtendimentoApiService) { }
+  constructor(
+    private notificacao: NotificacaoService,private api: RascunhoAtendimentoApiService) { }
 
   /** Existe rascunho gravado no servidor para esta consulta. */
   get temRascunho(): boolean {
@@ -270,7 +271,7 @@ export class RascunhoAutosaveService {
     if (erro?.status === 409 && codigo === 'CONSULTA_ENCERRADA') {
       this.parar();
       this.estado = 'encerrado';
-      Swal.fire({
+      this.notificacao.fire({
         icon: 'info',
         title: 'Consulta encerrada',
         text: extrairMensagemErro(erro) || 'Esta consulta já foi encerrada. O rascunho não será mais salvo.',
@@ -324,7 +325,7 @@ export class RascunhoAutosaveService {
     this.emConflito = true;
     this.limparDebounce();
     this.estado = 'erro';
-    Swal.fire({
+    this.notificacao.fire({
       icon: 'warning',
       title: 'Atendimento alterado em outro lugar',
       text: 'Este atendimento foi alterado em outra aba ou computador. Recarregue para ver a versão mais recente.',

@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MatDialogRef } from '@angular/material/dialog';
 import { Subscription } from 'rxjs';
-import Swal from 'sweetalert2';
+import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
 import { AdministradorApiService } from 'src/app/services/api/administrador-api.service';
 import { FiltroStateService } from 'src/app/services/state/filtro-state.service';
 import { cpfValidator } from 'src/app/util/validators/cpf-form.validator';
@@ -27,6 +27,7 @@ export class CadastroAdmComponent implements OnInit, OnDestroy {
   @ViewChild('scrollArea', { static: false }) scrollArea!: ElementRef;
 
   constructor(
+    private notificacao: NotificacaoService,
     private router: Router,
     private form: FormBuilder,
     private administradorApi: AdministradorApiService,
@@ -108,7 +109,7 @@ export class CadastroAdmComponent implements OnInit, OnDestroy {
 
   cadastra() {
     if (!this.FormularioADM.valid) {
-      Swal.fire({
+      this.notificacao.fire({
         icon: 'warning',
         title: 'Formulário incompleto',
         text: 'Por favor, preencha todos os campos obrigatórios.',
@@ -119,7 +120,7 @@ export class CadastroAdmComponent implements OnInit, OnDestroy {
     const form = this.FormularioADM.value;
 
     if (!form.cpf || form.cpf.length < 11) {
-      Swal.fire({
+      this.notificacao.fire({
         icon: 'warning',
         title: 'CPF inválido',
         text: 'O CPF é obrigatório e será usado como login.',
@@ -137,7 +138,7 @@ export class CadastroAdmComponent implements OnInit, OnDestroy {
         const duration = endTime - startTime;
 
         this.isLoading = false;
-        Swal.fire({
+        this.notificacao.fire({
           icon: 'success',
           title: 'Sucesso!',
           text: 'Administrador cadastrado com sucesso. As credenciais serão enviadas por email.',
@@ -181,7 +182,7 @@ export class CadastroAdmComponent implements OnInit, OnDestroy {
       errorMessage = 'Erro no servidor, tente novamente.';
     }
 
-    Swal.fire({
+    this.notificacao.fire({
       icon: icone,
       title: titulo,
       text: errorMessage,

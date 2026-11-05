@@ -6,7 +6,7 @@ import { ConsultaApiService } from 'src/app/services/api/consulta-api.service';
 import { RascunhoAtendimentoApiService } from 'src/app/services/api/rascunho-atendimento-api.service';
 import { extrairMensagemErro } from 'src/app/shared/utils/mensagem-erro-http';
 import { ProntuarioStateService } from 'src/app/services/state/prontuario-state.service';
-import Swal from 'sweetalert2';
+import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
 
 /** Status em que a consulta já foi encerrada e não aceita mais atendimento. */
 const STATUS_ENCERRADOS = ['REALIZADA', 'PAGO', 'CANCELADA'];
@@ -28,6 +28,7 @@ const TEXTO_ACESSO_NEGADO =
 export class ProntuarioGuard implements CanActivate {
 
   constructor(
+    private notificacao: NotificacaoService,
     private router: Router,
     private prontuarioState: ProntuarioStateService,
     private consultaApi: ConsultaApiService,
@@ -111,7 +112,7 @@ export class ProntuarioGuard implements CanActivate {
   }
 
   private bloquear(titulo: string, texto: string, botao = 'Ir para Agenda', icone: 'warning' | 'error' = 'warning'): false {
-    Swal.fire({
+    this.notificacao.fire({
       icon: icone,
       title: titulo,
       text: texto,

@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/core/services/auth.service';
-import Swal from 'sweetalert2';
+import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
 import { extrairMensagemErro } from 'src/app/shared/utils/mensagem-erro-http';
 
 const MENSAGEM_NEUTRA = 'Se o e-mail estiver cadastrado, você receberá as instruções para recuperar a senha.';
@@ -21,6 +21,7 @@ export class RecuperaCadastroComponent implements OnInit {
   mensagemSucesso: string = MENSAGEM_NEUTRA;
 
   constructor(
+    private notificacao: NotificacaoService,
     private router: Router,
     private formBuilder: FormBuilder,
     private authService: AuthService,
@@ -45,7 +46,7 @@ export class RecuperaCadastroComponent implements OnInit {
         this.isLoading = false;
         this.emailEnviado = true;
         this.mensagemSucesso = resposta?.message || MENSAGEM_NEUTRA;
-        Swal.fire({
+        this.notificacao.fire({
           icon: 'success',
           title: 'Solicitação recebida',
           text: this.mensagemSucesso,
@@ -54,7 +55,7 @@ export class RecuperaCadastroComponent implements OnInit {
       },
       error: (erro) => {
         this.isLoading = false;
-        Swal.fire({
+        this.notificacao.fire({
           icon: 'error',
           title: 'Erro',
           text: extrairMensagemErro(erro) || 'Não foi possível processar a solicitação. Tente novamente em instantes.',

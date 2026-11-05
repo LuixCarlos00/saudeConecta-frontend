@@ -5,7 +5,7 @@ import { ConsultaApiService } from 'src/app/services/api/consulta-api.service';
 import { ConsultaStateService } from 'src/app/services/state/consulta-state.service';
 import { MatDialog } from '@angular/material/dialog';
 import { CronologiaComponent } from 'src/app/util/variados/Cronologia/cronologia.component';
-import Swal from 'sweetalert2';
+import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
 import { extrairMensagemErro } from 'src/app/shared/utils/mensagem-erro-http';
 import { EditarConsultasComponent } from './Editar-Consultas/Editar-Consultas.component';
 import { ObservacoesComponent } from './Observacoes/Observacoes.component';
@@ -58,6 +58,7 @@ export class AgendaComponent implements OnInit, OnDestroy {
 
 
   constructor(
+    private notificacao: NotificacaoService,
     private formBuilder: FormBuilder,
     private consultaApi: ConsultaApiService,
     public dialog: MatDialog,
@@ -117,7 +118,7 @@ export class AgendaComponent implements OnInit, OnDestroy {
       }
     } catch (error) {
       console.error(error);
-      Swal.fire('Erro', 'Erro ao buscar dados da tabela.', 'error');
+      this.notificacao.fire('Erro', 'Erro ao buscar dados da tabela.', 'error');
     }
   }
 
@@ -159,10 +160,10 @@ export class AgendaComponent implements OnInit, OnDestroy {
         this.dataSource = dados;
       } else {
         this.buscarDadosParaTabela();
-        Swal.fire('Erro', 'Pesquisa não encontrada.', 'error');
+        this.notificacao.fire('Erro', 'Pesquisa não encontrada.', 'error');
       }
     } catch (error) {
-      Swal.fire('Erro', 'Falha ao fazer a busca.', 'error');
+      this.notificacao.fire('Erro', 'Falha ao fazer a busca.', 'error');
       console.error(error);
     } finally {
       setTimeout(() => {
@@ -204,7 +205,7 @@ export class AgendaComponent implements OnInit, OnDestroy {
   // ─────────────────────────────────────────────────────────────────────────────
 
   async Deletar(consulta: Consultav2) {
-    const confirmar = await Swal.fire({
+    const confirmar = await this.notificacao.fire({
       title: 'Confirmar exclusão',
       text: `Deseja excluir a consulta de ${consulta.pacienteNome}? O questionário de saúde será excluído.`,
       icon: 'warning',
@@ -219,14 +220,14 @@ export class AgendaComponent implements OnInit, OnDestroy {
 
     try {
       await this.consultaApi.deletarConsulta(consulta.id).toPromise();
-      Swal.fire('Deletado', 'Consulta deletada com sucesso', 'success');
+      this.notificacao.fire('Deletado', 'Consulta deletada com sucesso', 'success');
       this.buscarDadosParaTabela();
     } catch (error: any) {
       const status = error?.status;
       if (status === 409) {
-        Swal.fire('Exclusão bloqueada', 'Esta consulta possui prontuário clínico e não pode ser excluída. Os dados clínicos devem ser preservados.', 'info');
+        this.notificacao.fire('Exclusão bloqueada', 'Esta consulta possui prontuário clínico e não pode ser excluída. Os dados clínicos devem ser preservados.', 'info');
       } else {
-        Swal.fire('Erro', 'Erro ao deletar consulta', 'error');
+        this.notificacao.fire('Erro', 'Erro ao deletar consulta', 'error');
       }
     }
   }
@@ -292,7 +293,7 @@ Editar(consulta: any) {
     }
 
      if (config.requiresMotivo) {
-      Swal.fire({
+      this.notificacao.fire({
         title: config.title,
         text: config.text,
         icon: 'question',
@@ -317,7 +318,7 @@ Editar(consulta: any) {
       });
     } else {
       // Status que não precisam de motivo
-      Swal.fire({
+      this.notificacao.fire({
         title: config.title,
         text: config.text,
         icon: 'question',
@@ -357,7 +358,7 @@ Editar(consulta: any) {
           'REALIZADA': 'Realizada',
           'PAGO': 'Paga'
         };
-        Swal.fire(`${statusLabels[status]}!`, `Consulta marcada como ${statusLabels[status].toLowerCase()} com sucesso.`, 'success');
+        this.notificacao.fire(`${statusLabels[status]}!`, `Consulta marcada como ${statusLabels[status].toLowerCase()} com sucesso.`, 'success');
         this.buscarDadosParaTabela();
       },
       error: (err: any) => {
@@ -369,7 +370,7 @@ Editar(consulta: any) {
           'REALIZADA': 'Realizada',
           'PAGO': 'Paga'
         };
-        Swal.fire('Erro', extrairMensagemErro(err) || `Não foi possível alterar a consulta para ${statusLabels[status].toLowerCase()}.`, 'error');
+        this.notificacao.fire('Erro', extrairMensagemErro(err) || `Não foi possível alterar a consulta para ${statusLabels[status].toLowerCase()}.`, 'error');
       },
     });
   }
@@ -397,7 +398,7 @@ Editar(consulta: any) {
   }
 
   VerMotivoCancelamento(motivo: string): void {
-    Swal.fire({
+    this.notificacao.fire({
       title: 'Motivo do Cancelamento',
       html: `<div style="text-align: left; padding: 10px;">
                <p style="margin: 0; color: #374151; font-size: 14px; line-height: 1.6;">
@@ -470,7 +471,7 @@ Editar(consulta: any) {
 
 
       if (dadosArray && Array.isArray(dadosArray) && dadosArray.length === 0) {
-        Swal.fire({
+        this.notificacao.fire({
           icon: 'info',
           title: 'Nenhum resultado',
           text: `Nenhuma consulta ${this.Finalizadas ? 'finalizada' : 'agendada'} encontrada com os filtros selecionados.`,
@@ -492,7 +493,7 @@ Editar(consulta: any) {
           // Recarrega os dados da tabela para refletir a alteração
           this.buscarDadosParaTabela();
 
-          Swal.fire({
+          this.notificacao.fire({
             icon: 'success',
             title: 'Alteração realizada!',
             text: `Consulta alterada para ${alteracao.novoStatus} com sucesso.`,
@@ -501,7 +502,7 @@ Editar(consulta: any) {
         },
         error: (error) => {
           console.error('Erro ao processar alteração específica:', error);
-          Swal.fire({
+          this.notificacao.fire({
             icon: 'error',
             title: 'Erro na alteração',
             text: extrairMensagemErro(error) || 'Não foi possível realizar a alteração. Tente novamente.',
@@ -524,13 +525,13 @@ Editar(consulta: any) {
         next: (prontuario: any) => {
           const codigoProntuario = this.acoesConsulta.extrairCodigoProntuario(prontuario);
           if (!codigoProntuario) {
-            Swal.fire('Aviso', 'Nenhum prontuário encontrado para esta consulta.', 'warning');
+            this.notificacao.fire('Aviso', 'Nenhum prontuário encontrado para esta consulta.', 'warning');
             return;
           }
           const plans = prontuario?.planejamentosTerapeuticos || prontuario?.planejamentos || [];
           if (plans.length > 0 && plans.every((p: any) => p.statusAssinatura === 'ASSINADO')) {
             this.planejamentosAssinados.add(element.id);
-            Swal.fire('Aviso', 'Todos os itens do planejamento já foram assinados pelo paciente.', 'info');
+            this.notificacao.fire('Aviso', 'Todos os itens do planejamento já foram assinados pelo paciente.', 'info');
             return;
           }
           this.planejamentoApi.gerarLinkAssinatura(codigoProntuario, tipoProfissional)
@@ -540,7 +541,7 @@ Editar(consulta: any) {
                 const baseUrl = window.location.origin;
                 const link = `${baseUrl}/#/assinatura-planejamento/${resp.token}`;
                 navigator.clipboard.writeText(link).catch(() => {});
-                Swal.fire({
+                this.notificacao.fire({
                   icon: 'success',
                   title: 'Link Gerado!',
                   html: `<p style="font-size:0.9rem;">Copie o link abaixo e envie ao paciente:</p>
@@ -550,12 +551,12 @@ Editar(consulta: any) {
                 });
               },
               error: () => {
-                Swal.fire('Erro', 'Não foi possível gerar o link do planejamento.', 'error');
+                this.notificacao.fire('Erro', 'Não foi possível gerar o link do planejamento.', 'error');
               }
             });
         },
         error: () => {
-          Swal.fire('Erro', 'Não foi possível buscar o prontuário desta consulta.', 'error');
+          this.notificacao.fire('Erro', 'Não foi possível buscar o prontuário desta consulta.', 'error');
         }
       });
   }
@@ -574,7 +575,7 @@ Editar(consulta: any) {
         next: (resp: any) => {
           if (resp?.respondido) {
             this.questionariosRespondidos.add(element.id);
-            Swal.fire('Aviso', 'O questionário de saúde já foi respondido e assinado pelo paciente.', 'info');
+            this.notificacao.fire('Aviso', 'O questionário de saúde já foi respondido e assinado pelo paciente.', 'info');
             return;
           }
           this.executarGeracaoLinkQuestionario(element);
@@ -594,7 +595,7 @@ Editar(consulta: any) {
           const baseUrl = window.location.origin;
           const link = `${baseUrl}/#/questionario-saude/${resp.token}`;
           navigator.clipboard.writeText(link).then(() => {
-            Swal.fire({
+            this.notificacao.fire({
               icon: 'success',
               title: 'Link Gerado!',
               html: `<p style="font-size:0.9rem;">Link copiado para a área de transferência.</p>
@@ -603,7 +604,7 @@ Editar(consulta: any) {
               confirmButtonText: 'OK'
             });
           }).catch(() => {
-            Swal.fire({
+            this.notificacao.fire({
               icon: 'info',
               title: 'Link Gerado',
               html: `<p style="font-size:0.9rem;">Copie o link abaixo e envie ao paciente:</p>
@@ -614,7 +615,7 @@ Editar(consulta: any) {
           });
         },
         error: () => {
-          Swal.fire('Erro', 'Não foi possível gerar o link do questionário.', 'error');
+          this.notificacao.fire('Erro', 'Não foi possível gerar o link do questionário.', 'error');
         }
       });
   }

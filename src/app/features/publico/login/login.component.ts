@@ -5,7 +5,7 @@ import { Subject, takeUntil } from 'rxjs';
 
 // Core services
 import { AuthService } from 'src/app/core/services/auth.service';
-import { ErrorHandlerService } from 'src/app/core/services/error-handler.service';
+import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
 
 // Constants
 import { ALLOWED_ROLES, Role } from 'src/app/shared/constants/roles.constant';
@@ -33,7 +33,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     private router: Router,
     private formBuilder: FormBuilder,
     private authService: AuthService,
-    private errorHandler: ErrorHandlerService
+    private notificacao: NotificacaoService
   ) { }
 
   ngOnInit(): void {
@@ -112,7 +112,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.isLoading = false;
 
     if (!response.body?.token) {
-      this.errorHandler.showError('Resposta inválida do servidor');
+      this.notificacao.showError('Resposta inválida do servidor');
       return;
     }
 
@@ -122,7 +122,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     if (success) {
       this.router.navigate(['/Dashboard']);
     } else {
-      this.errorHandler.showError('Você não tem permissão para acessar esta página');
+      this.notificacao.showError('Você não tem permissão para acessar esta página');
     }
   }
 
@@ -134,18 +134,18 @@ export class LoginComponent implements OnInit, OnDestroy {
     console.error('[Login] Erro:', error);
 
     if (error.status === 403 && error.error?.message) {
-      this.errorHandler.showWarning(error.error.message, 'Acesso bloqueado');
+      this.notificacao.showWarning(error.error.message, 'Acesso bloqueado');
     } else if (error.status === 401 && typeof error.error?.error === 'string' && error.error.error.trim()) {
       // Back manda {"error": "..."} p.ex. para usuário bloqueado
-      this.errorHandler.showError(error.error.error);
+      this.notificacao.showError(error.error.error);
     } else if (error.status === 401 || error.status === 403) {
-      this.errorHandler.showError('Email ou senha inválidos');
+      this.notificacao.showError('Email ou senha inválidos');
     } else if (error.status === 0) {
-      this.errorHandler.showError('Sem conexão com o servidor');
+      this.notificacao.showError('Sem conexão com o servidor');
     } else if (error.status >= 500) {
-      this.errorHandler.showError('Erro no servidor, tente novamente');
+      this.notificacao.showError('Erro no servidor, tente novamente');
     } else {
-      this.errorHandler.showError(error.error?.message || 'Não foi possível realizar o login');
+      this.notificacao.showError(error.error?.message || 'Não foi possível realizar o login');
     }
   }
 

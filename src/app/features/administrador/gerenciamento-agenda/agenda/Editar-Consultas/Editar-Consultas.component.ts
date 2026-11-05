@@ -7,7 +7,7 @@ import { ConsultaApiService, HorarioOcupado } from 'src/app/services/api/consult
 import { PacienteApiService } from 'src/app/services/api/paciente-api.service';
 import { Paciente } from 'src/app/util/variados/interfaces/paciente/paciente';
 import { HoradaConsulta } from 'src/app/util/variados/options/options';
-import Swal from 'sweetalert2';
+import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
 import { FORMAS_PAGAMENTO, rotuloFormaPagamento } from 'src/app/shared/constants/forma-pagamento.constant';
 import { Profissional } from 'src/app/util/variados/interfaces/medico/Profissional';
 import { escaparHtml } from 'src/app/shared/utils/escapar-html';
@@ -57,6 +57,7 @@ export class EditarConsultasComponent implements OnInit {
   carregandoHorarios = false;
 
   constructor(
+    private notificacao: NotificacaoService,
     public dialogRef: MatDialogRef<EditarConsultasComponent>,
     @Inject(MAT_DIALOG_DATA) public data: { consulta: ConsultaEdit },
     private pacienteApi: PacienteApiService,
@@ -146,7 +147,7 @@ export class EditarConsultasComponent implements OnInit {
     const filtro = this.FormGroupConsulta.get('FiltroPesquisaPaciente')?.value;
 
     if (!pesquisa && filtro !== 5) {
-      Swal.fire('Atenção', 'Digite algo para pesquisar', 'warning');
+      this.notificacao.fire('Atenção', 'Digite algo para pesquisar', 'warning');
       return;
     }
 
@@ -156,11 +157,11 @@ export class EditarConsultasComponent implements OnInit {
       this.showResultadoPaciente = true;
 
       if (this.dadosPacientePassandoTabela.length === 0) {
-        Swal.fire('Aviso', 'Nenhum paciente encontrado', 'info');
+        this.notificacao.fire('Aviso', 'Nenhum paciente encontrado', 'info');
       }
     } catch (error) {
       console.error('Erro ao pesquisar pacientes:', error);
-      Swal.fire('Erro', 'Erro ao pesquisar pacientes', 'error');
+      this.notificacao.fire('Erro', 'Erro ao pesquisar pacientes', 'error');
     }
   }
 
@@ -176,7 +177,7 @@ export class EditarConsultasComponent implements OnInit {
     this.showResultadoPaciente = false;
     this.FormGroupConsulta.patchValue({ PesquisaPaciente: '' });
 
-    Swal.fire({
+    this.notificacao.fire({
       icon: 'success',
       title: 'Paciente selecionado',
       text: paciente.nome,
@@ -191,7 +192,7 @@ export class EditarConsultasComponent implements OnInit {
     const filtro = this.FormGroupConsulta.get('FiltroPesquisaMedico')?.value;
 
     if (!pesquisa && filtro !== 5) {
-      Swal.fire('Atenção', 'Digite algo para pesquisar', 'warning');
+      this.notificacao.fire('Atenção', 'Digite algo para pesquisar', 'warning');
       return;
     }
 
@@ -201,11 +202,11 @@ export class EditarConsultasComponent implements OnInit {
       this.showResultadoMedico = true;
 
       if (this.dadosMedicoPassandoTabela.length === 0) {
-        Swal.fire('Aviso', 'Nenhum médico encontrado', 'info');
+        this.notificacao.fire('Aviso', 'Nenhum médico encontrado', 'info');
       }
     } catch (error) {
       console.error('Erro ao pesquisar médicos:', error);
-      Swal.fire('Erro', 'Erro ao pesquisar médicos', 'error');
+      this.notificacao.fire('Erro', 'Erro ao pesquisar médicos', 'error');
     }
   }
 
@@ -239,7 +240,7 @@ export class EditarConsultasComponent implements OnInit {
         : [...HoradaConsulta];
     }
 
-    Swal.fire({
+    this.notificacao.fire({
       icon: 'success',
       title: 'Médico selecionado',
       text: medico.nome,
@@ -264,7 +265,7 @@ export class EditarConsultasComponent implements OnInit {
 
   private async buscarHorariosDisponiveis(data: string): Promise<void> {
     if (!this.consulta.profissionalId) {
-      Swal.fire({
+      this.notificacao.fire({
         icon: 'warning',
         title: 'Atenção',
         text: 'Selecione um médico primeiro',
@@ -301,7 +302,7 @@ export class EditarConsultasComponent implements OnInit {
       }
 
       if (this.Hora.length === 0) {
-        Swal.fire({
+        this.notificacao.fire({
           icon: 'info',
           title: 'Sem horários disponíveis',
           text: 'Não há horários disponíveis para esta data. Escolha outra data.',
@@ -311,7 +312,7 @@ export class EditarConsultasComponent implements OnInit {
 
     } catch (error) {
       console.error('Erro ao buscar horários ocupados:', error);
-      Swal.fire({
+      this.notificacao.fire({
         icon: 'error',
         title: 'Erro',
         text: 'Falha ao buscar horários disponíveis!',
@@ -427,7 +428,7 @@ export class EditarConsultasComponent implements OnInit {
   // ==================== SALVAR ====================
   Salvar(): void {
     if (this.FormGroupConsulta.invalid) {
-      Swal.fire({
+      this.notificacao.fire({
         icon: 'warning',
         title: 'Atenção',
         text: 'Preencha todos os campos obrigatórios',
@@ -445,7 +446,7 @@ export class EditarConsultasComponent implements OnInit {
     const formaPagamentoTexto = this.obterTextoPagamento(formValues.formaPagamento);
     const htmlConfirmacao = this.construirHtmlConfirmacao(formValues, formaPagamentoTexto);
 
-    Swal.fire({
+    this.notificacao.fire({
       html: htmlConfirmacao,
       icon: 'question',
       showCancelButton: true,
@@ -556,7 +557,7 @@ export class EditarConsultasComponent implements OnInit {
   }
 
   private exibirSucessoEdicao(): void {
-    Swal.fire({
+    this.notificacao.fire({
       icon: 'success',
       title: 'Sucesso!',
       text: 'Consulta editada com sucesso.',
@@ -571,7 +572,7 @@ export class EditarConsultasComponent implements OnInit {
     console.error('Erro ao editar consulta:', erro);
     const mensagem = extrairMensagemErro(erro) || 'Não foi possível editar a consulta. Tente novamente.';
 
-    Swal.fire({
+    this.notificacao.fire({
       icon: 'error',
       title: 'Erro',
       text: mensagem,

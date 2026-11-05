@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { of, throwError } from 'rxjs';
 import Swal from 'sweetalert2';
 
-import { ErrorHandlerService } from 'src/app/core/services/error-handler.service';
+import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
 import { ProntuarioDentistaApiService } from 'src/app/services/api/prontuario-dentista-api.service';
 import { RascunhoAtendimentoApiService } from 'src/app/services/api/rascunho-atendimento-api.service';
 import { ProntuarioStateService } from 'src/app/services/state/prontuario-state.service';
@@ -20,7 +20,7 @@ describe('ProntuarioDentistaComponent: rascunho do atendimento', () => {
   let component: ProntuarioDentistaComponent;
   let rascunhoApi: jasmine.SpyObj<RascunhoAtendimentoApiService>;
   let prontuarioApi: jasmine.SpyObj<ProntuarioDentistaApiService>;
-  let errorHandler: jasmine.SpyObj<ErrorHandlerService>;
+  let notificacao: jasmine.SpyObj<NotificacaoService>;
 
   const consulta = {
     id: 822, pacienteId: 3, pacienteNome: 'Ana', profissionalId: 9, observacoes: 'Obs da consulta',
@@ -52,7 +52,7 @@ describe('ProntuarioDentistaComponent: rascunho do atendimento', () => {
       providers: [
         { provide: RascunhoAtendimentoApiService, useValue: rascunhoApi },
         { provide: ProntuarioDentistaApiService, useValue: prontuarioApi },
-        { provide: ErrorHandlerService, useValue: errorHandler },
+        { provide: NotificacaoService, useValue: notificacao },
       ],
     });
     TestBed.inject(ProntuarioStateService).setConsulta(consulta);
@@ -64,7 +64,9 @@ describe('ProntuarioDentistaComponent: rascunho do atendimento', () => {
   beforeEach(() => {
     rascunhoApi = jasmine.createSpyObj('RascunhoAtendimentoApiService', ['buscar', 'salvar', 'descartar', 'listarMeus']);
     prontuarioApi = jasmine.createSpyObj('ProntuarioDentistaApiService', ['cadastrarProntuarioByOrg']);
-        errorHandler = jasmine.createSpyObj('ErrorHandlerService', ['showError', 'showSuccessToast']);
+        notificacao = jasmine.createSpyObj('NotificacaoService', ['showError', 'showSuccessToast', 'fire']);
+    // fire continua passando pelo Swal.fire, que os testes espiam.
+    notificacao.fire.and.callFake((...args: any[]) => (Swal.fire as any)(...args));
     spyOn(Swal, 'fire').and.resolveTo({ isConfirmed: true } as any);
   });
 
@@ -87,7 +89,7 @@ describe('ProntuarioDentistaComponent: rascunho do atendimento', () => {
       expect(component.timer).toBe(754);
       expect(component.minutes).toBe(12);
       expect(component.seconds).toBe(34);
-      expect(errorHandler.showSuccessToast).toHaveBeenCalledWith('Atendimento retomado');
+      expect(notificacao.showSuccessToast).toHaveBeenCalledWith('Atendimento retomado');
       fixture.destroy();
       discardPeriodicTasks();
     }));
@@ -175,7 +177,7 @@ describe('ProntuarioDentistaComponent: rascunho do atendimento', () => {
       tick(0);
       (component as any).concluido();
       flushMicrotasks();
-      expect(errorHandler.showError).toHaveBeenCalledWith('Esta consulta já foi finalizada. Para corrigir o prontuário, use a edição.');
+      expect(notificacao.showError).toHaveBeenCalledWith('Esta consulta já foi finalizada. Para corrigir o prontuário, use a edição.');
       tick(1500);
       expect(TestBed.inject(Router).navigate).toHaveBeenCalledWith(['/agenda-calendario']);
       component.abaExameObjetivo.Diagnostico = 'digitado depois';
@@ -227,7 +229,7 @@ describe('ProntuarioDentistaComponent: rascunho do atendimento', () => {
       expect(component.abaExameObjetivo.observacao).toBe('Obs da consulta');
       expect(component.abaIdentificacao.responsavel).toBe('');
       expect(component.timer).toBeGreaterThanOrEqual(0);
-      expect(errorHandler.showSuccessToast).not.toHaveBeenCalled();
+      expect(notificacao.showSuccessToast).not.toHaveBeenCalled();
       fixture.destroy();
       discardPeriodicTasks();
     }));
@@ -258,7 +260,7 @@ describe('ProntuarioDentistaComponent: rascunho do atendimento', () => {
     montar();
     fixture.detectChanges();
     tick(0);
-    expect(errorHandler.showError).toHaveBeenCalled();
+    expect(notificacao.showError).toHaveBeenCalled();
     expect(component.abaExameObjetivo.observacao).toBe('Obs da consulta');
     fixture.destroy();
     discardPeriodicTasks();

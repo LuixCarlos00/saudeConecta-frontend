@@ -11,7 +11,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { el } from 'date-fns/locale';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { Adiministrador } from 'src/app/util/variados/interfaces/administrado/adiministrador';
-import Swal from 'sweetalert2';
+import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
 import { map, take, filter } from 'rxjs';
 import { Usuario } from 'src/app/util/variados/interfaces/usuario/usuario';
 import { UsuarioApiService } from 'src/app/services/api/usuario-api.service';
@@ -32,6 +32,7 @@ export class TrocaSenhaComponent implements OnInit {
   codigoDeSegurancaValidao: Boolean = false;
   PesquisandoEmail: Boolean = false;
   constructor(
+    private notificacao: NotificacaoService,
     private form: FormBuilder,
     private administradorApiService: AdministradorApiService,
     private usuarioApiService: UsuarioApiService,
@@ -76,7 +77,7 @@ export class TrocaSenhaComponent implements OnInit {
           (response: any) => {
 
             this.FormularioTrocaSenha.reset();
-            Swal.fire({
+            this.notificacao.fire({
               icon: 'success',
               title: ' OK...',
               text: 'Senha alterada com sucesso',
@@ -84,7 +85,7 @@ export class TrocaSenhaComponent implements OnInit {
 
           },
           (error: any) => {
-            Swal.fire({
+            this.notificacao.fire({
               icon: 'error',
               title: 'Oops...',
               text: 'Senha inválida',
@@ -92,7 +93,7 @@ export class TrocaSenhaComponent implements OnInit {
           }
         );
       } else {
-        Swal.fire({
+        this.notificacao.fire({
           icon: 'error',
           title: 'Oops...',
           text: 'Senhas diferentes',

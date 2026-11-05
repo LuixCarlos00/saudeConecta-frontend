@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import Swal from 'sweetalert2';
+import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
 import { CadastroPublicoApiService } from 'src/app/services/api/cadastro-publico-api.service';
 import { CepApiService } from 'src/app/services/api/cep-api.service';
 import { PlanoApiService } from 'src/app/services/api/plano-api.service';
@@ -62,6 +62,7 @@ export class CadastroSaasComponent implements OnInit {
   ];
 
   constructor(
+    private notificacao: NotificacaoService,
     private fb: FormBuilder,
     private cadastroPublicoApi: CadastroPublicoApiService,
     private cepApiService: CepApiService,
@@ -129,7 +130,7 @@ export class CadastroSaasComponent implements OnInit {
       },
       error: () => {
         this.isLoadingPlanos = false;
-        Swal.fire({ icon: 'error', title: 'Erro', text: 'Não foi possível carregar os planos.' });
+        this.notificacao.fire({ icon: 'error', title: 'Erro', text: 'Não foi possível carregar os planos.' });
       }
     });
   }
@@ -199,7 +200,7 @@ export class CadastroSaasComponent implements OnInit {
       },
       error: () => {
         this.isBuscandoCep = false;
-        Swal.fire({ icon: 'warning', title: 'CEP não encontrado', text: 'Verifique o CEP informado.' });
+        this.notificacao.fire({ icon: 'warning', title: 'CEP não encontrado', text: 'Verifique o CEP informado.' });
       }
     });
   }
@@ -210,7 +211,7 @@ export class CadastroSaasComponent implements OnInit {
 
     if (invalidos.length > 0) {
       invalidos.forEach(campo => this.formulario.get(campo)?.markAsTouched());
-      Swal.fire({ icon: 'warning', title: 'Campos pendentes', text: 'Revise os campos destacados antes de continuar.' });
+      this.notificacao.fire({ icon: 'warning', title: 'Campos pendentes', text: 'Revise os campos destacados antes de continuar.' });
       return;
     }
 
@@ -242,7 +243,7 @@ export class CadastroSaasComponent implements OnInit {
   cadastrar(): void {
     if (this.formulario.invalid) {
       this.formulario.markAllAsTouched();
-      Swal.fire({ icon: 'warning', title: 'Formulário incompleto', text: 'Preencha todos os campos obrigatórios.' });
+      this.notificacao.fire({ icon: 'warning', title: 'Formulário incompleto', text: 'Preencha todos os campos obrigatórios.' });
       return;
     }
 
@@ -257,7 +258,7 @@ export class CadastroSaasComponent implements OnInit {
     this.cadastroPublicoApi.cadastrar(payload).subscribe({
       next: (resposta) => {
         this.isLoading = false;
-        Swal.fire({
+        this.notificacao.fire({
           icon: 'success',
           title: 'Cadastro realizado!',
           html: `${resposta.mensagem}<br><br>
@@ -284,7 +285,7 @@ export class CadastroSaasComponent implements OnInit {
     } else if (erro.error?.message) {
       mensagem = erro.error.message;
     }
-    Swal.fire({ icon: 'error', title: 'Erro no cadastro', text: mensagem });
+    this.notificacao.fire({ icon: 'error', title: 'Erro no cadastro', text: mensagem });
   }
 
   formatarValor(valor: number | undefined): string {

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
-import Swal, { SweetAlertResult } from 'sweetalert2';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import Swal, { SweetAlertIcon, SweetAlertOptions, SweetAlertResult } from 'sweetalert2';
 
 /**
  * Mapeamento de erros de duplicação do banco de dados
@@ -11,13 +12,19 @@ interface DuplicateErrorMapping {
 }
 
 /**
- * Serviço centralizado para tratamento de erros e notificações
- * Elimina duplicação de código de tratamento de erros nos componentes
+ * Ponto único de mensagens ao usuário: alertas (SweetAlert2), toasts e snackbars,
+ * além da tradução de erros HTTP em mensagem.
+ *
+ * É o único arquivo do app que importa `sweetalert2`. Os componentes chamam `fire`
+ * com as mesmas opções que passariam ao `Swal.fire`, ou os atalhos `showError`,
+ * `showSuccessToast` e `showWarning`.
  */
 @Injectable({
   providedIn: 'root'
 })
-export class ErrorHandlerService {
+export class NotificacaoService {
+
+  constructor(private snackBar: MatSnackBar) { }
 
   /**
    * Mapeamento de erros de duplicação conhecidos
@@ -128,6 +135,60 @@ export class ErrorHandlerService {
   // ========== Métodos de Notificação ==========
 
   /**
+   * Abre um alerta SweetAlert2 (mesma assinatura do `Swal.fire`).
+   *
+   * @param options opções do alerta, ou título/html/ícone na forma curta
+   * @returns promessa com o resultado (isConfirmed, value...)
+   */
+  fire<T = any>(options: SweetAlertOptions): Promise<SweetAlertResult<Awaited<T>>>;
+  fire<T = any>(title?: string, html?: string, icon?: SweetAlertIcon): Promise<SweetAlertResult<Awaited<T>>>;
+  fire<T = any>(...args: any[]): Promise<SweetAlertResult<Awaited<T>>> {
+    return (Swal.fire as (...a: any[]) => Promise<SweetAlertResult<Awaited<T>>>)(...args);
+  }
+
+  /**
+   * Mostra o spinner de carregamento dentro do alerta aberto (usar em `didOpen`).
+   */
+  mostrarCarregando(): void {
+    Swal.showLoading();
+  }
+
+  /**
+   * Toast no canto superior direito por 3s, com barra de progresso e pausa no hover.
+   *
+   * @param icone tipo do toast (success, error...)
+   * @param titulo texto exibido
+   */
+  mostrarToast(icone: SweetAlertIcon, titulo: string): void {
+    const Toast = Swal.mixin({
+      toast: true,
+      position: 'top-end',
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: true,
+      didOpen: (toast) => {
+        toast.addEventListener('mouseenter', Swal.stopTimer);
+        toast.addEventListener('mouseleave', Swal.resumeTimer);
+      }
+    });
+
+    Toast.fire({
+      icon: icone,
+      title: titulo
+    });
+  }
+
+  /**
+   * Mensagem discreta no rodapé (MatSnackBar) com botão "Fechar".
+   *
+   * @param mensagem texto exibido
+   * @param duracaoMs tempo em milissegundos até fechar sozinha
+   */
+  mostrarSnackbar(mensagem: string, duracaoMs: number): void {
+    this.snackBar.open(mensagem, 'Fechar', { duration: duracaoMs });
+  }
+
+  /**
    * Exibe mensagem de erro
    */
   showError(message: string, title: string = 'Erro'): void {
@@ -161,30 +222,6 @@ export class ErrorHandlerService {
       text: message,
       confirmButtonColor: '#f0ad4e'
     });
-  }
-
-  /**
-   * Exibe diálogo de confirmação
-   * @returns Promise<boolean> - true se confirmado, false se cancelado
-   */
-  async confirm(
-    message: string,
-    title: string = 'Confirmação',
-    confirmText: string = 'Sim',
-    cancelText: string = 'Não'
-  ): Promise<boolean> {
-    const result: SweetAlertResult = await Swal.fire({
-      icon: 'warning',
-      title,
-      text: message,
-      showCancelButton: true,
-      confirmButtonColor: '#5ccf6c',
-      cancelButtonColor: '#d33',
-      confirmButtonText: confirmText,
-      cancelButtonText: cancelText
-    });
-
-    return result.isConfirmed;
   }
 
 }

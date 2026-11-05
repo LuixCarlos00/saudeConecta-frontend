@@ -76,7 +76,7 @@ describe('NovaConsultaComponent', () => {
       verificar = jasmine.createSpy('verificarDisponibilidadeByOrg');
       cadastrar = jasmine.createSpy('cadastrarConsultaByOrg');
       (component as any).consultaApi = { verificarDisponibilidadeByOrg: verificar, cadastrarConsultaByOrg: cadastrar };
-      dialogJaExiste = spyOn((component as any).DialogService, 'JaexisteDadosCAdastradosComEssesParamentros');
+      dialogJaExiste = spyOn((component as any).notificacao, 'mostrarSnackbar');
       spyOn(Swal, 'fire').and.returnValue(Promise.resolve({ isConfirmed: false } as any));
       spyOn(console, 'error');
       component.Medico = { id: 1, especialidades: [{ id: 1 }] } as any;
@@ -111,7 +111,7 @@ describe('NovaConsultaComponent', () => {
     it('horário ocupado (true) mostra aviso de duplicidade e limpa o form', async () => {
       verificar.and.returnValue(of(true));
       await component.marcarConsulta();
-      expect(dialogJaExiste).toHaveBeenCalled();
+      expect(dialogJaExiste).toHaveBeenCalledWith(jasmine.stringContaining('Ja Existe uma consulta marcadas'), 10000);
       expect(cadastrar).not.toHaveBeenCalled();
     });
   });

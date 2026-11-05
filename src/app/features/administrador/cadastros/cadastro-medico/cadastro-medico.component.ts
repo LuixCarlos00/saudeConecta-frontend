@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
 import { MatDialogRef } from '@angular/material/dialog';
-import Swal from 'sweetalert2';
+import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
 
 import { ProfissionalApiService } from 'src/app/services/api/profissional-api.service';
 import { ufOptions } from 'src/app/util/variados/options/options';
@@ -65,6 +65,7 @@ export class CadastroMedicoComponent implements OnInit, OnDestroy {
   };
 
   constructor(
+    private notificacao: NotificacaoService,
     private form: FormBuilder,
     private profissionalApiService: ProfissionalApiService,
     private route: Router,
@@ -211,22 +212,7 @@ export class CadastroMedicoComponent implements OnInit, OnDestroy {
    * @param mensagem Mensagem a ser exibida
    */
   private mostrarFeedbackCep(tipo: 'success' | 'error', mensagem: string) {
-    const Toast = Swal.mixin({
-      toast: true,
-      position: 'top-end',
-      showConfirmButton: false,
-      timer: 3000,
-      timerProgressBar: true,
-      didOpen: (toast) => {
-        toast.addEventListener('mouseenter', Swal.stopTimer);
-        toast.addEventListener('mouseleave', Swal.resumeTimer);
-      }
-    });
-
-    Toast.fire({
-      icon: tipo,
-      title: mensagem
-    });
+    this.notificacao.mostrarToast(tipo, mensagem);
   }
 
   private getTipoProfissionalSelecionado(): string {
@@ -243,7 +229,7 @@ export class CadastroMedicoComponent implements OnInit, OnDestroy {
       error: (error) => {
         console.error('Erro ao carregar especialidades:', error);
         this.isLoadingEspecialidades = false;
-        Swal.fire({
+        this.notificacao.fire({
           icon: 'error',
           title: 'Erro',
           text: 'Não foi possível carregar as especialidades. Tente novamente.',
@@ -257,7 +243,7 @@ export class CadastroMedicoComponent implements OnInit, OnDestroy {
     this.FormularioEndereco.markAllAsTouched();
 
     if (!this.FormularioEndereco.valid || !this.FormularioMedico.valid) {
-      Swal.fire({
+      this.notificacao.fire({
         icon: 'warning',
         title: 'Formulário incompleto',
         text: 'Por favor, preencha todos os campos obrigatórios corretamente.',
@@ -272,7 +258,7 @@ export class CadastroMedicoComponent implements OnInit, OnDestroy {
     };
 
     if (!dadosCompletos.cpf || dadosCompletos.cpf.length < 11) {
-      Swal.fire({
+      this.notificacao.fire({
         icon: 'warning',
         title: 'CPF inválido',
         text: 'O CPF é obrigatório e será usado como login do usuário.',
@@ -284,7 +270,7 @@ export class CadastroMedicoComponent implements OnInit, OnDestroy {
     this.profissionalApiService.cadastraClinicoByOrg(dadosCompletos).subscribe({
       next: () => {
         this.isLoading = false;
-        Swal.fire({
+        this.notificacao.fire({
           icon: 'success',
           title: 'Sucesso!',
           text: 'Médico cadastrado com sucesso. As credenciais serão enviadas por email.',
@@ -328,7 +314,7 @@ export class CadastroMedicoComponent implements OnInit, OnDestroy {
       errorMessage = 'Erro no servidor, tente novamente.';
     }
 
-    Swal.fire({
+    this.notificacao.fire({
       icon: icone,
       title: titulo,
       text: errorMessage,

@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRe
 import { Subject, takeUntil, take, filter, Observable } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import Swal from 'sweetalert2';
+import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
 import { extrairMensagemErro } from 'src/app/shared/utils/mensagem-erro-http';
 import { ConsultaApiService } from 'src/app/services/api/consulta-api.service';
 import { ConsultaStateService } from 'src/app/services/state/consulta-state.service';
@@ -130,6 +130,7 @@ export class AgendaCalendarioComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
   constructor(
+    private notificacao: NotificacaoService,
     private consultaService: ConsultaApiService,
     private consultaState: ConsultaStateService,
     private prontuarioState: ProntuarioStateService,
@@ -221,7 +222,7 @@ export class AgendaCalendarioComponent implements OnInit, OnDestroy {
         error: () => {
           this.carregando = false;
           this.cdr.markForCheck();
-          Swal.fire('Erro', 'Não foi possível carregar as consultas.', 'error');
+          this.notificacao.fire('Erro', 'Não foi possível carregar as consultas.', 'error');
         }
       });
   }
@@ -585,7 +586,7 @@ export class AgendaCalendarioComponent implements OnInit, OnDestroy {
           this.configuracaoFluxo = config;
           this.dropdownConfigAberto = false;
           this.cdr.markForCheck();
-          Swal.fire(
+          this.notificacao.fire(
             'Sucesso', 
             this.pularParaConfirmado 
               ? 'Configuração atualizada: novas consultas serão cadastradas diretamente como Confirmada' 
@@ -594,7 +595,7 @@ export class AgendaCalendarioComponent implements OnInit, OnDestroy {
           );
         },
         error: () => {
-          Swal.fire('Erro', 'Não foi possível atualizar a configuração.', 'error');
+          this.notificacao.fire('Erro', 'Não foi possível atualizar a configuração.', 'error');
           this.pularParaConfirmado = !this.pularParaConfirmado;
           this.cdr.markForCheck();
         }
@@ -604,7 +605,7 @@ export class AgendaCalendarioComponent implements OnInit, OnDestroy {
   deletarConsultaDrawer(): void {
     const c = this.consultaSelecionada;
     if (!c) return;
-    Swal.fire({
+    this.notificacao.fire({
       title: 'Confirmar exclusão',
       text: `Deseja excluir a consulta de ${c.pacienteNome}? O questionário de saúde será excluído.`,
       icon: 'warning', showCancelButton: true,
@@ -615,10 +616,10 @@ export class AgendaCalendarioComponent implements OnInit, OnDestroy {
       this.consultaService.deletarConsulta(c.id)
         .pipe(takeUntil(this.destroy$))
         .subscribe({
-          next: () => { Swal.fire('Deletado', 'Consulta deletada com sucesso.', 'success'); this.fecharPopover(); this.carregarConsultas(); },
+          next: () => { this.notificacao.fire('Deletado', 'Consulta deletada com sucesso.', 'success'); this.fecharPopover(); this.carregarConsultas(); },
           error: (err: any) => {
-            if (err?.status === 409) Swal.fire('Exclusão bloqueada', 'Esta consulta possui prontuário clínico e não pode ser excluída. Os dados clínicos devem ser preservados.', 'info');
-            else Swal.fire('Erro', 'Erro ao deletar consulta.', 'error');
+            if (err?.status === 409) this.notificacao.fire('Exclusão bloqueada', 'Esta consulta possui prontuário clínico e não pode ser excluída. Os dados clínicos devem ser preservados.', 'info');
+            else this.notificacao.fire('Erro', 'Erro ao deletar consulta.', 'error');
           },
         });
     });
@@ -669,7 +670,7 @@ export class AgendaCalendarioComponent implements OnInit, OnDestroy {
     this.fecharPopover();
 
     setTimeout(() => {
-      Swal.fire({
+      this.notificacao.fire({
         title: retomando ? 'Retomar Atendimento' : 'Iniciar Atendimento',
         html: `
           <div style="text-align: left; padding: 10px;">
@@ -699,14 +700,14 @@ export class AgendaCalendarioComponent implements OnInit, OnDestroy {
         cancelButtonText: '<i class="fa-solid fa-times"></i> Cancelar',
       }).then((result) => {
         if (result.isConfirmed) {
-          Swal.fire({
+          this.notificacao.fire({
             title: 'Iniciando consulta...',
             html: 'Aguarde enquanto preparamos o prontuário.',
             allowOutsideClick: false,
             showConfirmButton: false,
             timer: 1500,
             timerProgressBar: true,
-            didOpen: () => { Swal.showLoading(); },
+            didOpen: () => { this.notificacao.mostrarCarregando(); },
           }).then(() => {
             this.prontuarioState.changeConsulta(element);
             if (this.UsuarioLogado.tipoProfissional === 'MEDICO') {
@@ -788,14 +789,14 @@ export class AgendaCalendarioComponent implements OnInit, OnDestroy {
         next: (prontuario: any) => {
           const codigoProntuario = this.acoesConsulta.extrairCodigoProntuario(prontuario);
           if (!codigoProntuario) {
-            Swal.fire('Aviso', 'Nenhum prontuário encontrado para esta consulta.', 'warning');
+            this.notificacao.fire('Aviso', 'Nenhum prontuário encontrado para esta consulta.', 'warning');
             return;
           }
           const plans = prontuario?.planejamentosTerapeuticos || prontuario?.planejamentos || [];
           if (plans.length > 0 && plans.every((p: any) => p.statusAssinatura === 'ASSINADO')) {
             this.planejamentosAssinados.add(element.id);
             this.cdr.markForCheck();
-            Swal.fire('Aviso', 'Todos os itens do planejamento já foram assinados pelo paciente.', 'info');
+            this.notificacao.fire('Aviso', 'Todos os itens do planejamento já foram assinados pelo paciente.', 'info');
             return;
           }
           this.planejamentoApi.gerarLinkAssinatura(codigoProntuario, tipoProfissional)
@@ -805,7 +806,7 @@ export class AgendaCalendarioComponent implements OnInit, OnDestroy {
                 const baseUrl = window.location.origin;
                 const link = `${baseUrl}/#/assinatura-planejamento/${resp.token}`;
                 navigator.clipboard.writeText(link).catch(() => {});
-                Swal.fire({
+                this.notificacao.fire({
                   icon: 'success', title: 'Link Gerado!',
                   html: `<p style="font-size:0.9rem;">Copie o link abaixo e envie ao paciente:</p>
                          <input type="text" value="${link}" readonly
@@ -813,10 +814,10 @@ export class AgendaCalendarioComponent implements OnInit, OnDestroy {
                   confirmButtonText: 'OK'
                 });
               },
-              error: () => Swal.fire('Erro', 'Não foi possível gerar o link do planejamento.', 'error')
+              error: () => this.notificacao.fire('Erro', 'Não foi possível gerar o link do planejamento.', 'error')
             });
         },
-        error: () => Swal.fire('Erro', 'Não foi possível buscar o prontuário desta consulta.', 'error')
+        error: () => this.notificacao.fire('Erro', 'Não foi possível buscar o prontuário desta consulta.', 'error')
       });
   }
 

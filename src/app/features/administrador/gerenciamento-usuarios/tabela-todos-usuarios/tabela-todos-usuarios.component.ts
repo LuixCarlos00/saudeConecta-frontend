@@ -2,14 +2,13 @@ import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/cor
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
 import { Subject, finalize, takeUntil } from 'rxjs';
-import Swal from 'sweetalert2';
+import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
 
 import { UsuarioApiService } from 'src/app/services/api/usuario-api.service';
 import { PacienteApiService } from 'src/app/services/api/paciente-api.service';
 import { AdministradorApiService } from 'src/app/services/api/administrador-api.service';
 import { SecretariaApiService } from 'src/app/services/api/secretaria-api.service';
 import { FiltroStateService } from 'src/app/services/state/filtro-state.service';
-import { DialogService } from 'src/app/util/variados/dialogo-confirmacao/dialog.service';
 import { TrocaSenhaUsuariosComponent } from './TrocaSenhaUsuarios/TrocaSenhaUsuarios.component';
 import { VisualizarEditarUsuarioComponent } from './VisualizarEditarUsuario/visualizar-editar-usuario.component';
 
@@ -68,12 +67,12 @@ export class TabelaTodosUsuariosComponent implements OnInit, OnDestroy {
   displayedColumns = ['index', 'nome', 'categoria', 'email', 'status', 'acoes'];
 
   constructor(
+    private notificacao: NotificacaoService,
     private usuarioApiService: UsuarioApiService,
     private pacienteApiService: PacienteApiService,
     private administradorApiService: AdministradorApiService,
     private secretariaApiService: SecretariaApiService,
     private filtroStateService: FiltroStateService,
-    private dialogService: DialogService,
     private dialog: MatDialog,
     private clinicoApiService: ProfissionalApiService,
     public controleAcessoService: ControleAcessoApiService,
@@ -233,7 +232,7 @@ export class TabelaTodosUsuariosComponent implements OnInit, OnDestroy {
     this.dataSource = resultado;
 
     if (this.searchText && resultado.length === 0) {
-      this.dialogService.NaoFoiEncontradoConsultasComEssesParametros();
+      this.notificacao.mostrarSnackbar('Não foi encontrado consultas com esses parametros .Tente Novamente.', 50000);
     }
   }
 
@@ -282,7 +281,7 @@ export class TabelaTodosUsuariosComponent implements OnInit, OnDestroy {
   }
 
   confirmarDelecao(usuario: UsuarioUnificado): void {
-    Swal.fire({
+    this.notificacao.fire({
       title: 'Confirmar exclusão',
       text: `Deseja realmente excluir ${usuario.nome}?`,
       icon: 'warning',
@@ -360,7 +359,7 @@ export class TabelaTodosUsuariosComponent implements OnInit, OnDestroy {
   }
 
   private mostrarSucesso(mensagem: string): void {
-    Swal.fire({
+    this.notificacao.fire({
       icon: 'success',
       title: 'Sucesso!',
       text: mensagem,
@@ -370,7 +369,7 @@ export class TabelaTodosUsuariosComponent implements OnInit, OnDestroy {
   }
 
   private mostrarErro(mensagem: string): void {
-    Swal.fire({
+    this.notificacao.fire({
       icon: 'error',
       title: 'Erro',
       text: mensagem,
@@ -388,7 +387,7 @@ export class TabelaTodosUsuariosComponent implements OnInit, OnDestroy {
       ? `Deseja ${acao} o tenant ${usuario.nome}? Todos os usuários desta organização também serão ${novoStatus === 0 ? 'bloqueados' : 'desbloqueados'}.`
       : `Deseja ${acao} o usuário ${usuario.nome}?`;
 
-    Swal.fire({
+    this.notificacao.fire({
       title: `Confirmar ${acao}`,
       text: textoConfirmacao,
       icon: isCascata ? 'warning' : 'question',

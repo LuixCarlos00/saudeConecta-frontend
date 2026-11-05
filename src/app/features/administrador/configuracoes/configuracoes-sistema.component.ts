@@ -14,7 +14,7 @@ import { ProcedimentoPadraoApiService } from 'src/app/services/api/procedimento-
 import { UsuarioApiService } from 'src/app/services/api/usuario-api.service';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { Subscription } from 'rxjs';
-import Swal from 'sweetalert2';
+import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
 
 @Component({
   selector: 'app-configuracoes-sistema',
@@ -46,6 +46,7 @@ export class ConfiguracoesSistemaComponent implements OnInit, OnDestroy {
   private themeSubscription?: Subscription;
 
   constructor(
+    private notificacao: NotificacaoService,
     public themeService: ThemeService,
     private configuracaoGraficoService: ConfiguracaoGraficoDashboardService,
     private configuracaoCardService: ConfiguracaoCardService,
@@ -97,7 +98,7 @@ export class ConfiguracoesSistemaComponent implements OnInit, OnDestroy {
       next: (configs) => {
         this.configuracoes = configs;
         this.loading = false;
-        Swal.fire({
+        this.notificacao.fire({
           icon: 'info',
           title: 'Configurações Inicializadas',
           text: 'Ative os gráficos que deseja visualizar no dashboard.',
@@ -122,7 +123,7 @@ export class ConfiguracoesSistemaComponent implements OnInit, OnDestroy {
       next: (updated) => {
         const i = this.configuracoes.findIndex(c => c.id === updated.id);
         if (i !== -1) { this.configuracoes[i] = updated; }
-        Swal.fire({ icon: 'success', title: `Gráfico ${updated.ativo ? 'ativado' : 'desativado'}`, timer: 2000, showConfirmButton: false });
+        this.notificacao.fire({ icon: 'success', title: `Gráfico ${updated.ativo ? 'ativado' : 'desativado'}`, timer: 2000, showConfirmButton: false });
       },
       error: () => this.mostrarErro('Não foi possível atualizar a configuração')
     });
@@ -137,14 +138,14 @@ export class ConfiguracoesSistemaComponent implements OnInit, OnDestroy {
       next: (updated) => {
         this.configuracoes = updated;
         this.loading = false;
-        Swal.fire({ icon: 'success', title: 'Configurações salvas', timer: 2000, showConfirmButton: false });
+        this.notificacao.fire({ icon: 'success', title: 'Configurações salvas', timer: 2000, showConfirmButton: false });
       },
       error: () => { this.loading = false; this.mostrarErro('Não foi possível salvar'); }
     });
   }
 
   resetarConfiguracoes(): void {
-    Swal.fire({
+    this.notificacao.fire({
       icon: 'warning',
       title: 'Confirmar Reset',
       text: 'Deseja realmente resetar todas as configurações para o padrão?',
@@ -159,7 +160,7 @@ export class ConfiguracoesSistemaComponent implements OnInit, OnDestroy {
       this.configuracaoGraficoService.resetarConfiguracoesParaPadrao().subscribe({
         next: () => {
           this.carregarConfiguracoes();
-          Swal.fire({ icon: 'success', title: 'Configurações resetadas', timer: 2000, showConfirmButton: false });
+          this.notificacao.fire({ icon: 'success', title: 'Configurações resetadas', timer: 2000, showConfirmButton: false });
         },
         error: () => { this.loading = false; this.mostrarErro('Não foi possível resetar'); }
       });
@@ -203,7 +204,7 @@ export class ConfiguracoesSistemaComponent implements OnInit, OnDestroy {
       next: (configs) => {
         this.configuracoesCards = configs;
         this.loadingCards = false;
-        Swal.fire({
+        this.notificacao.fire({
           icon: 'info',
           title: 'Configurações Inicializadas',
           text: 'Selecione quais cards deseja visualizar no dashboard.',
@@ -228,7 +229,7 @@ export class ConfiguracoesSistemaComponent implements OnInit, OnDestroy {
       next: (updated) => {
         const i = this.configuracoesCards.findIndex(c => c.id === updated.id);
         if (i !== -1) { this.configuracoesCards[i] = updated; }
-        Swal.fire({ icon: 'success', title: `Card ${updated.ativo ? 'ativado' : 'desativado'}`, timer: 2000, showConfirmButton: false });
+        this.notificacao.fire({ icon: 'success', title: `Card ${updated.ativo ? 'ativado' : 'desativado'}`, timer: 2000, showConfirmButton: false });
       },
       error: () => this.mostrarErro('Não foi possível atualizar a configuração do card')
     });
@@ -243,14 +244,14 @@ export class ConfiguracoesSistemaComponent implements OnInit, OnDestroy {
       next: (updated) => {
         this.configuracoesCards = updated;
         this.loadingCards = false;
-        Swal.fire({ icon: 'success', title: 'Configurações salvas', timer: 2000, showConfirmButton: false });
+        this.notificacao.fire({ icon: 'success', title: 'Configurações salvas', timer: 2000, showConfirmButton: false });
       },
       error: () => { this.loadingCards = false; this.mostrarErro('Não foi possível salvar'); }
     });
   }
 
   resetarConfiguracoesCards(): void {
-    Swal.fire({
+    this.notificacao.fire({
       icon: 'warning',
       title: 'Confirmar Reset',
       text: 'Deseja realmente exibir todos os cards no dashboard?',
@@ -265,7 +266,7 @@ export class ConfiguracoesSistemaComponent implements OnInit, OnDestroy {
       this.configuracaoCardService.resetarConfiguracoesParaPadrao().subscribe({
         next: () => {
           this.carregarConfiguracoesCards();
-          Swal.fire({ icon: 'success', title: 'Configurações resetadas', timer: 2000, showConfirmButton: false });
+          this.notificacao.fire({ icon: 'success', title: 'Configurações resetadas', timer: 2000, showConfirmButton: false });
         },
         error: () => { this.loadingCards = false; this.mostrarErro('Não foi possível resetar'); }
       });
@@ -295,7 +296,7 @@ export class ConfiguracoesSistemaComponent implements OnInit, OnDestroy {
   }
 
   private mostrarErro(texto: string): void {
-    Swal.fire({ icon: 'error', title: 'Erro', text: texto, confirmButtonColor: '#0066CC' });
+    this.notificacao.fire({ icon: 'error', title: 'Erro', text: texto, confirmButtonColor: '#0066CC' });
   }
 
   // ── Planejamentos (Procedimentos Padrão) ──────────────────────────────────
@@ -363,7 +364,7 @@ export class ConfiguracoesSistemaComponent implements OnInit, OnDestroy {
         this.procedimentosPadrao.push(criado);
         this.mostrarFormNovo = false;
         this.novoProcedimento = { nomeProcedimento: '', valorPadrao: 0 };
-        Swal.fire({ icon: 'success', title: 'Procedimento cadastrado', timer: 2000, showConfirmButton: false });
+        this.notificacao.fire({ icon: 'success', title: 'Procedimento cadastrado', timer: 2000, showConfirmButton: false });
       },
       error: () => this.mostrarErro('Erro ao cadastrar procedimento')
     });
@@ -394,7 +395,7 @@ export class ConfiguracoesSistemaComponent implements OnInit, OnDestroy {
         proc.nomeProcedimento = atualizado.nomeProcedimento;
         proc.valorPadrao = atualizado.valorPadrao;
         this.cancelarEdicao();
-        Swal.fire({ icon: 'success', title: 'Procedimento atualizado', timer: 2000, showConfirmButton: false });
+        this.notificacao.fire({ icon: 'success', title: 'Procedimento atualizado', timer: 2000, showConfirmButton: false });
       },
       error: () => this.mostrarErro('Erro ao atualizar procedimento')
     });
@@ -404,7 +405,7 @@ export class ConfiguracoesSistemaComponent implements OnInit, OnDestroy {
     this.procedimentoPadraoService.toggleAtivo(proc.id).subscribe({
       next: (atualizado) => {
         proc.ativo = atualizado.ativo;
-        Swal.fire({
+        this.notificacao.fire({
           icon: 'success',
           title: `Procedimento ${atualizado.ativo ? 'ativado' : 'bloqueado'}`,
           timer: 2000,

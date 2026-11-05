@@ -4,7 +4,7 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 
 // Services
 import { AuthService } from './services/auth.service';
-import { ErrorHandlerService } from './services/error-handler.service';
+import { NotificacaoService } from './notificacao/notificacao.service';
 
 // Guards
 import { AuthGuard } from './guards/auth.guard';
@@ -32,7 +32,7 @@ import { environment } from '../../environments/environment';
   providers: [
     // Services
     AuthService,
-    ErrorHandlerService,
+    NotificacaoService,
 
     // Guards
     AuthGuard,

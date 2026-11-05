@@ -1,7 +1,7 @@
 import { ComponentType } from '@angular/cdk/portal';
 import { Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import Swal from 'sweetalert2';
+import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
 
 import { ProntuarioApiService } from 'src/app/services/api/prontuario-api.service';
 import { ProntuarioDentistaApiService } from 'src/app/services/api/prontuario-dentista-api.service';
@@ -57,6 +57,7 @@ export class RelatorioService {
   private readonly DIALOG_HEIGHT = '90%';
 
   constructor(
+    private notificacao: NotificacaoService,
     private dialog: MatDialog,
     private prontuarioApiService: ProntuarioApiService,
     private prontuarioDentistaApiService: ProntuarioDentistaApiService,
@@ -368,7 +369,7 @@ export class RelatorioService {
    * Exibe mensagem de erro quando o prontuário não é encontrado.
    */
   mostrarErroProntuarioNaoEncontrado(): void {
-    Swal.fire({
+    this.notificacao.fire({
       title: 'Prontuário não encontrado',
       html: `
         <p>Não foi possível encontrar o prontuário desta consulta.</p>

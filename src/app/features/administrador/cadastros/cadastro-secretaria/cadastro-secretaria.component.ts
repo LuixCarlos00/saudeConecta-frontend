@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, Optional, ViewChild, ElementRef } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
-import Swal from 'sweetalert2';
+import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
 import { Router } from '@angular/router';
 import { MatDialogRef } from '@angular/material/dialog';
 import { SecretariaApiService } from 'src/app/services/api/secretaria-api.service';
@@ -32,6 +32,7 @@ export class CadastroSecretariaComponent implements OnInit, OnDestroy {
   @ViewChild('scrollArea', { static: false }) scrollArea!: ElementRef;
 
   constructor(
+    private notificacao: NotificacaoService,
     private router: Router,
     private form: FormBuilder,
     private secretariaApiService: SecretariaApiService,
@@ -115,7 +116,7 @@ export class CadastroSecretariaComponent implements OnInit, OnDestroy {
     this.FormularioSecretaria.markAllAsTouched();
 
     if (!this.FormularioSecretaria.valid) {
-      Swal.fire({
+      this.notificacao.fire({
         icon: 'warning',
         title: 'Formulário incompleto',
         text: 'Por favor, preencha todos os campos obrigatórios corretamente.',
@@ -126,7 +127,7 @@ export class CadastroSecretariaComponent implements OnInit, OnDestroy {
     const form = this.FormularioSecretaria.value;
 
     if (!form.cpf || form.cpf.length < 11) {
-      Swal.fire({
+      this.notificacao.fire({
         icon: 'warning',
         title: 'CPF inválido',
         text: 'O CPF é obrigatório e será usado como login.',
@@ -145,7 +146,7 @@ export class CadastroSecretariaComponent implements OnInit, OnDestroy {
         const duration = endTime - startTime;
 
         this.isLoading = false;
-        Swal.fire({
+        this.notificacao.fire({
           icon: 'success',
           title: 'Sucesso!',
           text: 'Secretária cadastrada com sucesso. As credenciais serão enviadas por email.',
@@ -193,7 +194,7 @@ export class CadastroSecretariaComponent implements OnInit, OnDestroy {
       }
     }
 
-    Swal.fire({
+    this.notificacao.fire({
       icon: icone,
       title: titulo,
       text: errorMessage,
