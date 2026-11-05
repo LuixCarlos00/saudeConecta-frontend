@@ -17,6 +17,9 @@ jobs:
 
       - run: npm ci
 
+      - name: Regras de arquitetura (dependency-cruiser)
+        run: npm run arquitetura
+
       - name: Testes
         run: npx ng test --watch=false --browsers=ChromeHeadless
 
