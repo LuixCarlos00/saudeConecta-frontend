@@ -155,8 +155,9 @@ export class AbaPlanejamentoComponent implements OnChanges, OnDestroy {
   }
 
   /**
-   * Preenche os planejamentos com dados existentes (modo edição).
-   * @param dados Objeto com o array de planejamentos do prontuário
+   * Preenche os planejamentos com dados existentes (modo edição) ou com um rascunho.
+   * Aceita o formato de getDadosRascunho() (com `_local`) e o do prontuário salvo (sem `_local`).
+   * @param dados Objeto com o array de planejamentos
    */
   setDados(dados: any): void {
     if (!dados?.planejamentos) return;
@@ -166,7 +167,7 @@ export class AbaPlanejamentoComponent implements OnChanges, OnDestroy {
       procedimentoRealizado: p.procedimentoRealizado || '',
       valor: p.valor || 0,
       statusAssinatura: p.statusAssinatura || 'PENDENTE',
-      _local: false,
+      _local: p._local ?? false,
     }));
   }
 
@@ -184,6 +185,23 @@ export class AbaPlanejamentoComponent implements OnChanges, OnDestroy {
           valor: p.valor,
           pacienteId: this.pacienteId,
         })),
+    };
+  }
+
+  /**
+   * Retorna todos os itens do planejamento (id, valor, status de assinatura e se ainda é local)
+   * para o rascunho do atendimento. Diferente de getDados(), não descarta itens já gravados.
+   */
+  getDadosRascunho(): any {
+    return {
+      planejamentos: this.planejamentos.map(p => ({
+        id: p.id,
+        dataProcedimento: p.dataProcedimento || '',
+        procedimentoRealizado: p.procedimentoRealizado,
+        valor: p.valor,
+        statusAssinatura: p.statusAssinatura || 'PENDENTE',
+        _local: !!p._local,
+      })),
     };
   }
 }

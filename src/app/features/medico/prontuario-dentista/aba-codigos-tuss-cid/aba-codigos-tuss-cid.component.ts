@@ -166,6 +166,11 @@ export class AbaCodigosTussCidComponent {
     this.textoTuss = dados.tussTexto || '';
     this.textoCid = dados.cidTexto || '';
     this.textoSolicitacaoExame = dados.solicitacaoExameTexto || '';
+    // getDados() também devolve as listas selecionadas; sem elas (modo edição) mantém as atuais.
+    if (Array.isArray(dados.tussSelecionados)) { this.tussSelecionados = [...dados.tussSelecionados]; }
+    if (Array.isArray(dados.cidSelecionados)) { this.cidSelecionados = [...dados.cidSelecionados]; }
+    if (Array.isArray(dados.tussExameSelecionados)) { this.tussExameSelecionados = [...dados.tussExameSelecionados]; }
+    if (Array.isArray(dados.cidExameSelecionados)) { this.cidExameSelecionados = [...dados.cidExameSelecionados]; }
   }
 
   /**

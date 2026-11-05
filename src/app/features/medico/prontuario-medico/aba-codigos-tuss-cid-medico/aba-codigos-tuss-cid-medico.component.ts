@@ -155,12 +155,21 @@ export class AbaCodigosTussCidMedicoComponent {
     this.textoSolicitacaoExame = linhas.join('\n');
   }
 
+  /**
+   * Preenche a aba com dados existentes (modo edição) ou com um rascunho.
+   * As listas selecionadas só vêm no formato de getDadosRascunho(); sem elas, mantém as atuais.
+   * @param dados Objeto com os campos da aba
+   */
   setDados(dados: any): void {
     if (!dados) return;
     this.Prescricao = dados.prescricao || '';
     this.textoTuss = dados.tussTexto || '';
     this.textoCid = dados.cidTexto || '';
     this.textoSolicitacaoExame = dados.solicitacaoExameTexto || '';
+    if (Array.isArray(dados.tussSelecionados)) { this.tussSelecionados = [...dados.tussSelecionados]; }
+    if (Array.isArray(dados.cidSelecionados)) { this.cidSelecionados = [...dados.cidSelecionados]; }
+    if (Array.isArray(dados.tussExameSelecionados)) { this.tussExameSelecionados = [...dados.tussExameSelecionados]; }
+    if (Array.isArray(dados.cidExameSelecionados)) { this.cidExameSelecionados = [...dados.cidExameSelecionados]; }
   }
 
   getDados(): any {
@@ -170,6 +179,20 @@ export class AbaCodigosTussCidMedicoComponent {
       tussTexto: this.textoTuss,
       cidTexto: this.textoCid,
       solicitacaoExameTexto: this.textoSolicitacaoExame,
+    };
+  }
+
+  /**
+   * Retorna getDados() mais as listas selecionadas (TUSS/CID e exames), que não vão no payload final
+   * mas são necessárias para o rascunho: sem elas, remover um item após restaurar apagaria o texto.
+   */
+  getDadosRascunho(): any {
+    return {
+      ...this.getDados(),
+      tussSelecionados: this.tussSelecionados,
+      cidSelecionados: this.cidSelecionados,
+      tussExameSelecionados: this.tussExameSelecionados,
+      cidExameSelecionados: this.cidExameSelecionados,
     };
   }
 }

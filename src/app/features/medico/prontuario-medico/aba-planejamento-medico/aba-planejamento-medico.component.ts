@@ -73,7 +73,8 @@ export class AbaPlanejamentoMedicoComponent implements OnChanges, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (prontuario: Prontuario) => {
-          if (prontuario?.planejamentos) {
+          // Não sobrescreve itens já presentes (ex.: restaurados de um rascunho).
+          if (prontuario?.planejamentos && this.planejamentos.length === 0) {
             this.planejamentos = prontuario.planejamentos.map((p: PlanejamentoTerapeutico) => ({
               id: p.id,
               dataProcedimento: p.dataProcedimento || '',
@@ -85,9 +86,8 @@ export class AbaPlanejamentoMedicoComponent implements OnChanges, OnDestroy {
           }
         },
         error: (error) => {
-          // Se não encontrar prontuário (404) ou outros erros, mantém o array vazio para novos planejamentos
-          // Isso é normal ao iniciar uma nova consulta antes de criar o prontuário
-          this.planejamentos = [];
+          // Se não encontrar prontuário (404) ou outros erros, mantém a lista como está: vazia numa consulta
+          // nova ou com os itens restaurados do rascunho. Isso é normal antes de criar o prontuário.
         }
       });
   }
@@ -183,10 +183,11 @@ export class AbaPlanejamentoMedicoComponent implements OnChanges, OnDestroy {
   }
 
   /**
-   * Preenche os planejamentos com dados existentes (modo edição).
-   * @param dados Objeto com o array de planejamentos do prontuário
+   * Preenche os planejamentos com dados existentes (modo edição) ou com um rascunho.
+   * Aceita o formato de getDadosRascunho() (com `_local`) e o do prontuário salvo (sem `_local`).
+   * @param dados Objeto com o array de planejamentos
    */
-  setDados(dados: { planejamentos?: PlanejamentoTerapeutico[] }): void {
+  setDados(dados: { planejamentos?: (PlanejamentoTerapeutico & { _local?: boolean })[] }): void {
     if (!dados?.planejamentos) return;
     this.planejamentos = dados.planejamentos.map(p => ({
       id: p.id,
@@ -194,7 +195,7 @@ export class AbaPlanejamentoMedicoComponent implements OnChanges, OnDestroy {
       procedimentoRealizado: p.procedimentoRealizado || '',
       valor: p.valor || 0,
       statusAssinatura: p.statusAssinatura || 'PENDENTE',
-      _local: false,
+      _local: p._local ?? false,
     }));
   }
 
@@ -211,6 +212,23 @@ export class AbaPlanejamentoMedicoComponent implements OnChanges, OnDestroy {
           valor: p.valor,
           pacienteId: this.pacienteId,
         })),
+    };
+  }
+
+  /**
+   * Retorna todos os itens do planejamento (id, valor, status de assinatura e se ainda é local)
+   * para o rascunho do atendimento. Diferente de getDados(), preserva id e status.
+   */
+  getDadosRascunho(): any {
+    return {
+      planejamentos: this.planejamentos.map(p => ({
+        id: p.id,
+        dataProcedimento: p.dataProcedimento || '',
+        procedimentoRealizado: p.procedimentoRealizado,
+        valor: p.valor,
+        statusAssinatura: p.statusAssinatura || 'PENDENTE',
+        _local: !!p._local,
+      })),
     };
   }
 }
