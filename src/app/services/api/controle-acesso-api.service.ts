@@ -9,14 +9,6 @@ export interface UsuarioLogado {
   sub: string;
 }
 
-export enum TipoUsuario {
-  SUPER_ADMIN = 'ROLE_SUPER_ADMIN',
-  ADMIN = 'ROLE_ADMIN',
-  GERENTE = 'ROLE_GERENTE',
-  PROFISSIONAL = 'ROLE_PROFISSIONAL',
-  RECEPCIONISTA = 'ROLE_RECEPCIONISTA'
-}
-
 @Injectable({
   providedIn: 'root',
 })

@@ -3,21 +3,6 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
-export interface Usuario {
-  id?: number;
-  login?: string;
-  senha?: string;
-  role?: string;
-  ativo?: boolean;
-}
-
-export interface UsuarioResponse {
-  id: number;
-  login: string;
-  tipoUsuarioNovo: string;
-  status: number;
-}
-
 export interface TodosUsuariosAgrupados {
   paciente: any[];
   medico: any[];

@@ -14,24 +14,6 @@ export interface HorarioOcupado {
   duracaoMinutos: number;
 }
 
-export interface ConsultaEstatisticas {
-  consultasHoje: number;
-  consultasRealizadasHoje: number;
-  consultasAgendadasHoje: number;
-  consultasSemana: number;
-  medicosAtivos: number;
-}
-
-export interface Tabela {
-  consulta: any;
-  medico: any;
-  paciente: any;
-  diaSemana: string;
-  data: string;
-  horario: string;
-  observacao: string;
-}
-
 
 export interface SaldoPorPeriodo {
   periodo: string;

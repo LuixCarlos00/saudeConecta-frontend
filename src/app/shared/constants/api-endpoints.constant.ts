@@ -10,8 +10,3 @@ export const API_ENDPOINTS = {
     LOGIN: '/Home/login'
   }
 } as const;
-
-/**
- * Tipo para garantir type-safety nos endpoints
- */
-export type ApiEndpoint = typeof API_ENDPOINTS;
