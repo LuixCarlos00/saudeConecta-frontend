@@ -22,7 +22,6 @@ export class FiltroStateService {
   // Subject (sem replay): recarga é um evento; um BehaviorSubject reemitia `true` antigo e causava carga dupla.
   private recarregarSubject = new Subject<boolean>();
   private carregandoSubject = new BehaviorSubject<boolean>(false);
-  private statusFiltroSubject = new BehaviorSubject<string>('');
 
   readonly categoria$: Observable<FiltroCategoria> = this.categoriaSubject.asObservable().pipe(
     distinctUntilChanged()
@@ -36,7 +35,6 @@ export class FiltroStateService {
   readonly recarregar$: Observable<boolean> = this.recarregarSubject.asObservable();
   /** Indica se a tabela de usuários está carregando (alimentado pela própria tabela). */
   readonly carregando$: Observable<boolean> = this.carregandoSubject.asObservable();
-  readonly statusFiltro$: Observable<string> = this.statusFiltroSubject.asObservable();
 
   setCategoria(categoria: FiltroCategoria): void {
     this.categoriaSubject.next(categoria);
@@ -54,10 +52,6 @@ export class FiltroStateService {
     this.carregandoSubject.next(valor);
   }
 
-  setStatusFiltro(status: string): void {
-    this.statusFiltroSubject.next(status);
-  }
-
   get categoriaAtual(): FiltroCategoria {
     return this.categoriaSubject.getValue();
   }
@@ -69,6 +63,5 @@ export class FiltroStateService {
   resetar(): void {
     this.categoriaSubject.next(FiltroCategoria.TODOS);
     this.searchTextSubject.next('');
-    this.statusFiltroSubject.next('');
   }
 }

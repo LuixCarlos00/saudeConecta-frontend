@@ -39,7 +39,4 @@ export class ProntuarioDentistaApiService {
     return this.http.get<any>(`${this.apiUrl}/questionario-saude/${consultaId}`);
   }
 
-  listarHistoricoPorPaciente(pacienteId: number): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/paciente/${pacienteId}`);
-  }
 }

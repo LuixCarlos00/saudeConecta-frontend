@@ -17,10 +17,6 @@ export class ProntuarioApiService {
     return this.http.post<Prontuario>(`${this.apiUrl}/cadastrarProntuarioMedico`, prontuario);
   }
 
-  cadastrarProntuarioMedicoComPlanejamentos(dados: { prontuario: any, planejamentos: any[] }): Observable<Prontuario> {
-    return this.http.post<Prontuario>(`${this.apiUrl}/cadastrarProntuarioMedicoComPlanejamentos`, dados);
-  }
-
 
 
   atualizarProntuarioMedico(id: number, prontuario: any): Observable<Prontuario> {
@@ -36,11 +32,4 @@ export class ProntuarioApiService {
     return this.http.get<any>(`${this.apiUrl}/consulta/${consultaId}/recente`);
   }
 
-  buscarPorPaciente(pacienteId: number): Observable<Prontuario[]> {
-    return this.http.get<Prontuario[]>(`${this.apiUrl}/paciente/${pacienteId}`);
-  }
-
-  buscarPorProfissional(profissionalId: number): Observable<Prontuario[]> {
-    return this.http.get<Prontuario[]>(`${this.apiUrl}/profissional/${profissionalId}`);
-  }
 }

@@ -56,13 +56,4 @@ export class CpfValidator {
     return cpfLimpo.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
   }
   
-  /**
-   * Remove formatação do CPF
-   * @param cpf CPF formatado
-   * @returns string CPF apenas números
-   */
-  static clean(cpf: string): string {
-    if (!cpf) return '';
-    return cpf.replace(/[^\d]/g, '');
-  }
 }

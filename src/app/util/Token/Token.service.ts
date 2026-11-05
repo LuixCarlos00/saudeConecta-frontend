@@ -36,14 +36,6 @@ export class tokenService {
   }
 
   /**
-   * Indica se há token salvo (delegado ao AuthService).
-   * @returns true se existe token
-   */
-  possuiToken(): boolean {
-    return this.authService.hasToken();
-  }
-
-  /**
    * Decodifica o token atual e publica o payload em UsuarioLogadoValue$.
    */
   public decodificaToken(): void {
@@ -65,15 +57,4 @@ export class tokenService {
     return usuario ? usuario.organizacaoId : null;
   }
 
-  obterUsuarioId(): number | null {
-    this.decodificaToken();
-    const usuario = this.UsuarioLogadoSubject.getValue();
-    return usuario ? usuario.id : null;
-  }
-
-  obterNome(): string | null {
-    this.decodificaToken();
-    const usuario = this.UsuarioLogadoSubject.getValue();
-    return usuario ? usuario.nome : null;
-  }
 }

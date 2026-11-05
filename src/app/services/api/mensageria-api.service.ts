@@ -35,20 +35,6 @@ export class MensageriaApiService {
   }
 
   /**
-   * Busca uma mensagem específica por ID.
-   */
-  buscarPorId(id: number): Observable<MensageriaResponse> {
-    return this.http.get<MensageriaResponse>(`${this.apiUrl}/${id}`);
-  }
-
-  /**
-   * Lista mensagens com falha ainda não notificadas ao administrador.
-   */
-  listarFalhasPendentes(): Observable<MensageriaResponse[]> {
-    return this.http.get<MensageriaResponse[]>(`${this.apiUrl}/falhas-pendentes`);
-  }
-
-  /**
    * Retorna a contagem de falhas pendentes de notificação.
    */
   contarFalhasPendentes(): Observable<{ total: number }> {

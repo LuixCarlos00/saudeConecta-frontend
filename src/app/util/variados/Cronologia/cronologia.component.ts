@@ -341,7 +341,4 @@ export class CronologiaComponent implements OnInit {
     return formatarDataLocal(data);
   }
 
-  fecharDialog(): void {
-    this.dialogRef.close();
-  }
 }

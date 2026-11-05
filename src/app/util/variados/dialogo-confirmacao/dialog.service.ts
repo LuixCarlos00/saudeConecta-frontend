@@ -19,28 +19,10 @@ export class DialogService {
     private dialog: MatDialog,
     private consultaApi: ConsultaApiService) { }
 
-  exibirMensagemErro() {
-    this._snackBar.open('Não ha registros com esse parametro.', 'Fechar', {
-      duration: 3000,
-    });
-  }
-
-  exibirMensagemDeRetornoAposCriaConsultaDeMedico() {
-    this._snackBar.open('Consulta Criada.', 'Fechar', {
-      duration: 3000,
-    });
-  }
-
 
   JaexisteDadosCAdastradosComEssesParamentros() {
     this._snackBar.open('Ja Existe uma consulta marcadas para esse dia com esse horário.\nTente outro horário. Ou altere o dia.', 'Fechar', {
       duration: 10000,
-    });
-  }
-
-  exibirMensagemParaCamposNaoInformadosDeConsulta() {
-    this._snackBar.open('Dados não informados.Tente Novamente.', 'Fechar', {
-      duration: 50000,
     });
   }
 
@@ -52,26 +34,7 @@ export class DialogService {
 
 
 
-  NaoHaRegistroParaAsDatasSelecionada() {
-    this._snackBar.open('Não ha registro para a data Selecionada', 'Fechar', {
-      duration: 50000,
-    });
-  }
 
-
-  DeletadoComSucesso() {
-    this._snackBar.open(' Deletado Com Sucesso', 'Fechar', {
-      duration: 50000,
-    });
-  }
-
-
-  CliqueEmSalvarParaFinalizar() {
-    this._snackBar.open('Clique em salvar para finalizare salvar os dados do prontuario', 'Fechar', {
-      duration: 50000,
-    });
-
-  }
 
 }
 

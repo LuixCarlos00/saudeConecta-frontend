@@ -140,18 +140,6 @@ export class ErrorHandlerService {
   }
 
   /**
-   * Exibe mensagem de sucesso
-   */
-  showSuccess(message: string, title: string = 'Sucesso'): void {
-    Swal.fire({
-      icon: 'success',
-      title,
-      text: message,
-      confirmButtonColor: '#5ccf6c'
-    });
-  }
-
-  /**
    * Exibe mensagem de sucesso com auto-fechamento
    */
   showSuccessToast(message: string, duration: number = 1500): void {
@@ -172,18 +160,6 @@ export class ErrorHandlerService {
       title,
       text: message,
       confirmButtonColor: '#f0ad4e'
-    });
-  }
-
-  /**
-   * Exibe mensagem informativa
-   */
-  showInfo(message: string, title: string = 'Informação'): void {
-    Swal.fire({
-      icon: 'info',
-      title,
-      text: message,
-      confirmButtonColor: '#3085d6'
     });
   }
 
@@ -211,27 +187,4 @@ export class ErrorHandlerService {
     return result.isConfirmed;
   }
 
-  /**
-   * Exibe diálogo de confirmação para exclusão
-   */
-  async confirmDelete(itemName: string = 'este item'): Promise<boolean> {
-    return this.confirm(
-      `Tem certeza que deseja excluir ${itemName}? Esta ação não pode ser desfeita.`,
-      'Confirmar Exclusão',
-      'Sim, excluir',
-      'Cancelar'
-    );
-  }
-
-  /**
-   * Exibe diálogo de confirmação para conclusão
-   */
-  async confirmComplete(itemName: string = 'este registro'): Promise<boolean> {
-    return this.confirm(
-      `Tem certeza que deseja concluir ${itemName}?`,
-      'Confirmar Conclusão',
-      'Sim, concluir',
-      'Cancelar'
-    );
-  }
 }

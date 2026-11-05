@@ -121,48 +121,6 @@ export class RelatorioService {
   // O tipo é determinado pelo perfil do usuário logado.
   // ─────────────────────────────────────────────────────────────────────────────
 
-  /**
-   * Abre o seletor de relatório no contexto do profissional.
-   * @param element - Dados da consulta (Consultav2)
-   * @param perfilUsuario - Perfil do usuário logado ('MEDICO' ou 'DENTISTA')
-   */
-  abrirRelatorioProfissional(element: Consultav2, perfilUsuario: string): void {
-    const consultaNaoRealizada = (element.status as any) === 'AGENDADA';
-    const dialogRef = this.dialog.open(RelatorioComponent, {
-      maxWidth: 'auto',
-      panelClass: 'selecao-relatorio-dialog',
-      data: {
-        consulta: element,
-        consultaNaoRealizada,
-        isAdmin: false,
-        isProfissional: true,
-        tipoProfissional: perfilUsuario,
-      },
-    });
-
-    dialogRef.afterClosed().subscribe((opcaoSelecionada: string) => {
-      if (!opcaoSelecionada) { return; }
-
-      // Histórico Completo não precisa de prontuário
-      if (opcaoSelecionada === '3') {
-        this.abrirHistoricoCompleto(element);
-        return;
-      }
-
-      if (perfilUsuario === 'MEDICO') {
-        this.prontuarioApiService.buscarProntuarioById(element.id).subscribe(
-          (dados: Prontuario) => this.abrirDialogImpressaoMedico(opcaoSelecionada, dados),
-          () => this.mostrarErroProntuarioNaoEncontrado()
-        );
-      } else if (perfilUsuario === 'DENTISTA') {
-        this.prontuarioDentistaApiService.buscarProntuarioDentistaById(element.id).subscribe(
-          (dados: Prontuario) => this.abrirDialogImpressaoDentista(opcaoSelecionada, dados),
-          () => this.mostrarErroProntuarioNaoEncontrado()
-        );
-      }
-    });
-  }
-
   // ─────────────────────────────────────────────────────────────────────────────
   // Fluxo direto — Tela de relatórios por paciente
   //

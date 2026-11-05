@@ -94,11 +94,6 @@ export class ControleAcessoApiService {
     return this.isAdmin() || this.isRecepcionista() || (this.isProfissional() && !this.isDashboardAdministrativo());
   }
 
-  // Menu Pacientes: Profissional apenas (não Admin)
-  podeVerMenuPacientes(): boolean {
-    return this.isProfissional() && !this.isDashboardAdministrativo();
-  }
-
   // Menu Mensageria: Super Admin, Admin
   podeVerMenuMensageria(): boolean {
     return this.isSuperAdmin() || this.isAdmin();
@@ -114,40 +109,10 @@ export class ControleAcessoApiService {
     return this.isProfissional() && !this.isDashboardAdministrativo();
   }
 
-  // ========== RETROCOMPATIBILIDADE ==========
-
-  podeGerenciarOrganizacao(): boolean {
-    return this.isSuperAdmin() || this.isAdmin() || this.isGerente() || this.isRecepcionista();
-  }
-
-  podeGerenciarUsuarios(): boolean {
-    return this.podeVerMenuUsuarios();
-  }
-
-  podeAcessarMinhaAgenda(): boolean {
-    return this.podeVerMenuMinhaAgenda();
-  }
-
-  podeAcessarAgenda(): boolean {
-    return this.podeVerMenuAgenda();
-  }
-
-  podeAcessarProntuario(): boolean {
-    return this.podeVerMenuProntuario();
-  }
-
   // ========== RETROCOMPATIBILIDADE (métodos antigos) ==========
 
   AcessoMedico(): boolean {
     return this.isProfissional();
-  }
-
-  AcessoAdministrador(): boolean {
-    return this.isAdmin();
-  }
-
-  AcessoSecretaria(): boolean {
-    return this.isRecepcionista();
   }
 
   // ========== UTILITÁRIOS ==========

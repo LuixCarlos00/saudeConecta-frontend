@@ -119,10 +119,6 @@ export class BarraSuperiorComponent implements OnInit, OnDestroy {
     this.mostrarNotificacaoCobranca = !this.mostrarNotificacaoCobranca;
   }
 
-  fecharNotificacaoCobranca(): void {
-    this.mostrarNotificacaoCobranca = false;
-  }
-
   navegarPara(rota: string): void {
     this.router.navigate([rota]);
     this.mostrarNotificacaoCobranca = false;

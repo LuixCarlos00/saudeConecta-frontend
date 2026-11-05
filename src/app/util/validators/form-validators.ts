@@ -66,20 +66,6 @@ function contemInjection(valor: string): boolean {
   return REGEX_SQL_INJECTION.test(valor) || REGEX_XSS.test(valor) || REGEX_HTML_TAGS.test(valor);
 }
 
-/**
- * Sanitiza um texto removendo caracteres perigosos
- * Uso: chamar antes de enviar dados ao backend
- * @param valor Texto a ser sanitizado
- * @returns Texto limpo
- */
-export function sanitizar(valor: string): string {
-  if (!valor) return '';
-  return valor
-    .replace(REGEX_HTML_TAGS, '')
-    .replace(/[<>"'`;]/g, '')
-    .trim();
-}
-
 // ─── Validators ───────────────────────────────────────────────────────────────
 
 /**
@@ -185,34 +171,6 @@ export function rgValidator(): ValidatorFn {
     const semFormatacao = valor.replace(/[\.\-]/g, '');
     if (!REGEX_NUMEROS.test(semFormatacao)) return { rgInvalido: true };
     if (semFormatacao.length < 7 || semFormatacao.length > 9) return { rgTamanhoInvalido: true };
-
-    return null;
-  };
-}
-
-/**
- * Valida CRM (apenas números, 4-6 dígitos)
- */
-export function crmValidator(): ValidatorFn {
-  return (control: AbstractControl): ValidationErrors | null => {
-    const valor: string = control.value?.trim() ?? '';
-    if (!valor) return null;
-
-    if (!REGEX_CRM.test(valor)) return { crmInvalido: true };
-
-    return null;
-  };
-}
-
-/**
- * Valida CRO (mesmo formato que CRM)
- */
-export function croValidator(): ValidatorFn {
-  return (control: AbstractControl): ValidationErrors | null => {
-    const valor: string = control.value?.trim() ?? '';
-    if (!valor) return null;
-
-    if (!REGEX_CRO.test(valor)) return { croInvalido: true };
 
     return null;
   };

@@ -118,11 +118,6 @@ export class BarraLateraComponent implements OnInit, OnDestroy {
     this.isConfigOpen = !this.isConfigOpen;
   }
 
-  // Toggle do submenu de cadastros
-  toggleCadastro(): void {
-    this.isCadastroOpen = !this.isCadastroOpen;
-  }
-
   // Abre menu mobile
   openMobileMenu(): void {
     this.isMobileOpen = true;

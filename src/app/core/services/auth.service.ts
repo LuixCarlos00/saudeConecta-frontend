@@ -173,13 +173,6 @@ export class AuthService implements OnDestroy {
   }
 
   /**
-   * Remove token do localStorage
-   */
-  removeToken(): void {
-    localStorage.removeItem(STORAGE_KEYS.TOKEN);
-  }
-
-  /**
    * Verifica se o token é válido (não expirado)
    */
   isTokenValid(token: string): boolean {
@@ -300,13 +293,6 @@ export class AuthService implements OnDestroy {
   }
 
   /**
-   * Verifica se o usuário pertence a uma organização
-   */
-  hasOrganization(): boolean {
-    return this.getOrganizacaoId() !== null;
-  }
-
-  /**
    * Obtém o perfil do usuário atual
    */
   getUserProfile(): string {
@@ -323,31 +309,10 @@ export class AuthService implements OnDestroy {
   }
 
   /**
-   * Verifica se o usuário é ROOT (Super Administrador)
-   */
-  isRoot(): boolean {
-    return this.hasProfile('ROOT');
-  }
-
-  /**
-   * Verifica se o usuário é GESTOR
-   */
-  isGestor(): boolean {
-    return this.hasProfile('GESTOR');
-  }
-
-  /**
    * Verifica se o usuário é CLINICO
    */
   isClinico(): boolean {
     return this.hasProfile('CLINICO');
-  }
-
-  /**
-   * Verifica se o usuário é ASSISTENTE
-   */
-  isAssistente(): boolean {
-    return this.hasProfile('ASSISTENTE');
   }
 
   /**

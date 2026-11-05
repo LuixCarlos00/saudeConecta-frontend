@@ -25,23 +25,8 @@ export class ConfiguracoesConsultaApiService {
     return this.http.get<ConfiguracoesConsulta>(`${this.apiUrl}/atual`);
   }
 
-  buscarConfiguracaoPorOrganizacao(organizacaoId: number): Observable<ConfiguracoesConsulta> {
-    return this.http.get<ConfiguracoesConsulta>(`${this.apiUrl}/organizacao/${organizacaoId}`);
-  }
-
-  criarConfiguracao(organizacaoId: number, configuracao: ConfiguracoesConsulta): Observable<ConfiguracoesConsulta> {
-    return this.http.post<ConfiguracoesConsulta>(`${this.apiUrl}/organizacao/${organizacaoId}`, configuracao);
-  }
-
-  atualizarConfiguracao(id: number, configuracao: ConfiguracoesConsulta): Observable<ConfiguracoesConsulta> {
-    return this.http.put<ConfiguracoesConsulta>(`${this.apiUrl}/${id}`, configuracao);
-  }
-
   atualizarConfiguracaoAtual(configuracao: ConfiguracoesConsulta): Observable<ConfiguracoesConsulta> {
     return this.http.put<ConfiguracoesConsulta>(`${this.apiUrl}/atual`, configuracao);
   }
 
-  devePularParaConfirmado(): Observable<boolean> {
-    return this.http.get<boolean>(`${this.apiUrl}/deve-pular-confirmado`);
-  }
 }
