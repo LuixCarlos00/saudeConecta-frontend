@@ -49,12 +49,10 @@ import { AgendarConsultaComponent } from 'src/app/features/publico/agendar-consu
 
 // Componentes de Gerenciamento de Agenda
 import { AgendaComponent } from './gerenciamento-agenda/agenda/agenda.component';
-import { AvisosLembretesComponent } from './gerenciamento-agenda/agenda/Avisos-Lembretes/Avisos-Lembretes.component';
 import { EditarConsultasComponent } from './gerenciamento-agenda/agenda/Editar-Consultas/Editar-Consultas.component';
 import { TabelaEditarMedicosConsultasComponent } from './gerenciamento-agenda/agenda/Editar-Consultas/tabela-editar-Medicos-Consultas/tabela-editar-Medicos-Consultas.component';
 import { TabelaEditarPacienteConsultasComponent } from './gerenciamento-agenda/agenda/Editar-Consultas/tabela-editar-Paciente-Consultas/tabela-editar-Paciente-Consultas.component';
 import { ObservacoesComponent } from './gerenciamento-agenda/agenda/Observacoes/Observacoes.component';
-import { GerenciamentoComponent } from './gerenciamento-agenda/gerenciamento.component';
 import { NovaConsultaComponent } from './gerenciamento-agenda/nova-consuta/nova-consuta.component';
 import { TabelaDePacientesComponent } from './gerenciamento-agenda/nova-consuta/tabela-de-pacientes/tabela-de-pacientes.component';
 import { TabelasPesquisasMedicosComponent } from './gerenciamento-agenda/nova-consuta/tabelas-Pesquisas-Medicos/tabelas-Pesquisas-Medicos.component';
@@ -126,12 +124,10 @@ const routes: Routes = [
 
     // Componentes de Gerenciamento de Agenda
     AgendaComponent,
-    AvisosLembretesComponent,
     EditarConsultasComponent,
     TabelaEditarMedicosConsultasComponent,
     TabelaEditarPacienteConsultasComponent,
     ObservacoesComponent,
-    GerenciamentoComponent,
     NovaConsultaComponent,
     TabelaDePacientesComponent,
     TabelasPesquisasMedicosComponent,
