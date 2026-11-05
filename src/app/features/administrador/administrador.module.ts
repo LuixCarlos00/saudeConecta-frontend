@@ -39,6 +39,7 @@ import { ConfiguracoesSistemaComponent } from './configuracoes/configuracoes-sis
 
 // Componentes de Dashboard
 import { DashboardComponent } from './dashboard/dashboard.component';
+import { DashboardPlataformaComponent } from './dashboard/plataforma/dashboard-plataforma.component';
 import { GraficosPrincipaisDashboardComponent } from './dashboard/graficos-principais-dashboard/graficos-principais-dashboard.component';
 
 // Componentes de Agenda Calendário
@@ -116,6 +117,7 @@ const routes: Routes = [
     // Componentes de Dashboard
     DashboardComponent,
     GraficosPrincipaisDashboardComponent,
+    DashboardPlataformaComponent,
     
     // Componentes de Agenda Calendário
     AgendaCalendarioComponent,

@@ -1,3 +1,6 @@
+<app-dashboard-plataforma *ngIf="superAdmin; else painelClinica"></app-dashboard-plataforma>
+
+<ng-template #painelClinica>
 <div class="healthcare-content">
   <!-- Header do Dashboard -->
   <header class="dashboard-header">
@@ -202,3 +205,4 @@
     <br>
     <br>
 </div>
+</ng-template>

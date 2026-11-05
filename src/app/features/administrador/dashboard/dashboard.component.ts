@@ -31,6 +31,8 @@ import { calcularDataSuspensao } from 'src/app/shared/constants/regua-cobranca.c
 export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   today = new Date();
   isDarkMode = false;
+  /** true quando o usuário logado é SUPER_ADMIN: mostra o painel da plataforma em vez do da clínica. */
+  superAdmin = false;
   private themeSubscription?: Subscription;
 
   // Estatísticas do Dashboard
@@ -97,6 +99,9 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
+    // SUPER_ADMIN vê o painel da plataforma; as chamadas abaixo são de clínica (exigem tenant).
+    this.superAdmin = this.ControleAcessoService.isSuperAdmin();
+    if (this.superAdmin) { return; }
     this.themeSubscription = this.themeService.currentTheme$.subscribe(
       (theme) => this.isDarkMode = theme.isDark
     );
