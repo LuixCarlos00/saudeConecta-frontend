@@ -5,7 +5,8 @@ import { jsPDF } from 'jspdf';
 import { ConsultaApiService } from 'src/app/services/api/consulta-api.service';
 import { Consultav2 } from 'src/app/util/variados/interfaces/consulta/consultav2';
 import { HistoricoCompletoPacienteResponse } from 'src/app/util/variados/interfaces/historico/historico-completo-paciente-response.interface';
-import { formatarDataLocal } from '../../../../shared/utils/data-local';
+import { formatarDataBr, formatarDataLocal } from '../../../../shared/utils/data-local';
+import { prefixoTitulo } from '../../../../shared/utils/titulo-profissional';
 
 /**
  * Componente único responsável por exibir e imprimir o histórico completo
@@ -58,16 +59,19 @@ export class HistoricoCompletoComponent implements OnInit {
     return this.historicoMedico.length + this.historicoDentista.length;
   }
 
-  /**
-   * Prefixo "Dr(a). " antes do nome do profissional, omitido quando o nome cadastrado
-   * já traz o título (ex.: "Dra. Bruna"), para não imprimir "Dr(a). Dra. Bruna".
-   *
-   * @param nome nome do profissional, como vem da API
-   * @returns "Dr(a). " ou string vazia
-   */
+  /** Prefixo "Dr(a). " omitido quando o nome já traz o título (ver shared/utils/titulo-profissional). */
   prefixoTitulo(nome: string | null | undefined): string {
-    if (!nome) return '';
-    return /^dr[a]?\.?\s/i.test(nome.trim()) ? '' : 'Dr(a). ';
+    return prefixoTitulo(nome);
+  }
+
+  /**
+   * Data-sem-hora da API ('yyyy-MM-dd') em dd/MM/yyyy, no calendário local.
+   *
+   * @param data data como vem da API
+   * @returns data formatada, ou '-' quando ausente/inválida
+   */
+  dataBr(data: string | null | undefined): string {
+    return formatarDataBr(data, '-');
   }
 
   getLabelStatus(status: string): string {

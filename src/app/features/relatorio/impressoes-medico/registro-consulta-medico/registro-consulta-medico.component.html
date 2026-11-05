@@ -49,7 +49,7 @@
       <div class="section-header"><div class="section-bar"></div><span class="section-title">MÉDICO ATENDENTE</span></div>
       <table class="data-table">
         <tr>
-          <td class="cell"><strong>Nome:</strong> Dr. {{ nomeMedico }}</td>
+          <td class="cell"><strong>Nome:</strong> {{ nomeMedicoComTitulo }}</td>
           <td class="cell"><strong>CRM:</strong> {{ crm }}</td>
           <td class="cell"><strong>Email:</strong> {{ emailMedico }}</td>
           <td class="cell"><strong>Tel.:</strong> {{ telefoneMedico }}</td>
@@ -86,7 +86,7 @@
 
       <!-- Diagnóstico / Prescrição / Orientações -->
       <div class="inline-field" *ngIf="diagnostico"><strong>Diagnóstico:</strong> {{ diagnostico }}</div>
-      <div class="inline-field" *ngIf="prescricao"><strong>Prescrição Médica:</strong> {{ prescricao }}</div>
+      <div class="inline-field" *ngIf="prescricao"><strong>{{ rotuloPrescricao }}</strong> {{ prescricao }}</div>
       <div class="inline-field" *ngIf="orientacoes"><strong>Orientações:</strong> {{ orientacoes }}</div>
 
       <!-- Códigos CID / TUSS -->
@@ -111,7 +111,7 @@
           </thead>
           <tbody>
             <tr *ngFor="let plan of planejamentos">
-              <td class="cell">{{ plan.dataProcedimento }}</td>
+              <td class="cell">{{ dataBr(plan.dataProcedimento) }}</td>
               <td class="cell">{{ plan.procedimentoRealizado }}</td>
               <td class="cell">R$ {{ plan.valor?.toFixed(2) || '0.00' }}</td>
               <td class="cell">{{ plan.statusAssinatura || 'PENDENTE' }}</td>

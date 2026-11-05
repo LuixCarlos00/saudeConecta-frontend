@@ -107,7 +107,7 @@
               <td class="cell" colspan="4"><strong>Planejamentos Terapêuticos:</strong></td>
             </tr>
             <tr *ngFor="let p of item.planejamentos">
-              <td class="cell"><strong>Data:</strong> {{ p.dataProcedimento || '-' }}</td>
+              <td class="cell"><strong>Data:</strong> {{ dataBr(p.dataProcedimento) }}</td>
               <td class="cell"><strong>Proced.:</strong> {{ p.procedimentoRealizado || p.procedimento || '-' }}</td>
               <td class="cell"><strong>Valor:</strong> {{ p.valor ? 'R$ ' + p.valor.toFixed(2) : '-' }}</td>
               <td class="cell"><strong>Assin.:</strong> {{ p.statusAssinatura || '-' }}</td>
@@ -228,7 +228,7 @@
             </div>
             <table class="data-table">
               <tr *ngFor="let plan of item.planejamentos">
-                <td class="cell"><strong>Data:</strong> {{ plan.dataProcedimento || '-' }}</td>
+                <td class="cell"><strong>Data:</strong> {{ dataBr(plan.dataProcedimento) }}</td>
                 <td class="cell"><strong>Procedimento:</strong> {{ plan.procedimentoRealizado || plan.procedimento || '-' }}</td>
                 <td class="cell"><strong>Valor:</strong> {{ plan.valor ? 'R$ ' + plan.valor.toFixed(2) : '-' }}</td>
                 <td class="cell"><strong>Assinatura:</strong> {{ plan.statusAssinatura || '-' }}</td>
