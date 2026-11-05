@@ -1,5 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { AssinaturaApiService } from 'src/app/services/api/assinatura-api.service';
+import { ControleAcessoApiService } from 'src/app/services/api/controle-acesso-api.service';
 import { formatarDataLocal } from 'src/app/shared/utils/data-local';
 import { DetalheAssinaturaComponent } from './detalhe-assinatura.component';
 
@@ -8,7 +9,11 @@ describe('DetalheAssinaturaComponent - datas de vencimento', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [DetalheAssinaturaComponent, { provide: AssinaturaApiService, useValue: {} }],
+      providers: [
+        DetalheAssinaturaComponent,
+        { provide: AssinaturaApiService, useValue: {} },
+        { provide: ControleAcessoApiService, useValue: { podeGerenciarAdministrador: () => true } },
+      ],
     });
     componente = TestBed.inject(DetalheAssinaturaComponent);
   });
@@ -41,5 +46,41 @@ describe('DetalheAssinaturaComponent - datas de vencimento', () => {
   it('formatarData não recua um dia', () => {
     expect((componente as any).formatarData('2026-12-05')).toBe('05/12/2026');
     expect((componente as any).formatarData(null)).toBe('o fim do período atual');
+  });
+});
+
+describe('DetalheAssinaturaComponent - permissões de pagamento', () => {
+  function criar(admin: boolean, status: string): DetalheAssinaturaComponent {
+    TestBed.configureTestingModule({
+      providers: [
+        DetalheAssinaturaComponent,
+        { provide: AssinaturaApiService, useValue: {} },
+        { provide: ControleAcessoApiService, useValue: { podeGerenciarAdministrador: () => admin } },
+      ],
+    });
+    const c = TestBed.inject(DetalheAssinaturaComponent);
+    c.assinatura = { status, cortesia: false, dataVencimento: '2026-12-05' } as any;
+    return c;
+  }
+
+  it('ADMIN inadimplente vê pagar e cancelar, sem aviso', () => {
+    const c = criar(true, 'INADIMPLENTE');
+    expect(c.podeAtivar).toBeTrue();
+    expect(c.podeCancelar).toBeTrue();
+    expect(c.avisoSomenteLeitura).toBeFalse();
+  });
+
+  it('Secretária inadimplente não vê botões e recebe o aviso', () => {
+    const c = criar(false, 'INADIMPLENTE');
+    expect(c.podeAtivar).toBeFalse();
+    expect(c.podeCancelar).toBeFalse();
+    expect(c.avisoSomenteLeitura).toBeTrue();
+  });
+
+  it('Secretária com assinatura ativa não vê botões nem aviso', () => {
+    const c = criar(false, 'ATIVA');
+    expect(c.podeAtivar).toBeFalse();
+    expect(c.podeCancelar).toBeFalse();
+    expect(c.avisoSomenteLeitura).toBeFalse();
   });
 });

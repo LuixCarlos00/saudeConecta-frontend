@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AssinaturaApiService } from 'src/app/services/api/assinatura-api.service';
+import { ControleAcessoApiService } from 'src/app/services/api/controle-acesso-api.service';
 import { AssinaturaTenant, CobrancaTenant, LimitesPlano } from 'src/app/util/variados/interfaces/planos/PlanoAssinatura';
 import { diasCalendarioAte, formatarDataBr } from 'src/app/shared/utils/data-local';
 import Swal from 'sweetalert2';
@@ -18,7 +19,10 @@ export class DetalheAssinaturaComponent implements OnInit {
   gerandoLink = false;
   cancelando = false;
 
-  constructor(private assinaturaApiService: AssinaturaApiService) {}
+  constructor(
+    private assinaturaApiService: AssinaturaApiService,
+    private controleAcesso: ControleAcessoApiService
+  ) {}
 
   ngOnInit(): void {
     this.carregarDados();
@@ -67,16 +71,34 @@ export class DetalheAssinaturaComponent implements OnInit {
     return !!this.assinatura?.cortesia;
   }
 
-  /** Permite ativar enquanto a cobrança automática ainda não estiver vigente. */
-  get podeAtivar(): boolean {
+  /**
+   * Pagar e cancelar exigem ROLE_ADMIN no back (gerar-link-pagamento e DELETE minha-assinatura);
+   * a Secretária só visualiza a tela (senão levaria 403).
+   */
+  get podeGerenciarPagamento(): boolean {
+    return this.controleAcesso.podeGerenciarAdministrador();
+  }
+
+  /** Estado da assinatura permite ativar/pagar (independente de quem está logado). */
+  private get statusPermiteAtivar(): boolean {
     if (!this.assinatura || this.isCortesia) return false;
     return ['TRIAL', 'INADIMPLENTE', 'SUSPENSA'].includes(this.assinatura.status);
   }
 
+  /** Permite ativar enquanto a cobrança automática ainda não estiver vigente. */
+  get podeAtivar(): boolean {
+    return this.podeGerenciarPagamento && this.statusPermiteAtivar;
+  }
+
   /** Só faz sentido cancelar uma assinatura que ainda dá acesso ao sistema. */
   get podeCancelar(): boolean {
-    if (!this.assinatura || this.isCortesia) return false;
+    if (!this.podeGerenciarPagamento || !this.assinatura || this.isCortesia) return false;
     return this.assinatura.status !== 'CANCELADA';
+  }
+
+  /** Secretária diante de uma assinatura que precisa de pagamento: orientar a falar com o gestor. */
+  get avisoSomenteLeitura(): boolean {
+    return !this.podeGerenciarPagamento && this.statusPermiteAtivar;
   }
 
   get diasRestantesTrial(): number {

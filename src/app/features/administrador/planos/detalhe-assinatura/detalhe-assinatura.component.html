@@ -82,6 +82,10 @@
           {{ cancelando ? 'Cancelando...' : 'Cancelar assinatura' }}
         </button>
 
+        <span *ngIf="avisoSomenteLeitura" class="aviso-pendente">
+          Peça ao gestor da clínica para regularizar o pagamento.
+        </span>
+
         <span *ngIf="isCortesia" class="aviso-pendente">
           Assinatura de cortesia: nenhuma cobrança é realizada.
         </span>
