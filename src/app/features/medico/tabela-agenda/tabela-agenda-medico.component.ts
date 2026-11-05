@@ -1,6 +1,7 @@
 import { filter, take } from 'rxjs';
 import { Consultav2 } from 'src/app/util/variados/interfaces/consulta/consultav2';
 import { ConsultaApiService } from 'src/app/services/api/consulta-api.service';
+import { RascunhoAtendimentoApiService } from 'src/app/services/api/rascunho-atendimento-api.service';
 import { ProntuarioStateService } from 'src/app/services/state/prontuario-state.service';
 import { Usuario } from 'src/app/util/variados/interfaces/usuario/usuario';
 import { tokenService } from 'src/app/util/Token/Token.service';
@@ -28,6 +29,8 @@ export class TabelaAgendaMedicoComponent implements OnInit {
   filteredDataSource: Consultav2[] = [];
   clickedRows = new Set<any>();
   pesquisa: string = '';
+  /** IDs das consultas que já têm rascunho de atendimento (uma chamada por carregamento da tela). */
+  consultasComRascunho = new Set<number>();
 
   UsuarioLogado: Usuario = {
     id: 0,
@@ -43,7 +46,8 @@ export class TabelaAgendaMedicoComponent implements OnInit {
     public dialog: MatDialog,
     private prontuarioStateService: ProntuarioStateService,
     private DialogService: DialogService,
-    private route: Router
+    private route: Router,
+    private rascunhoApi: RascunhoAtendimentoApiService
   ) {
     this.tokenService.decodificaToken();
     this.tokenService.UsuarioLogadoValue$.pipe(filter(Boolean), take(1)).subscribe((Usuario) => {
@@ -57,7 +61,23 @@ export class TabelaAgendaMedicoComponent implements OnInit {
 
   }
 
-  ngOnInit() { }
+  ngOnInit() {
+    this.carregarRascunhos();
+  }
+
+  /** Busca de uma vez os rascunhos do profissional logado para trocar "Iniciar" por "Retomar atendimento". */
+  private carregarRascunhos(): void {
+    this.rascunhoApi.listarMeus().subscribe({
+      next: lista => { this.consultasComRascunho = new Set((lista || []).map(r => r.consultaId)); },
+      // Sem a lista a agenda continua funcionando: só mostra "Iniciar" em todas.
+      error: () => { this.consultasComRascunho = new Set<number>(); },
+    });
+  }
+
+  /** A consulta já tem um atendimento em andamento (rascunho salvo)? */
+  temRascunho(consulta: Consultav2): boolean {
+    return !!consulta && this.consultasComRascunho.has(consulta.id);
+  }
 
 
   DesejaAbrirConsulta(element: any) {

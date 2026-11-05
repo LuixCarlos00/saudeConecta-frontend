@@ -16,6 +16,7 @@ import { RelatorioService } from 'src/app/features/relatorio/relatorio.service';
 import { ProntuarioDentistaApiService } from 'src/app/services/api/prontuario-dentista-api.service';
 import { ProntuarioApiService } from 'src/app/services/api/prontuario-api.service';
 import { PlanejamentoTerapeuticoApiService } from 'src/app/services/api/planejamento-terapeutico-api.service';
+import { RascunhoAtendimentoApiService } from 'src/app/services/api/rascunho-atendimento-api.service';
 import { ConfiguracoesConsultaApiService, ConfiguracoesConsulta } from 'src/app/services/api/configuracoes-consulta-api.service';
 import { formatarDataLocal } from '../../../shared/utils/data-local';
 
@@ -65,6 +66,8 @@ export class AgendaCalendarioComponent implements OnInit, OnDestroy {
   especialidadesDisponiveis: string[] = [];
   planejamentosAssinados = new Set<number>();
   questionariosRespondidos = new Set<number>();
+  /** IDs das consultas que já têm rascunho de atendimento (uma chamada por carregamento da tela). */
+  consultasComRascunho = new Set<number>();
 
   readonly statusOpcoes = [
     { value: 'AGENDADA',   label: 'Agendada',   cor: 'status-agendada'   },
@@ -140,6 +143,7 @@ export class AgendaCalendarioComponent implements OnInit, OnDestroy {
     private planejamentoApi: PlanejamentoTerapeuticoApiService,
     private router: Router,
     private configuracoesConsultaService: ConfiguracoesConsultaApiService,
+    private rascunhoApi: RascunhoAtendimentoApiService,
   ) {}
 
   ngOnInit(): void {
@@ -154,6 +158,7 @@ export class AgendaCalendarioComponent implements OnInit, OnDestroy {
       .subscribe(usuario => {
         this.UsuarioLogado = usuario!;
         this.carregarConsultas();
+        this.carregarRascunhos();
       });
 
     this.consultaState.cadastroRealizado$
@@ -639,10 +644,31 @@ export class AgendaCalendarioComponent implements OnInit, OnDestroy {
     }, 100);
   }
 
+  /** Busca de uma vez os rascunhos do profissional logado para trocar "Iniciar" por "Retomar atendimento". */
+  private carregarRascunhos(): void {
+    if (this.UsuarioLogado?.perfil !== 'CLINICO') { return; }
+    this.rascunhoApi.listarMeus()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: lista => {
+          this.consultasComRascunho = new Set((lista || []).map(r => r.consultaId));
+          this.cdr.markForCheck();
+        },
+        // Sem a lista a agenda continua funcionando: só mostra "Iniciar" em todas.
+        error: () => { this.consultasComRascunho = new Set<number>(); },
+      });
+  }
+
+  /** A consulta já tem um atendimento em andamento (rascunho salvo)? */
+  temRascunho(consulta: Consultav2 | null | undefined): boolean {
+    return !!consulta && this.consultasComRascunho.has(consulta.id);
+  }
+
   iniciarConsultaDrawer(): void {
     if (!this.consultaSelecionada) return;
 
     const element = this.consultaSelecionada;
+    const retomando = this.temRascunho(element);
     const dataFormatada = element.dataHora
       ? new Date(element.dataHora).toLocaleDateString('pt-BR')
       : 'Não informada';
@@ -655,7 +681,7 @@ export class AgendaCalendarioComponent implements OnInit, OnDestroy {
 
     setTimeout(() => {
       Swal.fire({
-        title: 'Iniciar Atendimento',
+        title: retomando ? 'Retomar Atendimento' : 'Iniciar Atendimento',
         html: `
           <div style="text-align: left; padding: 10px;">
             <p style="margin-bottom: 15px; color: #666;">
@@ -672,13 +698,15 @@ export class AgendaCalendarioComponent implements OnInit, OnDestroy {
             </p>
           </div>
           <p style="margin-top: 20px; font-size: 14px; color: #888;">
-            Deseja iniciar o atendimento deste paciente?
+            Deseja ${retomando ? 'retomar' : 'iniciar'} o atendimento deste paciente?
           </p>
         `,
         showCancelButton: true,
         confirmButtonColor: '#5ccf6c',
         cancelButtonColor: '#6c757d',
-        confirmButtonText: '<i class="fa-solid fa-stethoscope"></i> Iniciar Atendimento',
+        confirmButtonText: retomando
+          ? '<i class="fa-solid fa-rotate-right"></i> Retomar Atendimento'
+          : '<i class="fa-solid fa-stethoscope"></i> Iniciar Atendimento',
         cancelButtonText: '<i class="fa-solid fa-times"></i> Cancelar',
       }).then((result) => {
         if (result.isConfirmed) {
