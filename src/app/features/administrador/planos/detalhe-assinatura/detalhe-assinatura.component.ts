@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AssinaturaApiService } from 'src/app/services/api/assinatura-api.service';
 import { AssinaturaTenant, CobrancaTenant, LimitesPlano } from 'src/app/util/variados/interfaces/planos/PlanoAssinatura';
+import { diasCalendarioAte, formatarDataBr } from 'src/app/shared/utils/data-local';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -80,8 +81,7 @@ export class DetalheAssinaturaComponent implements OnInit {
 
   get diasRestantesTrial(): number {
     if (!this.assinatura?.dataVencimento) return 0;
-    const diffMs = new Date(this.assinatura.dataVencimento).getTime() - new Date().getTime();
-    return Math.max(0, Math.ceil(diffMs / (1000 * 60 * 60 * 24)));
+    return Math.max(0, diasCalendarioAte(this.assinatura.dataVencimento));
   }
 
   /**
@@ -209,6 +209,6 @@ export class DetalheAssinaturaComponent implements OnInit {
   }
 
   private formatarData(data: string | null | undefined): string {
-    return data ? new Date(data).toLocaleDateString('pt-BR') : 'o fim do período atual';
+    return formatarDataBr(data, 'o fim do período atual');
   }
 }

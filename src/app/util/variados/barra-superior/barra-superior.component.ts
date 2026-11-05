@@ -5,6 +5,7 @@ import { tokenService } from 'src/app/util/Token/Token.service';
 import { ControleAcessoApiService } from 'src/app/services/api/controle-acesso-api.service';
 import { AssinaturaApiService } from 'src/app/services/api/assinatura-api.service';
 import { AssinaturaTenant } from 'src/app/util/variados/interfaces/planos/PlanoAssinatura';
+import { diasCalendarioAte } from 'src/app/shared/utils/data-local';
 import { Usuario } from '../interfaces/usuario/usuario';
 
 /**
@@ -105,14 +106,13 @@ export class BarraSuperiorComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Calcula quantos dias faltam até a data informada.
+   * Calcula quantos dias de calendário faltam até a data informada.
    *
-   * @param data data alvo no formato ISO
+   * @param data data alvo 'yyyy-MM-dd'
    * @returns dias restantes (nunca negativo)
    */
   private calcularDiasRestantes(data: string): number {
-    const diffMs = new Date(data).getTime() - new Date().getTime();
-    return Math.max(0, Math.ceil(diffMs / (1000 * 60 * 60 * 24)));
+    return Math.max(0, diasCalendarioAte(data));
   }
 
   toggleNotificacaoCobranca(): void {

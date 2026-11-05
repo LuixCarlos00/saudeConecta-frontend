@@ -12,6 +12,7 @@ import { ConsultaApiService } from 'src/app/services/api/consulta-api.service';
 import { tokenService } from 'src/app/util/Token/Token.service';
 import { ConfiguracaoGraficoDashboardService } from 'src/app/core/services/configuracao-grafico-dashboard.service';
 import { ConfiguracaoGraficoDashboard, TipoGraficoDashboard, TipoCardDashboard } from 'src/app/shared/models/configuracao-grafico-dashboard.interface';
+import { diasCalendarioAte, parseDataLocal } from 'src/app/shared/utils/data-local';
 
 @Component({
   selector: 'app-dashboard',
@@ -238,13 +239,12 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
       next: (assinatura) => {
         if (assinatura.status === 'INADIMPLENTE') {
           this.assinaturaInadimplente = true;
-          const dataVencimento = new Date(assinatura.dataVencimento);
-          this.dataLimiteAcesso = new Date(dataVencimento);
-          this.dataLimiteAcesso.setDate(this.dataLimiteAcesso.getDate() + 10);
-
-          const hoje = new Date();
-          const diffMs = this.dataLimiteAcesso.getTime() - hoje.getTime();
-          this.diasRestantes = Math.max(0, Math.ceil(diffMs / (1000 * 60 * 60 * 24)));
+          const dataLimite = parseDataLocal(assinatura.dataVencimento);
+          if (dataLimite) {
+            dataLimite.setDate(dataLimite.getDate() + 10);
+            this.dataLimiteAcesso = dataLimite;
+            this.diasRestantes = Math.max(0, diasCalendarioAte(dataLimite));
+          }
         }
       },
       error: (err) => console.warn('Não foi possível verificar status da assinatura:', err)

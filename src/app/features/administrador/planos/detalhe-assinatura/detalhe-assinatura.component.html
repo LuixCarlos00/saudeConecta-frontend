@@ -18,8 +18,11 @@
       <div>
         <strong>Período gratuito</strong>
         <p>
-          Restam <strong>{{ diasRestantesTrial }}</strong>
-          {{ diasRestantesTrial === 1 ? 'dia' : 'dias' }} de teste.
+          <ng-container *ngIf="diasRestantesTrial > 0; else ultimoDia">
+            Restam <strong>{{ diasRestantesTrial }}</strong>
+            {{ diasRestantesTrial === 1 ? 'dia' : 'dias' }} de teste.
+          </ng-container>
+          <ng-template #ultimoDia>Hoje é o <strong>último dia</strong> de teste.</ng-template>
           Ative sua assinatura para não perder o acesso em
           {{ assinatura.dataVencimento | date:'dd/MM/yyyy' }}.
         </p>
