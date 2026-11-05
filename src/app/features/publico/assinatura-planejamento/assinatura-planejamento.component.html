@@ -131,6 +131,7 @@
 
     <!-- BOTÃO ASSINAR -->
     <div class="assinatura-footer">
+      <p class="erro-envio" role="alert" *ngIf="erroEnvio">{{ erroEnvio }}</p>
       <button class="btn-assinar" [disabled]="!assinaturaPreenchida || enviando" (click)="assinarPlanejamento()">
         <i class="fa-solid fa-check-circle" *ngIf="!enviando"></i>
         <div class="spinner-sm" *ngIf="enviando"></div>

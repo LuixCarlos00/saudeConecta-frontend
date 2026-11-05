@@ -149,6 +149,7 @@
 
     <!-- BOTÃO ENVIAR -->
     <div class="questionario-footer">
+      <p class="erro-envio" role="alert" *ngIf="erroEnvio">{{ erroEnvio }}</p>
       <button class="btn-enviar" [disabled]="!formularioValido || enviando" (click)="enviarQuestionario()">
         <i class="fa-solid fa-paper-plane" *ngIf="!enviando"></i>
         <div class="spinner-sm" *ngIf="enviando"></div>

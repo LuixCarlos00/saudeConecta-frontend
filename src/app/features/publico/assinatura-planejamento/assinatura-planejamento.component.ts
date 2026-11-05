@@ -2,6 +2,8 @@ import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { QuestionarioPublicoApiService } from 'src/app/services/api/questionario-publico-api.service';
 
+import { extrairMensagemErro } from 'src/app/shared/utils/mensagem-erro-http';
+
 @Component({
   selector: 'app-assinatura-planejamento',
   templateUrl: './assinatura-planejamento.component.html',
@@ -12,6 +14,8 @@ export class AssinaturaPlanejamentoComponent implements OnInit {
   token = '';
   loading = true;
   erro = '';
+  /** Falha transitória no envio: o formulário continua visível para tentar de novo. */
+  erroEnvio = '';
   enviado = false;
   enviando = false;
 
@@ -117,6 +121,7 @@ export class AssinaturaPlanejamentoComponent implements OnInit {
   assinarPlanejamento(): void {
     if (!this.assinaturaPreenchida) return;
     this.enviando = true;
+    this.erroEnvio = '';
 
     const payload = {
       token: this.token,
@@ -128,8 +133,16 @@ export class AssinaturaPlanejamentoComponent implements OnInit {
         this.enviado = true;
         this.enviando = false;
       },
-      error: () => {
-        this.erro = 'Erro ao enviar assinatura. Tente novamente.';
+      error: (err) => {
+        const mensagem = extrairMensagemErro(err);
+        if (err.status === 404 || err.status === 410) {
+          // Link expirado ou já usado: reenviar não adianta, então troca o formulário pela tela de erro.
+          this.erro = mensagem ?? (err.status === 404
+            ? 'Planejamento não encontrado ou link expirado.'
+            : 'Este link já foi utilizado.');
+        } else {
+          this.erroEnvio = mensagem ?? 'Erro ao enviar assinatura. Tente novamente.';
+        }
         this.enviando = false;
       }
     });
