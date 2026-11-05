@@ -36,4 +36,38 @@ describe('MensageriaComponent - sanitização de HTML', () => {
     expect(texto).not.toContain('<script');
     expect(texto).toContain('<b>ok</b>');
   });
+
+  describe('preview do iframe', () => {
+    const msg = (id: number) => ({ id, corpoMensagem: '<html><body>x</body></html>' } as any);
+
+    it('calcula a URL uma vez e mantém a mesma referência', () => {
+      const criar = spyOn(URL, 'createObjectURL').and.returnValue('blob:a');
+      spyOn(URL, 'revokeObjectURL');
+      componente.abrirDetalhe(msg(1));
+      const primeira = componente.urlPreviewSegura;
+      expect(primeira).toBeTruthy();
+      expect(componente.urlPreviewSegura).toBe(primeira);
+      expect(criar).toHaveBeenCalledTimes(1);
+    });
+
+    it('revoga a URL anterior ao trocar de mensagem e ao fechar', () => {
+      const criar = spyOn(URL, 'createObjectURL').and.returnValues('blob:a', 'blob:b');
+      const revogar = spyOn(URL, 'revokeObjectURL');
+      componente.abrirDetalhe(msg(1));
+      componente.abrirDetalhe(msg(2));
+      expect(criar).toHaveBeenCalledTimes(2);
+      expect(revogar).toHaveBeenCalledWith('blob:a');
+      componente.fecharDetalhe();
+      expect(revogar).toHaveBeenCalledWith('blob:b');
+      expect(componente.urlPreviewSegura).toBeNull();
+    });
+
+    it('revoga a URL no ngOnDestroy', () => {
+      spyOn(URL, 'createObjectURL').and.returnValue('blob:a');
+      const revogar = spyOn(URL, 'revokeObjectURL');
+      componente.abrirDetalhe(msg(1));
+      componente.ngOnDestroy();
+      expect(revogar).toHaveBeenCalledWith('blob:a');
+    });
+  });
 });
