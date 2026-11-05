@@ -294,9 +294,13 @@ export class MensageriaComponent implements OnInit, OnDestroy {
 
   /**
    * Cria o Blob com o HTML sanitizado (conteúdo da API não é confiável) e devolve a URL segura.
-   * A URL crua fica guardada para ser revogada depois.
+   * A URL crua fica guardada para ser revogada depois; uma URL anterior é revogada aqui
+   * para que nenhum chamador consiga vazar Blob.
    */
   getSafeHtmlUrl(htmlContent: string): SafeResourceUrl {
+    if (this.urlPreviewBlob) {
+      URL.revokeObjectURL(this.urlPreviewBlob);
+    }
     const blob = new Blob([this.sanitizarHtml(htmlContent)], { type: 'text/html' });
     this.urlPreviewBlob = URL.createObjectURL(blob);
     return this.sanitizer.bypassSecurityTrustResourceUrl(this.urlPreviewBlob);
