@@ -52,6 +52,13 @@
   background: var(--color-background-secondary, #f1f5f9);
   color: var(--color-text-secondary, #475569);
   &--info { background: #e0f2fe; color: #0369a1; }
+  &--acao {
+    border: 1px solid #0369a1;
+    background: #fff;
+    color: #0369a1;
+    cursor: pointer;
+    &:hover { background: #e0f2fe; }
+  }
   i { margin-right: 3px; }
 }
 

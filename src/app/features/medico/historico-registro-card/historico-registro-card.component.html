@@ -10,6 +10,10 @@
       <span class="hr-badge hr-badge--info" title="Tempo de atendimento">
         <i class="fa-regular fa-clock"></i> {{ duracao }}
       </span>
+      <button type="button" class="hr-badge hr-badge--acao" *ngIf="podeEditar"
+              (click)="editar.emit(registro)" title="Corrigir os dados deste prontuário">
+        <i class="fa-solid fa-pen-to-square"></i> Editar prontuário
+      </button>
     </div>
   </div>
 

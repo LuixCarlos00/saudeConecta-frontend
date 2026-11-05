@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { of, throwError } from 'rxjs';
 import Swal from 'sweetalert2';
 
+import { EdicaoProntuarioService } from '../edicao-prontuario.service';
 import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
 import { ProntuarioDentistaApiService } from 'src/app/services/api/prontuario-dentista-api.service';
 import { RascunhoAtendimentoApiService } from 'src/app/services/api/rascunho-atendimento-api.service';
@@ -168,24 +169,48 @@ describe('ProntuarioDentistaComponent: rascunho do atendimento', () => {
       discardPeriodicTasks();
     }));
 
-    it('409 PRONTUARIO_JA_FINALIZADO: avisa, volta para a agenda e não religa o autosave', fakeAsync(() => {
-      prontuarioApi.cadastrarProntuarioByOrg.and.returnValue(throwError(() => ({
-        status: 409,
-        error: { code: 'PRONTUARIO_JA_FINALIZADO', message: 'Esta consulta já foi finalizada. Para corrigir o prontuário, use a edição.' },
-      })));
-      fixture.detectChanges();
-      tick(0);
-      (component as any).concluido();
-      flushMicrotasks();
-      expect(notificacao.showError).toHaveBeenCalledWith('Esta consulta já foi finalizada. Para corrigir o prontuário, use a edição.');
-      tick(1500);
-      expect(TestBed.inject(Router).navigate).toHaveBeenCalledWith(['/agenda-calendario']);
-      component.abaExameObjetivo.Diagnostico = 'digitado depois';
-      tick(2000 + 5000);
-      expect(rascunhoApi.salvar).not.toHaveBeenCalled();
-      fixture.destroy();
-      discardPeriodicTasks();
-    }));
+    describe('409 PRONTUARIO_JA_FINALIZADO', () => {
+      const MSG = 'Esta consulta já foi finalizada. Para corrigir o prontuário, use a edição.';
+      let editar: jasmine.Spy;
+
+      beforeEach(() => {
+        prontuarioApi.cadastrarProntuarioByOrg.and.returnValue(throwError(() => ({
+          status: 409, error: { code: 'PRONTUARIO_JA_FINALIZADO', message: MSG },
+        })));
+        editar = spyOn(TestBed.inject(EdicaoProntuarioService), 'editar').and.returnValue(of(true));
+      });
+
+      it('oferece "Editar prontuário"; ao aceitar abre a edição da consulta e depois volta para a agenda, sem religar o autosave', fakeAsync(() => {
+        fixture.detectChanges();
+        tick(0);
+        (component as any).concluido();
+        flushMicrotasks();
+        expect(Swal.fire).toHaveBeenCalledWith(jasmine.objectContaining({
+          title: 'Consulta já finalizada', text: MSG, confirmButtonText: 'Editar prontuário', showCancelButton: true,
+        }));
+        flushMicrotasks();
+        expect(editar).toHaveBeenCalledOnceWith('DENTISTA', jasmine.objectContaining({ id: 822, pacienteId: 3, profissionalId: 9 }));
+        expect(TestBed.inject(Router).navigate).toHaveBeenCalledWith(['/agenda-calendario']);
+        component.abaExameObjetivo.Diagnostico = 'digitado depois';
+        tick(2000 + 5000);
+        expect(rascunhoApi.salvar).not.toHaveBeenCalled();
+        fixture.destroy();
+        discardPeriodicTasks();
+      }));
+
+      it('recusar a edição só volta para a agenda', fakeAsync(() => {
+        (Swal.fire as jasmine.Spy).and.resolveTo({ isConfirmed: false } as any);
+        fixture.detectChanges();
+        tick(0);
+        (component as any).concluido();
+        flushMicrotasks();
+        flushMicrotasks();
+        expect(editar).not.toHaveBeenCalled();
+        expect(TestBed.inject(Router).navigate).toHaveBeenCalledWith(['/agenda-calendario']);
+        fixture.destroy();
+        discardPeriodicTasks();
+      }));
+    });
 
     it('descartar: confirma, faz o DELETE e limpa as abas', fakeAsync(() => {
       rascunhoApi.descartar.and.returnValue(of(undefined));

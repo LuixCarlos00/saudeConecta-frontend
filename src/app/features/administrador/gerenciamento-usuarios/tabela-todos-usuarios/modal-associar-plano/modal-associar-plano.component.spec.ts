@@ -49,6 +49,7 @@ describe('ModalAssociarPlanoComponent - 502 MP_VALOR_NAO_ATUALIZADO (super admin
   });
 
   it('customização: mostra o aviso e não recarrega os dados da tela', () => {
+    spyOn(console, 'error');
     api.customizarPlano.and.returnValue(erro502());
     c.salvarCustomizacao();
     expect(notificacao.fire).toHaveBeenCalledWith(jasmine.objectContaining({

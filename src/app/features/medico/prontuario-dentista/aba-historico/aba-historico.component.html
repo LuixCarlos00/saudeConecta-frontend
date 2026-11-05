@@ -256,7 +256,8 @@
 
     <!-- Lista de prontuários anteriores -->
     <div *ngIf="historicoCarregado && historicoProntuarios.length && !historicoLoading">
-      <app-historico-registro-card *ngFor="let pront of historicoProntuarios" [registro]="pront"></app-historico-registro-card>
+      <app-historico-registro-card *ngFor="let pront of historicoProntuarios" [registro]="pront"
+        (editar)="editarRegistro($event)"></app-historico-registro-card>
     </div>
 
   </div>

@@ -17,6 +17,7 @@ import { AbaPlanejamentoMedicoComponent } from './aba-planejamento-medico/aba-pl
 import { AbaQuestionarioSaudeComponent } from './aba-questionario-saude/aba-questionario-saude.component';
 import { formatarDataLocal } from '../../../shared/utils/data-local';
 import { extrairMensagemErro } from '../../../shared/utils/mensagem-erro-http';
+import { EdicaoProntuarioService } from '../edicao-prontuario.service';
 import { RascunhoAtendimentoApiService } from 'src/app/services/api/rascunho-atendimento-api.service';
 import { ConfigAutosave, RascunhoAutosaveService } from 'src/app/services/state/rascunho-autosave.service';
 import { DadosRascunho, RascunhoAtendimentoResponse } from 'src/app/util/variados/interfaces/Prontuario/RascunhoAtendimento';
@@ -73,7 +74,8 @@ export class ProntuarioMedicoComponent implements OnInit, OnDestroy, AfterViewIn
     private prontuarioState: ProntuarioStateService,
     private notificacao: NotificacaoService,
     private rascunhoApi: RascunhoAtendimentoApiService,
-    public autosave: RascunhoAutosaveService
+    public autosave: RascunhoAutosaveService,
+    private edicaoProntuario: EdicaoProntuarioService
   ) { }
 
   // =========================================================================
@@ -324,11 +326,10 @@ export class ProntuarioMedicoComponent implements OnInit, OnDestroy, AfterViewIn
         },
         error: (error) => {
           // 409 PRONTUARIO_JA_FINALIZADO: outro "Finalizar" (duplo clique, outra aba) já fechou a consulta.
-          // Não religa o autosave (a consulta está encerrada) e volta para a agenda.
+          // Não religa o autosave (a consulta está encerrada); oferece abrir a edição ou voltar para a agenda.
           if (error?.status === 409 && error?.error?.code === 'PRONTUARIO_JA_FINALIZADO') {
             this.stopTimer();
-            this.notificacao.showError(extrairMensagemErro(error) || 'Esta consulta já foi finalizada.');
-            setTimeout(() => this.router.navigate(['/agenda-calendario']), 1500);
+            this.oferecerEdicaoDoProntuarioFinalizado(extrairMensagemErro(error) || 'Esta consulta já foi finalizada.');
             return;
           }
           console.error('Erro ao cadastrar prontuário médico:', error);
@@ -337,6 +338,32 @@ export class ProntuarioMedicoComponent implements OnInit, OnDestroy, AfterViewIn
           this.autosave.retomar();
         },
       });
+  }
+
+  /**
+   * Avisa que a consulta já foi finalizada e oferece abrir a edição do prontuário dela.
+   * Seja qual for a escolha (ou ao fechar a edição), o fluxo termina na agenda.
+   *
+   * @param mensagem texto do back explicando que a consulta já foi finalizada
+   */
+  private oferecerEdicaoDoProntuarioFinalizado(mensagem: string): void {
+    this.notificacao.fire({
+      icon: 'warning',
+      title: 'Consulta já finalizada',
+      text: mensagem,
+      showCancelButton: true,
+      confirmButtonText: 'Editar prontuário',
+      cancelButtonText: 'Voltar para a agenda',
+    }).then(resultado => {
+      const voltar = () => this.router.navigate(['/agenda-calendario']);
+      if (!resultado.isConfirmed || !this.Consulta) { voltar(); return; }
+      this.edicaoProntuario.editar('MEDICO', {
+        id: this.Consulta.id,
+        pacienteId: this.Consulta.pacienteId,
+        profissionalId: this.Consulta.profissionalId,
+        pacienteNome: this.Consulta.pacienteNome,
+      }).pipe(takeUntil(this.destroy$)).subscribe({ next: voltar, error: voltar });
+    });
   }
 
   // =========================================================================
