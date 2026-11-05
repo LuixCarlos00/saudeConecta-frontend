@@ -1,6 +1,9 @@
 /* tslint:disable:no-unused-variable */
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { throwError } from 'rxjs';
+import { of, throwError } from 'rxjs';
+import { convertToParamMap } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
+import { ModalAssociarPlanoComponent } from './modal-associar-plano/modal-associar-plano.component';
 import { By } from '@angular/platform-browser';
 import { DebugElement } from '@angular/core';
 
@@ -29,6 +32,34 @@ describe('TabelaTodosUsuariosComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  describe('atalho do dashboard da plataforma (?organizacaoId)', () => {
+    let abrir: jasmine.Spy;
+
+    function iniciarComUrl(superAdmin: boolean, query: Record<string, string>): void {
+      spyOn(component.controleAcessoService, 'isSuperAdmin').and.returnValue(superAdmin);
+      abrir = spyOn(TestBed.inject(MatDialog), 'open').and.returnValue({ afterClosed: () => of(false) } as any);
+      (component as any).route = { snapshot: { queryParamMap: convertToParamMap(query) } };
+      (component as any).abrirPlanoDaOrganizacaoDaUrl();
+    }
+
+    it('SUPER_ADMIN com organizacaoId abre o modal de plano da clínica', () => {
+      iniciarComUrl(true, { organizacaoId: '12', nome: 'Clínica X' });
+      expect(abrir).toHaveBeenCalledWith(ModalAssociarPlanoComponent, jasmine.objectContaining({
+        data: { organizacaoId: 12, nomeOrganizacao: 'Clínica X' }
+      }));
+    });
+
+    it('não abre para quem não é SUPER_ADMIN', () => {
+      iniciarComUrl(false, { organizacaoId: '12' });
+      expect(abrir).not.toHaveBeenCalled();
+    });
+
+    it('não abre sem organizacaoId ou com valor inválido', () => {
+      iniciarComUrl(true, { organizacaoId: 'abc' });
+      expect(abrir).not.toHaveBeenCalled();
+    });
   });
 
   describe('podeExcluir', () => {

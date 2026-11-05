@@ -1,5 +1,6 @@
 import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { ActivatedRoute } from '@angular/router';
 import { Subject, finalize, takeUntil } from 'rxjs';
 import Swal from 'sweetalert2';
 
@@ -75,7 +76,8 @@ export class TabelaTodosUsuariosComponent implements OnInit, OnDestroy {
     private dialogService: DialogService,
     private dialog: MatDialog,
     private clinicoApiService: ProfissionalApiService,
-    public controleAcessoService: ControleAcessoApiService
+    public controleAcessoService: ControleAcessoApiService,
+    private route: ActivatedRoute
   ) { }
 
   ngOnInit(): void {
@@ -86,6 +88,25 @@ export class TabelaTodosUsuariosComponent implements OnInit, OnDestroy {
     
     this.inicializarSubscriptions();
     this.carregarUsuarios();
+    this.abrirPlanoDaOrganizacaoDaUrl();
+  }
+
+  /**
+   * Atalho do dashboard da plataforma: `?organizacaoId=X&nome=Y` abre direto o modal de plano da clínica.
+   * Só vale para SUPER_ADMIN; o modal precisa apenas do id e do nome da organização.
+   */
+  private abrirPlanoDaOrganizacaoDaUrl(): void {
+    if (!this.controleAcessoService.isSuperAdmin()) { return; }
+    const params = this.route.snapshot.queryParamMap;
+    const organizacaoId = Number(params.get('organizacaoId'));
+    if (!Number.isInteger(organizacaoId) || organizacaoId <= 0) { return; }
+    this.dialog.open(ModalAssociarPlanoComponent, {
+      width: '700px',
+      data: { organizacaoId, nomeOrganizacao: params.get('nome') || 'Organização' },
+      disableClose: true
+    }).afterClosed().subscribe((associado: boolean) => {
+      if (associado) { this.carregarUsuarios(); }
+    });
   }
 
   ngOnDestroy(): void {
