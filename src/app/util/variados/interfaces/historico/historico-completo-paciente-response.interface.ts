@@ -107,6 +107,9 @@ export interface HistoricoCompletoPacienteResponse {
   // Tratamento
   planoTratamento?: string;
   procedimentos?: string;
+  inicioTratamento?: string;
+  terminoTratamento?: string;
+  interrupcao?: string;
   orientacoes?: string;
   responsavel?: string;
 
