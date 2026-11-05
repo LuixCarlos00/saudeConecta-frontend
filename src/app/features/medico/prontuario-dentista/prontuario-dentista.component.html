@@ -27,6 +27,17 @@
           </div>
           <span class="pep-timer__label">Duração da Consulta</span>
         </div>
+        <span class="pep-rascunho"
+          *ngIf="autosave.mensagem as msgRascunho"
+          [class.pep-rascunho--erro]="autosave.estado === 'erro'"
+          [attr.title]="autosave.detalheErro || null"
+          role="status" aria-live="polite">
+          <i class="fa-solid"
+            [ngClass]="{'fa-spinner fa-spin': autosave.estado === 'salvando',
+                        'fa-cloud-arrow-up': autosave.estado === 'salvo',
+                        'fa-triangle-exclamation': autosave.estado === 'erro' || autosave.estado === 'encerrado'}"></i>
+          {{ msgRascunho }}
+        </span>
       </div>
     </div>
   </header>
@@ -156,6 +167,13 @@
         <i class="fa-solid fa-clock"></i>
         <span>Tempo decorrido: <strong>{{ minutes }}min {{ seconds }}s</strong></span>
       </div>
+      <button type="button" class="pep-descartar"
+        *ngIf="autosave.temRascunho"
+        (click)="descartarRascunho()"
+        [disabled]="FinalizarConsulta"
+        title="Apaga o rascunho salvo e limpa o atendimento">
+        <i class="fa-solid fa-trash-can"></i> Descartar rascunho
+      </button>
       <div class="progress-indicator">
         <div class="progress-step" [class.progress-step--completed]="selectedTabIndex >= 0">
           <i class="fa-solid fa-check"></i>
