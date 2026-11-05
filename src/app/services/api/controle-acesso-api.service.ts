@@ -29,31 +29,28 @@ export class ControleAcessoApiService {
     });
   }
 
-  private possuiRole(role: string): boolean {
-    const autorizacao = this.authService.getUserRole();
-    return autorizacao.includes(role);
-  }
-
   // ========== VERIFICAÇÕES POR TIPO ==========
+  // A identidade vem do AuthService (fonte única); aqui ficam só as regras de menu/permissão.
 
   isSuperAdmin(): boolean {
-    return this.possuiRole('ROLE_SUPER_ADMIN');
+    return this.authService.isSuperAdmin();
   }
 
+  /** Admin de organização (ROLE_ADMIN sem ROLE_SUPER_ADMIN). */
   isAdmin(): boolean {
-    return this.possuiRole('ROLE_ADMIN') && !this.possuiRole('ROLE_SUPER_ADMIN');
+    return this.authService.isOrgAdmin();
   }
 
   isGerente(): boolean {
-    return this.possuiRole('ROLE_GERENTE');
+    return this.authService.getUserRole().includes('ROLE_GERENTE');
   }
 
   isProfissional(): boolean {
-    return this.possuiRole('ROLE_PROFISSIONAL');
+    return this.authService.isProfissional();
   }
 
   isRecepcionista(): boolean {
-    return this.possuiRole('ROLE_RECEPCIONISTA');
+    return this.authService.isRecepcionista();
   }
 
   /**

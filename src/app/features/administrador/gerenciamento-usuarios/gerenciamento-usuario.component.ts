@@ -9,7 +9,6 @@ import { CadastroSecretariaComponent } from '../cadastros/cadastro-secretaria/ca
 import { CadastroAdmComponent } from '../cadastros/cadastro-adm/cadastro-adm.component';
 import { CadastroAdminOrgComponent } from '../cadastros/cadastro-admin-org/cadastro-admin-org.component';
 import { AuthService } from 'src/app/core/services/auth.service';
-import { isSuperAdmin } from 'src/app/shared/constants/roles.constant';
 import { AssinaturaApiService } from 'src/app/services/api/assinatura-api.service';
 import { LimitesPlano } from 'src/app/util/variados/interfaces/planos/PlanoAssinatura';
 import Swal from 'sweetalert2';
@@ -35,8 +34,7 @@ export class GerenciamentoUsuarioComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    const role = this.authService.getUserRole();
-    this.isSuperAdmin = isSuperAdmin(role);
+    this.isSuperAdmin = this.authService.isSuperAdmin();
     this.carregarLimites();
     // asapScheduler: a tabela filha liga o loading durante o ciclo de detecção do pai (evita NG0100).
     this.filtroStateService.carregando$
