@@ -12,7 +12,8 @@ import { ConsultaApiService } from 'src/app/services/api/consulta-api.service';
 import { tokenService } from 'src/app/util/Token/Token.service';
 import { ConfiguracaoGraficoDashboardService } from 'src/app/core/services/configuracao-grafico-dashboard.service';
 import { ConfiguracaoGraficoDashboard, TipoGraficoDashboard, TipoCardDashboard } from 'src/app/shared/models/configuracao-grafico-dashboard.interface';
-import { diasCalendarioAte, parseDataLocal } from 'src/app/shared/utils/data-local';
+import { diasCalendarioAte } from 'src/app/shared/utils/data-local';
+import { calcularDataSuspensao } from 'src/app/shared/constants/regua-cobranca.constant';
 
 @Component({
   selector: 'app-dashboard',
@@ -239,9 +240,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
       next: (assinatura) => {
         if (assinatura.status === 'INADIMPLENTE') {
           this.assinaturaInadimplente = true;
-          const dataLimite = parseDataLocal(assinatura.dataVencimento);
+          const dataLimite = calcularDataSuspensao(assinatura.dataVencimento);
           if (dataLimite) {
-            dataLimite.setDate(dataLimite.getDate() + 10);
             this.dataLimiteAcesso = dataLimite;
             this.diasRestantes = Math.max(0, diasCalendarioAte(dataLimite));
           }
