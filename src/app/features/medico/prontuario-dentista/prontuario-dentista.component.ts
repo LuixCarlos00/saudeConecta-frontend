@@ -326,8 +326,16 @@ export class ProntuarioDentistaComponent implements OnInit, OnDestroy, AfterView
           setTimeout(() => this.router.navigate(['/agenda-calendario']), 1500);
         },
         error: (error) => {
+          // 409 PRONTUARIO_JA_FINALIZADO: outro "Finalizar" (duplo clique, outra aba) já fechou a consulta.
+          // Não religa o autosave (a consulta está encerrada) e volta para a agenda.
+          if (error?.status === 409 && error?.error?.code === 'PRONTUARIO_JA_FINALIZADO') {
+            this.stopTimer();
+            this.errorHandler.showError(extrairMensagemErro(error) || 'Esta consulta já foi finalizada.');
+            setTimeout(() => this.router.navigate(['/agenda-calendario']), 1500);
+            return;
+          }
           console.error('Erro ao cadastrar prontuário odontológico:', error);
-          this.errorHandler.showError('Erro ao salvar prontuário');
+          this.errorHandler.showError(extrairMensagemErro(error) || 'Erro ao salvar prontuário');
           this.FinalizarConsulta = false;
           this.autosave.retomar();
         },

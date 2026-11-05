@@ -166,6 +166,25 @@ describe('ProntuarioDentistaComponent: rascunho do atendimento', () => {
       discardPeriodicTasks();
     }));
 
+    it('409 PRONTUARIO_JA_FINALIZADO: avisa, volta para a agenda e não religa o autosave', fakeAsync(() => {
+      prontuarioApi.cadastrarProntuarioByOrg.and.returnValue(throwError(() => ({
+        status: 409,
+        error: { code: 'PRONTUARIO_JA_FINALIZADO', message: 'Esta consulta já foi finalizada. Para corrigir o prontuário, use a edição.' },
+      })));
+      fixture.detectChanges();
+      tick(0);
+      (component as any).concluido();
+      flushMicrotasks();
+      expect(errorHandler.showError).toHaveBeenCalledWith('Esta consulta já foi finalizada. Para corrigir o prontuário, use a edição.');
+      tick(1500);
+      expect(TestBed.inject(Router).navigate).toHaveBeenCalledWith(['/agenda-calendario']);
+      component.abaExameObjetivo.Diagnostico = 'digitado depois';
+      tick(2000 + 5000);
+      expect(rascunhoApi.salvar).not.toHaveBeenCalled();
+      fixture.destroy();
+      discardPeriodicTasks();
+    }));
+
     it('descartar: confirma, faz o DELETE e limpa as abas', fakeAsync(() => {
       rascunhoApi.descartar.and.returnValue(of(undefined));
       fixture.detectChanges();
