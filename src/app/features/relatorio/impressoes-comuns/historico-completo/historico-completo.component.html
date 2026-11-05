@@ -57,7 +57,7 @@
               <td class="cell"><strong>Status:</strong> {{ item.status || '-' }}</td>
             </tr>
             <tr>
-              <td class="cell" colspan="2"><strong>Médico:</strong> Dr(a). {{ item.profissionalNome || '-' }}</td>
+              <td class="cell" colspan="2"><strong>Médico:</strong> {{ prefixoTitulo(item.profissionalNome) }}{{ item.profissionalNome || '-' }}</td>
               <td class="cell"><strong>CRM:</strong> {{ item.profissionalCrm || '-' }} | {{ item.profissionalEspecialidade || '-' }}</td>
               <td class="cell"><strong>Valor:</strong> {{ item.valor ? 'R$ ' + item.valor.toFixed(2) : '-' }}</td>
               <td class="cell"><strong>Duração:</strong> {{ item.duracaoMinutos ? item.duracaoMinutos + ' min' : (item.tempoDuracao || '-') }}</td>
@@ -67,10 +67,17 @@
           <table class="data-table" *ngIf="item.peso || item.altura || item.temperatura || item.pressao || item.saturacao || item.hemoglobina || item.frequenciaRespiratoria || item.frequenciaArterialSistolica || item.frequenciaArterialDiastolica">
             <tr>
               <td class="cell" *ngIf="item.peso"><strong>Peso:</strong> {{ item.peso }} kg</td>
-              <td class="cell" *ngIf="item.altura"><strong>Altura:</strong> {{ item.altura }} cm</td>
+              <td class="cell" *ngIf="item.altura"><strong>Altura:</strong> {{ item.altura }} m</td>
               <td class="cell" *ngIf="item.temperatura"><strong>Temp.:</strong> {{ item.temperatura }} °C</td>
               <td class="cell" *ngIf="item.pressao"><strong>PA:</strong> {{ item.pressao }}</td>
               <td class="cell" *ngIf="item.saturacao"><strong>SpO2:</strong> {{ item.saturacao }}%</td>
+            </tr>
+            <tr *ngIf="item.pulso || item.hemoglobina || item.frequenciaRespiratoria || item.frequenciaArterialSistolica || item.frequenciaArterialDiastolica">
+              <td class="cell" *ngIf="item.pulso"><strong>Pulso:</strong> {{ item.pulso }} bpm</td>
+              <td class="cell" *ngIf="item.hemoglobina"><strong>Hb:</strong> {{ item.hemoglobina }} g/dL</td>
+              <td class="cell" *ngIf="item.frequenciaRespiratoria"><strong>Fr. Resp.:</strong> {{ item.frequenciaRespiratoria }} irpm</td>
+              <td class="cell" *ngIf="item.frequenciaArterialSistolica"><strong>PA Sist.:</strong> {{ item.frequenciaArterialSistolica }}</td>
+              <td class="cell" *ngIf="item.frequenciaArterialDiastolica"><strong>PA Diast.:</strong> {{ item.frequenciaArterialDiastolica }}</td>
             </tr>
           </table>
 
@@ -81,14 +88,19 @@
             </tr>
           </table>
 
+          <div class="inline-field" *ngIf="item.responsavel"><strong>Responsável:</strong> {{ item.responsavel }}</div>
           <div class="inline-field" *ngIf="item.anamnese"><strong>Anamnese:</strong> {{ item.anamnese }}</div>
           <div class="inline-field" *ngIf="item.exame"><strong>Exame Físico:</strong> {{ item.exame }}</div>
           <div class="inline-field" *ngIf="item.conduta"><strong>Conduta:</strong> {{ item.conduta }}</div>
           <div class="inline-field" *ngIf="item.prescricao">
             <strong>Prescrição{{ item.tituloPrescricao ? ' — ' + item.tituloPrescricao : '' }}{{ item.dataPrescricao ? ' (' + item.dataPrescricao + ')' : '' }}:</strong> {{ item.prescricao }}
           </div>
+          <div class="inline-field" *ngIf="item.orientacoes"><strong>Orientações:</strong> {{ item.orientacoes }}</div>
+          <div class="inline-field" *ngIf="item.cidTexto"><strong>CID:</strong> {{ item.cidTexto }}</div>
+          <div class="inline-field" *ngIf="item.tussTexto"><strong>TUSS:</strong> {{ item.tussTexto }}</div>
+          <div class="inline-field" *ngIf="item.solicitacaoExameTexto"><strong>Solicitação de Exames:</strong> {{ item.solicitacaoExameTexto }}</div>
           <div class="inline-field" *ngIf="item.observacao"><strong>Observações:</strong> {{ item.observacao }}</div>
-          <div class="inline-field" *ngIf="item.dataFinalizado"><strong>Data Finalização:</strong> {{ item.dataFinalizado }}</div>
+          <div class="inline-field" *ngIf="item.dataFinalizado"><strong>Data Finalização:</strong> {{ item.dataFinalizado | date: 'dd/MM/yyyy' }}</div>
 
           <table class="data-table" *ngIf="item.planejamentos && item.planejamentos.length > 0">
             <tr>
@@ -128,7 +140,7 @@
               <td class="cell"><strong>Status:</strong> {{ item.status || '-' }}</td>
             </tr>
             <tr>
-              <td class="cell" colspan="2"><strong>Dentista:</strong> Dr(a). {{ item.profissionalNome || '-' }}</td>
+              <td class="cell" colspan="2"><strong>Dentista:</strong> {{ prefixoTitulo(item.profissionalNome) }}{{ item.profissionalNome || '-' }}</td>
               <td class="cell"><strong>CRO:</strong> {{ item.profissionalCrm || '-' }} | {{ item.profissionalEspecialidade || '-' }}</td>
               <td class="cell"><strong>Valor:</strong> {{ item.valor ? 'R$ ' + item.valor.toFixed(2) : '-' }}</td>
               <td class="cell"><strong>Duração:</strong> {{ item.duracaoMinutos ? item.duracaoMinutos + ' min' : (item.tempoDuracao || '-') }}</td>
@@ -138,7 +150,7 @@
           <table class="data-table" *ngIf="item.peso || item.altura || item.temperatura || item.pressao || item.pulso || item.saturacao">
             <tr>
               <td class="cell" *ngIf="item.peso"><strong>Peso:</strong> {{ item.peso }} kg</td>
-              <td class="cell" *ngIf="item.altura"><strong>Altura:</strong> {{ item.altura }} cm</td>
+              <td class="cell" *ngIf="item.altura"><strong>Altura:</strong> {{ item.altura }} m</td>
               <td class="cell" *ngIf="item.temperatura"><strong>Temp.:</strong> {{ item.temperatura }} °C</td>
               <td class="cell" *ngIf="item.pressao"><strong>PA:</strong> {{ item.pressao }}</td>
               <td class="cell" *ngIf="item.pulso"><strong>Pulso:</strong> {{ item.pulso }} bpm</td>

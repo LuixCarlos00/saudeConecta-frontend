@@ -58,6 +58,18 @@ export class HistoricoCompletoComponent implements OnInit {
     return this.historicoMedico.length + this.historicoDentista.length;
   }
 
+  /**
+   * Prefixo "Dr(a). " antes do nome do profissional, omitido quando o nome cadastrado
+   * já traz o título (ex.: "Dra. Bruna"), para não imprimir "Dr(a). Dra. Bruna".
+   *
+   * @param nome nome do profissional, como vem da API
+   * @returns "Dr(a). " ou string vazia
+   */
+  prefixoTitulo(nome: string | null | undefined): string {
+    if (!nome) return '';
+    return /^dr[a]?\.?\s/i.test(nome.trim()) ? '' : 'Dr(a). ';
+  }
+
   getLabelStatus(status: string): string {
     const labels: Record<string, string> = {
       sadio: 'Sadio', cariado: 'Cariado', obturado: 'Obturado',
