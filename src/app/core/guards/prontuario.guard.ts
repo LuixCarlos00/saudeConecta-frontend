@@ -1,9 +1,11 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router, UrlTree } from '@angular/router';
+import { HttpErrorResponse } from '@angular/common/http';
 import { Observable, catchError, map, of, switchMap } from 'rxjs';
 import { ConsultaApiService } from 'src/app/services/api/consulta-api.service';
+import { RascunhoAtendimentoApiService } from 'src/app/services/api/rascunho-atendimento-api.service';
+import { extrairMensagemErro } from 'src/app/shared/utils/mensagem-erro-http';
 import { ProntuarioStateService } from 'src/app/services/state/prontuario-state.service';
-import { tokenService } from 'src/app/util/Token/Token.service';
 import Swal from 'sweetalert2';
 
 /** Status em que a consulta já foi encerrada e não aceita mais atendimento. */
@@ -29,7 +31,7 @@ export class ProntuarioGuard implements CanActivate {
     private router: Router,
     private prontuarioState: ProntuarioStateService,
     private consultaApi: ConsultaApiService,
-    private token: tokenService
+    private rascunhoApi: RascunhoAtendimentoApiService
   ) {}
 
   canActivate(
@@ -81,7 +83,6 @@ export class ProntuarioGuard implements CanActivate {
    * Carrega a consulta da URL, valida dono e status, e a coloca no state.
    */
   private carregarPelaApi(consultaId: number): Observable<boolean> {
-    const usuarioId = this.token.obterUsuarioId();
     return this.consultaApi.buscarPorId(consultaId).pipe(
       switchMap(consulta => {
         if (STATUS_ENCERRADOS.includes(String(consulta?.status))) {
@@ -90,18 +91,19 @@ export class ProntuarioGuard implements CanActivate {
             'Esta consulta já foi encerrada e não pode mais ser atendida. Abra outra consulta pela agenda.'
           ));
         }
-        if (!usuarioId) {
-          return of(this.bloquear('Acesso Negado', TEXTO_ACESSO_NEGADO));
-        }
-        // A rota por id não informa o usuário dono; a agenda do profissional logado é a prova de posse.
-        return this.consultaApi.buscarAgendaMedico(usuarioId, 'anual').pipe(
-          map(agenda => {
-            if (!agenda?.some(c => c.id === consulta.id)) {
-              return this.bloquear('Acesso Negado', TEXTO_ACESSO_NEGADO);
-            }
+        // A rota por id não informa o usuário dono; o GET do rascunho é a prova de posse (200/204 = dono,
+        // 404 = outro usuário). O rascunho baixado fica no state para o componente não repetir o GET.
+        return this.rascunhoApi.buscar(consulta.id).pipe(
+          map(rascunho => {
+            this.prontuarioState.setRascunhoPreCarregado(consulta.id, rascunho);
             this.prontuarioState.setConsulta(consulta);
             return true;
-          })
+          }),
+          catchError((erro: HttpErrorResponse) => of(
+            erro?.status === 404
+              ? this.bloquear('Acesso Negado', TEXTO_ACESSO_NEGADO)
+              : this.bloquear('Erro', extrairMensagemErro(erro) || 'Não foi possível verificar o acesso a esta consulta.', 'Ir para Agenda', 'error')
+          ))
         );
       }),
       catchError(() => of(this.bloquear('Acesso Negado', TEXTO_ACESSO_NEGADO)))

@@ -3,8 +3,8 @@ import { ActivatedRouteSnapshot, convertToParamMap, Router, UrlTree } from '@ang
 import { RouterTestingModule } from '@angular/router/testing';
 import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { ConsultaApiService } from 'src/app/services/api/consulta-api.service';
+import { RascunhoAtendimentoApiService } from 'src/app/services/api/rascunho-atendimento-api.service';
 import { ProntuarioStateService } from 'src/app/services/state/prontuario-state.service';
-import { tokenService } from 'src/app/util/Token/Token.service';
 import Swal from 'sweetalert2';
 import { ProntuarioGuard } from './prontuario.guard';
 
@@ -13,6 +13,8 @@ describe('ProntuarioGuard', () => {
   let router: Router;
   let consulta$: BehaviorSubject<any>;
   let setConsulta: jasmine.Spy;
+  let setRascunho: jasmine.Spy;
+  let rascunhoApi: jasmine.SpyObj<RascunhoAtendimentoApiService>;
   let consultaApi: jasmine.SpyObj<ConsultaApiService>;
 
   const completa = { id: 1, pacienteNome: 'A', profissionalId: 2, status: 'CONFIRMADA' };
@@ -27,13 +29,15 @@ describe('ProntuarioGuard', () => {
   beforeEach(() => {
     consulta$ = new BehaviorSubject<any>(null);
     setConsulta = jasmine.createSpy('setConsulta');
+    setRascunho = jasmine.createSpy('setRascunhoPreCarregado');
+    rascunhoApi = jasmine.createSpyObj('RascunhoAtendimentoApiService', ['buscar']);
     consultaApi = jasmine.createSpyObj('ConsultaApiService', ['buscarPorId', 'buscarAgendaMedico']);
     TestBed.configureTestingModule({
       imports: [RouterTestingModule],
       providers: [
-        { provide: ProntuarioStateService, useValue: { consulta$, setConsulta } },
+        { provide: ProntuarioStateService, useValue: { consulta$, setConsulta, setRascunhoPreCarregado: setRascunho } },
         { provide: ConsultaApiService, useValue: consultaApi },
-        { provide: tokenService, useValue: { obterUsuarioId: () => 99 } },
+        { provide: RascunhoAtendimentoApiService, useValue: rascunhoApi },
       ],
     });
     guard = TestBed.inject(ProntuarioGuard);
@@ -76,27 +80,54 @@ describe('ProntuarioGuard', () => {
   describe('com id na URL e sem estado em memoria', () => {
     it('carrega pela API, confere o dono, poe no state e libera', (done) => {
       consultaApi.buscarPorId.and.returnValue(of(completa as any));
-      consultaApi.buscarAgendaMedico.and.returnValue(of([{ id: 1 }]));
+      const rascunho = { consultaId: 1, versao: 0 } as any;
+      rascunhoApi.buscar.and.returnValue(of(rascunho));
       (guard.canActivate(rota('startconsulta/:consultaId', '1'), {} as any) as Observable<boolean>)
         .subscribe(ok => {
           expect(ok).toBeTrue();
           expect(consultaApi.buscarPorId).toHaveBeenCalledWith(1);
+          expect(consultaApi.buscarAgendaMedico).not.toHaveBeenCalled();
           expect(setConsulta).toHaveBeenCalledWith(completa);
+          expect(setRascunho).toHaveBeenCalledWith(1, rascunho);
           done();
         });
     });
 
-    it('bloqueia quando a consulta nao e do profissional logado', (done) => {
+    it('204 (sem rascunho) tambem prova a posse e guarda null no cache', (done) => {
       consultaApi.buscarPorId.and.returnValue(of(completa as any));
-      consultaApi.buscarAgendaMedico.and.returnValue(of([{ id: 77 }]));
+      rascunhoApi.buscar.and.returnValue(of(null));
+      (guard.canActivate(rota('startconsulta/:consultaId', '1'), {} as any) as Observable<boolean>)
+        .subscribe(ok => {
+          expect(ok).toBeTrue();
+          expect(setRascunho).toHaveBeenCalledWith(1, null);
+          done();
+        });
+    });
+
+    it('404 do rascunho (consulta de outro usuario) bloqueia com Acesso Negado', (done) => {
+      consultaApi.buscarPorId.and.returnValue(of(completa as any));
+      rascunhoApi.buscar.and.returnValue(throwError(() => ({ status: 404 })));
       (guard.canActivate(rota('startconsulta/:consultaId', '1'), {} as any) as Observable<boolean>)
         .subscribe(ok => {
           expect(ok).toBeFalse();
           expect(setConsulta).not.toHaveBeenCalled();
-          expect(Swal.fire).toHaveBeenCalled();
+          expect(Swal.fire).toHaveBeenCalledWith(jasmine.objectContaining({ title: 'Acesso Negado' }));
           done();
         });
     });
+
+    it('outro erro do rascunho mostra a mensagem do back e volta para a agenda', fakeAsync(() => {
+      consultaApi.buscarPorId.and.returnValue(of(completa as any));
+      rascunhoApi.buscar.and.returnValue(throwError(() => ({ status: 500, error: { message: 'Falha interna' } })));
+      let resultado: boolean | undefined;
+      (guard.canActivate(rota('startconsulta/:consultaId', '1'), {} as any) as Observable<boolean>)
+        .subscribe(ok => resultado = ok);
+      flushMicrotasks();
+      expect(resultado).toBeFalse();
+      expect(setConsulta).not.toHaveBeenCalled();
+      expect(Swal.fire).toHaveBeenCalledWith(jasmine.objectContaining({ icon: 'error', text: 'Falha interna' }));
+      expect(router.navigate).toHaveBeenCalledWith(['/agenda-calendario']);
+    }));
 
     for (const status of ['REALIZADA', 'PAGO', 'CANCELADA']) {
       it(`bloqueia consulta ${status}`, (done) => {
@@ -104,7 +135,7 @@ describe('ProntuarioGuard', () => {
         (guard.canActivate(rota('startconsulta/:consultaId', '1'), {} as any) as Observable<boolean>)
           .subscribe(ok => {
             expect(ok).toBeFalse();
-            expect(consultaApi.buscarAgendaMedico).not.toHaveBeenCalled();
+            expect(rascunhoApi.buscar).not.toHaveBeenCalled();
             expect(setConsulta).not.toHaveBeenCalled();
             done();
           });
@@ -123,7 +154,7 @@ describe('ProntuarioGuard', () => {
     it('estado em memoria de outra consulta e ignorado e a URL manda', (done) => {
       consulta$.next({ ...completa, id: 5 });
       consultaApi.buscarPorId.and.returnValue(of(completa as any));
-      consultaApi.buscarAgendaMedico.and.returnValue(of([{ id: 1 }]));
+      rascunhoApi.buscar.and.returnValue(of(null));
       (guard.canActivate(rota('startconsulta/:consultaId', '1'), {} as any) as Observable<boolean>)
         .subscribe(ok => {
           expect(ok).toBeTrue();
