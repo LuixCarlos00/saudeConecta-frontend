@@ -1,0 +1,10 @@
+/* Base de todos os gráficos filhos: estilos compartilhados e o host transparente para o grid. */
+@import '../shared-chart-styles.css';
+
+:host {
+  display: contents;
+}
+
+.grafico-item {
+  min-width: 0;
+}

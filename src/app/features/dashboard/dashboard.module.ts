@@ -21,6 +21,11 @@ import { NgChartsModule } from 'ng2-charts';
 import { DashboardRoutingModule } from './dashboard-routing.module';
 import { DashboardComponent } from 'src/app/features/dashboard/pages/dashboard/dashboard.component';
 import { GraficosPrincipaisDashboardComponent } from 'src/app/features/dashboard/pages/dashboard/graficos-principais-dashboard/graficos-principais-dashboard.component';
+import { GraficoConsultasComponent } from 'src/app/features/dashboard/pages/dashboard/graficos-principais-dashboard/grafico-consultas/grafico-consultas.component';
+import { GraficoAgendamentosComponent } from 'src/app/features/dashboard/pages/dashboard/graficos-principais-dashboard/grafico-agendamentos/grafico-agendamentos.component';
+import { GraficoSaldoComponent } from 'src/app/features/dashboard/pages/dashboard/graficos-principais-dashboard/grafico-saldo/grafico-saldo.component';
+import { GraficoCategoriaComponent } from 'src/app/features/dashboard/pages/dashboard/graficos-principais-dashboard/grafico-categoria/grafico-categoria.component';
+import { GraficoMediaTempoComponent } from 'src/app/features/dashboard/pages/dashboard/graficos-principais-dashboard/grafico-media-tempo/grafico-media-tempo.component';
 import { DashboardPlataformaComponent } from 'src/app/features/dashboard/pages/dashboard/plataforma/dashboard-plataforma.component';
 
 /**
@@ -31,6 +36,11 @@ import { DashboardPlataformaComponent } from 'src/app/features/dashboard/pages/d
   declarations: [
     DashboardComponent,
     GraficosPrincipaisDashboardComponent,
+    GraficoConsultasComponent,
+    GraficoAgendamentosComponent,
+    GraficoSaldoComponent,
+    GraficoCategoriaComponent,
+    GraficoMediaTempoComponent,
     DashboardPlataformaComponent,
   ],
   imports: [

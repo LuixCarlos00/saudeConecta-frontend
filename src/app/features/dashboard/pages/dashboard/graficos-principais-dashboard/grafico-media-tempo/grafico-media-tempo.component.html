@@ -1,0 +1,110 @@
+<div class="grafico-item grafico-container">
+  <!-- Filtros de Período Padronizados -->
+  <div class="chart-filters-wrapper">
+    <div class="filter-header">
+      <span class="filter-title">
+        <i class="fa-solid fa-filter"></i>
+        Média de Tempo - Filtrar por Período
+      </span>
+      <div class="quick-filters-inline">
+        <button
+                class="quick-filter-btn quick-filter-btn--small"
+                [class.quick-filter-btn--active]="diaSelecionadoMediaTempo === 1"
+                (click)="diaSelecionadoMediaTempo = 1; atualizarGraficoMediaTempo()">
+            7 dias
+        </button>
+        <button
+                class="quick-filter-btn quick-filter-btn--small"
+                [class.quick-filter-btn--active]="diaSelecionadoMediaTempo === 2"
+                (click)="diaSelecionadoMediaTempo = 2; atualizarGraficoMediaTempo()">
+            30 dias
+        </button>
+        <button
+                class="quick-filter-btn quick-filter-btn--small"
+                [class.quick-filter-btn--active]="diaSelecionadoMediaTempo === 3"
+                (click)="diaSelecionadoMediaTempo = 3; atualizarGraficoMediaTempo()">
+            60 dias
+        </button>
+      </div>
+    </div>
+
+    <!-- Período Personalizado Abaixo -->
+    <mat-form-field appearance="fill" class="custom-period-field" hideRequiredMarker>
+      <mat-label>
+        <i class="fa-solid fa-calendar-range"></i>
+      </mat-label>
+      <mat-date-range-input [rangePicker]="pickerMediaTempo" [formGroup]="IntervaloDeDatasMediaTempo">
+        <input matStartDate formControlName="start" placeholder="Data inicial">
+        <input matEndDate formControlName="end" placeholder="Data final" (dateChange)="atualizarGraficoPersonalizadoMediaTempo()">
+      </mat-date-range-input>
+      <mat-datepicker-toggle matIconSuffix [for]="pickerMediaTempo"></mat-datepicker-toggle>
+      <mat-date-range-picker #pickerMediaTempo></mat-date-range-picker>
+    </mat-form-field>
+  </div>
+
+  <!-- Cards de Estatísticas -->
+  <div class="stats-cards" *ngIf="temDadosMediaTempo() && !isLoadingMediaTempo">
+    <div class="stat-card stat-card--primary">
+      <div class="stat-card__icon">
+        <i class="fa fa-clock"></i>
+      </div>
+      <div class="stat-card__content">
+        <span class="stat-card__value">{{ formatarTempoMediaTempo(dadosMediaTempo.mediaTempo) }}</span>
+        <span class="stat-card__label">Tempo Médio</span>
+      </div>
+    </div>
+
+    <div class="stat-card stat-card--success">
+      <div class="stat-card__icon">
+        <i class="fa fa-calendar-check"></i>
+      </div>
+      <div class="stat-card__content">
+        <span class="stat-card__value">{{ dadosMediaTempo.totalConsultas }}</span>
+        <span class="stat-card__label">Total de Consultas</span>
+      </div>
+    </div>
+
+    <div class="stat-card stat-card--info">
+      <div class="stat-card__icon">
+        <i class="fa fa-arrow-down"></i>
+      </div>
+      <div class="stat-card__content">
+        <span class="stat-card__value">{{ formatarTempoMediaTempo(dadosMediaTempo.tempoMinimo) }}</span>
+        <span class="stat-card__label">Tempo Mínimo</span>
+      </div>
+    </div>
+
+    <div class="stat-card stat-card--danger">
+      <div class="stat-card__icon">
+        <i class="fa fa-arrow-up"></i>
+      </div>
+      <div class="stat-card__content">
+        <span class="stat-card__value">{{ formatarTempoMediaTempo(dadosMediaTempo.tempoMaximo) }}</span>
+        <span class="stat-card__label">Tempo Máximo</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading-state" *ngIf="isLoadingMediaTempo">
+    <i class="fa fa-spinner fa-spin"></i>
+    <p>Carregando dados...</p>
+  </div>
+
+  <!-- Error State -->
+  <div class="error-state" *ngIf="hasErrorMediaTempo && !isLoadingMediaTempo">
+    <i class="fa fa-exclamation-triangle"></i>
+    <p>{{ errorMessageMediaTempo }}</p>
+  </div>
+
+  <!-- Gráfico -->
+  <div class="grafico-wrapper" *ngIf="temDadosMediaTempo() && !isLoadingMediaTempo && !hasErrorMediaTempo">
+    <canvas #canvasMediaTempo></canvas>
+  </div>
+
+  <!-- Empty State -->
+  <div class="empty-state" *ngIf="!temDadosMediaTempo() && !isLoadingMediaTempo && !hasErrorMediaTempo">
+    <i class="fa fa-chart-bar"></i>
+    <p>Nenhuma consulta encontrada no período selecionado</p>
+  </div>
+</div>

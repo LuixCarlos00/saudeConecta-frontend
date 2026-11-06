@@ -1,0 +1,82 @@
+/* Filtros de período (botões 7/30/60 dias e seletor de datas), usados por consultas, agendamentos e tempo médio. */
+
+/* Filtros */
+.filter-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: nowrap;
+}
+
+.filter-title {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.filter-title i {
+  margin-right: 6px;
+}
+
+.quick-filters-inline {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  flex-wrap: nowrap;
+}
+
+.quick-filter-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: var(--btn-secondary-bg);
+  border: 1px solid var(--btn-secondary-border);
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.quick-filter-btn--small {
+  padding: 4px 10px;
+  font-size: 0.7rem;
+}
+
+.quick-filter-btn i {
+  font-size: 0.7rem;
+}
+
+.quick-filter-btn--small i {
+  font-size: 0.65rem;
+}
+
+.quick-filter-btn:hover {
+  background: var(--btn-secondary-hover);
+  color: var(--text-primary);
+}
+
+.quick-filter-btn--active {
+  background: var(--btn-primary-bg);
+  border-color: var(--btn-primary-bg);
+  color: var(--btn-primary-text);
+}
+
+.quick-filter-btn--active:hover {
+  background: var(--btn-primary-hover);
+}
+
+/* Date Range Picker */
+.date-range-picker {
+  margin-left: auto;
+}
+
+.custom-period-field {
+  width: 180px;
+}

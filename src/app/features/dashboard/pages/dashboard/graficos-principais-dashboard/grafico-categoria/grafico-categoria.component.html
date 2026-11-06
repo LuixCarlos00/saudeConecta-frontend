@@ -1,0 +1,27 @@
+<div class="grafico-item especialidade-container">
+  <!-- Resumo -->
+  <div class="especialidade-resumo" *ngIf="!isLoadingCategoria && !hasErrorCategoria && totalClinicos > 0">
+    <span class="especialidade-resumo-total">{{ totalClinicos }}</span>
+    <span class="especialidade-resumo-label">clínicos em {{ especialidadesCategoria.length }} especialidade{{ especialidadesCategoria.length !== 1 ? 's' : '' }}</span>
+  </div>
+
+  <!-- Loading -->
+  <div class="especialidade-status" *ngIf="isLoadingCategoria">
+    <i class="fa-solid fa-spinner fa-spin"></i> Carregando...
+  </div>
+
+  <!-- Erro -->
+  <div class="especialidade-status especialidade-status--erro" *ngIf="hasErrorCategoria && !isLoadingCategoria">
+    <i class="fa-solid fa-triangle-exclamation"></i> Não foi possível carregar os dados.
+  </div>
+
+  <!-- Gráfico de barras horizontais -->
+  <div class="especialidade-chart-wrapper" [style.display]="isLoadingCategoria || hasErrorCategoria || especialidadesCategoria.length === 0 ? 'none' : 'block'">
+    <canvas #canvasCategoriaMedicos></canvas>
+  </div>
+
+  <!-- Vazio -->
+  <div class="especialidade-status" *ngIf="!isLoadingCategoria && !hasErrorCategoria && especialidadesCategoria.length === 0">
+    <i class="fa-solid fa-user-doctor"></i> Nenhum clínico cadastrado
+  </div>
+</div>
