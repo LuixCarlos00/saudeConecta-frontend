@@ -35,7 +35,7 @@ import { CadastroPacienteComponent } from './agenda/pages/cadastro-paciente/cada
 import { CadastroSecretariaComponent } from './usuarios/pages/cadastro-secretaria/cadastro-secretaria.component';
 
 // Componentes de Configurações
-import { ConfiguracoesSistemaComponent } from './administrador/configuracoes/configuracoes-sistema.component';
+import { ConfiguracoesSistemaComponent } from './configuracoes/pages/configuracoes/configuracoes-sistema.component';
 
 // Componentes de Dashboard
 import { DashboardComponent } from './dashboard/pages/dashboard/dashboard.component';

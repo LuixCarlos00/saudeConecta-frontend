@@ -22,7 +22,7 @@ import { CadastroMedicoComponent } from './features/usuarios/pages/cadastro-medi
 import { CadastroAdmComponent } from './features/usuarios/pages/cadastro-adm/cadastro-adm.component';
 import { CadastroAdminOrgComponent } from './features/usuarios/pages/cadastro-admin-org/cadastro-admin-org.component';
 import { CadastroSecretariaComponent } from './features/usuarios/pages/cadastro-secretaria/cadastro-secretaria.component';
-import { ConfiguracoesSistemaComponent } from './features/administrador/configuracoes/configuracoes-sistema.component';
+import { ConfiguracoesSistemaComponent } from './features/configuracoes/pages/configuracoes/configuracoes-sistema.component';
 import { TrocaSenhaComponent } from './features/auth/pages/troca-senha/troca-senha.component';
 import { SuporteComponent } from './features/administrador/suporte/suporte.component';
 import { GestaoChamadosComponent } from './features/administrador/suporte/gestao-chamados/gestao-chamados.component';
