@@ -2,10 +2,10 @@ import { Injectable } from '@angular/core';
 import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router, UrlTree } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Observable, catchError, map, of, switchMap } from 'rxjs';
-import { ConsultaApiService } from 'src/app/services/api/consulta-api.service';
-import { RascunhoAtendimentoApiService } from 'src/app/services/api/rascunho-atendimento-api.service';
+import { ConsultaApiService } from 'src/app/core/data-access/consulta-api.service';
+import { RascunhoAtendimentoApiService } from 'src/app/core/data-access/rascunho-atendimento-api.service';
 import { extrairMensagemErro } from 'src/app/shared/utils/mensagem-erro-http';
-import { ProntuarioStateService } from 'src/app/services/state/prontuario-state.service';
+import { ProntuarioStateService } from 'src/app/core/data-access/prontuario-state.service';
 import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
 
 /** Status em que a consulta já foi encerrada e não aceita mais atendimento. */

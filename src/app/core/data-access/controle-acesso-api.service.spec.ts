@@ -3,7 +3,7 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 
 import { ControleAcessoApiService } from './controle-acesso-api.service';
-import { AuthService } from 'src/app/core/services/auth.service';
+import { AuthService } from 'src/app/core/auth/auth.service';
 
 describe('ControleAcessoApiService.podeGerenciarAdministrador', () => {
   function criarServico(aud: string): ControleAcessoApiService {

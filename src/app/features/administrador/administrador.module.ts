@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Routes } from '@angular/router';
 import { SharedModule } from 'src/app/shared/shared.module';
-import { AuthGuard, RoleGuard } from 'src/app/core/guards';
+import { AuthGuard, RoleGuard } from 'src/app/core/auth/guards';
 import { Role } from 'src/app/shared/constants/roles.constant';
 import { FilterPipe } from 'src/app/shared/pipes/filter.pipe';
 

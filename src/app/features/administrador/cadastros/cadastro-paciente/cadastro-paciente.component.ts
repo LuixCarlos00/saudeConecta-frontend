@@ -5,9 +5,9 @@ import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service
 import { Router } from '@angular/router';
 import { MatDialogRef } from '@angular/material/dialog';
 import { ufOptions } from 'src/app/util/variados/options/options';
-import { PacienteApiService } from 'src/app/services/api/paciente-api.service';
-import { FiltroStateService } from 'src/app/services/state/filtro-state.service';
-import { CepApiService } from 'src/app/services/api/cep-api.service';
+import { PacienteApiService } from 'src/app/core/data-access/paciente-api.service';
+import { FiltroStateService } from 'src/app/core/data-access/filtro-state.service';
+import { CepApiService } from 'src/app/core/data-access/cep-api.service';
 import { cpfValidator } from 'src/app/util/validators/cpf-form.validator';
 import { CpfValidator } from 'src/app/util/validators/cpf.validator';
 import { getFieldError } from 'src/app/util/validators/field-errors';

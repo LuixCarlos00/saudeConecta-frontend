@@ -1,9 +1,9 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { AuthGuard, RoleGuard } from './core/guards';
+import { AuthGuard, RoleGuard } from './core/auth/guards';
 import { ProntuarioGuard } from './core/guards/prontuario.guard';
 import { Role } from './shared/constants/roles.constant';
-import { NotFoundComponent } from './util/Erros/not-found/not-found.component';
+import { NotFoundComponent } from './core/layout/not-found/not-found.component';
 
 // ========== FEATURES PÚBLICAS ==========
 import { LandingPageComponent } from './features/publico/landing-page/landing-page.component';

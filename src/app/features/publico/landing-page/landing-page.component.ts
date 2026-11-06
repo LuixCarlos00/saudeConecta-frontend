@@ -1,6 +1,6 @@
 import { Component, OnInit, HostListener } from '@angular/core';
 import { Router } from '@angular/router';
-import { PlanoApiService } from 'src/app/services/api/plano-api.service';
+import { PlanoApiService } from 'src/app/core/data-access/plano-api.service';
 import { PlanoAssinatura } from 'src/app/util/variados/interfaces/planos/PlanoAssinatura';
 import { PlanoDescricaoParserService } from 'src/app/services/plano-descricao-parser.service';
 

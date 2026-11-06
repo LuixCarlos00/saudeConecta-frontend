@@ -4,8 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 
-import { ProntuarioApiService } from 'src/app/services/api/prontuario-api.service';
-import { ProntuarioStateService } from 'src/app/services/state/prontuario-state.service';
+import { ProntuarioApiService } from 'src/app/core/data-access/prontuario-api.service';
+import { ProntuarioStateService } from 'src/app/core/data-access/prontuario-state.service';
 import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
 import { Consultav2 } from '../../../util/variados/interfaces/consulta/consultav2';
 
@@ -18,7 +18,7 @@ import { AbaQuestionarioSaudeComponent } from './aba-questionario-saude/aba-ques
 import { formatarDataLocal } from '../../../shared/utils/data-local';
 import { extrairMensagemErro } from '../../../shared/utils/mensagem-erro-http';
 import { EdicaoProntuarioService } from '../edicao-prontuario.service';
-import { RascunhoAtendimentoApiService } from 'src/app/services/api/rascunho-atendimento-api.service';
+import { RascunhoAtendimentoApiService } from 'src/app/core/data-access/rascunho-atendimento-api.service';
 import { ConfigAutosave, RascunhoAutosaveService } from 'src/app/services/state/rascunho-autosave.service';
 import { DadosRascunho, RascunhoAtendimentoResponse } from 'src/app/util/variados/interfaces/Prontuario/RascunhoAtendimento';
 

@@ -4,11 +4,11 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 
-import { ProntuarioStateService } from 'src/app/services/state/prontuario-state.service';
+import { ProntuarioStateService } from 'src/app/core/data-access/prontuario-state.service';
 import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
 import { Consultav2 } from '../../../util/variados/interfaces/consulta/consultav2';
 import { ProntuarioDentistaRequest } from '../../../util/variados/interfaces/Prontuario/ProntuarioDentista';
-import { ProntuarioDentistaApiService } from 'src/app/services/api/prontuario-dentista-api.service';
+import { ProntuarioDentistaApiService } from 'src/app/core/data-access/prontuario-dentista-api.service';
 
 import { AbaIdentificacaoComponent } from './aba-identificacao/aba-identificacao.component';
 import { AbaExameObjetivoComponent } from './aba-exame-objetivo/aba-exame-objetivo.component';
@@ -19,7 +19,7 @@ import { AbaHistoricoComponent } from './aba-historico/aba-historico.component';
 import { formatarDataLocal } from '../../../shared/utils/data-local';
 import { extrairMensagemErro } from '../../../shared/utils/mensagem-erro-http';
 import { EdicaoProntuarioService } from '../edicao-prontuario.service';
-import { RascunhoAtendimentoApiService } from 'src/app/services/api/rascunho-atendimento-api.service';
+import { RascunhoAtendimentoApiService } from 'src/app/core/data-access/rascunho-atendimento-api.service';
 import { ConfigAutosave, RascunhoAutosaveService } from 'src/app/services/state/rascunho-autosave.service';
 import { DadosRascunho, RascunhoAtendimentoResponse } from 'src/app/util/variados/interfaces/Prontuario/RascunhoAtendimento';
 

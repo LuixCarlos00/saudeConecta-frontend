@@ -1,13 +1,13 @@
 import { Component, OnInit, OnDestroy, Optional, ViewChild, ElementRef } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { CepApiService } from 'src/app/services/api/cep-api.service';
-import { PlanoApiService } from 'src/app/services/api/plano-api.service';
+import { CepApiService } from 'src/app/core/data-access/cep-api.service';
+import { PlanoApiService } from 'src/app/core/data-access/plano-api.service';
 import { Router } from '@angular/router';
 import { MatDialogRef } from '@angular/material/dialog';
 import { Subscription } from 'rxjs';
 import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
-import { AdministradorApiService } from 'src/app/services/api/administrador-api.service';
-import { FiltroStateService } from 'src/app/services/state/filtro-state.service';
+import { AdministradorApiService } from 'src/app/core/data-access/administrador-api.service';
+import { FiltroStateService } from 'src/app/core/data-access/filtro-state.service';
 import { CpfValidator } from 'src/app/util/validators/cpf.validator';
 import { cpfValidator } from 'src/app/util/validators/cpf-form.validator';
 import { extrairMensagemErro } from '../../../../shared/utils/mensagem-erro-http';

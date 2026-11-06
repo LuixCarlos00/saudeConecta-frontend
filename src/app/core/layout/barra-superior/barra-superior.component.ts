@@ -1,12 +1,12 @@
 import { Component, ElementRef, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { AuthService } from 'src/app/core/services/auth.service';
-import { ControleAcessoApiService } from 'src/app/services/api/controle-acesso-api.service';
-import { AssinaturaApiService } from 'src/app/services/api/assinatura-api.service';
+import { AuthService } from 'src/app/core/auth/auth.service';
+import { ControleAcessoApiService } from 'src/app/core/data-access/controle-acesso-api.service';
+import { AssinaturaApiService } from 'src/app/core/data-access/assinatura-api.service';
 import { AssinaturaTenant } from 'src/app/util/variados/interfaces/planos/PlanoAssinatura';
 import { diasCalendarioAte } from 'src/app/shared/utils/data-local';
-import { Usuario } from '../interfaces/usuario/usuario';
+import { Usuario } from 'src/app/util/variados/interfaces/usuario/usuario';
 
 /**
  * Barra superior fixa, exibida em todas as rotas da área logada.

@@ -2,7 +2,7 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { jsPDF } from 'jspdf';
 
-import { ConsultaApiService } from 'src/app/services/api/consulta-api.service';
+import { ConsultaApiService } from 'src/app/core/data-access/consulta-api.service';
 import { Consultav2 } from 'src/app/util/variados/interfaces/consulta/consultav2';
 import { HistoricoCompletoPacienteResponse } from 'src/app/util/variados/interfaces/historico/historico-completo-paciente-response.interface';
 import { formatarDataBr, formatarDataLocal } from '../../../../shared/utils/data-local';

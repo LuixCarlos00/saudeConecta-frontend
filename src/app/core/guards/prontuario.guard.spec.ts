@@ -2,9 +2,9 @@ import { fakeAsync, flushMicrotasks, TestBed } from '@angular/core/testing';
 import { ActivatedRouteSnapshot, convertToParamMap, Router, UrlTree } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
-import { ConsultaApiService } from 'src/app/services/api/consulta-api.service';
-import { RascunhoAtendimentoApiService } from 'src/app/services/api/rascunho-atendimento-api.service';
-import { ProntuarioStateService } from 'src/app/services/state/prontuario-state.service';
+import { ConsultaApiService } from 'src/app/core/data-access/consulta-api.service';
+import { RascunhoAtendimentoApiService } from 'src/app/core/data-access/rascunho-atendimento-api.service';
+import { ProntuarioStateService } from 'src/app/core/data-access/prontuario-state.service';
 import Swal from 'sweetalert2';
 import { ProntuarioGuard } from './prontuario.guard';
 

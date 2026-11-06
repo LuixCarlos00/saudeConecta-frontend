@@ -5,16 +5,16 @@ import {
   transition,
   trigger,
 } from '@angular/animations';
-import { AdministradorApiService } from 'src/app/services/api/administrador-api.service';
+import { AdministradorApiService } from 'src/app/core/data-access/administrador-api.service';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { el } from 'date-fns/locale';
-import { AuthService } from 'src/app/core/services/auth.service';
+import { AuthService } from 'src/app/core/auth/auth.service';
 import { Adiministrador } from 'src/app/util/variados/interfaces/administrado/adiministrador';
 import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
 import { map, take, filter } from 'rxjs';
 import { Usuario } from 'src/app/util/variados/interfaces/usuario/usuario';
-import { UsuarioApiService } from 'src/app/services/api/usuario-api.service';
+import { UsuarioApiService } from 'src/app/core/data-access/usuario-api.service';
 
 @Component({
   selector: 'app-troca-senha',

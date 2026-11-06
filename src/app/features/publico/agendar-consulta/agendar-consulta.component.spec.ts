@@ -4,7 +4,7 @@ import { of, throwError } from 'rxjs';
 import Swal from 'sweetalert2';
 
 import { AgendarConsultaComponent } from './agendar-consulta.component';
-import { ConsultaApiService } from 'src/app/services/api/consulta-api.service';
+import { ConsultaApiService } from 'src/app/core/data-access/consulta-api.service';
 import {
   IMPORTS_TESTE_PADRAO,
   PROVIDERS_TESTE_PADRAO,

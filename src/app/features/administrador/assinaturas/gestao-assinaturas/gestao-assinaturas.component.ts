@@ -12,7 +12,7 @@ import {
   StatusAssinaturaFiltro,
   TipoPlanoFiltro
 } from 'src/app/services/api/assinatura-admin-api.service';
-import { AssinaturaApiService } from 'src/app/services/api/assinatura-api.service';
+import { AssinaturaApiService } from 'src/app/core/data-access/assinatura-api.service';
 import { formatarDataBr } from 'src/app/shared/utils/data-local';
 import { mensagemErroAssinaturaAdmin } from 'src/app/shared/utils/mensagem-erro-http';
 import { ModalAssociarPlanoComponent } from '../../gerenciamento-usuarios/tabela-todos-usuarios/modal-associar-plano/modal-associar-plano.component';

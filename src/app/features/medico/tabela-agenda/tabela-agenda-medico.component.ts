@@ -1,10 +1,10 @@
 import { filter, take } from 'rxjs';
 import { Consultav2 } from 'src/app/util/variados/interfaces/consulta/consultav2';
-import { ConsultaApiService } from 'src/app/services/api/consulta-api.service';
-import { RascunhoAtendimentoApiService } from 'src/app/services/api/rascunho-atendimento-api.service';
-import { ProntuarioStateService } from 'src/app/services/state/prontuario-state.service';
+import { ConsultaApiService } from 'src/app/core/data-access/consulta-api.service';
+import { RascunhoAtendimentoApiService } from 'src/app/core/data-access/rascunho-atendimento-api.service';
+import { ProntuarioStateService } from 'src/app/core/data-access/prontuario-state.service';
 import { Usuario } from 'src/app/util/variados/interfaces/usuario/usuario';
-import { AuthService } from 'src/app/core/services/auth.service';
+import { AuthService } from 'src/app/core/auth/auth.service';
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { PageEvent } from '@angular/material/paginator';
 import { MatDialog } from '@angular/material/dialog';

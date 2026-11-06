@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { PlanoApiService } from 'src/app/services/api/plano-api.service';
+import { PlanoApiService } from 'src/app/core/data-access/plano-api.service';
 import { PlanoAssinatura, PlanoAssinaturaRequest } from 'src/app/util/variados/interfaces/planos/PlanoAssinatura';
 import { PlanoDescricaoParserService } from 'src/app/services/plano-descricao-parser.service';
 import { ModalValoresAdicionaisComponent } from './modal-valores-adicionais/modal-valores-adicionais.component';

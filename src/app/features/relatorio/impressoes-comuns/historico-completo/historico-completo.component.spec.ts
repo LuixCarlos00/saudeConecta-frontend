@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { of } from 'rxjs';
 
-import { ConsultaApiService } from 'src/app/services/api/consulta-api.service';
+import { ConsultaApiService } from 'src/app/core/data-access/consulta-api.service';
 import { HistoricoCompletoComponent } from './historico-completo.component';
 import {
   IMPORTS_TESTE_PADRAO,

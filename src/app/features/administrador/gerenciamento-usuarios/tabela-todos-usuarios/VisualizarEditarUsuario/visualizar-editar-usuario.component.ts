@@ -5,14 +5,14 @@ import { Observable, Subject, takeUntil } from 'rxjs';
 import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
 import { extrairMensagemErro } from 'src/app/shared/utils/mensagem-erro-http';
 
-import { PacienteApiService } from 'src/app/services/api/paciente-api.service';
-import { ProfissionalApiService } from 'src/app/services/api/profissional-api.service';
-import { AdministradorApiService } from 'src/app/services/api/administrador-api.service';
+import { PacienteApiService } from 'src/app/core/data-access/paciente-api.service';
+import { ProfissionalApiService } from 'src/app/core/data-access/profissional-api.service';
+import { AdministradorApiService } from 'src/app/core/data-access/administrador-api.service';
 import { UsuarioUnificado } from '../tabela-todos-usuarios.component';
 import { SecretariaApiService } from 'src/app/services/api/secretaria-api.service';
 import { ufOptions } from 'src/app/util/variados/options/options';
-import { EspecialidadeApiService, EspecialidadeResponse } from 'src/app/services/api/especialidade-api.service';
-import { ControleAcessoApiService } from 'src/app/services/api/controle-acesso-api.service';
+import { EspecialidadeApiService, EspecialidadeResponse } from 'src/app/core/data-access/especialidade-api.service';
+import { ControleAcessoApiService } from 'src/app/core/data-access/controle-acesso-api.service';
 import { dataNascimentoValidator } from 'src/app/util/validators/form-validators';
 
 export interface DialogData {

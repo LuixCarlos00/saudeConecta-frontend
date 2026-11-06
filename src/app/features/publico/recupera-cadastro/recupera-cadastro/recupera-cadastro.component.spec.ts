@@ -5,7 +5,7 @@ import { DebugElement } from '@angular/core';
 
 import { of } from 'rxjs';
 import Swal from 'sweetalert2';
-import { AuthService } from 'src/app/core/services/auth.service';
+import { AuthService } from 'src/app/core/auth/auth.service';
 import { RecuperaCadastroComponent } from './recupera-cadastro.component';
 import { IMPORTS_TESTE_PADRAO, PROVIDERS_TESTE_PADRAO, SCHEMAS_TESTE_PADRAO } from '../../../../testing/configuracao-teste';
 

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { PlanoApiService } from 'src/app/services/api/plano-api.service';
-import { AssinaturaApiService } from 'src/app/services/api/assinatura-api.service';
+import { PlanoApiService } from 'src/app/core/data-access/plano-api.service';
+import { AssinaturaApiService } from 'src/app/core/data-access/assinatura-api.service';
 import { PlanoAssinatura, AssinaturaTenant } from 'src/app/util/variados/interfaces/planos/PlanoAssinatura';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { mensagemErroTrocaPlano } from 'src/app/shared/utils/mensagem-erro-http';

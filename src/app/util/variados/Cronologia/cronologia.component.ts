@@ -3,12 +3,12 @@ import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
 
-import { ConsultaApiService } from 'src/app/services/api/consulta-api.service';
-import { ProfissionalApiService } from 'src/app/services/api/profissional-api.service';
-import { EspecialidadeApiService, EspecialidadeResponse } from 'src/app/services/api/especialidade-api.service';
+import { ConsultaApiService } from 'src/app/core/data-access/consulta-api.service';
+import { ProfissionalApiService } from 'src/app/core/data-access/profissional-api.service';
+import { EspecialidadeApiService, EspecialidadeResponse } from 'src/app/core/data-access/especialidade-api.service';
 import { ConsultaStateService } from 'src/app/services/state/consulta-state.service';
 import { Profissional } from '../interfaces/medico/Profissional';
-import { ControleAcessoApiService } from 'src/app/services/api/controle-acesso-api.service';
+import { ControleAcessoApiService } from 'src/app/core/data-access/controle-acesso-api.service';
 import { formatarDataLocal } from '../../../shared/utils/data-local';
 
 interface FiltrosPesquisa {

@@ -4,9 +4,9 @@ import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/fo
 import { Subject, takeUntil } from 'rxjs';
 
 // Core services
-import { AuthService } from 'src/app/core/services/auth.service';
+import { AuthService } from 'src/app/core/auth/auth.service';
 import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
-import { AssinaturaApiService } from 'src/app/services/api/assinatura-api.service';
+import { AssinaturaApiService } from 'src/app/core/data-access/assinatura-api.service';
 
 // Constants
 import { ALLOWED_ROLES, Role } from 'src/app/shared/constants/roles.constant';

@@ -1,14 +1,14 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subject, asapScheduler, observeOn, takeUntil } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
-import { FiltroStateService } from 'src/app/services/state/filtro-state.service';
+import { FiltroStateService } from 'src/app/core/data-access/filtro-state.service';
 import { CadastroMedicoComponent } from '../cadastros/cadastro-medico/cadastro-medico.component';
 import { CadastroPacienteComponent } from '../cadastros/cadastro-paciente/cadastro-paciente.component';
 import { CadastroSecretariaComponent } from '../cadastros/cadastro-secretaria/cadastro-secretaria.component';
 import { CadastroAdmComponent } from '../cadastros/cadastro-adm/cadastro-adm.component';
 import { CadastroAdminOrgComponent } from '../cadastros/cadastro-admin-org/cadastro-admin-org.component';
-import { AuthService } from 'src/app/core/services/auth.service';
-import { AssinaturaApiService } from 'src/app/services/api/assinatura-api.service';
+import { AuthService } from 'src/app/core/auth/auth.service';
+import { AssinaturaApiService } from 'src/app/core/data-access/assinatura-api.service';
 import { LimitesPlano } from 'src/app/util/variados/interfaces/planos/PlanoAssinatura';
 import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
 

@@ -7,7 +7,7 @@ import {
   DashboardPlataforma,
   PlataformaDashboardApiService
 } from 'src/app/services/api/plataforma-dashboard-api.service';
-import { ThemeService } from 'src/app/services/theme/theme.service';
+import { ThemeService } from 'src/app/core/theme/theme.service';
 import { extrairMensagemErro } from 'src/app/shared/utils/mensagem-erro-http';
 import { formatarDataBr } from 'src/app/shared/utils/data-local';
 import {

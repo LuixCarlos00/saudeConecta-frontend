@@ -4,11 +4,11 @@ import { of, Subject, throwError } from 'rxjs';
 import Swal from 'sweetalert2';
 
 import { EdicaoProntuarioService } from '../edicao-prontuario.service';
-import { AuthService } from 'src/app/core/services/auth.service';
+import { AuthService } from 'src/app/core/auth/auth.service';
 import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
-import { ProntuarioApiService } from 'src/app/services/api/prontuario-api.service';
-import { RascunhoAtendimentoApiService } from 'src/app/services/api/rascunho-atendimento-api.service';
-import { ProntuarioStateService } from 'src/app/services/state/prontuario-state.service';
+import { ProntuarioApiService } from 'src/app/core/data-access/prontuario-api.service';
+import { RascunhoAtendimentoApiService } from 'src/app/core/data-access/rascunho-atendimento-api.service';
+import { ProntuarioStateService } from 'src/app/core/data-access/prontuario-state.service';
 import { RascunhoAtendimentoResponse } from 'src/app/util/variados/interfaces/Prontuario/RascunhoAtendimento';
 import { IMPORTS_TESTE_PADRAO, SCHEMAS_TESTE_PADRAO } from '../../../testing/configuracao-teste';
 import { ProntuarioMedicoComponent } from './prontuario-medico.component';

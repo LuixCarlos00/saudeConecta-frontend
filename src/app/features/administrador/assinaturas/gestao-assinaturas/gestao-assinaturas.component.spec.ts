@@ -4,7 +4,7 @@ import { of, Subject, throwError } from 'rxjs';
 
 import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
 import { AssinaturaAdminApiService, AssinaturaResumoAdmin } from 'src/app/services/api/assinatura-admin-api.service';
-import { AssinaturaApiService } from 'src/app/services/api/assinatura-api.service';
+import { AssinaturaApiService } from 'src/app/core/data-access/assinatura-api.service';
 import { IMPORTS_TESTE_PADRAO, SCHEMAS_TESTE_PADRAO } from 'src/app/testing/configuracao-teste';
 import { ModalAssociarPlanoComponent } from '../../gerenciamento-usuarios/tabela-todos-usuarios/modal-associar-plano/modal-associar-plano.component';
 import { GestaoAssinaturasComponent } from './gestao-assinaturas.component';

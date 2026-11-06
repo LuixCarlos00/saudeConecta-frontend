@@ -1,7 +1,7 @@
 import { Component, Input, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Subject, takeUntil } from 'rxjs';
-import { ConsultaApiService } from 'src/app/services/api/consulta-api.service';
+import { ConsultaApiService } from 'src/app/core/data-access/consulta-api.service';
 import { TipoProntuario } from '../../consulta-edicao';
 import { EdicaoProntuarioService } from '../../edicao-prontuario.service';
 import { HistoricoCompletoPacienteResponse } from 'src/app/util/variados/interfaces/historico/historico-completo-paciente-response.interface';

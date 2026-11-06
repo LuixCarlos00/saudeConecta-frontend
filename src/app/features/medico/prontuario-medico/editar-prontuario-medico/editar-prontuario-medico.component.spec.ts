@@ -3,7 +3,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { delay, of, throwError } from 'rxjs';
 
 import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
-import { ProntuarioApiService } from 'src/app/services/api/prontuario-api.service';
+import { ProntuarioApiService } from 'src/app/core/data-access/prontuario-api.service';
 import { IMPORTS_TESTE_PADRAO, SCHEMAS_TESTE_PADRAO } from '../../../../testing/configuracao-teste';
 import { AbaCodigosTussCidMedicoComponent } from '../aba-codigos-tuss-cid-medico/aba-codigos-tuss-cid-medico.component';
 import { AbaExameObjetivoMedicoComponent } from '../aba-exame-objetivo-medico/aba-exame-objetivo-medico.component';

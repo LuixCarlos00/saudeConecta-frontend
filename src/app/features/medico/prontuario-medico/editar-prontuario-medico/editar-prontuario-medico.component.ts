@@ -5,7 +5,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Subject, takeUntil } from 'rxjs';
 import { extrairMensagemErro } from 'src/app/shared/utils/mensagem-erro-http';
 
-import { ProntuarioApiService } from 'src/app/services/api/prontuario-api.service';
+import { ProntuarioApiService } from 'src/app/core/data-access/prontuario-api.service';
 import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
 import { ConsultaEdicao } from '../../consulta-edicao';
 

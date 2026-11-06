@@ -1,9 +1,9 @@
-import { ControleAcessoApiService } from 'src/app/services/api/controle-acesso-api.service';
+import { ControleAcessoApiService } from 'src/app/core/data-access/controle-acesso-api.service';
 import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
-import { Usuario } from '../interfaces/usuario/usuario';
-import { AuthService } from 'src/app/core/services/auth.service';
-import { ThemeService } from 'src/app/services/theme/theme.service';
+import { Usuario } from 'src/app/util/variados/interfaces/usuario/usuario';
+import { AuthService } from 'src/app/core/auth/auth.service';
+import { ThemeService } from 'src/app/core/theme/theme.service';
 import { Subscription, filter } from 'rxjs';
 
 @Component({

@@ -1,8 +1,8 @@
 import { TestBed } from '@angular/core/testing';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { of, throwError } from 'rxjs';
-import { AssinaturaApiService } from 'src/app/services/api/assinatura-api.service';
-import { PlanoApiService } from 'src/app/services/api/plano-api.service';
+import { AssinaturaApiService } from 'src/app/core/data-access/assinatura-api.service';
+import { PlanoApiService } from 'src/app/core/data-access/plano-api.service';
 import { MENSAGEM_MP_VALOR_NAO_ATUALIZADO, MENSAGEM_PREAPPROVAL_EM_ANALISE_CLIENTE } from 'src/app/shared/utils/mensagem-erro-http';
 import { ListaPlanosComponent } from './lista-planos.component';
 

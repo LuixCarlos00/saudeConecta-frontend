@@ -1,8 +1,8 @@
 import { Component, Input, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Subject, takeUntil } from 'rxjs';
-import { ProntuarioApiService } from 'src/app/services/api/prontuario-api.service';
-import { ProntuarioDentistaApiService } from 'src/app/services/api/prontuario-dentista-api.service';
+import { ProntuarioApiService } from 'src/app/core/data-access/prontuario-api.service';
+import { ProntuarioDentistaApiService } from 'src/app/core/data-access/prontuario-dentista-api.service';
 
 @Component({
   selector: 'app-aba-questionario-saude',

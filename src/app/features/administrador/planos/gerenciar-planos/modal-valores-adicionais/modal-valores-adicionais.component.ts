@@ -2,7 +2,7 @@ import { Component, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { PlanoAssinatura } from 'src/app/util/variados/interfaces/planos/PlanoAssinatura';
 import { PlanoAssinaturaRequest } from 'src/app/util/variados/interfaces/planos/PlanoAssinatura';
-import { PlanoApiService } from 'src/app/services/api/plano-api.service';
+import { PlanoApiService } from 'src/app/core/data-access/plano-api.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({

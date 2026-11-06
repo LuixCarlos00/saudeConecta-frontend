@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Subject, Subscription, firstValueFrom, race, timer } from 'rxjs';
 import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
 
-import { RascunhoAtendimentoApiService } from 'src/app/services/api/rascunho-atendimento-api.service';
+import { RascunhoAtendimentoApiService } from 'src/app/core/data-access/rascunho-atendimento-api.service';
 import { extrairMensagemErro } from 'src/app/shared/utils/mensagem-erro-http';
 import {
   DadosRascunho,

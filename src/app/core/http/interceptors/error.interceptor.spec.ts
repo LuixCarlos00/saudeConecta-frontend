@@ -4,7 +4,7 @@ import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import Swal from 'sweetalert2';
-import { AuthService } from '../services/auth.service';
+import { AuthService } from '../../auth/auth.service';
 import { ErrorInterceptor } from './error.interceptor';
 
 describe('ErrorInterceptor (401)', () => {

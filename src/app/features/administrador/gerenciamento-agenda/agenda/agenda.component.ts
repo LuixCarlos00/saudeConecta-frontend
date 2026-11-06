@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subject, takeUntil, Observable } from 'rxjs';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { ConsultaApiService } from 'src/app/services/api/consulta-api.service';
+import { ConsultaApiService } from 'src/app/core/data-access/consulta-api.service';
 import { ConsultaStateService } from 'src/app/services/state/consulta-state.service';
 import { MatDialog } from '@angular/material/dialog';
 import { CronologiaComponent } from 'src/app/util/variados/Cronologia/cronologia.component';
@@ -11,10 +11,10 @@ import { EditarConsultasComponent } from './Editar-Consultas/Editar-Consultas.co
 import { ObservacoesComponent } from './Observacoes/Observacoes.component';
 import { Consultav2 } from 'src/app/util/variados/interfaces/consulta/consultav2';
 import { Usuario } from 'src/app/util/variados/interfaces/usuario/usuario';
-import { AuthService } from 'src/app/core/services/auth.service';
-import { ProntuarioDentistaApiService } from 'src/app/services/api/prontuario-dentista-api.service';
+import { AuthService } from 'src/app/core/auth/auth.service';
+import { ProntuarioDentistaApiService } from 'src/app/core/data-access/prontuario-dentista-api.service';
 import { AcoesConsultaService } from '../acoes-consulta.service';
-import { PlanejamentoTerapeuticoApiService } from 'src/app/services/api/planejamento-terapeutico-api.service';
+import { PlanejamentoTerapeuticoApiService } from 'src/app/core/data-access/planejamento-terapeutico-api.service';
 import { RelatorioService } from 'src/app/features/relatorio/relatorio.service';
 import { formatarDataLocal } from '../../../../shared/utils/data-local';
     

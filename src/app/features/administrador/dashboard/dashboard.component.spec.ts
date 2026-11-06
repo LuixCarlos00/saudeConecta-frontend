@@ -3,16 +3,16 @@ import { Component } from '@angular/core';
 import { By } from '@angular/platform-browser';
 import { EMPTY, of } from 'rxjs';
 import { Router } from '@angular/router';
-import { AuthService } from 'src/app/core/services/auth.service';
+import { AuthService } from 'src/app/core/auth/auth.service';
 
 import { DashboardComponent } from './dashboard.component';
-import { ControleAcessoApiService } from 'src/app/services/api/controle-acesso-api.service';
-import { DashboardApiService } from 'src/app/services/api/dashboard-api.service';
-import { AssinaturaApiService } from 'src/app/services/api/assinatura-api.service';
-import { ConsultaApiService } from 'src/app/services/api/consulta-api.service';
-import { ProfissionalApiService } from 'src/app/services/api/profissional-api.service';
-import { ConfiguracaoCardService } from 'src/app/services/api/configuracao-card.service';
-import { ConfiguracaoGraficoDashboardService } from 'src/app/core/services/configuracao-grafico-dashboard.service';
+import { ControleAcessoApiService } from 'src/app/core/data-access/controle-acesso-api.service';
+import { DashboardApiService } from 'src/app/core/data-access/dashboard-api.service';
+import { AssinaturaApiService } from 'src/app/core/data-access/assinatura-api.service';
+import { ConsultaApiService } from 'src/app/core/data-access/consulta-api.service';
+import { ProfissionalApiService } from 'src/app/core/data-access/profissional-api.service';
+import { ConfiguracaoCardService } from 'src/app/core/data-access/configuracao-card.service';
+import { ConfiguracaoGraficoDashboardService } from 'src/app/core/data-access/configuracao-grafico-dashboard.service';
 import { IMPORTS_TESTE_PADRAO, SCHEMAS_TESTE_PADRAO } from '../../../testing/configuracao-teste';
 
 @Component({ selector: 'app-dashboard-plataforma', template: '' })

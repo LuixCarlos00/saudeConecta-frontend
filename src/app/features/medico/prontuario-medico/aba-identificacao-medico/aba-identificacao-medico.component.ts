@@ -2,7 +2,7 @@ import { Component, Input, OnChanges, SimpleChanges, OnDestroy } from '@angular/
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Subject, takeUntil } from 'rxjs';
-import { PacienteApiService } from 'src/app/services/api/paciente-api.service';
+import { PacienteApiService } from 'src/app/core/data-access/paciente-api.service';
 
 @Component({
   selector: 'app-aba-identificacao-medico',

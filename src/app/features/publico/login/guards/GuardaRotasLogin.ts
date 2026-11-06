@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { ActivatedRouteSnapshot, Router, RouterStateSnapshot, UrlTree } from "@angular/router";
-import { AuthService } from "src/app/core/services/auth.service";
+import { AuthService } from "src/app/core/auth/auth.service";
 
 /**
  * Guard para a página de LOGIN

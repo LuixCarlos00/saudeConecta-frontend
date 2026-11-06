@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 
-import { ConsultaApiService } from 'src/app/services/api/consulta-api.service';
+import { ConsultaApiService } from 'src/app/core/data-access/consulta-api.service';
 import { IALocalService } from 'src/app/services/ia-local.service';
 import { EdicaoProntuarioService } from '../../edicao-prontuario.service';
 import { AbaHistoricoMedicoComponent } from './aba-historico-medico.component';

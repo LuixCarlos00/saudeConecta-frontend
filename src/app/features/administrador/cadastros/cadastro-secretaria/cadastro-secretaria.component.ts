@@ -5,7 +5,7 @@ import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service
 import { Router } from '@angular/router';
 import { MatDialogRef } from '@angular/material/dialog';
 import { SecretariaApiService } from 'src/app/services/api/secretaria-api.service';
-import { FiltroStateService } from 'src/app/services/state/filtro-state.service';
+import { FiltroStateService } from 'src/app/core/data-access/filtro-state.service';
 import { cpfValidator } from 'src/app/util/validators/cpf-form.validator';
 import { CpfValidator } from 'src/app/util/validators/cpf.validator';
 import { getFieldError } from 'src/app/util/validators/field-errors';

@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { ThemeService, ThemeType, ThemeConfig, Theme } from 'src/app/services/theme/theme.service';
-import { ConfiguracaoGraficoDashboardService } from 'src/app/core/services/configuracao-grafico-dashboard.service';
+import { ThemeService, ThemeType, ThemeConfig, Theme } from 'src/app/core/theme/theme.service';
+import { ConfiguracaoGraficoDashboardService } from 'src/app/core/data-access/configuracao-grafico-dashboard.service';
 import {
   ConfiguracaoGraficoDashboard,
   AtualizarConfiguracaoGraficoRequest
@@ -9,10 +9,10 @@ import {
   ConfiguracaoCardService,
   ConfiguracaoCardResponse,
   AtualizarConfiguracaoCardRequest
-} from 'src/app/services/api/configuracao-card.service';
-import { ProcedimentoPadraoApiService } from 'src/app/services/api/procedimento-padrao-api.service';
-import { UsuarioApiService } from 'src/app/services/api/usuario-api.service';
-import { AuthService } from 'src/app/core/services/auth.service';
+} from 'src/app/core/data-access/configuracao-card.service';
+import { ProcedimentoPadraoApiService } from 'src/app/core/data-access/procedimento-padrao-api.service';
+import { UsuarioApiService } from 'src/app/core/data-access/usuario-api.service';
+import { AuthService } from 'src/app/core/auth/auth.service';
 import { Subscription } from 'rxjs';
 import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
 

@@ -1,8 +1,8 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { PlanoApiService } from 'src/app/services/api/plano-api.service';
-import { AssinaturaApiService } from 'src/app/services/api/assinatura-api.service';
+import { PlanoApiService } from 'src/app/core/data-access/plano-api.service';
+import { AssinaturaApiService } from 'src/app/core/data-access/assinatura-api.service';
 import { CobrancaApiService } from 'src/app/services/api/cobranca-api.service';
 import { PlanoAssinatura, AssinaturaTenant, CobrancaTenant, CustomizarPlanoTenantRequest } from 'src/app/util/variados/interfaces/planos/PlanoAssinatura';
 import { forkJoin } from 'rxjs';

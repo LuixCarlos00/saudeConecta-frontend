@@ -4,7 +4,7 @@ import { MatTableModule } from '@angular/material/table';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
 import { environment } from 'src/environments/environment';
-import { ProntuarioStateService } from 'src/app/services/state/prontuario-state.service';
+import { ProntuarioStateService } from 'src/app/core/data-access/prontuario-state.service';
 
 import { TabelaAgendaMedicoComponent } from './tabela-agenda-medico.component';
 import { IMPORTS_TESTE_PADRAO, PROVIDERS_TESTE_PADRAO, SCHEMAS_TESTE_PADRAO } from '../../../testing/configuracao-teste';

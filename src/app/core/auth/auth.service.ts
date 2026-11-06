@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { BehaviorSubject, Observable, Subject, takeUntil, tap } from 'rxjs';
 import { jwtDecode } from 'jwt-decode';
 
-import { ApiUrlService } from '../../services/api/api-url.service';
+import { ApiUrlService } from '../http/api-url.service';
 import { API_ENDPOINTS } from '../../shared/constants/api-endpoints.constant';
 import { Role, ALLOWED_ROLES, isValidRole } from '../../shared/constants/roles.constant';
 

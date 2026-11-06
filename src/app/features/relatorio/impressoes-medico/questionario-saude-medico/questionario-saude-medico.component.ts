@@ -1,9 +1,9 @@
 import { Component, Inject, OnInit, OnDestroy } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Subject, takeUntil } from 'rxjs';
-import { ProntuarioApiService } from 'src/app/services/api/prontuario-api.service';
+import { ProntuarioApiService } from 'src/app/core/data-access/prontuario-api.service';
 import { jsPDF } from 'jspdf';
-import { ProntuarioDentistaApiService } from 'src/app/services/api/prontuario-dentista-api.service';
+import { ProntuarioDentistaApiService } from 'src/app/core/data-access/prontuario-dentista-api.service';
 import { formatarDataLocal } from '../../../../shared/utils/data-local';
 
 @Component({

@@ -1,15 +1,15 @@
-import { AdministradorApiService } from './../../../services/api/administrador-api.service';
+import { AdministradorApiService } from 'src/app/core/data-access/administrador-api.service';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ProfissionalApiService } from 'src/app/services/api/profissional-api.service';
+import { ProfissionalApiService } from 'src/app/core/data-access/profissional-api.service';
 import { SecretariaApiService } from 'src/app/services/api/secretaria-api.service';
-import { UsuarioApiService } from 'src/app/services/api/usuario-api.service';
-import { CepApiService } from 'src/app/services/api/cep-api.service';
-import { AuthService } from 'src/app/core/services/auth.service';
+import { UsuarioApiService } from 'src/app/core/data-access/usuario-api.service';
+import { CepApiService } from 'src/app/core/data-access/cep-api.service';
+import { AuthService } from 'src/app/core/auth/auth.service';
 import { Subscription } from 'rxjs';
 import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
 import { extrairMensagemErro } from 'src/app/shared/utils/mensagem-erro-http';
-import { EspecialidadeApiService } from "../../../services/api/especialidade-api.service";
+import { EspecialidadeApiService } from "src/app/core/data-access/especialidade-api.service";
 import { ufOptions } from '../../../util/variados/options/options';
 import { getFieldError } from 'src/app/util/validators/field-errors';
 import {

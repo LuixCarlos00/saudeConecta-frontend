@@ -1,8 +1,8 @@
 import { TestBed } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
 import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
-import { AssinaturaApiService } from 'src/app/services/api/assinatura-api.service';
-import { ControleAcessoApiService } from 'src/app/services/api/controle-acesso-api.service';
+import { AssinaturaApiService } from 'src/app/core/data-access/assinatura-api.service';
+import { ControleAcessoApiService } from 'src/app/core/data-access/controle-acesso-api.service';
 import { MENSAGEM_PREAPPROVAL_EM_ANALISE_CLIENTE } from 'src/app/shared/utils/mensagem-erro-http';
 import { formatarDataLocal } from 'src/app/shared/utils/data-local';
 import { DetalheAssinaturaComponent } from './detalhe-assinatura.component';

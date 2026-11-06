@@ -2,8 +2,8 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { Router } from '@angular/router';
 import { of, throwError } from 'rxjs';
-import { AuthService } from 'src/app/core/services/auth.service';
-import { AssinaturaApiService } from 'src/app/services/api/assinatura-api.service';
+import { AuthService } from 'src/app/core/auth/auth.service';
+import { AssinaturaApiService } from 'src/app/core/data-access/assinatura-api.service';
 import { LoginComponent } from './login.component';
 import { IMPORTS_TESTE_PADRAO, PROVIDERS_TESTE_PADRAO, SCHEMAS_TESTE_PADRAO } from '../../../testing/configuracao-teste';
 

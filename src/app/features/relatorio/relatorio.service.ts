@@ -3,9 +3,9 @@ import { Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
 
-import { ProntuarioApiService } from 'src/app/services/api/prontuario-api.service';
-import { ProntuarioDentistaApiService } from 'src/app/services/api/prontuario-dentista-api.service';
-import { PlanejamentoTerapeuticoApiService } from 'src/app/services/api/planejamento-terapeutico-api.service';
+import { ProntuarioApiService } from 'src/app/core/data-access/prontuario-api.service';
+import { ProntuarioDentistaApiService } from 'src/app/core/data-access/prontuario-dentista-api.service';
+import { PlanejamentoTerapeuticoApiService } from 'src/app/core/data-access/planejamento-terapeutico-api.service';
 
 import { Consultav2, StatusConsulta } from 'src/app/util/variados/interfaces/consulta/consultav2';
 import { Prontuario } from 'src/app/util/variados/interfaces/Prontuario/Prontuario';

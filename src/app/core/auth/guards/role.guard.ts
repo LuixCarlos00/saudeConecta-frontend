@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router, UrlTree } from '@angular/router';
-import { AuthService } from '../services/auth.service';
-import { Role } from '../../shared/constants/roles.constant';
+import { AuthService } from '../auth.service';
+import { Role } from 'src/app/shared/constants/roles.constant';
 
 /**
  * Guard para verificar PERMISSÕES DE ROLE

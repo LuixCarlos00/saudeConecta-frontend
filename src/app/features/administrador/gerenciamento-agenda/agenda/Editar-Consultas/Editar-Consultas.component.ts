@@ -1,10 +1,10 @@
-import { ProfissionalApiService } from 'src/app/services/api/profissional-api.service';
+import { ProfissionalApiService } from 'src/app/core/data-access/profissional-api.service';
 import { Component, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { extrairMensagemErro } from 'src/app/shared/utils/mensagem-erro-http';
-import { ConsultaApiService, HorarioOcupado } from 'src/app/services/api/consulta-api.service';
-import { PacienteApiService } from 'src/app/services/api/paciente-api.service';
+import { ConsultaApiService, HorarioOcupado } from 'src/app/core/data-access/consulta-api.service';
+import { PacienteApiService } from 'src/app/core/data-access/paciente-api.service';
 import { Paciente } from 'src/app/util/variados/interfaces/paciente/paciente';
 import { HoradaConsulta } from 'src/app/util/variados/options/options';
 import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';

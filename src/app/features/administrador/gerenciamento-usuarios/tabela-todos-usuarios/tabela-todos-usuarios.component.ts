@@ -4,22 +4,22 @@ import { ActivatedRoute } from '@angular/router';
 import { Subject, finalize, takeUntil } from 'rxjs';
 import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
 
-import { UsuarioApiService } from 'src/app/services/api/usuario-api.service';
-import { PacienteApiService } from 'src/app/services/api/paciente-api.service';
-import { AdministradorApiService } from 'src/app/services/api/administrador-api.service';
+import { UsuarioApiService } from 'src/app/core/data-access/usuario-api.service';
+import { PacienteApiService } from 'src/app/core/data-access/paciente-api.service';
+import { AdministradorApiService } from 'src/app/core/data-access/administrador-api.service';
 import { SecretariaApiService } from 'src/app/services/api/secretaria-api.service';
-import { FiltroStateService } from 'src/app/services/state/filtro-state.service';
+import { FiltroStateService } from 'src/app/core/data-access/filtro-state.service';
 import { TrocaSenhaUsuariosComponent } from './TrocaSenhaUsuarios/TrocaSenhaUsuarios.component';
 import { VisualizarEditarUsuarioComponent } from './VisualizarEditarUsuario/visualizar-editar-usuario.component';
 
 import { Adiministrador } from 'src/app/util/variados/interfaces/administrado/adiministrador';
 import { Secretaria } from 'src/app/util/variados/interfaces/secretaria/secretaria';
 import { Paciente } from 'src/app/util/variados/interfaces/paciente/paciente';
-import { ProfissionalApiService } from 'src/app/services/api/profissional-api.service';
+import { ProfissionalApiService } from 'src/app/core/data-access/profissional-api.service';
 import { is } from 'date-fns/locale';
 import { extrairMensagemErro } from 'src/app/shared/utils/mensagem-erro-http';
 import { Profissional } from 'src/app/util/variados/interfaces/medico/Profissional';
-import { ControleAcessoApiService } from 'src/app/services/api/controle-acesso-api.service';
+import { ControleAcessoApiService } from 'src/app/core/data-access/controle-acesso-api.service';
 import { ModalAssociarPlanoComponent } from './modal-associar-plano/modal-associar-plano.component';
 
 export enum CategoriaUsuario {

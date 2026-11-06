@@ -1,7 +1,7 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
-import { UsuarioApiService } from 'src/app/services/api/usuario-api.service';
+import { UsuarioApiService } from 'src/app/core/data-access/usuario-api.service';
 
 @Component({
   selector: 'app-TrocaSenhaUsuarios',

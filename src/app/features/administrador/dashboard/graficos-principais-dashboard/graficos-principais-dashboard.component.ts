@@ -1,11 +1,11 @@
 import { Component, ElementRef, OnInit, ViewChild, OnDestroy, OnChanges, SimpleChanges, Input } from '@angular/core';
 import { FormControl, FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Chart, registerables, ChartConfiguration } from 'chart.js';
-import { ConsultaApiService, SaldoFinanceiroResponse } from 'src/app/services/api/consulta-api.service';
+import { ConsultaApiService, SaldoFinanceiroResponse } from 'src/app/core/data-access/consulta-api.service';
 import { Subject, takeUntil, finalize } from 'rxjs';
-import { ControleAcessoApiService } from 'src/app/services/api/controle-acesso-api.service';
-import { AuthService } from 'src/app/core/services/auth.service';
-import { ProfissionalApiService } from 'src/app/services/api/profissional-api.service';
+import { ControleAcessoApiService } from 'src/app/core/data-access/controle-acesso-api.service';
+import { AuthService } from 'src/app/core/auth/auth.service';
+import { ProfissionalApiService } from 'src/app/core/data-access/profissional-api.service';
 import { formatarDataLocal } from '../../../../shared/utils/data-local';
 
 // Registrar todos os componentes do Chart.js

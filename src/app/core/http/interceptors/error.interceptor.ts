@@ -4,8 +4,8 @@ import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
-import { AuthService } from '../services/auth.service';
-import { extrairCodigoErro, extrairMensagemErro } from '../../shared/utils/mensagem-erro-http';
+import { AuthService } from '../../auth/auth.service';
+import { extrairCodigoErro, extrairMensagemErro } from 'src/app/shared/utils/mensagem-erro-http';
 
 /** Rotas do front acessíveis sem login: um 401 nelas não deve expulsar o paciente para o login. */
 const ROTAS_PUBLICAS = ['/cadastro', '/recuperaCadastro', '/assinatura', '/questionario-saude', '/assinatura-planejamento'];

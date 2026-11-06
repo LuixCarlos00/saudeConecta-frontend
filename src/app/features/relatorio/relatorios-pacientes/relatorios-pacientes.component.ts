@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { ControleAcessoApiService } from 'src/app/services/api/controle-acesso-api.service';
-import { ProfissionalApiService } from 'src/app/services/api/profissional-api.service';
+import { ControleAcessoApiService } from 'src/app/core/data-access/controle-acesso-api.service';
+import { ProfissionalApiService } from 'src/app/core/data-access/profissional-api.service';
 import { RelatorioApiService } from 'src/app/services/api/relatorio-api.service';
 import {
   ConsultaRelatorio,

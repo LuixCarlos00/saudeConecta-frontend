@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { of, Subject } from 'rxjs';
-import { ProntuarioApiService } from 'src/app/services/api/prontuario-api.service';
-import { ProntuarioDentistaApiService } from 'src/app/services/api/prontuario-dentista-api.service';
+import { ProntuarioApiService } from 'src/app/core/data-access/prontuario-api.service';
+import { ProntuarioDentistaApiService } from 'src/app/core/data-access/prontuario-dentista-api.service';
 import { RelatorioService } from 'src/app/features/relatorio/relatorio.service';
 import { AcoesConsultaService } from './acoes-consulta.service';
 

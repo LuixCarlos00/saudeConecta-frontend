@@ -6,7 +6,7 @@ import { Subject, takeUntil } from 'rxjs';
 import { extrairMensagemErro } from 'src/app/shared/utils/mensagem-erro-http';
 import { formatarDataLocal } from '../../../../shared/utils/data-local';
 
-import { ProntuarioDentistaApiService } from 'src/app/services/api/prontuario-dentista-api.service';
+import { ProntuarioDentistaApiService } from 'src/app/core/data-access/prontuario-dentista-api.service';
 import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
 import { ConsultaEdicao } from '../../consulta-edicao';
 

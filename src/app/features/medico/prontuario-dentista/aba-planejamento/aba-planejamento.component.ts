@@ -2,8 +2,8 @@ import { Component, Input, OnChanges, SimpleChanges, OnDestroy } from '@angular/
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Subject, takeUntil } from 'rxjs';
-import { ProcedimentoPadraoApiService } from 'src/app/services/api/procedimento-padrao-api.service';
-import { PlanejamentoTerapeuticoApiService } from 'src/app/services/api/planejamento-terapeutico-api.service';
+import { ProcedimentoPadraoApiService } from 'src/app/core/data-access/procedimento-padrao-api.service';
+import { PlanejamentoTerapeuticoApiService } from 'src/app/core/data-access/planejamento-terapeutico-api.service';
 import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
 import { formatarDataLocal } from '../../../../shared/utils/data-local';
 

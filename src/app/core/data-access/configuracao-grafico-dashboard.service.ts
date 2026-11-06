@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { ApiUrlService } from '../../services/api/api-url.service';
+import { ApiUrlService } from '../http/api-url.service';
 import {
   ConfiguracaoGraficoDashboard,
   AtualizarConfiguracaoGraficoRequest
