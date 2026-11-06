@@ -64,7 +64,6 @@ export function mensagemErroTrocaPlano(error: any, padrao: string): string {
 
 /** Textos por `code` das ações do SUPER_ADMIN sobre assinaturas (contrato admin-assinaturas, seção 6). */
 const MENSAGENS_ASSINATURA_ADMIN: Record<string, string> = {
-  MP_VALOR_NAO_ATUALIZADO: 'O Mercado Pago não aceitou o novo valor. O plano não foi alterado; tente de novo.',
   ASSINATURA_SUSPENSA: 'Clínica suspensa: dê cortesia ou cancele a assinatura antes de associar um plano.',
   ASSINATURA_CANCELADA: 'Esta assinatura está cancelada e não pode ser suspensa.',
   PREAPPROVAL_SUBSTITUIDO_EM_ANALISE: 'Há um pagamento anterior em análise. Resolva a pendência no Mercado Pago antes.',

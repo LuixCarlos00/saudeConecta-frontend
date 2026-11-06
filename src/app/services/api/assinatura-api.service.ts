@@ -73,14 +73,6 @@ export class AssinaturaApiService {
   }
 
   /**
-   * Lista todas as assinaturas (SUPER_ADMIN).
-   * @returns Observable com lista de assinaturas
-   */
-  listarTodas(): Observable<AssinaturaTenant[]> {
-    return this.http.get<AssinaturaTenant[]>(this.apiUrl);
-  }
-
-  /**
    * Lista assinaturas de uma organização específica (SUPER_ADMIN).
    * @param organizacaoId ID da organização
    * @returns Observable com lista de assinaturas

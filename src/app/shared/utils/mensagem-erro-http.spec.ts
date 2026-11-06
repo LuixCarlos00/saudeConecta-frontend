@@ -50,7 +50,7 @@ describe('mensagemErroAssinaturaAdmin', () => {
     expect(mensagemErroAssinaturaAdmin(erro(409, 'ASSINATURA_CANCELADA'), 'p')).toContain('cancelada');
     expect(mensagemErroAssinaturaAdmin(erro(409, 'ASSINATURA_SUSPENSA'), 'p')).toContain('Clínica suspensa');
     expect(mensagemErroAssinaturaAdmin(erro(409, 'PREAPPROVAL_SUBSTITUIDO_EM_ANALISE'), 'p')).toContain('pagamento anterior em análise');
-    expect(mensagemErroAssinaturaAdmin(erro(502, 'MP_VALOR_NAO_ATUALIZADO'), 'p')).toContain('não aceitou o novo valor');
+    expect(mensagemErroAssinaturaAdmin(erro(502, 'MP_VALOR_NAO_ATUALIZADO'), 'p')).toBe(MENSAGEM_MP_VALOR_NAO_ATUALIZADO);
     expect(mensagemErroAssinaturaAdmin(erro(409, 'PENDENCIA_JA_RESOLVIDA'), 'p')).toContain('já foi resolvida');
     expect(mensagemErroAssinaturaAdmin(erro(403, 'ACESSO_NEGADO'), 'p')).toContain('permissão');
   });
