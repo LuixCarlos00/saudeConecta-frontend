@@ -1,20 +1,6 @@
 [
   {
     "type": "dependency",
-    "from": "src/app/features/administrador/gerenciamento-usuarios/gerenciamento-usuario.component.ts",
-    "to": "src/app/features/agenda/pages/cadastro-paciente/cadastro-paciente.component.ts",
-    "unresolvedTo": "../../agenda/pages/cadastro-paciente/cadastro-paciente.component",
-    "dependencyTypes": [
-      "local",
-      "import"
-    ],
-    "rule": {
-      "severity": "error",
-      "name": "feature-nao-importa-outra-feature"
-    }
-  },
-  {
-    "type": "dependency",
     "from": "src/app/features/agenda/components/agenda/agenda.component.ts",
     "to": "src/app/features/relatorio/relatorio.service.ts",
     "unresolvedTo": "src/app/features/relatorio/relatorio.service",
@@ -84,9 +70,51 @@
     }
   },
   {
+    "type": "dependency",
+    "from": "src/app/features/usuarios/pages/gerenciamento-usuarios/gerenciamento-usuario.component.ts",
+    "to": "src/app/features/agenda/pages/cadastro-paciente/cadastro-paciente.component.ts",
+    "unresolvedTo": "src/app/features/agenda/pages/cadastro-paciente/cadastro-paciente.component",
+    "dependencyTypes": [
+      "undetermined",
+      "import"
+    ],
+    "rule": {
+      "severity": "error",
+      "name": "feature-nao-importa-outra-feature"
+    }
+  },
+  {
+    "type": "dependency",
+    "from": "src/app/features/usuarios/pages/gerenciamento-usuarios/tabela-todos-usuarios/tabela-todos-usuarios.component.spec.ts",
+    "to": "src/app/features/administrador/gerenciamento-usuarios/tabela-todos-usuarios/modal-associar-plano/modal-associar-plano.component.ts",
+    "unresolvedTo": "src/app/features/administrador/gerenciamento-usuarios/tabela-todos-usuarios/modal-associar-plano/modal-associar-plano.component",
+    "dependencyTypes": [
+      "undetermined",
+      "import"
+    ],
+    "rule": {
+      "severity": "error",
+      "name": "feature-nao-importa-outra-feature"
+    }
+  },
+  {
+    "type": "dependency",
+    "from": "src/app/features/usuarios/pages/gerenciamento-usuarios/tabela-todos-usuarios/tabela-todos-usuarios.component.ts",
+    "to": "src/app/features/administrador/gerenciamento-usuarios/tabela-todos-usuarios/modal-associar-plano/modal-associar-plano.component.ts",
+    "unresolvedTo": "src/app/features/administrador/gerenciamento-usuarios/tabela-todos-usuarios/modal-associar-plano/modal-associar-plano.component",
+    "dependencyTypes": [
+      "undetermined",
+      "import"
+    ],
+    "rule": {
+      "severity": "error",
+      "name": "feature-nao-importa-outra-feature"
+    }
+  },
+  {
     "type": "cycle",
-    "from": "src/app/features/administrador/gerenciamento-usuarios/tabela-todos-usuarios/tabela-todos-usuarios.component.ts",
-    "to": "src/app/features/administrador/gerenciamento-usuarios/tabela-todos-usuarios/VisualizarEditarUsuario/visualizar-editar-usuario.component.ts",
+    "from": "src/app/features/usuarios/pages/gerenciamento-usuarios/tabela-todos-usuarios/tabela-todos-usuarios.component.ts",
+    "to": "src/app/features/usuarios/pages/gerenciamento-usuarios/tabela-todos-usuarios/VisualizarEditarUsuario/visualizar-editar-usuario.component.ts",
     "unresolvedTo": "./VisualizarEditarUsuario/visualizar-editar-usuario.component",
     "dependencyTypes": [
       "local",
@@ -98,14 +126,14 @@
     },
     "cycle": [
       {
-        "name": "src/app/features/administrador/gerenciamento-usuarios/tabela-todos-usuarios/VisualizarEditarUsuario/visualizar-editar-usuario.component.ts",
+        "name": "src/app/features/usuarios/pages/gerenciamento-usuarios/tabela-todos-usuarios/VisualizarEditarUsuario/visualizar-editar-usuario.component.ts",
         "dependencyTypes": [
           "local",
           "import"
         ]
       },
       {
-        "name": "src/app/features/administrador/gerenciamento-usuarios/tabela-todos-usuarios/tabela-todos-usuarios.component.ts",
+        "name": "src/app/features/usuarios/pages/gerenciamento-usuarios/tabela-todos-usuarios/tabela-todos-usuarios.component.ts",
         "dependencyTypes": [
           "local",
           "import"
