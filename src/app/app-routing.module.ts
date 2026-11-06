@@ -24,8 +24,8 @@ import { CadastroAdminOrgComponent } from './features/usuarios/pages/cadastro-ad
 import { CadastroSecretariaComponent } from './features/usuarios/pages/cadastro-secretaria/cadastro-secretaria.component';
 import { ConfiguracoesSistemaComponent } from './features/configuracoes/pages/configuracoes/configuracoes-sistema.component';
 import { TrocaSenhaComponent } from './features/auth/pages/troca-senha/troca-senha.component';
-import { SuporteComponent } from './features/administrador/suporte/suporte.component';
-import { GestaoChamadosComponent } from './features/administrador/suporte/gestao-chamados/gestao-chamados.component';
+import { SuporteComponent } from './features/suporte/pages/suporte/suporte.component';
+import { GestaoChamadosComponent } from './features/suporte/pages/suporte/gestao-chamados/gestao-chamados.component';
 import { MensageriaComponent } from './features/administrador/mensageria/mensageria.component';
 import { GerenciarPlanosComponent } from './features/administrador/planos/gerenciar-planos/gerenciar-planos.component';
 import { GestaoAssinaturasComponent } from './features/administrador/assinaturas/gestao-assinaturas/gestao-assinaturas.component';

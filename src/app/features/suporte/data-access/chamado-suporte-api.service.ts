@@ -9,7 +9,7 @@ import {
   ChamadoSuporteResponse,
   PrioridadeChamado,
   StatusChamado
-} from 'src/app/util/variados/interfaces/suporte/ChamadoSuporte';
+} from 'src/app/features/suporte/models/ChamadoSuporte';
 
 export {
   AtualizarStatusChamadoRequest,

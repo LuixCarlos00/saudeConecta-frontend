@@ -2,12 +2,12 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { finalize, Subject, takeUntil } from 'rxjs';
 
 import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
-import { ChamadoSuporteApiService } from 'src/app/services/api/chamado-suporte-api.service';
+import { ChamadoSuporteApiService } from 'src/app/features/suporte/data-access/chamado-suporte-api.service';
 import {
   ChamadoSuporteResponse,
   PrioridadeChamado,
   StatusChamado
-} from 'src/app/util/variados/interfaces/suporte/ChamadoSuporte';
+} from 'src/app/features/suporte/models/ChamadoSuporte';
 
 /**
  * Tela exclusiva do perfil ROOT para acompanhamento e triagem dos chamados

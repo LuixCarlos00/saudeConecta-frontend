@@ -3,14 +3,14 @@ import { finalize, Subject, takeUntil } from 'rxjs';
 
 import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
 import { AuthService } from 'src/app/core/auth/auth.service';
-import { ChamadoSuporteApiService } from 'src/app/services/api/chamado-suporte-api.service';
+import { ChamadoSuporteApiService } from 'src/app/features/suporte/data-access/chamado-suporte-api.service';
 import {
   CategoriaChamado,
   ChamadoAnexoRequest,
   ChamadoSuporteRequest,
   ChamadoSuporteResponse,
   PrioridadeChamado
-} from 'src/app/util/variados/interfaces/suporte/ChamadoSuporte';
+} from 'src/app/features/suporte/models/ChamadoSuporte';
 
 /**
  * Anexo preparado para exibicao no modal de detalhes.
