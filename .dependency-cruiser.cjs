@@ -13,6 +13,8 @@
  * - core não importa de features;
  * - uma feature não importa outra;
  * - ninguém importa de testing/ fora de specs;
+ * - só data-access (e core) usa HttpClient: features e shared fora de data-access não importam @angular/common/http (guards só tratam HttpErrorResponse);
+ * - as pastas legadas util/ e services/ não existem mais;
  * - sem dependência circular.
  */
 /** @type {import('dependency-cruiser').IConfiguration} */
@@ -52,6 +54,20 @@ module.exports = {
       severity: 'error',
       from: { pathNot: '\\.spec\\.ts$' },
       to: { path: '^src/app/testing/' },
+    },
+    {
+      name: 'http-so-em-data-access',
+      comment: 'Só a camada data-access (e o core) fala HTTP; telas e componentes consomem os services.',
+      severity: 'error',
+      from: { path: '^src/app/(features|shared)/', pathNot: '(/data-access/|/guards/|\\.spec\\.ts$)' },
+      to: { path: '^node_modules/@angular/common/.*/http\\.mjs$' },
+    },
+    {
+      name: 'sem-pastas-legadas',
+      comment: 'util/ e services/ foram dissolvidos na F4: o código novo vai para core/, shared/ ou features/<area>/.',
+      severity: 'error',
+      from: {},
+      to: { path: '^src/app/(util|services)/' },
     },
     {
       name: 'sem-dependencia-circular',
