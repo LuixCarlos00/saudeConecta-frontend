@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Subject, Subscription, takeUntil } from 'rxjs';
 
 import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
 import { AssinaturaAdminApiService, PendenciaManual } from 'src/app/services/api/assinatura-admin-api.service';
@@ -37,6 +37,7 @@ export class PendenciasManuaisComponent implements OnInit, OnDestroy {
   salvando = false;
 
   private requisicao?: Subscription;
+  private readonly destroy$ = new Subject<void>();
 
   constructor(
     private adminApi: AssinaturaAdminApiService,
@@ -49,6 +50,8 @@ export class PendenciasManuaisComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.requisicao?.unsubscribe();
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   /** Busca a lista da aba atual (abertas ou resolvidas); a resposta de uma chamada antiga é descartada. */
@@ -123,7 +126,7 @@ export class PendenciasManuaisComponent implements OnInit, OnDestroy {
     if (this.erroObservacao) { return; }
 
     this.salvando = true;
-    this.adminApi.resolverPendencia(pendencia.eventoId, this.observacaoAparada).subscribe({
+    this.adminApi.resolverPendencia(pendencia.eventoId, this.observacaoAparada).pipe(takeUntil(this.destroy$)).subscribe({
       next: () => {
         this.salvando = false;
         this.cancelarResolucao();

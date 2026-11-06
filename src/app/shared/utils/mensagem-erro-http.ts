@@ -67,6 +67,7 @@ const MENSAGENS_ASSINATURA_ADMIN: Record<string, string> = {
   ASSINATURA_SUSPENSA: 'Clínica suspensa: dê cortesia ou cancele a assinatura antes de associar um plano.',
   ASSINATURA_CANCELADA: 'Esta assinatura está cancelada e não pode ser suspensa.',
   PREAPPROVAL_SUBSTITUIDO_EM_ANALISE: 'Há um pagamento anterior em análise. Resolva a pendência no Mercado Pago antes.',
+  NAO_ENCONTRADO: 'O registro não existe mais; a lista foi atualizada.',
   PENDENCIA_JA_RESOLVIDA: 'Esta pendência já foi resolvida por outra pessoa.',
   ACESSO_NEGADO: 'Você não tem permissão para esta ação.',
 };

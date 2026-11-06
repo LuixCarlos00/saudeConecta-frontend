@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { PageEvent } from '@angular/material/paginator';
-import { Observable, Subscription } from 'rxjs';
+import { Observable, Subject, Subscription, takeUntil } from 'rxjs';
 
 import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
 import {
@@ -67,7 +67,12 @@ export class GestaoAssinaturasComponent implements OnInit, OnDestroy {
   /** assinaturaId com ação em andamento: trava só os botões daquela linha. */
   acaoEmAndamento: number | null = null;
 
+  /** Filtros da última busca aplicada: recarregar (ordenar, paginar, ação) não usa texto digitado e não aplicado. */
+  private filtroAplicado: { status: StatusAssinaturaFiltro | ''; plano: TipoPlanoFiltro | ''; cortesia: FiltroCortesia; busca: string } =
+    { status: '', plano: '', cortesia: '', busca: '' };
+
   private requisicao?: Subscription;
+  private readonly destroy$ = new Subject<void>();
 
   constructor(
     private adminApi: AssinaturaAdminApiService,
@@ -82,6 +87,8 @@ export class GestaoAssinaturasComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.requisicao?.unsubscribe();
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   /** Busca a página atual com os filtros e a ordenação da tela; a resposta de uma chamada antiga é descartada. */
@@ -90,15 +97,21 @@ export class GestaoAssinaturasComponent implements OnInit, OnDestroy {
     this.carregando = true;
     this.erro = null;
     this.requisicao = this.adminApi.listar({
-      status: this.filtroStatus,
-      plano: this.filtroPlano,
-      cortesia: this.filtroCortesia === '' ? null : this.filtroCortesia === 'true',
-      busca: this.filtroBusca,
+      status: this.filtroAplicado.status,
+      plano: this.filtroAplicado.plano,
+      cortesia: this.filtroAplicado.cortesia === '' ? null : this.filtroAplicado.cortesia === 'true',
+      busca: this.filtroAplicado.busca,
       page: this.pagina,
       size: this.tamanho,
       sort: `${this.campoOrdenacao},${this.direcaoOrdenacao}`
     }).subscribe({
       next: (resposta: PaginaAssinaturas<AssinaturaResumoAdmin>) => {
+        // Depois de cancelar/apagar o último item da página, ela some: recua uma página em vez de mostrar tabela vazia
+        if (resposta.content.length === 0 && this.pagina > 0) {
+          this.pagina--;
+          this.carregar();
+          return;
+        }
         this.itens = resposta.content;
         this.total = resposta.totalElements;
         this.carregando = false;
@@ -114,6 +127,9 @@ export class GestaoAssinaturasComponent implements OnInit, OnDestroy {
 
   /** Aplica os filtros voltando para a primeira página. */
   aplicarFiltros(): void {
+    this.filtroAplicado = {
+      status: this.filtroStatus, plano: this.filtroPlano, cortesia: this.filtroCortesia, busca: this.filtroBusca
+    };
     this.pagina = 0;
     this.carregar();
   }
@@ -229,7 +245,7 @@ export class GestaoAssinaturasComponent implements OnInit, OnDestroy {
       width: '700px',
       data: { organizacaoId: item.organizacaoId, nomeOrganizacao: item.organizacaoNome },
       disableClose: true
-    }).afterClosed().subscribe((alterou: boolean) => {
+    }).afterClosed().pipe(takeUntil(this.destroy$)).subscribe((alterou: boolean) => {
       if (alterou) { this.carregar(); }
     });
   }
@@ -249,7 +265,7 @@ export class GestaoAssinaturasComponent implements OnInit, OnDestroy {
     this.notificacao.fire({ showCancelButton: true, cancelButtonText: 'Voltar', ...pergunta }).then(r => {
       if (!r.isConfirmed || this.acaoEmAndamento !== null) { return; }
       this.acaoEmAndamento = item.assinaturaId;
-      acao().subscribe({
+      acao().pipe(takeUntil(this.destroy$)).subscribe({
         next: () => {
           this.acaoEmAndamento = null;
           this.notificacao.mostrarToast('success', sucesso);

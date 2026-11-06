@@ -55,6 +55,12 @@ describe('mensagemErroAssinaturaAdmin', () => {
     expect(mensagemErroAssinaturaAdmin(erro(403, 'ACESSO_NEGADO'), 'p')).toContain('permissão');
   });
 
+  it('PREAPPROVAL_SUBSTITUIDO_EM_ANALISE trava o texto do admin e NAO_ENCONTRADO tem texto próprio', () => {
+    expect(mensagemErroAssinaturaAdmin(erro(409, 'PREAPPROVAL_SUBSTITUIDO_EM_ANALISE'), 'p'))
+      .toBe('Há um pagamento anterior em análise. Resolva a pendência no Mercado Pago antes.');
+    expect(mensagemErroAssinaturaAdmin(erro(404, 'NAO_ENCONTRADO'), 'p')).toBe('O registro não existe mais; a lista foi atualizada.');
+  });
+
   it('503 sem código fala da integração; código desconhecido usa a mensagem do back; sem nada usa o padrão', () => {
     expect(mensagemErroAssinaturaAdmin({ status: 503, error: {} }, 'p')).toContain('Mercado Pago indisponível');
     expect(mensagemErroAssinaturaAdmin(erro(502, 'BUSINESS_ERROR', 'MP fora do ar'), 'p')).toBe('MP fora do ar');

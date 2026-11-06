@@ -165,7 +165,7 @@ describe('PendenciasManuaisComponent', () => {
       api.listarPendenciasManuais.calls.reset();
       abrirEPreencher('x');
       c.confirmarResolucao(c.pendencias[0]);
-      expect(notificacao.showError).toHaveBeenCalledWith('msg do back');
+      expect(notificacao.showError).toHaveBeenCalledWith('O registro não existe mais; a lista foi atualizada.');
       expect(api.listarPendenciasManuais).toHaveBeenCalledTimes(1);
     });
 

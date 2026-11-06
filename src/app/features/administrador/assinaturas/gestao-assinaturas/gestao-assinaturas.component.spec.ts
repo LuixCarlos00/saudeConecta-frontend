@@ -160,6 +160,37 @@ describe('GestaoAssinaturasComponent', () => {
       expect(ultimaChamada().page).toBe(0);
     });
 
+    it('texto de busca digitado e não aplicado não vaza em ordenar, paginar ou recarregar', () => {
+      c.filtroBusca = 'digitado';
+      c.ordenarPor('status');
+      expect(ultimaChamada().busca).toBe('');
+      c.mudarPagina({ pageIndex: 1, pageSize: 20, length: 100 } as any);
+      expect(ultimaChamada().busca).toBe('');
+      c.aplicarFiltros();
+      expect(ultimaChamada().busca).toBe('digitado');
+      c.filtroBusca = 'outro';
+      c.carregar();
+      expect(ultimaChamada().busca).toBe('digitado');
+    });
+
+    it('página que vem vazia depois da primeira recua uma página e recarrega', () => {
+      c.pagina = 2;
+      admin.listar.calls.reset();
+      admin.listar.and.returnValues(of(pagina([], 40)), of(pagina([linha()], 40)));
+      c.carregar();
+      expect(admin.listar.calls.allArgs().map(a => a[0]!.page)).toEqual([2, 1]);
+      expect(c.pagina).toBe(1);
+      expect(c.itens.length).toBe(1);
+    });
+
+    it('página 0 vazia não recua nem entra em laço', () => {
+      admin.listar.calls.reset();
+      admin.listar.and.returnValue(of(pagina([])));
+      c.carregar();
+      expect(admin.listar).toHaveBeenCalledTimes(1);
+      expect(c.pagina).toBe(0);
+    });
+
     it('mudar de página ou de tamanho refaz a chamada', () => {
       c.mudarPagina({ pageIndex: 2, pageSize: 50, length: 200 } as any);
       expect(ultimaChamada()).toEqual(jasmine.objectContaining({ page: 2, size: 50 }));
@@ -237,7 +268,7 @@ describe('GestaoAssinaturasComponent', () => {
       montar();
       api.cancelar.and.returnValue(erroHttp(404, 'NAO_ENCONTRADO'));
       await confirmando(true, () => c.cancelar(item()));
-      expect(notificacao.showError).toHaveBeenCalledWith('msg do back');
+      expect(notificacao.showError).toHaveBeenCalledWith('O registro não existe mais; a lista foi atualizada.');
       api.cancelar.and.returnValue(throwError(() => ({ status: 503, error: {} })));
       await confirmando(true, () => c.cancelar(item()));
       expect(notificacao.showError).toHaveBeenCalledWith(jasmine.stringContaining('Mercado Pago indisponível'));
