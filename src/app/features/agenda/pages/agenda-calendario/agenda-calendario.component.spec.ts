@@ -162,6 +162,13 @@ describe('AgendaCalendarioComponent: tela', () => {
     expect(component.horasDia.length).toBe(13);
   });
 
+  it('visão semana também preenche os rótulos de hora (sem nunca ter aberto a visão dia)', () => {
+    component.tipoVisualizacao = 'semana';
+    component.gerarCalendario();
+    expect(component.horasDia.map(h => h.label)).toEqual(
+      ['07:00', '08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00']);
+  });
+
   it('selecionar um dia de outro mês recarrega e mantém a visão', () => {
     component.dataAtual = new Date(2026, 10, 1);
     component.selecionarDia({ data: new Date(2026, 11, 2) });

@@ -243,6 +243,8 @@ export class AgendaCalendarioComponent implements OnInit, OnDestroy {
       this.diasCalendario = gerarDiasMes(this.dataAtual, this.consultasFiltradas, new Date());
     } else if (this.tipoVisualizacao === 'semana') {
       this.diasSemana = gerarDiasSemana(this.dataAtual, this.consultasFiltradas, new Date());
+      // A coluna de horários da semana usa os mesmos rótulos da visão dia.
+      this.horasDia = gerarHorasDia(this.dataAtual, this.consultasFiltradas);
     } else {
       this.horasDia = gerarHorasDia(this.dataAtual, this.consultasFiltradas);
     }
