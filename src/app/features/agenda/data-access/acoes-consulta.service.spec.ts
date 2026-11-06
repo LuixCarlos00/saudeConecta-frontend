@@ -89,6 +89,16 @@ describe('AcoesConsultaService', () => {
     expect(prontuarioDentistaApi.buscarQuestionarioSaude).toHaveBeenCalledTimes(2);
   });
 
+  it('aoMarcar recebe um Set NOVO (componentes OnPush) com os IDs marcados', () => {
+    prontuarioDentistaApi.buscarQuestionarioSaude.and.returnValue(of({ respondido: true }));
+    const respondidos = new Set<number>();
+    const recebidos: Set<number>[] = [];
+    service.verificarQuestionariosRespondidos([{ id: 10, status: 'CONFIRMADA' }] as any, respondidos, destroy$, novos => recebidos.push(novos));
+    expect(recebidos.length).toBe(1);
+    expect(recebidos[0]).not.toBe(respondidos);
+    expect([...recebidos[0]]).toEqual([10]);
+  });
+
   describe('WhatsApp', () => {
     it('formatarTelefoneWhatsApp deixa so digitos e poe 55 quando falta', () => {
       expect(service.formatarTelefoneWhatsApp('(48) 99999-0000')).toBe('5548999990000');

@@ -55,13 +55,13 @@ export class AcoesConsultaService {
    * @param consultas consultas exibidas na agenda
    * @param assinados Set de IDs a preencher (IDs já presentes não são consultados de novo)
    * @param ate$ encerra as requisições pendentes (destroy$ do componente)
-   * @param aoMarcar chamado depois de cada ID adicionado (ex.: markForCheck)
+   * @param aoMarcar chamado depois de cada ID adicionado, com um Set NOVO (para componentes OnPush perceberem a mudança)
    */
   verificarPlanejamentosAssinados(
     consultas: Consultav2[],
     assinados: Set<number>,
     ate$: Observable<void>,
-    aoMarcar: () => void = () => {}
+    aoMarcar: (novos: Set<number>) => void = () => {}
   ): void {
     const finalizadas = consultas.filter(c => c.status === 'REALIZADA');
     for (const consulta of finalizadas) {
@@ -73,7 +73,7 @@ export class AcoesConsultaService {
             const plans = prontuario?.planejamentosTerapeuticos || prontuario?.planejamentos || [];
             if (plans.length > 0 && plans.every((p: any) => p.statusAssinatura === 'ASSINADO')) {
               assinados.add(consulta.id);
-              aoMarcar();
+              aoMarcar(new Set(assinados));
             }
           }
         });
@@ -86,13 +86,13 @@ export class AcoesConsultaService {
    * @param consultas consultas exibidas na agenda
    * @param respondidos Set de IDs a preencher (IDs já presentes não são consultados de novo)
    * @param ate$ encerra as requisições pendentes (destroy$ do componente)
-   * @param aoMarcar chamado depois de cada ID adicionado (ex.: markForCheck)
+   * @param aoMarcar chamado depois de cada ID adicionado, com um Set NOVO (para componentes OnPush perceberem a mudança)
    */
   verificarQuestionariosRespondidos(
     consultas: Consultav2[],
     respondidos: Set<number>,
     ate$: Observable<void>,
-    aoMarcar: () => void = () => {}
+    aoMarcar: (novos: Set<number>) => void = () => {}
   ): void {
     const confirmadas = consultas.filter(c => c.status === 'CONFIRMADA');
     for (const consulta of confirmadas) {
@@ -103,7 +103,7 @@ export class AcoesConsultaService {
           next: (resp: any) => {
             if (resp?.respondido) {
               respondidos.add(consulta.id);
-              aoMarcar();
+              aoMarcar(new Set(respondidos));
             }
           }
         });

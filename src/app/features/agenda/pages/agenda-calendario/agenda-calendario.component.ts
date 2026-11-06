@@ -175,9 +175,9 @@ export class AgendaCalendarioComponent implements OnInit, OnDestroy {
           this.extrairProfissionais();
           this.aplicarFiltros();
           if (this.filtroFinalizadas) {
-            this.acoesConsulta.verificarPlanejamentosAssinados(this.todasConsultas, this.planejamentosAssinados, this.destroy$, () => this.cdr.markForCheck());
+            this.acoesConsulta.verificarPlanejamentosAssinados(this.todasConsultas, this.planejamentosAssinados, this.destroy$, novos => { this.planejamentosAssinados = novos; this.cdr.markForCheck(); });
           } else {
-            this.acoesConsulta.verificarQuestionariosRespondidos(this.todasConsultas, this.questionariosRespondidos, this.destroy$, () => this.cdr.markForCheck());
+            this.acoesConsulta.verificarQuestionariosRespondidos(this.todasConsultas, this.questionariosRespondidos, this.destroy$, novos => { this.questionariosRespondidos = novos; this.cdr.markForCheck(); });
           }
           this.carregando = false;
           this.cdr.markForCheck();

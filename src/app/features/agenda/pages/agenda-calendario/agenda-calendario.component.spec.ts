@@ -242,6 +242,15 @@ describe('AgendaCalendarioComponent: tela', () => {
       expect(acoesConsulta.verificarPlanejamentosAssinados).toHaveBeenCalledTimes(1);
     });
 
+    it('quando o serviço marca IDs, a tela troca o Set por um novo (drawer OnPush percebe)', () => {
+      consultaService.buscarDoMesAtual.and.returnValue(of(todas));
+      const antes = component.questionariosRespondidos;
+      acoesConsulta.verificarQuestionariosRespondidos.and.callFake((_c: any, _s: any, _d: any, aoMarcar: (n: Set<number>) => void) => aoMarcar(new Set([1])));
+      component.carregarConsultas();
+      expect(component.questionariosRespondidos).not.toBe(antes);
+      expect(component.questionariosRespondidos.has(1)).toBeTrue();
+    });
+
     it('a legenda segue o tipo', () => {
       expect(component.legendaAtual.map(s => s.value)).toEqual(['AGENDADA', 'CONFIRMADA']);
       component.filtroFinalizadas = true;
