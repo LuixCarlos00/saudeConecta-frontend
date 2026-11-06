@@ -84,6 +84,8 @@ export class BarraLateraComponent implements OnInit, OnDestroy {
       '/agenda-calendario': 'AgendaCalendario',
       '/mensageria': 'Mensageria',
       '/gerenciar-planos': 'GerenciarPlanos',
+      '/gestao-assinaturas': 'GestaoAssinaturas',
+      '/pendencias-manuais': 'PendenciasManuais',
       '/minha-assinatura': 'MinhaAssinatura',
       '/gestao-chamados': 'GestaoChamados',
       '/relatorios': 'Relatorios',
@@ -153,6 +155,8 @@ export class BarraLateraComponent implements OnInit, OnDestroy {
       'startconsulta': 'startconsulta',
       'Mensageria': 'mensageria',
       'GerenciarPlanos': 'gerenciar-planos',
+      'GestaoAssinaturas': 'gestao-assinaturas',
+      'PendenciasManuais': 'pendencias-manuais',
       'MinhaAssinatura': 'minha-assinatura',
       'GestaoChamados': 'gestao-chamados',
       'Relatorios': 'relatorios'

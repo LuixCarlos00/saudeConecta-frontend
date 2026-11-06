@@ -83,7 +83,7 @@
         <article class="kpi" [class.kpi--alerta]="dados.resumo.pendenciasManuais > 0" data-testid="kpi-card-pendencias">
           <span class="kpi__rotulo">Pendências manuais</span>
           <strong class="kpi__valor" data-testid="kpi-pendencias">{{ formatarInteiro(dados.resumo.pendenciasManuais) }}</strong>
-          <span class="kpi__detalhe">pagamentos a conferir</span>
+          <a class="kpi__detalhe" routerLink="/pendencias-manuais" data-testid="kpi-pendencias-link">pagamentos a conferir</a>
         </article>
       </div>
 
@@ -206,9 +206,9 @@
   </a>
 </ng-template>
 
-<!-- Pendência manual: não há clínica identificada nem tela de pendências, então fica sem link. -->
+<!-- Pendência manual: pode não ter clínica identificada; leva à tela de pendências manuais. -->
 <ng-template #semLink let-item>
-  <div class="atencao__link atencao__link--sem-link">
+  <a class="atencao__link" routerLink="/pendencias-manuais" data-testid="atencao-pendencia-link" aria-label="Abrir pendências manuais">
     <span [class]="classeMotivo(item)" data-testid="atencao-motivo">{{ textoMotivo(item) }}</span>
                 <span class="atencao__nome">
                   <strong>{{ item.nome }}</strong>
@@ -218,6 +218,6 @@
                   <span data-testid="atencao-vencimento" *ngIf="item.dataVencimento">{{ item.motivo === 'PENDENCIA_MANUAL' ? 'Chegou em' : 'Vence' }} {{ formatarData(item.dataVencimento) }}</span>
                   <strong data-testid="atencao-valor" *ngIf="item.valorMensal !== null">{{ formatarMoeda(item.valorMensal) }}</strong>
                 </span>
-    <span class="atencao__seta"></span>
-  </div>
+    <i class="fa-solid fa-chevron-right atencao__seta" aria-hidden="true"></i>
+  </a>
 </ng-template>

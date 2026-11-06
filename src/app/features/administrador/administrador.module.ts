@@ -74,6 +74,10 @@ import { GerenciarPlanosComponent } from './planos/gerenciar-planos/gerenciar-pl
  import { ModalValoresAdicionaisComponent } from './planos/gerenciar-planos/modal-valores-adicionais/modal-valores-adicionais.component';
  
 
+// Componentes de Assinaturas (SUPER_ADMIN)
+import { GestaoAssinaturasComponent } from './assinaturas/gestao-assinaturas/gestao-assinaturas.component';
+import { PendenciasManuaisComponent } from './assinaturas/pendencias-manuais/pendencias-manuais.component';
+
 // Componentes de Suporte
 import { SuporteComponent } from './suporte/suporte.component';
 import { GestaoChamadosComponent } from './suporte/gestao-chamados/gestao-chamados.component';
@@ -149,6 +153,10 @@ const routes: Routes = [
      ModalValoresAdicionaisComponent,
  
     
+    // Componentes de Assinaturas (SUPER_ADMIN)
+    GestaoAssinaturasComponent,
+    PendenciasManuaisComponent,
+
     // Componentes de Suporte
     SuporteComponent,
     GestaoChamadosComponent,

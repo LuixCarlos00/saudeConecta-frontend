@@ -90,6 +90,24 @@
         </button>
       </li>
 
+      <!-- Gestão de Assinaturas - Super Admin apenas -->
+      <li class="nav-item" *ngIf="ControleAcessoService.isSuperAdmin()"
+        [class.active]="activeRoute === 'GestaoAssinaturas'">
+        <button class="nav-link" (click)="navigateTo('GestaoAssinaturas')" title="Gestão de Assinaturas">
+          <i class="fa-solid fa-file-invoice-dollar nav-icon"></i>
+          <span class="nav-text">Gestão de Assinaturas</span>
+        </button>
+      </li>
+
+      <!-- Pendências Manuais - Super Admin apenas -->
+      <li class="nav-item" *ngIf="ControleAcessoService.isSuperAdmin()"
+        [class.active]="activeRoute === 'PendenciasManuais'">
+        <button class="nav-link" (click)="navigateTo('PendenciasManuais')" title="Pendências Manuais">
+          <i class="fa-solid fa-triangle-exclamation nav-icon"></i>
+          <span class="nav-text">Pendências Manuais</span>
+        </button>
+      </li>
+
       <!-- Minha Assinatura - Admin Org -->
       <li class="nav-item" *ngIf="ControleAcessoService.isAdmin() && !ControleAcessoService.isSuperAdmin()"
         [class.active]="activeRoute === 'MinhaAssinatura'">

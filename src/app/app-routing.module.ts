@@ -28,6 +28,8 @@ import { SuporteComponent } from './features/administrador/suporte/suporte.compo
 import { GestaoChamadosComponent } from './features/administrador/suporte/gestao-chamados/gestao-chamados.component';
 import { MensageriaComponent } from './features/administrador/mensageria/mensageria.component';
 import { GerenciarPlanosComponent } from './features/administrador/planos/gerenciar-planos/gerenciar-planos.component';
+import { GestaoAssinaturasComponent } from './features/administrador/assinaturas/gestao-assinaturas/gestao-assinaturas.component';
+import { PendenciasManuaisComponent } from './features/administrador/assinaturas/pendencias-manuais/pendencias-manuais.component';
 import { DetalheAssinaturaComponent } from './features/administrador/planos/detalhe-assinatura/detalhe-assinatura.component';
  
 import { HistoricoDadosPessoaisComponent } from './features/administrador/historico-dados-pessoais/historico-dados-pessoais.component';
@@ -75,6 +77,8 @@ const routes: Routes = [
   
   // ========== ROTAS DE PLANOS ==========
   { path: 'gerenciar-planos', component: GerenciarPlanosComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: [Role.SUPER_ADMIN] } },
+  { path: 'gestao-assinaturas', component: GestaoAssinaturasComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: [Role.SUPER_ADMIN] } },
+  { path: 'pendencias-manuais', component: PendenciasManuaisComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: [Role.SUPER_ADMIN] } },
   { path: 'minha-assinatura', component: DetalheAssinaturaComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: [Role.ADMIN, Role.SECRETARY] } },
  
 

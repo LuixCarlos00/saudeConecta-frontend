@@ -118,12 +118,17 @@ describe('DashboardPlataformaComponent', () => {
     expect(itens[0].querySelector('[data-testid=atencao-vencimento]').textContent).toContain('28/10/2026');
     expect(itens[0].querySelector('[data-testid=atencao-valor]').textContent.replace(/ /g, ' ')).toContain('R$ 149,00');
     expect(itens[0].querySelector('a').getAttribute('href')).toContain('/Gerenciamento-Usuarios?organizacaoId=12');
-    // pendência manual: campos null não quebram, sem link e sem valor
+    // pendência manual: campos null não quebram, leva à tela de pendências e não mostra valor
     expect(itens[1].querySelector('.badge--pendencia-manual')).toBeTruthy();
-    expect(itens[1].querySelector('a')).toBeNull();
+    expect(itens[1].querySelector('a').getAttribute('href')).toBe('/pendencias-manuais');
     expect(itens[1].querySelector('[data-testid=atencao-valor]')).toBeNull();
     expect(itens[1].textContent).toContain('Evento Mercado Pago #55');
     expect(itens[1].querySelector('[data-testid=atencao-vencimento]').textContent).toContain('04/11/2026');
+  });
+
+  it('o KPI de pendências manuais leva à tela de pendências', () => {
+    montar(of(criarDashboard()));
+    expect(fixture.nativeElement.querySelector('[data-testid=kpi-pendencias-link]').getAttribute('href')).toBe('/pendencias-manuais');
   });
 
   it('renderiza a tabela Top clínicas por uso', () => {
