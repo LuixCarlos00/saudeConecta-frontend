@@ -15,7 +15,7 @@ describe('AbaHistoricoMedicoComponent - edição de registro', () => {
   beforeEach(() => {
     consultaApi = jasmine.createSpyObj('ConsultaApiService', ['BuscandoHistoricoDeConsultasDoPaciente']);
     consultaApi.BuscandoHistoricoDeConsultasDoPaciente.and.returnValue(of([registro]));
-    edicao = jasmine.createSpyObj('EdicaoProntuarioService', ['editar']);
+    edicao = jasmine.createSpyObj('EdicaoProntuarioService', ['editar', 'ehDonoDoProntuario']);
     TestBed.configureTestingModule({
       providers: [
         AbaHistoricoMedicoComponent,
@@ -45,5 +45,11 @@ describe('AbaHistoricoMedicoComponent - edição de registro', () => {
     edicao.editar.and.returnValue(of(false));
     aba.editarRegistro(registro);
     expect(consultaApi.BuscandoHistoricoDeConsultasDoPaciente).toHaveBeenCalledTimes(1);
+  });
+
+  it('ehDonoDoProntuario pergunta ao serviço com o usuário do profissional do registro', () => {
+    edicao.ehDonoDoProntuario.and.returnValue(true);
+    expect(aba.ehDonoDoProntuario({ ...registro, profissionalUsuarioId: 8 })).toBeTrue();
+    expect(edicao.ehDonoDoProntuario).toHaveBeenCalledWith(8);
   });
 });

@@ -1,6 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
-import { EdicaoProntuarioService } from '../../data-access/edicao-prontuario.service';
 
 import {
   DenteResponse,
@@ -48,16 +47,18 @@ export class HistoricoRegistroCardComponent {
   /** Pedido de edição do prontuário deste registro (a tela que hospeda abre o dialog). */
   @Output() editar = new EventEmitter<HistoricoCompletoPacienteResponse>();
 
-  constructor(private edicaoProntuario: EdicaoProntuarioService) {}
+  /**
+   * O usuário logado é o dono do prontuário deste registro? Quem hospeda o card decide
+   * (EdicaoProntuarioService.ehDonoDoProntuario), para o card seguir só de apresentação.
+   */
+  @Input() ehDonoDoProntuario = false;
 
   /**
-   * Só o profissional dono do prontuário edita (contrato §1): `profissionalUsuarioId` do item igual
-   * ao id do usuário logado. Item sem esse campo ou sem prontuário gravado não mostra o botão.
-   * O back ainda valida o dono no PUT (404 para os demais).
+   * Só o profissional dono do prontuário edita (contrato §1). Item sem prontuário gravado
+   * não mostra o botão. O back ainda valida o dono no PUT (404 para os demais).
    */
   get podeEditar(): boolean {
-    return !!this.registro?.codigoProntuario
-      && this.edicaoProntuario.ehDonoDoProntuario(this.registro?.profissionalUsuarioId);
+    return !!this.registro?.codigoProntuario && this.ehDonoDoProntuario;
   }
 
   get isDentista(): boolean {

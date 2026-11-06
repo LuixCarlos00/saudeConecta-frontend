@@ -1,6 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { AuthService } from 'src/app/core/auth/auth.service';
 import { HistoricoRegistroCardComponent } from './historico-registro-card.component';
 import { IMPORTS_TESTE_PADRAO, SCHEMAS_TESTE_PADRAO } from 'src/app/testing/configuracao-teste';
 
@@ -130,56 +129,42 @@ describe('HistoricoRegistroCardComponent', () => {
 describe('HistoricoRegistroCardComponent - botão "Editar prontuário"', () => {
   let fixture: ComponentFixture<HistoricoRegistroCardComponent>;
 
-  /** Monta o card com `usuarioLogadoId` como id do usuário logado (null = sem sessão). */
-  async function montar(registro: any, usuarioLogadoId: number | null) {
+  /** Monta o card; `ehDono` diz se o usuário logado é o dono do prontuário (quem hospeda o card decide). */
+  async function montar(registro: any, ehDono: boolean) {
     await TestBed.configureTestingModule({
       declarations: [HistoricoRegistroCardComponent],
       imports: IMPORTS_TESTE_PADRAO,
       schemas: SCHEMAS_TESTE_PADRAO,
-      providers: [{
-        provide: AuthService,
-        useValue: { getCurrentUser: () => (usuarioLogadoId === null ? null : { id: usuarioLogadoId }) },
-      }],
     }).compileComponents();
     fixture = TestBed.createComponent(HistoricoRegistroCardComponent);
     fixture.componentRef.setInput('registro', registro);
+    fixture.componentRef.setInput('ehDonoDoProntuario', ehDono);
     fixture.detectChanges();
   }
 
   const botao = () => (fixture.nativeElement as HTMLElement).querySelector('button.hr-badge--acao') as HTMLButtonElement | null;
 
   it('dono do registro médico vê o botão, e o clique emite o registro', async () => {
-    const registro = { ...MEDICO, profissionalUsuarioId: 8 };
-    await montar(registro, 8);
+    await montar(MEDICO, true);
     const emitidos: any[] = [];
     fixture.componentInstance.editar.subscribe(r => emitidos.push(r));
     expect(botao()?.textContent).toContain('Editar prontuário');
     botao()!.click();
-    expect(emitidos).toEqual([registro]);
+    expect(emitidos).toEqual([MEDICO]);
   });
 
   it('dono do registro odontológico (com prontuário gravado) vê o botão', async () => {
-    await montar({ ...DENTISTA, codigoProntuario: '12', profissionalUsuarioId: 8 }, 8);
+    await montar({ ...DENTISTA, codigoProntuario: '12' }, true);
     expect(botao()).not.toBeNull();
   });
 
   it('não aparece para quem não é o dono (outro profissional, gestor, secretária)', async () => {
-    await montar({ ...MEDICO, profissionalUsuarioId: 8 }, 9);
-    expect(botao()).toBeNull();
-  });
-
-  it('não aparece quando o item não traz profissionalUsuarioId', async () => {
-    await montar(MEDICO, 8);
-    expect(botao()).toBeNull();
-  });
-
-  it('não aparece sem usuário logado', async () => {
-    await montar({ ...MEDICO, profissionalUsuarioId: 8 }, null);
+    await montar(MEDICO, false);
     expect(botao()).toBeNull();
   });
 
   it('não aparece em registro sem prontuário gravado', async () => {
-    await montar({ ...MEDICO, codigoProntuario: undefined, profissionalUsuarioId: 8 }, 8);
+    await montar({ ...MEDICO, codigoProntuario: undefined }, true);
     expect(botao()).toBeNull();
   });
 });

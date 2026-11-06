@@ -74,6 +74,15 @@ export class AbaHistoricoMedicoComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * O usuário logado é o dono do prontuário do registro? Só o dono vê o botão de editar no card.
+   *
+   * @param registro item do histórico
+   */
+  ehDonoDoProntuario(registro: HistoricoCompletoPacienteResponse): boolean {
+    return this.edicaoProntuario.ehDonoDoProntuario(registro.profissionalUsuarioId);
+  }
+
+  /**
    * Abre a edição do prontuário do registro. Se o usuário salvar, recarrega o histórico
    * (a tela de edição já mostra a mensagem de sucesso).
    *
