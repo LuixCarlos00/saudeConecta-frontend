@@ -1,4 +1,4 @@
-import { extrairCodigoErro, extrairMensagemErro, MENSAGEM_MP_VALOR_NAO_ATUALIZADO, mensagemErroTrocaPlano } from './mensagem-erro-http';
+import { extrairCodigoErro, extrairMensagemErro, MENSAGEM_MP_VALOR_NAO_ATUALIZADO, mensagemErroAssinaturaAdmin, mensagemErroTrocaPlano } from './mensagem-erro-http';
 
 describe('extrairMensagemErro', () => {
   it('corpo string', () => expect(extrairMensagemErro({ error: ' CPF inválido ' })).toBe('CPF inválido'));
@@ -40,5 +40,24 @@ describe('extrairCodigoErro e mensagemErroTrocaPlano', () => {
       .toBe(MENSAGEM_MP_VALOR_NAO_ATUALIZADO);
     expect(mensagemErroTrocaPlano({ error: { message: 'Limite excedido' } }, 'padrão')).toBe('Limite excedido');
     expect(mensagemErroTrocaPlano({}, 'padrão')).toBe('padrão');
+  });
+});
+
+describe('mensagemErroAssinaturaAdmin', () => {
+  const erro = (status: number, code?: string, message = 'msg do back') => ({ status, error: { code, message } });
+
+  it('traduz os códigos do contrato', () => {
+    expect(mensagemErroAssinaturaAdmin(erro(409, 'ASSINATURA_CANCELADA'), 'p')).toContain('cancelada');
+    expect(mensagemErroAssinaturaAdmin(erro(409, 'ASSINATURA_SUSPENSA'), 'p')).toContain('Clínica suspensa');
+    expect(mensagemErroAssinaturaAdmin(erro(409, 'PREAPPROVAL_SUBSTITUIDO_EM_ANALISE'), 'p')).toContain('pagamento anterior em análise');
+    expect(mensagemErroAssinaturaAdmin(erro(502, 'MP_VALOR_NAO_ATUALIZADO'), 'p')).toContain('não aceitou o novo valor');
+    expect(mensagemErroAssinaturaAdmin(erro(409, 'PENDENCIA_JA_RESOLVIDA'), 'p')).toContain('já foi resolvida');
+    expect(mensagemErroAssinaturaAdmin(erro(403, 'ACESSO_NEGADO'), 'p')).toContain('permissão');
+  });
+
+  it('503 sem código fala da integração; código desconhecido usa a mensagem do back; sem nada usa o padrão', () => {
+    expect(mensagemErroAssinaturaAdmin({ status: 503, error: {} }, 'p')).toContain('Mercado Pago indisponível');
+    expect(mensagemErroAssinaturaAdmin(erro(502, 'BUSINESS_ERROR', 'MP fora do ar'), 'p')).toBe('MP fora do ar');
+    expect(mensagemErroAssinaturaAdmin({ status: 0 }, 'padrão')).toBe('padrão');
   });
 });

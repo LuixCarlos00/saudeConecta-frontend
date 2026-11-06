@@ -7,7 +7,7 @@ import { CobrancaApiService } from 'src/app/services/api/cobranca-api.service';
 import { PlanoAssinatura, AssinaturaTenant, CobrancaTenant, CustomizarPlanoTenantRequest } from 'src/app/util/variados/interfaces/planos/PlanoAssinatura';
 import { forkJoin } from 'rxjs';
 import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
-import { mensagemErroTrocaPlano } from 'src/app/shared/utils/mensagem-erro-http';
+import { mensagemErroAssinaturaAdmin } from 'src/app/shared/utils/mensagem-erro-http';
 
 @Component({
   selector: 'app-modal-associar-plano',
@@ -157,14 +157,14 @@ export class ModalAssociarPlanoComponent implements OnInit {
 
     this.isSaving = true;
 
-    this.assinaturaApiService.assinarPlano(this.data.organizacaoId, this.planoSelecionado).subscribe({
+    this.assinaturaApiService.assinar({ organizacaoId: this.data.organizacaoId, planoId: this.planoSelecionado }).subscribe({
       next: () => {
         const msg = this.modoEdicao ? 'Plano alterado com sucesso!' : 'Plano associado com sucesso!';
         this.snackBar.open(msg, 'Fechar', { duration: 3000 });
         this.dialogRef.close(true);
       },
       error: (err) => {
-        const msg = mensagemErroTrocaPlano(err, this.modoEdicao ? 'Erro ao alterar plano' : 'Erro ao associar plano');
+        const msg = mensagemErroAssinaturaAdmin(err, this.modoEdicao ? 'Erro ao alterar plano' : 'Erro ao associar plano');
         this.snackBar.open(msg, 'Fechar', { duration: 5000 });
         this.isSaving = false;
       }
@@ -264,7 +264,7 @@ export class ModalAssociarPlanoComponent implements OnInit {
       error: (err) => {
         console.error('Erro ao customizar plano:', err);
         this.isSavingCustom = false;
-        const msg = mensagemErroTrocaPlano(err, err.message || 'Erro ao personalizar plano');
+        const msg = mensagemErroAssinaturaAdmin(err, err.message || 'Erro ao personalizar plano');
         this.notificacao.fire({
           icon: 'error',
           title: 'Erro',

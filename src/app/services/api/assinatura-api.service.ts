@@ -14,22 +14,13 @@ export class AssinaturaApiService {
   constructor(private http: HttpClient) { }
 
   /**
-   * Cria nova assinatura (TRIAL) para a organização.
-   * @param request dados da assinatura
-   * @returns Observable com a assinatura criada
+   * Associa plano a uma clínica (SUPER_ADMIN): cria TRIAL quando não há assinatura TRIAL/ATIVA/INADIMPLENTE
+   * e troca o plano quando há. A resposta é 201 nos dois casos; quem chama sabe qual foi pelo modo do modal.
+   * @param request organização e plano
+   * @returns Observable com a assinatura criada ou atualizada
    */
   assinar(request: AssinaturaTenantRequest): Observable<AssinaturaTenant> {
     return this.http.post<AssinaturaTenant>(this.apiUrl, request);
-  }
-
-  /**
-   * Associa um plano a uma organização (SUPER_ADMIN).
-   * @param organizacaoId ID da organização
-   * @param planoId ID do plano
-   * @returns Observable com a assinatura criada
-   */
-  assinarPlano(organizacaoId: number, planoId: number): Observable<AssinaturaTenant> {
-    return this.http.post<AssinaturaTenant>(`${this.apiUrl}/organizacao/${organizacaoId}/plano/${planoId}`, {});
   }
 
   /**

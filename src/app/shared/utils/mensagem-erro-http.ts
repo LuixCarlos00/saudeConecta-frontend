@@ -55,3 +55,28 @@ export function mensagemErroTrocaPlano(error: any, padrao: string): string {
   if (extrairCodigoErro(error) === 'MP_VALOR_NAO_ATUALIZADO') { return MENSAGEM_MP_VALOR_NAO_ATUALIZADO; }
   return extrairMensagemErro(error) || padrao;
 }
+
+/** Textos por `code` das ações do SUPER_ADMIN sobre assinaturas (contrato admin-assinaturas, seção 6). */
+const MENSAGENS_ASSINATURA_ADMIN: Record<string, string> = {
+  MP_VALOR_NAO_ATUALIZADO: 'O Mercado Pago não aceitou o novo valor. O plano não foi alterado; tente de novo.',
+  ASSINATURA_SUSPENSA: 'Clínica suspensa: dê cortesia ou cancele a assinatura antes de associar um plano.',
+  ASSINATURA_CANCELADA: 'Esta assinatura está cancelada e não pode ser suspensa.',
+  PREAPPROVAL_SUBSTITUIDO_EM_ANALISE: 'Há um pagamento anterior em análise. Resolva a pendência no Mercado Pago antes.',
+  PENDENCIA_JA_RESOLVIDA: 'Esta pendência já foi resolvida por outra pessoa.',
+  ACESSO_NEGADO: 'Você não tem permissão para esta ação.',
+};
+
+/**
+ * Mensagem de erro das telas do SUPER_ADMIN (assinaturas, associar plano, pendências): o `code` do back
+ * ganha o texto do contrato; sem código conhecido usa a mensagem do back ou o padrão.
+ *
+ * @param error HttpErrorResponse da ação
+ * @param padrao texto quando o back não trouxe mensagem
+ * @returns mensagem pronta para o usuário
+ */
+export function mensagemErroAssinaturaAdmin(error: any, padrao: string): string {
+  const codigo = extrairCodigoErro(error);
+  if (codigo && MENSAGENS_ASSINATURA_ADMIN[codigo]) { return MENSAGENS_ASSINATURA_ADMIN[codigo]; }
+  if (error?.status === 503) { return 'Integração com o Mercado Pago indisponível no momento. Tente novamente mais tarde.'; }
+  return mensagemErroTrocaPlano(error, padrao);
+}
