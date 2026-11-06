@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AuthGuard, RoleGuard } from './core/auth/guards';
-import { ProntuarioGuard } from './core/guards/prontuario.guard';
+import { ProntuarioGuard } from './features/atendimento/guards/prontuario.guard';
 import { Role } from './shared/constants/roles.constant';
 import { NotFoundComponent } from './core/layout/not-found/not-found.component';
 
@@ -37,10 +37,10 @@ import { HistoricoDadosPessoaisComponent } from './features/administrador/histor
 
 // ========== FEATURES MÉDICO ==========
 import { DadosPessoaisComponent } from './features/medico/dados-pessoais/DadosPessoais.component';
-import { ProntuarioMedicoComponent } from './features/medico/prontuario-medico/prontuario-medico.component';
-import { ProntuarioComponent } from './features/medico/prontuario/prontuario.component';
+import { ProntuarioMedicoComponent } from './features/atendimento/pages/prontuario-medico/prontuario-medico.component';
+import { ProntuarioComponent } from './features/atendimento/pages/prontuario/prontuario.component';
 import { AgendaCalendarioComponent } from './features/administrador/agenda-calendario/agenda-calendario.component';
-import { ProntuarioDentistaComponent } from './features/medico/prontuario-dentista/prontuario-dentista.component';
+import { ProntuarioDentistaComponent } from './features/atendimento/pages/prontuario-dentista/prontuario-dentista.component';
 import { QuestionarioSaudeComponent } from './features/publico/questionario-saude/questionario-saude.component';
 import { AssinaturaPlanejamentoComponent } from './features/publico/assinatura-planejamento/assinatura-planejamento.component';
 import { RelatoriosPacientesComponent } from './features/relatorio/relatorios-pacientes/relatorios-pacientes.component';

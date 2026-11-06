@@ -7,7 +7,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
-import { PublicoModule } from './features/publico/publico.module';
+import { PublicoModule } from './features/publico.module';
 import { UtilModule } from './util/util/util.module';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { CommonModule } from '@angular/common';
@@ -21,9 +21,9 @@ import { BarraSuperiorComponent } from './core/layout/barra-superior/barra-super
 import { NgChartsModule } from 'ng2-charts';
 import { MatBadgeModule } from '@angular/material/badge';
 import { CoreModule } from './core/core.module';
-import { AdministradorModule } from './features/administrador/administrador.module';
+import { AdministradorModule } from './features/administrador.module';
 
-import { MedicoModule } from './features/medico/medico.module';
+import { MedicoModule } from './features/medico.module';
 import { RelatorioModule } from './features/relatorio/relatorio.module';
 
 registerLocaleData(localePt);
