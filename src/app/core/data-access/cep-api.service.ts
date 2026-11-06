@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, map, throwError } from 'rxjs';
-import { EnderecoViaCep } from 'src/app/util/variados/interfaces/endereco/logradouro';
+import { EnderecoViaCep } from 'src/app/shared/models/logradouro';
 import { environment } from 'src/environments/environment';
 
 

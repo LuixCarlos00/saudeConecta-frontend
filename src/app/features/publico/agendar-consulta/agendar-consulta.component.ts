@@ -3,10 +3,10 @@ import { Component, OnInit, Inject, Optional, ElementRef, ViewChild } from '@ang
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { MatDialog, MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
-import { HoradaConsulta } from 'src/app/util/variados/options/options';
-import { Paciente } from 'src/app/util/variados/interfaces/paciente/paciente';
-import { Profissional } from 'src/app/util/variados/interfaces/medico/Profissional';
-import { Usuario } from 'src/app/util/variados/interfaces/usuario/usuario';
+import { HoradaConsulta } from 'src/app/shared/constants/options';
+import { Paciente } from 'src/app/shared/models/paciente';
+import { Profissional } from 'src/app/shared/models/Profissional';
+import { Usuario } from 'src/app/shared/models/usuario';
 import { ConsultaApiService } from 'src/app/core/data-access/consulta-api.service';
 import { ConsultaStateService } from 'src/app/services/state/consulta-state.service';
 import { PacienteApiService } from 'src/app/core/data-access/paciente-api.service';
@@ -15,7 +15,7 @@ import { AuthService } from 'src/app/core/auth/auth.service';
 import { TabelaDePacientesComponent } from '../../administrador/gerenciamento-agenda/nova-consuta/tabela-de-pacientes/tabela-de-pacientes.component';
 import { TabelasPesquisasMedicosComponent } from '../../administrador/gerenciamento-agenda/nova-consuta/tabelas-Pesquisas-Medicos/tabelas-Pesquisas-Medicos.component';
 import { CadastroPacienteComponent } from '../../administrador/cadastros/cadastro-paciente/cadastro-paciente.component';
-import { Consultav2 } from 'src/app/util/variados/interfaces/consulta/consultav2';
+import { Consultav2 } from 'src/app/shared/models/consultav2';
 import { idFormaPagamentoPorRotulo } from 'src/app/shared/constants/forma-pagamento.constant';
 import { formatarDataLocal, formatarHoraLocal } from 'src/app/shared/utils/data-local';
 

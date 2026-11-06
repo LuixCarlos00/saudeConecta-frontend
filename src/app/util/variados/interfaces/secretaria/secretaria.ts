@@ -1,4 +1,4 @@
-import { Usuario } from '../usuario/usuario';
+import { Usuario } from 'src/app/shared/models/usuario';
 
 export interface Secretaria {
   // Propriedades PascalCase (legado)

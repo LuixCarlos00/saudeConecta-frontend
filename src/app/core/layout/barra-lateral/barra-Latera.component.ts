@@ -1,7 +1,7 @@
 import { ControleAcessoApiService } from 'src/app/core/data-access/controle-acesso-api.service';
 import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
-import { Usuario } from 'src/app/util/variados/interfaces/usuario/usuario';
+import { Usuario } from 'src/app/shared/models/usuario';
 import { AuthService } from 'src/app/core/auth/auth.service';
 import { ThemeService } from 'src/app/core/theme/theme.service';
 import { Subscription, filter } from 'rxjs';

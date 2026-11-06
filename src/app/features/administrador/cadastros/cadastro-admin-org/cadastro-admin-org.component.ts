@@ -8,10 +8,10 @@ import { Subscription } from 'rxjs';
 import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
 import { AdministradorApiService } from 'src/app/core/data-access/administrador-api.service';
 import { FiltroStateService } from 'src/app/core/data-access/filtro-state.service';
-import { CpfValidator } from 'src/app/util/validators/cpf.validator';
-import { cpfValidator } from 'src/app/util/validators/cpf-form.validator';
+import { CpfValidator } from 'src/app/shared/validators/cpf.validator';
+import { cpfValidator } from 'src/app/shared/validators/cpf-form.validator';
 import { extrairMensagemErro } from '../../../../shared/utils/mensagem-erro-http';
-import { getFieldError } from 'src/app/util/validators/field-errors';
+import { getFieldError } from 'src/app/shared/validators/field-errors';
 import {
   nomeCompletoValidator,
   emailValidator,
@@ -21,8 +21,8 @@ import {
   numeroEnderecoValidator,
   cnpjValidator,
   antiInjectionValidator,
-} from 'src/app/util/validators/form-validators';
-import { PlanoAssinatura } from 'src/app/util/variados/interfaces/planos/PlanoAssinatura';
+} from 'src/app/shared/validators/form-validators';
+import { PlanoAssinatura } from 'src/app/shared/models/PlanoAssinatura';
 
 @Component({
   selector: 'app-cadastro-admin-org',

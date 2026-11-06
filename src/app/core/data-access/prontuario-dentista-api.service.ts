@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { ProntuarioDentistaRequest } from 'src/app/util/variados/interfaces/Prontuario/ProntuarioDentista';
+import { ProntuarioDentistaRequest } from 'src/app/shared/models/ProntuarioDentista';
 import { environment } from 'src/environments/environment';
 
 @Injectable({

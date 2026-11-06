@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
-import { Consultav2 } from 'src/app/util/variados/interfaces/consulta/consultav2';
+import { Consultav2 } from 'src/app/shared/models/consultav2';
 
 @Injectable({
   providedIn: 'root'

@@ -1,9 +1,9 @@
 import { filter, take } from 'rxjs';
-import { Consultav2 } from 'src/app/util/variados/interfaces/consulta/consultav2';
+import { Consultav2 } from 'src/app/shared/models/consultav2';
 import { ConsultaApiService } from 'src/app/core/data-access/consulta-api.service';
 import { RascunhoAtendimentoApiService } from 'src/app/core/data-access/rascunho-atendimento-api.service';
 import { ProntuarioStateService } from 'src/app/core/data-access/prontuario-state.service';
-import { Usuario } from 'src/app/util/variados/interfaces/usuario/usuario';
+import { Usuario } from 'src/app/shared/models/usuario';
 import { AuthService } from 'src/app/core/auth/auth.service';
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { PageEvent } from '@angular/material/paginator';

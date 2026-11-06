@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { PageEvent } from '@angular/material/paginator';
 import { Medico } from 'src/app/util/variados/interfaces/medico/medico';
-import { Profissional } from 'src/app/util/variados/interfaces/medico/Profissional';
+import { Profissional } from 'src/app/shared/models/Profissional';
 
 @Component({
   selector: 'app-tabela-editar-Medicos-Consultas',

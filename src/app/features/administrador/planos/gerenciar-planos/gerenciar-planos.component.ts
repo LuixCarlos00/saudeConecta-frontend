@@ -3,8 +3,8 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { PlanoApiService } from 'src/app/core/data-access/plano-api.service';
-import { PlanoAssinatura, PlanoAssinaturaRequest } from 'src/app/util/variados/interfaces/planos/PlanoAssinatura';
-import { PlanoDescricaoParserService } from 'src/app/services/plano-descricao-parser.service';
+import { PlanoAssinatura, PlanoAssinaturaRequest } from 'src/app/shared/models/PlanoAssinatura';
+import { PlanoDescricaoParserService } from 'src/app/shared/utils/plano-descricao-parser.service';
 import { ModalValoresAdicionaisComponent } from './modal-valores-adicionais/modal-valores-adicionais.component';
 
 @Component({

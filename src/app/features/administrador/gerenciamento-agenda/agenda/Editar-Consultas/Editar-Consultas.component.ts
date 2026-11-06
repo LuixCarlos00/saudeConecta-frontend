@@ -5,11 +5,11 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { extrairMensagemErro } from 'src/app/shared/utils/mensagem-erro-http';
 import { ConsultaApiService, HorarioOcupado } from 'src/app/core/data-access/consulta-api.service';
 import { PacienteApiService } from 'src/app/core/data-access/paciente-api.service';
-import { Paciente } from 'src/app/util/variados/interfaces/paciente/paciente';
-import { HoradaConsulta } from 'src/app/util/variados/options/options';
+import { Paciente } from 'src/app/shared/models/paciente';
+import { HoradaConsulta } from 'src/app/shared/constants/options';
 import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
 import { FORMAS_PAGAMENTO, rotuloFormaPagamento } from 'src/app/shared/constants/forma-pagamento.constant';
-import { Profissional } from 'src/app/util/variados/interfaces/medico/Profissional';
+import { Profissional } from 'src/app/shared/models/Profissional';
 import { escaparHtml } from 'src/app/shared/utils/escapar-html';
 import { formatarDataLocal, formatarHoraLocal } from 'src/app/shared/utils/data-local';
 

@@ -9,7 +9,7 @@ import { CadastroAdmComponent } from '../cadastros/cadastro-adm/cadastro-adm.com
 import { CadastroAdminOrgComponent } from '../cadastros/cadastro-admin-org/cadastro-admin-org.component';
 import { AuthService } from 'src/app/core/auth/auth.service';
 import { AssinaturaApiService } from 'src/app/core/data-access/assinatura-api.service';
-import { LimitesPlano } from 'src/app/util/variados/interfaces/planos/PlanoAssinatura';
+import { LimitesPlano } from 'src/app/shared/models/PlanoAssinatura';
 import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
 
 @Component({

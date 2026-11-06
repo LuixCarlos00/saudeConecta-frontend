@@ -1,8 +1,8 @@
 import { Component, OnInit, HostListener } from '@angular/core';
 import { Router } from '@angular/router';
 import { PlanoApiService } from 'src/app/core/data-access/plano-api.service';
-import { PlanoAssinatura } from 'src/app/util/variados/interfaces/planos/PlanoAssinatura';
-import { PlanoDescricaoParserService } from 'src/app/services/plano-descricao-parser.service';
+import { PlanoAssinatura } from 'src/app/shared/models/PlanoAssinatura';
+import { PlanoDescricaoParserService } from 'src/app/shared/utils/plano-descricao-parser.service';
 
 @Component({
   selector: 'app-landing-page',

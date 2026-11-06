@@ -1,6 +1,6 @@
-import { ConsultaResponse, ProfissionalResponse } from './Prontuario';
-import { DentePayload } from './ProntuarioDentista';
-import { DenteResponse } from '../historico/historico-completo-paciente-response.interface';
+import { ConsultaResponse, ProfissionalResponse } from 'src/app/shared/models/Prontuario';
+import { DentePayload } from 'src/app/shared/models/ProntuarioDentista';
+import { DenteResponse } from 'src/app/shared/models/historico-completo-paciente-response.interface';
 
 // ─── Estrutura real que vem do backend do dentista ───────────────────────────
 

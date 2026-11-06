@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, tap } from 'rxjs';
-import { Paciente } from 'src/app/util/variados/interfaces/paciente/paciente';
+import { Paciente } from 'src/app/shared/models/paciente';
 import { environment } from 'src/environments/environment';
 
 

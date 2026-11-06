@@ -3,7 +3,7 @@ import { Observable, takeUntil } from 'rxjs';
 import { ProntuarioApiService } from 'src/app/core/data-access/prontuario-api.service';
 import { ProntuarioDentistaApiService } from 'src/app/core/data-access/prontuario-dentista-api.service';
 import { RelatorioService } from 'src/app/features/relatorio/relatorio.service';
-import { Consultav2 } from 'src/app/util/variados/interfaces/consulta/consultav2';
+import { Consultav2 } from 'src/app/shared/models/consultav2';
 
 /**
  * Ações sobre uma consulta compartilhadas pelas duas agendas (lista e calendário):

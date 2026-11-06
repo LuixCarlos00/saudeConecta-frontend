@@ -5,9 +5,9 @@ import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service
 import { CadastroPublicoApiService } from 'src/app/services/api/cadastro-publico-api.service';
 import { CepApiService } from 'src/app/core/data-access/cep-api.service';
 import { PlanoApiService } from 'src/app/core/data-access/plano-api.service';
-import { CpfValidator } from 'src/app/util/validators/cpf.validator';
-import { cpfValidator } from 'src/app/util/validators/cpf-form.validator';
-import { getFieldError } from 'src/app/util/validators/field-errors';
+import { CpfValidator } from 'src/app/shared/validators/cpf.validator';
+import { cpfValidator } from 'src/app/shared/validators/cpf-form.validator';
+import { getFieldError } from 'src/app/shared/validators/field-errors';
 import {
   antiInjectionValidator,
   cepValidator,
@@ -17,8 +17,8 @@ import {
   numeroEnderecoValidator,
   telefoneValidator,
   textoBrValidator,
-} from 'src/app/util/validators/form-validators';
-import { PlanoAssinatura } from 'src/app/util/variados/interfaces/planos/PlanoAssinatura';
+} from 'src/app/shared/validators/form-validators';
+import { PlanoAssinatura } from 'src/app/shared/models/PlanoAssinatura';
 
 /**
  * Auto-cadastro SaaS a partir da landing page.

@@ -3,7 +3,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { of, Subject, throwError } from 'rxjs';
 import Swal from 'sweetalert2';
 import { RascunhoAtendimentoApiService } from 'src/app/core/data-access/rascunho-atendimento-api.service';
-import { RascunhoAtendimentoResponse } from 'src/app/util/variados/interfaces/Prontuario/RascunhoAtendimento';
+import { RascunhoAtendimentoResponse } from 'src/app/shared/models/RascunhoAtendimento';
 import {
   DEBOUNCE_MS, INTERVALO_TEMPO_MS, INTERVALO_VERIFICACAO_MS, RascunhoAutosaveService, TIMEOUT_AGUARDAR_MS,
 } from './rascunho-autosave.service';

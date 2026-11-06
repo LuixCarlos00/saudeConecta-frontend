@@ -1,7 +1,7 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { environment } from 'src/environments/environment';
-import { RascunhoAtendimentoResponse } from 'src/app/util/variados/interfaces/Prontuario/RascunhoAtendimento';
+import { RascunhoAtendimentoResponse } from 'src/app/shared/models/RascunhoAtendimento';
 import { RascunhoAtendimentoApiService } from './rascunho-atendimento-api.service';
 
 describe('RascunhoAtendimentoApiService', () => {

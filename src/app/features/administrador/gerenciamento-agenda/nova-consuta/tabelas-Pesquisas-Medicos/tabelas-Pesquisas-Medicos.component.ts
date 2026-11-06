@@ -7,7 +7,7 @@ import {
 import { PageEvent } from '@angular/material/paginator';
 import { Medico } from 'src/app/util/variados/interfaces/medico/medico';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { Profissional } from 'src/app/util/variados/interfaces/medico/Profissional';
+import { Profissional } from 'src/app/shared/models/Profissional';
 
 @Component({
   selector: 'app-tabelas-Pesquisas-Medicos',

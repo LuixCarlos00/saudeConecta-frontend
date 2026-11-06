@@ -3,8 +3,8 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { jsPDF } from 'jspdf';
 
 import { ConsultaApiService } from 'src/app/core/data-access/consulta-api.service';
-import { Consultav2 } from 'src/app/util/variados/interfaces/consulta/consultav2';
-import { HistoricoCompletoPacienteResponse } from 'src/app/util/variados/interfaces/historico/historico-completo-paciente-response.interface';
+import { Consultav2 } from 'src/app/shared/models/consultav2';
+import { HistoricoCompletoPacienteResponse } from 'src/app/shared/models/historico-completo-paciente-response.interface';
 import { formatarDataBr, formatarDataLocal } from '../../../../shared/utils/data-local';
 import { prefixoTitulo } from '../../../../shared/utils/titulo-profissional';
 

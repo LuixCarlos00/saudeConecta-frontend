@@ -1,4 +1,4 @@
-import { Usuario } from '../usuario/usuario';
+import { Usuario } from './usuario';
 
 export interface Adiministrador {
   // Propriedades PascalCase (legado)

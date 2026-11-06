@@ -10,8 +10,8 @@ import { Subscription } from 'rxjs';
 import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
 import { extrairMensagemErro } from 'src/app/shared/utils/mensagem-erro-http';
 import { EspecialidadeApiService } from "src/app/core/data-access/especialidade-api.service";
-import { ufOptions } from '../../../util/variados/options/options';
-import { getFieldError } from 'src/app/util/validators/field-errors';
+import { ufOptions } from 'src/app/shared/constants/options';
+import { getFieldError } from 'src/app/shared/validators/field-errors';
 import {
   nomeCompletoValidator,
   emailValidator,
@@ -27,7 +27,7 @@ import {
   valorMonetarioValidator,
   cnpjValidator,
   antiInjectionValidator,
-} from 'src/app/util/validators/form-validators';
+} from 'src/app/shared/validators/form-validators';
 
 @Component({
   selector: 'app-DadosPessoais',

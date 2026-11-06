@@ -6,7 +6,7 @@ import {
   DenteResponse,
   HistoricoCompletoPacienteResponse,
   PlanejamentoResponse,
-} from 'src/app/util/variados/interfaces/historico/historico-completo-paciente-response.interface';
+} from 'src/app/shared/models/historico-completo-paciente-response.interface';
 import { formatarDataBr } from 'src/app/shared/utils/data-local';
 import { nomeComTitulo } from 'src/app/shared/utils/titulo-profissional';
 

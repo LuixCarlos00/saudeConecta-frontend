@@ -4,13 +4,13 @@ import { Subscription } from 'rxjs';
 import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
 import { Router } from '@angular/router';
 import { MatDialogRef } from '@angular/material/dialog';
-import { ufOptions } from 'src/app/util/variados/options/options';
+import { ufOptions } from 'src/app/shared/constants/options';
 import { PacienteApiService } from 'src/app/core/data-access/paciente-api.service';
 import { FiltroStateService } from 'src/app/core/data-access/filtro-state.service';
 import { CepApiService } from 'src/app/core/data-access/cep-api.service';
-import { cpfValidator } from 'src/app/util/validators/cpf-form.validator';
-import { CpfValidator } from 'src/app/util/validators/cpf.validator';
-import { getFieldError } from 'src/app/util/validators/field-errors';
+import { cpfValidator } from 'src/app/shared/validators/cpf-form.validator';
+import { CpfValidator } from 'src/app/shared/validators/cpf.validator';
+import { getFieldError } from 'src/app/shared/validators/field-errors';
 import {
   nomeCompletoValidator,
   dataNascimentoPacienteValidator,
@@ -22,7 +22,7 @@ import {
   nacionalidadeValidator,
   numeroEnderecoValidator,
   antiInjectionValidator,
-} from 'src/app/util/validators/form-validators';
+} from 'src/app/shared/validators/form-validators';
 import { extrairMensagemErro } from '../../../../shared/utils/mensagem-erro-http';
 
 @Component({

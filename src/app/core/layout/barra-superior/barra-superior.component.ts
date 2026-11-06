@@ -4,9 +4,9 @@ import { Subscription } from 'rxjs';
 import { AuthService } from 'src/app/core/auth/auth.service';
 import { ControleAcessoApiService } from 'src/app/core/data-access/controle-acesso-api.service';
 import { AssinaturaApiService } from 'src/app/core/data-access/assinatura-api.service';
-import { AssinaturaTenant } from 'src/app/util/variados/interfaces/planos/PlanoAssinatura';
+import { AssinaturaTenant } from 'src/app/shared/models/PlanoAssinatura';
 import { diasCalendarioAte } from 'src/app/shared/utils/data-local';
-import { Usuario } from 'src/app/util/variados/interfaces/usuario/usuario';
+import { Usuario } from 'src/app/shared/models/usuario';
 
 /**
  * Barra superior fixa, exibida em todas as rotas da área logada.

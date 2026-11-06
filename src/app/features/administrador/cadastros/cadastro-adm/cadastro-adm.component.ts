@@ -6,9 +6,9 @@ import { Subscription } from 'rxjs';
 import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
 import { AdministradorApiService } from 'src/app/core/data-access/administrador-api.service';
 import { FiltroStateService } from 'src/app/core/data-access/filtro-state.service';
-import { cpfValidator } from 'src/app/util/validators/cpf-form.validator';
-import { CpfValidator } from 'src/app/util/validators/cpf.validator';
-import { getFieldError } from 'src/app/util/validators/field-errors';
+import { cpfValidator } from 'src/app/shared/validators/cpf-form.validator';
+import { CpfValidator } from 'src/app/shared/validators/cpf.validator';
+import { getFieldError } from 'src/app/shared/validators/field-errors';
 import { extrairMensagemErro } from '../../../../shared/utils/mensagem-erro-http';
 
 @Component({

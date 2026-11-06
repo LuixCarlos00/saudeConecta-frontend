@@ -9,7 +9,7 @@ import {
   DadosRascunho,
   RascunhoAtendimentoResponse,
   TipoRascunho,
-} from 'src/app/util/variados/interfaces/Prontuario/RascunhoAtendimento';
+} from 'src/app/shared/models/RascunhoAtendimento';
 import { formatarHoraLocal } from 'src/app/shared/utils/data-local';
 
 /** Estado do salvamento automático, exibido no cabeçalho do atendimento. */

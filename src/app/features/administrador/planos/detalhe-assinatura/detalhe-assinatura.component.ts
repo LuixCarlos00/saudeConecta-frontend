@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AssinaturaApiService } from 'src/app/core/data-access/assinatura-api.service';
 import { ControleAcessoApiService } from 'src/app/core/data-access/controle-acesso-api.service';
-import { AssinaturaTenant, CobrancaTenant, LimitesPlano } from 'src/app/util/variados/interfaces/planos/PlanoAssinatura';
+import { AssinaturaTenant, CobrancaTenant, LimitesPlano } from 'src/app/shared/models/PlanoAssinatura';
 import { diasCalendarioAte, formatarDataBr } from 'src/app/shared/utils/data-local';
 import { extrairCodigoErro, MENSAGEM_PREAPPROVAL_EM_ANALISE_CLIENTE } from 'src/app/shared/utils/mensagem-erro-http';
 import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';

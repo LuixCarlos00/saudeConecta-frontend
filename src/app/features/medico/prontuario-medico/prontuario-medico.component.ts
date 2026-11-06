@@ -7,7 +7,7 @@ import { Subject, takeUntil } from 'rxjs';
 import { ProntuarioApiService } from 'src/app/core/data-access/prontuario-api.service';
 import { ProntuarioStateService } from 'src/app/core/data-access/prontuario-state.service';
 import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
-import { Consultav2 } from '../../../util/variados/interfaces/consulta/consultav2';
+import { Consultav2 } from 'src/app/shared/models/consultav2';
 
 import { AbaIdentificacaoMedicoComponent } from './aba-identificacao-medico/aba-identificacao-medico.component';
 import { AbaExameObjetivoMedicoComponent } from './aba-exame-objetivo-medico/aba-exame-objetivo-medico.component';
@@ -20,7 +20,7 @@ import { extrairMensagemErro } from '../../../shared/utils/mensagem-erro-http';
 import { EdicaoProntuarioService } from '../edicao-prontuario.service';
 import { RascunhoAtendimentoApiService } from 'src/app/core/data-access/rascunho-atendimento-api.service';
 import { ConfigAutosave, RascunhoAutosaveService } from 'src/app/services/state/rascunho-autosave.service';
-import { DadosRascunho, RascunhoAtendimentoResponse } from 'src/app/util/variados/interfaces/Prontuario/RascunhoAtendimento';
+import { DadosRascunho, RascunhoAtendimentoResponse } from 'src/app/shared/models/RascunhoAtendimento';
 
 @Component({
   selector: 'app-prontuario-medico',

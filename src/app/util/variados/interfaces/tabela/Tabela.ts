@@ -1,6 +1,6 @@
-import { Adiministrador } from "../administrado/adiministrador";
+import { Adiministrador } from "src/app/shared/models/adiministrador";
 import { Medico } from "../medico/medico";
-import { Paciente } from "../paciente/paciente";
+import { Paciente } from "src/app/shared/models/paciente";
 
 export interface Tabela {
   consulta: number;

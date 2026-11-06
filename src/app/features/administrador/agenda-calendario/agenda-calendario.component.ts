@@ -9,8 +9,8 @@ import { ConsultaStateService } from 'src/app/services/state/consulta-state.serv
 import { ProntuarioStateService } from 'src/app/core/data-access/prontuario-state.service';
 import { AuthService } from 'src/app/core/auth/auth.service';
 import { ControleAcessoApiService } from 'src/app/core/data-access/controle-acesso-api.service';
-import { Consultav2, StatusConsulta } from 'src/app/util/variados/interfaces/consulta/consultav2';
-import { Usuario } from 'src/app/util/variados/interfaces/usuario/usuario';
+import { Consultav2, StatusConsulta } from 'src/app/shared/models/consultav2';
+import { Usuario } from 'src/app/shared/models/usuario';
 import { AgendarConsultaComponent } from 'src/app/features/publico/agendar-consulta/agendar-consulta.component';
 import { RelatorioService } from 'src/app/features/relatorio/relatorio.service';
 import { ProntuarioDentistaApiService } from 'src/app/core/data-access/prontuario-dentista-api.service';

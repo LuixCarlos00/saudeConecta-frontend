@@ -1,8 +1,8 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, catchError, map } from 'rxjs';
-import { Consultav2 } from 'src/app/util/variados/interfaces/consulta/consultav2';
-import { HistoricoCompletoPacienteResponse } from 'src/app/util/variados/interfaces/historico/historico-completo-paciente-response.interface';
+import { Consultav2 } from 'src/app/shared/models/consultav2';
+import { HistoricoCompletoPacienteResponse } from 'src/app/shared/models/historico-completo-paciente-response.interface';
 import { environment } from 'src/environments/environment';
 import { EstatisticasDashboardAdminOrg } from './dashboard-api.service';
 

@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { PageEvent } from '@angular/material/paginator';
-import { Paciente } from 'src/app/util/variados/interfaces/paciente/paciente';
+import { Paciente } from 'src/app/shared/models/paciente';
 
 @Component({
   selector: 'app-tabela-editar-Paciente-Consultas',

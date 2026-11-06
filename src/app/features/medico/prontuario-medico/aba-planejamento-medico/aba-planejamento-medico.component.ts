@@ -6,7 +6,7 @@ import { ProcedimentoPadraoApiService } from 'src/app/core/data-access/procedime
 import { PlanejamentoTerapeuticoApiService } from 'src/app/core/data-access/planejamento-terapeutico-api.service';
 import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
 import { ProntuarioApiService } from 'src/app/core/data-access/prontuario-api.service';
-import { Prontuario, PlanejamentoTerapeutico } from 'src/app/util/variados/interfaces/Prontuario/Prontuario';
+import { Prontuario, PlanejamentoTerapeutico } from 'src/app/shared/models/Prontuario';
 import { formatarDataLocal } from '../../../../shared/utils/data-local';
 
 @Component({

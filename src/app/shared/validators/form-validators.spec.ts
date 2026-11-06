@@ -1,6 +1,6 @@
 import { FormControl } from '@angular/forms';
 import { dataNascimentoPacienteValidator, dataNascimentoValidator } from './form-validators';
-import { formatarDataLocal } from '../../shared/utils/data-local';
+import { formatarDataLocal } from '../utils/data-local';
 
 describe('validators de data de nascimento (data local)', () => {
   afterEach(() => jasmine.clock().uninstall());

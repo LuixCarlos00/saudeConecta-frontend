@@ -12,13 +12,13 @@ import { FiltroStateService } from 'src/app/core/data-access/filtro-state.servic
 import { TrocaSenhaUsuariosComponent } from './TrocaSenhaUsuarios/TrocaSenhaUsuarios.component';
 import { VisualizarEditarUsuarioComponent } from './VisualizarEditarUsuario/visualizar-editar-usuario.component';
 
-import { Adiministrador } from 'src/app/util/variados/interfaces/administrado/adiministrador';
+import { Adiministrador } from 'src/app/shared/models/adiministrador';
 import { Secretaria } from 'src/app/util/variados/interfaces/secretaria/secretaria';
-import { Paciente } from 'src/app/util/variados/interfaces/paciente/paciente';
+import { Paciente } from 'src/app/shared/models/paciente';
 import { ProfissionalApiService } from 'src/app/core/data-access/profissional-api.service';
 import { is } from 'date-fns/locale';
 import { extrairMensagemErro } from 'src/app/shared/utils/mensagem-erro-http';
-import { Profissional } from 'src/app/util/variados/interfaces/medico/Profissional';
+import { Profissional } from 'src/app/shared/models/Profissional';
 import { ControleAcessoApiService } from 'src/app/core/data-access/controle-acesso-api.service';
 import { ModalAssociarPlanoComponent } from './modal-associar-plano/modal-associar-plano.component';
 

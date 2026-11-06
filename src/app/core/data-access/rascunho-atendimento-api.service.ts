@@ -5,7 +5,7 @@ import {
   RascunhoAtendimentoRequest,
   RascunhoAtendimentoResponse,
   RascunhoResumo,
-} from 'src/app/util/variados/interfaces/Prontuario/RascunhoAtendimento';
+} from 'src/app/shared/models/RascunhoAtendimento';
 import { environment } from 'src/environments/environment';
 
 /**

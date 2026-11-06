@@ -1,5 +1,5 @@
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
-import { parseDataLocal } from '../../shared/utils/data-local';
+import { parseDataLocal } from '../utils/data-local';
 
 // ─── Regex Padrões ────────────────────────────────────────────────────────────
 

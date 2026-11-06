@@ -6,15 +6,15 @@ import { Router } from '@angular/router';
 import { MatDialogRef } from '@angular/material/dialog';
 import { SecretariaApiService } from 'src/app/services/api/secretaria-api.service';
 import { FiltroStateService } from 'src/app/core/data-access/filtro-state.service';
-import { cpfValidator } from 'src/app/util/validators/cpf-form.validator';
-import { CpfValidator } from 'src/app/util/validators/cpf.validator';
-import { getFieldError } from 'src/app/util/validators/field-errors';
+import { cpfValidator } from 'src/app/shared/validators/cpf-form.validator';
+import { CpfValidator } from 'src/app/shared/validators/cpf.validator';
+import { getFieldError } from 'src/app/shared/validators/field-errors';
 import {
   nomeCompletoValidator,
   telefoneValidator,
   emailValidator,
   antiInjectionValidator,
-} from 'src/app/util/validators/form-validators';
+} from 'src/app/shared/validators/form-validators';
 
 @Component({
   selector: 'app-cadastro-secretaria',

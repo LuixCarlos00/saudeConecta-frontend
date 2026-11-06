@@ -9,7 +9,7 @@ import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service
 import { ProntuarioApiService } from 'src/app/core/data-access/prontuario-api.service';
 import { RascunhoAtendimentoApiService } from 'src/app/core/data-access/rascunho-atendimento-api.service';
 import { ProntuarioStateService } from 'src/app/core/data-access/prontuario-state.service';
-import { RascunhoAtendimentoResponse } from 'src/app/util/variados/interfaces/Prontuario/RascunhoAtendimento';
+import { RascunhoAtendimentoResponse } from 'src/app/shared/models/RascunhoAtendimento';
 import { IMPORTS_TESTE_PADRAO, SCHEMAS_TESTE_PADRAO } from '../../../testing/configuracao-teste';
 import { ProntuarioMedicoComponent } from './prontuario-medico.component';
 import { AbaIdentificacaoMedicoComponent } from './aba-identificacao-medico/aba-identificacao-medico.component';

@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { CobrancaTenant } from 'src/app/util/variados/interfaces/planos/PlanoAssinatura';
+import { CobrancaTenant } from 'src/app/shared/models/PlanoAssinatura';
 import { environment } from 'src/environments/environment';
 
 @Injectable({

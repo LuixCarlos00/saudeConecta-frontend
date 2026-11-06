@@ -4,7 +4,7 @@ import { Subject, takeUntil } from 'rxjs';
 import { ConsultaApiService } from 'src/app/core/data-access/consulta-api.service';
 import { TipoProntuario } from '../../consulta-edicao';
 import { EdicaoProntuarioService } from '../../edicao-prontuario.service';
-import { HistoricoCompletoPacienteResponse } from 'src/app/util/variados/interfaces/historico/historico-completo-paciente-response.interface';
+import { HistoricoCompletoPacienteResponse } from 'src/app/shared/models/historico-completo-paciente-response.interface';
 import { IALocalService, ResumoClinico } from 'src/app/services/ia-local.service';
 
 type AbaResumo = 'visao' | 'vitais' | 'timeline' | 'recomendacoes';

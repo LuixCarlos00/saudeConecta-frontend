@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { RascunhoAtendimentoResponse } from 'src/app/util/variados/interfaces/Prontuario/RascunhoAtendimento';
+import { RascunhoAtendimentoResponse } from 'src/app/shared/models/RascunhoAtendimento';
 
 @Injectable({
   providedIn: 'root'

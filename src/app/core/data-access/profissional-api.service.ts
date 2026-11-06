@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
-import { Profissional } from 'src/app/util/variados/interfaces/medico/Profissional';
+import { Profissional } from 'src/app/shared/models/Profissional';
 import { environment } from 'src/environments/environment';
 
 

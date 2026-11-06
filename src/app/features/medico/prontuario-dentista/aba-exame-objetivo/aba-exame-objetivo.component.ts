@@ -9,7 +9,7 @@ import {
   DentePayload,
   DENTE_STATUS_OPTIONS,
   getStatusOption,
-} from 'src/app/util/variados/interfaces/Prontuario/ProntuarioDentista';
+} from 'src/app/shared/models/ProntuarioDentista';
 
 @Component({
   selector: 'app-aba-exame-objetivo',

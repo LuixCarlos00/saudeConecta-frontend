@@ -9,8 +9,8 @@ import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service
 import { extrairMensagemErro } from 'src/app/shared/utils/mensagem-erro-http';
 import { EditarConsultasComponent } from './Editar-Consultas/Editar-Consultas.component';
 import { ObservacoesComponent } from './Observacoes/Observacoes.component';
-import { Consultav2 } from 'src/app/util/variados/interfaces/consulta/consultav2';
-import { Usuario } from 'src/app/util/variados/interfaces/usuario/usuario';
+import { Consultav2 } from 'src/app/shared/models/consultav2';
+import { Usuario } from 'src/app/shared/models/usuario';
 import { AuthService } from 'src/app/core/auth/auth.service';
 import { ProntuarioDentistaApiService } from 'src/app/core/data-access/prontuario-dentista-api.service';
 import { AcoesConsultaService } from '../acoes-consulta.service';

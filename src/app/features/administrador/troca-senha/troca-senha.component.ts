@@ -10,10 +10,10 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { el } from 'date-fns/locale';
 import { AuthService } from 'src/app/core/auth/auth.service';
-import { Adiministrador } from 'src/app/util/variados/interfaces/administrado/adiministrador';
+import { Adiministrador } from 'src/app/shared/models/adiministrador';
 import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
 import { map, take, filter } from 'rxjs';
-import { Usuario } from 'src/app/util/variados/interfaces/usuario/usuario';
+import { Usuario } from 'src/app/shared/models/usuario';
 import { UsuarioApiService } from 'src/app/core/data-access/usuario-api.service';
 
 @Component({

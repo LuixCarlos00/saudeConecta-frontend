@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { CadastroSaasRequest, CadastroSaasResponse } from 'src/app/util/variados/interfaces/planos/PlanoAssinatura';
+import { CadastroSaasRequest, CadastroSaasResponse } from 'src/app/shared/models/PlanoAssinatura';
 import { environment } from 'src/environments/environment';
 
 /**

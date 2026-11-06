@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Inject, Input, OnInit, Output } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { PageEvent } from '@angular/material/paginator';
-import { Paciente } from 'src/app/util/variados/interfaces/paciente/paciente';
+import { Paciente } from 'src/app/shared/models/paciente';
 
 @Component({
   selector: 'app-tabela-de-pacientes',

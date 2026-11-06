@@ -7,7 +7,7 @@ import { ConsultaApiService } from 'src/app/core/data-access/consulta-api.servic
 import { ProfissionalApiService } from 'src/app/core/data-access/profissional-api.service';
 import { EspecialidadeApiService, EspecialidadeResponse } from 'src/app/core/data-access/especialidade-api.service';
 import { ConsultaStateService } from 'src/app/services/state/consulta-state.service';
-import { Profissional } from '../interfaces/medico/Profissional';
+import { Profissional } from 'src/app/shared/models/Profissional';
 import { ControleAcessoApiService } from 'src/app/core/data-access/controle-acesso-api.service';
 import { formatarDataLocal } from '../../../shared/utils/data-local';
 

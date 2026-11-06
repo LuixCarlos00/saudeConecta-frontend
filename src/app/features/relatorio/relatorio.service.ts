@@ -7,8 +7,8 @@ import { ProntuarioApiService } from 'src/app/core/data-access/prontuario-api.se
 import { ProntuarioDentistaApiService } from 'src/app/core/data-access/prontuario-dentista-api.service';
 import { PlanejamentoTerapeuticoApiService } from 'src/app/core/data-access/planejamento-terapeutico-api.service';
 
-import { Consultav2, StatusConsulta } from 'src/app/util/variados/interfaces/consulta/consultav2';
-import { Prontuario } from 'src/app/util/variados/interfaces/Prontuario/Prontuario';
+import { Consultav2, StatusConsulta } from 'src/app/shared/models/consultav2';
+import { Prontuario } from 'src/app/shared/models/Prontuario';
 import { ConsultaRelatorio, PacienteAtendido, TipoDocumento } from 'src/app/util/variados/interfaces/relatorio/relatorio-paciente';
 
 import { RelatorioComponent } from './relatorio.component';

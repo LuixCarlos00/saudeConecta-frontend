@@ -1,7 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { MensageriaResponse, PageResponse, StatusMensagem, TipoMensagem } from 'src/app/util/variados/interfaces/mensageria/Mensageria';
+import { MensageriaResponse, PageResponse, StatusMensagem, TipoMensagem } from 'src/app/shared/models/Mensageria';
 
 export { MensageriaResponse, PageResponse, StatusMensagem, TipoMensagem };
 import { environment } from 'src/environments/environment';
