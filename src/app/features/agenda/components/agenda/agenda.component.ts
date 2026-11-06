@@ -15,7 +15,7 @@ import { AuthService } from 'src/app/core/auth/auth.service';
 import { ProntuarioDentistaApiService } from 'src/app/core/data-access/prontuario-dentista-api.service';
 import { AcoesConsultaService } from '../../data-access/acoes-consulta.service';
 import { PlanejamentoTerapeuticoApiService } from 'src/app/core/data-access/planejamento-terapeutico-api.service';
-import { RelatorioService } from 'src/app/features/relatorios/data-access/relatorio.service';
+import { RelatorioService } from 'src/app/features/relatorios';
 import { formatarDataLocal } from 'src/app/shared/utils/data-local';
     
 type TipoVisualizacao = 'AGENDADA' | 'REALIZADA';

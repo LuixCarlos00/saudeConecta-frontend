@@ -8,7 +8,7 @@ import { PlanejamentoTerapeuticoApiService } from 'src/app/core/data-access/plan
 import { ProntuarioDentistaApiService } from 'src/app/core/data-access/prontuario-dentista-api.service';
 import { ProntuarioStateService } from 'src/app/core/data-access/prontuario-state.service';
 import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
-import { RelatorioService } from 'src/app/features/relatorios/data-access/relatorio.service';
+import { RelatorioService } from 'src/app/features/relatorios';
 import { Consultav2 } from 'src/app/shared/models/consultav2';
 import { Usuario } from 'src/app/shared/models/usuario';
 import { extrairMensagemErro } from 'src/app/shared/utils/mensagem-erro-http';
