@@ -11,7 +11,7 @@
  * Regras (plano de arquitetura, seção 3.2):
  * - shared não importa de core nem de features;
  * - core não importa de features;
- * - uma feature não importa outra;
+ * - uma feature não importa outra, exceto pelo `features/<area>/index.ts` (API pública da área: só o que outra área precisa, como um service de data-access ou um diálogo);
  * - ninguém importa de testing/ fora de specs;
  * - só data-access (e core) usa HttpClient: features e shared fora de data-access não importam @angular/common/http (guards só tratam HttpErrorResponse);
  * - as pastas legadas util/ e services/ não existem mais;
@@ -43,10 +43,10 @@ module.exports = {
     },
     {
       name: 'feature-nao-importa-outra-feature',
-      comment: 'Uma feature não importa outra; o item compartilhado sobe para shared ou vira data-access público.',
+      comment: 'Uma feature não importa outra; o item compartilhado sobe para shared ou vira API pública em features/<area>/index.ts (única porta de entrada permitida).',
       severity: 'error',
       from: { path: '^src/app/features/([^/]+)/' },
-      to: { path: '^src/app/features/', pathNot: '^src/app/features/$1/' },
+      to: { path: '^src/app/features/', pathNot: '^src/app/features/($1/|[^/]+/index\\.ts$)' },
     },
     {
       name: 'testing-so-em-spec',
