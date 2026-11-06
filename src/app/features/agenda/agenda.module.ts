@@ -22,7 +22,6 @@ import { AgendaRoutingModule } from './agenda-routing.module';
 import { EditarConsultasComponent } from 'src/app/features/agenda/components/agenda/Editar-Consultas/Editar-Consultas.component';
 import { TabelaEditarMedicosConsultasComponent } from 'src/app/features/agenda/components/agenda/Editar-Consultas/tabela-editar-Medicos-Consultas/tabela-editar-Medicos-Consultas.component';
 import { TabelaEditarPacienteConsultasComponent } from 'src/app/features/agenda/components/agenda/Editar-Consultas/tabela-editar-Paciente-Consultas/tabela-editar-Paciente-Consultas.component';
-import { ObservacoesComponent } from 'src/app/features/agenda/components/agenda/Observacoes/Observacoes.component';
 import { AgendaComponent } from 'src/app/features/agenda/components/agenda/agenda.component';
 import { AgendarConsultaComponent } from 'src/app/features/agenda/components/agendar-consulta/agendar-consulta.component';
 import { CronologiaComponent } from 'src/app/features/agenda/components/cronologia/cronologia.component';
@@ -55,7 +54,6 @@ import { CadastroPacienteComponent } from 'src/app/features/agenda/pages/cadastr
     EditarConsultasComponent,
     TabelaEditarMedicosConsultasComponent,
     TabelaEditarPacienteConsultasComponent,
-    ObservacoesComponent,
     NovaConsultaComponent,
     TabelaDePacientesComponent,
     TabelasPesquisasMedicosComponent,

@@ -8,7 +8,7 @@ import { CronologiaComponent } from 'src/app/features/agenda/components/cronolog
 import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
 import { extrairMensagemErro } from 'src/app/shared/utils/mensagem-erro-http';
 import { EditarConsultasComponent } from './Editar-Consultas/Editar-Consultas.component';
-import { ObservacoesComponent } from './Observacoes/Observacoes.component';
+import { ObservacoesComponent } from 'src/app/shared/ui/observacoes/observacoes.component';
 import { Consultav2 } from 'src/app/shared/models/consultav2';
 import { Usuario } from 'src/app/shared/models/usuario';
 import { AuthService } from 'src/app/core/auth/auth.service';

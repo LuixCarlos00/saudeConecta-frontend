@@ -7,12 +7,13 @@ import { UsuariosModule } from './features/usuarios/usuarios.module';
 import { AtendimentoModule } from './features/atendimento/atendimento.module';
 import { ModalAssociarPlanoComponent } from './features/assinatura/components/modal-associar-plano/modal-associar-plano.component';
 import { CadastroPacienteComponent } from './features/agenda/pages/cadastro-paciente/cadastro-paciente.component';
-import { ObservacoesComponent } from './features/agenda/components/agenda/Observacoes/Observacoes.component';
+import { ObservacoesComponent } from './shared/ui/observacoes/observacoes.component';
 
 /**
  * Dialogos que uma area lazy abre com componente declarado em OUTRA area:
- * usuarios abre ModalAssociarPlano (assinatura) e CadastroPaciente (agenda); atendimento abre
- * Observacoes (agenda). Cada area e carregada so com o proprio modulo, como no app real
+ * usuarios abre ModalAssociarPlano (assinatura) e CadastroPaciente (agenda). O Observacoes (que o
+ * atendimento abre) agora e do shared, e o teste segue garantindo que abre dentro do AtendimentoModule.
+ * Cada area e carregada so com o proprio modulo, como no app real
  * (a area dona do componente nao e importada). Se o dialogo deixar de abrir/renderizar, o teste falha.
  */
 describe('Dialogos que cruzam areas lazy', () => {
@@ -62,7 +63,7 @@ describe('Dialogos que cruzam areas lazy', () => {
     expect(el.querySelectorAll('input').length).toBeGreaterThan(0);
   });
 
-  it('atendimento abre o ObservacoesComponent (agenda) e mostra o texto', () => {
+  it('atendimento abre o ObservacoesComponent (shared) e mostra o texto', () => {
     abrirComo(AtendimentoModule);
     const ref: MatDialogRef<ObservacoesComponent> = dialog.open(ObservacoesComponent, {
       data: { observacoes: 'Paciente alergico a dipirona' },

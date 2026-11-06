@@ -3,8 +3,8 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-Observacoes',
-  templateUrl: './Observacoes.component.html',
-  styleUrls: ['./Observacoes.component.css']
+  templateUrl: './observacoes.component.html',
+  styleUrls: ['./observacoes.component.css']
 })
 export class ObservacoesComponent implements OnInit {
 
