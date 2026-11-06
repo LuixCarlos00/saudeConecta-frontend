@@ -54,19 +54,5 @@
       "severity": "error",
       "name": "feature-nao-importa-outra-feature"
     }
-  },
-  {
-    "type": "dependency",
-    "from": "src/app/features/usuarios/pages/gerenciamento-usuarios/gerenciamento-usuario.component.ts",
-    "to": "src/app/features/agenda/pages/cadastro-paciente/cadastro-paciente.component.ts",
-    "unresolvedTo": "src/app/features/agenda/pages/cadastro-paciente/cadastro-paciente.component",
-    "dependencyTypes": [
-      "undetermined",
-      "import"
-    ],
-    "rule": {
-      "severity": "error",
-      "name": "feature-nao-importa-outra-feature"
-    }
   }
 ]
