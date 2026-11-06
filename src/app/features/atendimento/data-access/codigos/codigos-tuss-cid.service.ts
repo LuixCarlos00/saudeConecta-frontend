@@ -1,29 +1,42 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { firstValueFrom } from 'rxjs';
 
 export interface CodigoTuss { codigo: string; descricao: string; fabricante: string; tabela: number; }
 export interface CodigoCid { codigo: string; label: string; }
 
+/** Arquivos estáticos das tabelas (src/assets/codigos), servidos pelo próprio front. */
+const URL_TUSS = 'assets/codigos/tuss.json';
+const URL_CID = 'assets/codigos/cid.json';
+
 /**
- * Acesso às tabelas TUSS (~42 mil linhas) e CID (~61 mil linhas).
- * As tabelas são carregadas sob demanda com import() dinâmico, para ficarem em chunks
- * separados e fora do bundle principal; o carregamento acontece uma única vez (cache).
+ * Acesso às tabelas TUSS (~7 mil itens) e CID (~14 mil itens).
+ * As tabelas ficam em JSON dentro de assets e só são baixadas na primeira busca, fora do
+ * bundle do app; depois de baixadas ficam em cache (uma vez por tabela). Se o download falhar,
+ * a próxima busca tenta de novo.
  */
 @Injectable({ providedIn: 'root' })
 export class CodigosTussCidService {
   private tuss$?: Promise<CodigoTuss[]>;
   private cid$?: Promise<CodigoCid[]>;
 
+  constructor(private http: HttpClient) {}
+
   /** Carrega (uma vez) a tabela TUSS completa. */
   carregarTuss(): Promise<CodigoTuss[]> {
-    this.tuss$ ??= import('src/app/features/atendimento/data-access/codigos/tuss-Terminologia-unificada-saude-splementar')
-      .then(m => m.Tuss_terminologia_Unificada_Saude_Suplementar);
+    this.tuss$ ??= firstValueFrom(this.http.get<CodigoTuss[]>(URL_TUSS)).catch(erro => {
+      this.tuss$ = undefined;
+      throw erro;
+    });
     return this.tuss$;
   }
 
   /** Carrega (uma vez) a tabela CID completa. */
   carregarCid(): Promise<CodigoCid[]> {
-    this.cid$ ??= import('src/app/features/atendimento/data-access/codigos/cid-codigo-internaciona-doecas')
-      .then(m => m.Cid_codigo_internaciona_doecas);
+    this.cid$ ??= firstValueFrom(this.http.get<CodigoCid[]>(URL_CID)).catch(erro => {
+      this.cid$ = undefined;
+      throw erro;
+    });
     return this.cid$;
   }
 
