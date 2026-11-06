@@ -21,6 +21,7 @@ import { extrairMensagemErro } from 'src/app/shared/utils/mensagem-erro-http';
 import { Profissional } from 'src/app/shared/models/Profissional';
 import { ControleAcessoApiService } from 'src/app/core/data-access/controle-acesso-api.service';
 import { ModalAssociarPlanoComponent } from 'src/app/features/assinatura/components/modal-associar-plano/modal-associar-plano.component';
+import { UsuarioUnificado } from 'src/app/features/usuarios/models/usuario-unificado';
 
 export enum CategoriaUsuario {
   PACIENTE = 1,
@@ -28,18 +29,6 @@ export enum CategoriaUsuario {
   SECRETARIA = 3,
   ADMINISTRADOR = 4,
   TODOS = 5
-}
-
-export interface UsuarioUnificado {
-  codigo: number;
-  nome: string;
-  email: string;
-  categoria: string;
-  categoriaIcon: string;
-  status: boolean;
-  dadosOriginais: any;
-  nomeOrganizacao?: string;
-  nomePlano?: string;
 }
 
 @Component({
