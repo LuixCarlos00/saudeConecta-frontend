@@ -43,7 +43,7 @@ import { AgendaCalendarioComponent } from './features/agenda/pages/agenda-calend
 import { ProntuarioDentistaComponent } from './features/atendimento/pages/prontuario-dentista/prontuario-dentista.component';
 import { QuestionarioSaudeComponent } from './features/publico/pages/questionario-saude/questionario-saude.component';
 import { AssinaturaPlanejamentoComponent } from './features/publico/pages/assinatura-planejamento/assinatura-planejamento.component';
-import { RelatoriosPacientesComponent } from './features/relatorio/relatorios-pacientes/relatorios-pacientes.component';
+import { RelatoriosPacientesComponent } from './features/relatorios/pages/relatorios-pacientes/relatorios-pacientes.component';
 
 
 const routes: Routes = [

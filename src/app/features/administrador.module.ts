@@ -25,7 +25,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgChartsModule } from 'ng2-charts';
 
 // Módulo centralizado de Relatórios
-import { RelatorioModule } from 'src/app/features/relatorio/relatorio.module';
+import { RelatorioModule } from 'src/app/features/relatorios/relatorios.module';
 
 // Componentes de Cadastros
 import { CadastroAdmComponent } from './usuarios/pages/cadastro-adm/cadastro-adm.component';

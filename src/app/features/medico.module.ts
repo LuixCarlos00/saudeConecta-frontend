@@ -7,7 +7,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 
 // Módulo centralizado de Relatórios
-import { RelatorioModule } from 'src/app/features/relatorio/relatorio.module';
+import { RelatorioModule } from 'src/app/features/relatorios/relatorios.module';
 
 // Componentes de Agenda
 import { TabelaAgendaMedicoComponent } from './atendimento/components/tabela-agenda/tabela-agenda-medico.component';

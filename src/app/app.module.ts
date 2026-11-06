@@ -24,7 +24,7 @@ import { CoreModule } from './core/core.module';
 import { AdministradorModule } from './features/administrador.module';
 
 import { MedicoModule } from './features/medico.module';
-import { RelatorioModule } from './features/relatorio/relatorio.module';
+import { RelatorioModule } from './features/relatorios/relatorios.module';
 
 registerLocaleData(localePt);
 

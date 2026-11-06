@@ -12,7 +12,7 @@ import { ControleAcessoApiService } from 'src/app/core/data-access/controle-aces
 import { Consultav2, StatusConsulta } from 'src/app/shared/models/consultav2';
 import { Usuario } from 'src/app/shared/models/usuario';
 import { AgendarConsultaComponent } from 'src/app/features/agenda/components/agendar-consulta/agendar-consulta.component';
-import { RelatorioService } from 'src/app/features/relatorio/relatorio.service';
+import { RelatorioService } from 'src/app/features/relatorios/data-access/relatorio.service';
 import { ProntuarioDentistaApiService } from 'src/app/core/data-access/prontuario-dentista-api.service';
 import { AcoesConsultaService } from '../../data-access/acoes-consulta.service';
 import { PlanejamentoTerapeuticoApiService } from 'src/app/core/data-access/planejamento-terapeutico-api.service';
