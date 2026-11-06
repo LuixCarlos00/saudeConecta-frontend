@@ -1,0 +1,31 @@
+<div class="view-semana">
+  <div class="grade-semana-header">
+    <div class="col-hora-header"></div>
+    <div
+      *ngFor="let dia of diasSemana"
+      class="dia-semana-col-header"
+      [class.hoje]="dia.hoje"
+      (click)="selecionarDia(dia)">
+      <span class="dia-nome">{{ DIAS_SEMANA_NOMES[dia.data.getDay()] }}</span>
+      <span class="dia-numero" [class.hoje-numero]="dia.hoje">{{ dia.data.getDate() }}</span>
+    </div>
+  </div>
+
+  <div class="grade-semana-corpo">
+    <!-- Coluna de horas -->
+    <div class="col-horas">
+      <div class="slot-hora" *ngFor="let h of horasDia">{{ h.label }}</div>
+    </div>
+    <!-- Colunas dos dias -->
+    <div *ngFor="let dia of diasSemana" class="col-dia-semana" [class.hoje]="dia.hoje">
+      <div class="slot-evento-semana" *ngFor="let c of dia.consultas"
+        [class]="'evento-card ' + getStatusClass(c.status)"
+        (click)="abrirConsulta(c, $event)">
+        <div class="evento-hora-semana">{{ getHorario(c.dataHora) }}</div>
+        <div class="evento-nome-semana">{{ c.pacienteNome }}</div>
+        <div class="evento-prof-semana" *ngIf="podeVerTodosProfissionais">{{ c.profissionalNome }}</div>
+      </div>
+      <div class="sem-consultas-semana" *ngIf="dia.consultas.length === 0"></div>
+    </div>
+  </div>
+</div>

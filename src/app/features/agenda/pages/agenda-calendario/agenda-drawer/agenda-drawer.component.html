@@ -1,0 +1,253 @@
+<div class="drawer-overlay" *ngIf="aberto && consulta" (click)="fecharPopover()"></div>
+
+<aside class="drawer-panel" [class.drawer-aberto]="aberto && consulta" *ngIf="consulta">
+
+  <!-- ── BLOCO 1: Header — paciente + status ── -->
+  <div class="drw-header">
+    <div class="drw-header-meta">
+      <span class="drw-consulta-id">Consulta #{{ consulta.id }}</span>
+      <span class="drw-status-pill" [class]="'drw-status-pill--' + getStatusClass(consulta.status)">
+        <i class="fa-solid fa-circle-check" *ngIf="consulta.status === 'CONFIRMADA'"></i>
+        <i class="fa-solid fa-calendar-check" *ngIf="consulta.status === 'AGENDADA'"></i>
+        <i class="fa-solid fa-circle-check" *ngIf="consulta.status === 'REALIZADA'"></i>
+        <i class="fa-solid fa-hand-holding-dollar" *ngIf="consulta.status === 'PAGO'"></i>
+        <i class="fa-solid fa-ban" *ngIf="consulta.status === 'CANCELADA'"></i>
+        {{ STATUS_LABELS[consulta.status] }}
+      </span>
+    </div>
+    <div class="drw-paciente-row">
+      <div class="drw-avatar">{{ consulta.pacienteNome | slice:0:2 | uppercase }}</div>
+      <div class="drw-paciente-info">
+        <p class="drw-paciente-nome">{{ consulta.pacienteNome }}</p>
+        <p class="drw-paciente-tel" *ngIf="consulta.pacienteTelefone">
+          <i class="fa-solid fa-phone"></i> {{ consulta.pacienteTelefone }}
+        </p>
+      </div>
+      <button class="drw-fechar-btn" (click)="fecharPopover()" title="Fechar">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- ── BLOCO 2: Data e hora ── -->
+  <div class="drw-datetime">
+    <div class="drw-datetime-icon">
+      <i class="fa-solid fa-calendar-days"></i>
+    </div>
+    <div>
+      <p class="drw-datetime-date">
+        {{ consulta.dataHora | date:'EEEE, dd \'de\' MMMM' : '' : 'pt-BR' | titlecase }}
+      </p>
+      <p class="drw-datetime-time">
+        {{ getHorario(consulta.dataHora) }}
+        <ng-container *ngIf="getHorario(consulta.dataHoraFim)">
+          &ndash; {{ getHorario(consulta.dataHoraFim) }}
+        </ng-container>
+        <ng-container *ngIf="consulta.duracaoMinutos">
+          &middot; {{ consulta.duracaoMinutos }} min
+        </ng-container>
+      </p>
+    </div>
+  </div>
+
+  <!-- ── Corpo scrollável ── -->
+  <div class="drawer-corpo">
+
+    <!-- ── BLOCO 3: Grid clínico + pagamento ── -->
+    <div class="drw-grid-2">
+
+      <!-- Clínico -->
+      <div class="drw-mini-card" *ngIf="podeVerTodosProfissionais()">
+        <p class="drw-mini-label"><i class="fa-solid fa-stethoscope"></i> Clínico</p>
+        <p class="drw-mini-value">{{ consulta.profissionalNome }}</p>
+        <p class="drw-mini-sub">{{ consulta.especialidadeNome }}</p>
+      </div>
+
+      <!-- Especialidade (sem ver profissional) -->
+      <div class="drw-mini-card" *ngIf="!podeVerTodosProfissionais()">
+        <p class="drw-mini-label"><i class="fa-solid fa-stethoscope"></i> Especialidade</p>
+        <p class="drw-mini-value">{{ consulta.especialidadeNome }}</p>
+        <p class="drw-mini-sub">{{ consulta.duracaoMinutos }} min</p>
+      </div>
+
+      <!-- Pagamento -->
+      <div class="drw-mini-card">
+        <p class="drw-mini-label"><i class="fa-solid fa-credit-card"></i> Pagamento</p>
+        <p class="drw-mini-value">{{ consulta.formaPagamentoNome || '—' }}</p>
+        <p class="drw-mini-sub">R$ {{ consulta.valor | number:'1.2-2' }}</p>
+      </div>
+
+    </div>
+
+    <!-- ── BLOCO 4: Stepper de fluxo ── -->
+    <div class="drw-section">
+      <p class="drw-section-label">Fluxo da consulta</p>
+      <div class="drw-stepper">
+
+        <div class="drw-step" [class.drw-step--done]="isStatusDone('AGENDADA', consulta.status)"
+                              [class.drw-step--active]="consulta.status === 'AGENDADA'">
+          <div class="drw-step-dot">
+            <i class="fa-solid fa-check" *ngIf="isStatusDone('AGENDADA', consulta.status)"></i>
+          </div>
+          <span>Agendada</span>
+        </div>
+
+        <div class="drw-step-line" [class.drw-step-line--done]="isStatusDone('CONFIRMADA', consulta.status)"></div>
+
+        <div class="drw-step" [class.drw-step--done]="isStatusDone('CONFIRMADA', consulta.status)"
+                              [class.drw-step--active]="consulta.status === 'CONFIRMADA'">
+          <div class="drw-step-dot">
+            <i class="fa-solid fa-check" *ngIf="isStatusDone('CONFIRMADA', consulta.status)"></i>
+          </div>
+          <span>Confirmada</span>
+        </div>
+
+        <div class="drw-step-line" [class.drw-step-line--done]="isStatusDone('REALIZADA', consulta.status)"></div>
+
+        <div class="drw-step" [class.drw-step--done]="isStatusDone('REALIZADA', consulta.status)"
+                              [class.drw-step--active]="consulta.status === 'REALIZADA'">
+          <div class="drw-step-dot">
+            <i class="fa-solid fa-check" *ngIf="isStatusDone('REALIZADA', consulta.status)"></i>
+          </div>
+          <span>Realizada</span>
+        </div>
+
+        <div class="drw-step-line" [class.drw-step-line--done]="consulta.status === 'PAGO'"></div>
+
+        <div class="drw-step" [class.drw-step--active]="consulta.status === 'PAGO'"
+                              [class.drw-step--done]="consulta.status === 'PAGO'">
+          <div class="drw-step-dot">
+            <i class="fa-solid fa-check" *ngIf="consulta.status === 'PAGO'"></i>
+          </div>
+          <span>Paga</span>
+        </div>
+
+      </div>
+
+      <!-- Cancelada -->
+      <div class="drw-cancelada-badge" *ngIf="consulta.status === 'CANCELADA'">
+        <i class="fa-solid fa-ban"></i>
+        Consulta cancelada
+        <span *ngIf="consulta.motivoCancelamento">— {{ consulta.motivoCancelamento }}</span>
+      </div>
+    </div>
+
+    <!-- ── BLOCO 5: Observações ── -->
+    <div class="drw-section" *ngIf="consulta.observacoes">
+      <p class="drw-section-label">Observações</p>
+      <p class="drw-obs-text">{{ consulta.observacoes }}</p>
+    </div>
+
+    <!-- ── BLOCO 6: Alterar status ── -->
+    <div class="drw-section" *ngIf="consulta.status !== 'CANCELADA' && consulta.status !== 'PAGO' && (controleAcesso.isAdmin() || controleAcesso.isRecepcionista())">
+      <label class="drw-section-label" for="drw-status-sel">Alterar status</label>
+
+      <ng-container *ngIf="consulta.status === 'AGENDADA'">
+        <select id="drw-status-sel" class="drw-select"
+          [attr.title]="mensagemTooltipStatus || 'Alterar status da consulta'"
+          [class.tooltip-ativo]="mensagemTooltipStatus"
+          (change)="alterarStatusDrawer($any($event.target).value); $any($event.target).value = ''">
+          <option value="">Agendada (atual)</option>
+          <option value="CONFIRMADA">Confirmar</option>
+          <option value="CANCELADA">Cancelar</option>
+        </select>
+      </ng-container>
+
+      <ng-container *ngIf="consulta.status === 'CONFIRMADA'">
+        <select id="drw-status-sel" class="drw-select"
+          [attr.title]="mensagemTooltipStatus || 'Alterar status da consulta'"
+          [class.tooltip-ativo]="mensagemTooltipStatus"
+          (change)="alterarStatusDrawer($any($event.target).value); $any($event.target).value = ''">
+          <option value="">Confirmada (atual)</option>
+          <option value="AGENDADA">Voltar para Agendada</option>
+          <option value="REALIZADA">Marcar como Realizada</option>
+          <option value="CANCELADA">Cancelar</option>
+        </select>
+      </ng-container>
+
+      <ng-container *ngIf="consulta.status === 'REALIZADA'">
+        <select id="drw-status-sel" class="drw-select"
+          [attr.title]="mensagemTooltipStatus || 'Alterar status da consulta'"
+          [class.tooltip-ativo]="mensagemTooltipStatus"
+          (change)="alterarStatusDrawer($any($event.target).value); $any($event.target).value = ''">
+          <option value="">Realizada (atual)</option>
+          <option value="PAGO">Marcar como Pago</option>
+        </select>
+      </ng-container>
+    </div>
+
+    <!-- ── BLOCO 7: Ações rápidas ── -->
+    <div class="drw-section">
+      <p class="drw-section-label">Ações rápidas</p>
+      <div class="drw-acoes-grid">
+
+        <!-- Iniciar Consulta — CONFIRMADA e apenas para médicos e dentistas -->
+        <button class="drw-acao-btn drw-acao-btn--success"
+                *ngIf="consulta.status === 'CONFIRMADA' && usuarioLogado.perfil === 'CLINICO' "
+                (click)="iniciarConsultaDrawer()"
+                [attr.title]="temRascunho(consulta) ? 'Retomar atendimento' : 'Iniciar Consulta'">
+          <i class="fa-solid" [ngClass]="temRascunho(consulta) ? 'fa-rotate-right' : 'fa-stethoscope'"></i>
+          <span>{{ temRascunho(consulta) ? 'Retomar atendimento' : 'Iniciar' }}</span>
+        </button>
+
+        <!-- Questionário — CONFIRMADA e não respondido -->
+        <button class="drw-acao-btn"
+                *ngIf="consulta.status === 'CONFIRMADA' && !questionariosRespondidos.has(consulta.id)"
+                (click)="gerarLinkQuestionarioDrawer()"
+                [attr.title]="mensagemTooltipQuestionario || 'Gerar Link do Questionário de Saúde'"
+                [class.tooltip-ativo]="mensagemTooltipQuestionario">
+          <i class="fa-solid fa-clipboard-list"></i>
+          <span>Questionário</span>
+        </button>
+
+        <!-- Planejamento — REALIZADA e não assinado -->
+        <button class="drw-acao-btn"
+                *ngIf="consulta.status === 'REALIZADA' && !planejamentosAssinados.has(consulta.id)"
+                (click)="gerarLinkPlanejamentoDrawer()"
+                title="Gerar Link de Planejamento Terapêutico">
+          <i class="fa-solid fa-file-signature"></i>
+          <span>Planejamento</span>
+        </button>
+
+        <!-- WhatsApp — CONFIRMADA com telefone -->
+        <a class="drw-acao-btn drw-acao-btn--whatsapp"
+           *ngIf="consulta.status === 'CONFIRMADA' && consulta.pacienteTelefone"
+           [href]="gerarWhatsAppDrawer()"
+           target="_blank"
+           title="Enviar WhatsApp">
+          <i class="fa-brands fa-whatsapp"></i>
+          <span>WhatsApp</span>
+        </a>
+
+        <!-- Imprimir — sempre -->
+        <button class="drw-acao-btn"
+                (click)="abrirImpressaoDrawer()"
+                title="Imprimir">
+          <i class="fa-solid fa-print"></i>
+          <span>Imprimir</span>
+        </button>
+
+        <!-- Editar — indisponível em CONFIRMADA para clínico e gestor -->
+        <button class="drw-acao-btn"
+                *ngIf="podeEditarConsulta(consulta.status)"
+                (click)="abrirEdicao()"
+                title="Editar Consulta">
+          <i class="fa-solid fa-pen-to-square"></i>
+          <span>Editar</span>
+        </button>
+
+        <!-- Excluir — AGENDADA ou CONFIRMADA -->
+        <button class="drw-acao-btn drw-acao-btn--danger"
+                *ngIf="consulta.status === 'AGENDADA' || consulta.status === 'CONFIRMADA'"
+                (click)="deletarConsultaDrawer()"
+                title="Excluir Consulta">
+          <i class="fa-solid fa-trash"></i>
+          <span>Excluir</span>
+        </button>
+
+      </div>
+    </div>
+
+  </div><!-- /drawer-corpo -->
+
+</aside>

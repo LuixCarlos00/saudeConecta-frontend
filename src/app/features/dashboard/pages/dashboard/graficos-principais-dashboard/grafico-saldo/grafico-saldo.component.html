@@ -1,0 +1,50 @@
+<div class="grafico-item saldo-container">
+  <!-- Filtros -->
+  <div class="saldo-filtros">
+    <button class="saldo-filtro-btn"
+            [class.active]="periodoSelecionadoSaldo === PeriodoFiltroSaldo.ESTE_MES"
+            (click)="onPeriodoChangeSaldo(PeriodoFiltroSaldo.ESTE_MES)">Este Mês</button>
+    <button class="saldo-filtro-btn"
+            [class.active]="periodoSelecionadoSaldo === PeriodoFiltroSaldo.ULTIMOS_3_MESES"
+            (click)="onPeriodoChangeSaldo(PeriodoFiltroSaldo.ULTIMOS_3_MESES)">3 Meses</button>
+    <button class="saldo-filtro-btn"
+            [class.active]="periodoSelecionadoSaldo === PeriodoFiltroSaldo.ULTIMOS_6_MESES"
+            (click)="onPeriodoChangeSaldo(PeriodoFiltroSaldo.ULTIMOS_6_MESES)">6 Meses</button>
+    <button class="saldo-filtro-btn"
+            [class.active]="periodoSelecionadoSaldo === PeriodoFiltroSaldo.ESTE_ANO"
+            (click)="onPeriodoChangeSaldo(PeriodoFiltroSaldo.ESTE_ANO)">Este Ano</button>
+  </div>
+
+  <!-- Resumo -->
+  <div class="saldo-resumo" *ngIf="dadosSaldo && !isLoadingSaldo">
+    <div class="saldo-resumo-item consultas">
+      <span class="saldo-resumo-label">Consultas</span>
+      <span class="saldo-resumo-valor">{{ formatarMoedaSaldo(dadosSaldo.totalConsultas) }}</span>
+      <span class="saldo-resumo-qtd">{{ dadosSaldo.quantidadeConsultas }} realizadas</span>
+    </div>
+    <div class="saldo-resumo-item procedimentos">
+      <span class="saldo-resumo-label">Procedimentos</span>
+      <span class="saldo-resumo-valor">{{ formatarMoedaSaldo(dadosSaldo.totalProcedimentos) }}</span>
+      <span class="saldo-resumo-qtd">{{ dadosSaldo.quantidadeProcedimentos }} realizados</span>
+    </div>
+    <div class="saldo-resumo-item total">
+      <span class="saldo-resumo-label">Total Geral</span>
+      <span class="saldo-resumo-valor">{{ formatarMoedaSaldo(dadosSaldo.totalGeral) }}</span>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div class="saldo-loading" *ngIf="isLoadingSaldo">
+    <i class="fa-solid fa-spinner fa-spin"></i> Carregando...
+  </div>
+
+  <!-- Erro -->
+  <div class="saldo-erro" *ngIf="hasErrorSaldo && !isLoadingSaldo">
+    <i class="fa-solid fa-triangle-exclamation"></i> Não foi possível carregar os dados financeiros.
+  </div>
+
+  <!-- Gráfico -->
+  <div class="saldo-chart-wrapper" [style.display]="isLoadingSaldo || hasErrorSaldo ? 'none' : 'block'">
+    <canvas #canvasSaldo></canvas>
+  </div>
+</div>

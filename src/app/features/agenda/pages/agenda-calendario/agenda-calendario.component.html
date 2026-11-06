@@ -1,0 +1,234 @@
+<div class="calendario-page">
+
+  <!-- ===== HEADER ===== -->
+  <div class="calendario-header">
+    <div class="header-left">
+      <h2 class="titulo-pagina"  (click)="mudarVisualizacao('mes')" >
+        <i class="fa-solid fa-calendar-days"></i>
+        Agenda
+      </h2>
+      <span class="subtitulo">{{ tituloAtual }} </span>
+
+
+      <div class="nova-consulta-wrapper" *ngIf="controleAcesso.isAdmin() || controleAcesso.isRecepcionista()">
+        <button class="btn-nova-consulta" (click)="abrirNovaConsulta($event)">
+          <i class="fa-solid fa-plus"></i>
+          Nova Consulta
+        </button>
+        <div class="dropdown-config">
+          <button class="btn-dropdown-config" (click)="toggleDropdownConfig($event)" [class.active]="dropdownConfigAberto">
+            <i class="fa-solid fa-chevron-down"></i>
+          </button>
+          <div class="dropdown-menu" [class.show]="dropdownConfigAberto" (click)="$event.stopPropagation()">
+            <label class="dropdown-item">
+              <input type="checkbox" [(ngModel)]="pularParaConfirmado" (change)="atualizarConfiguracaoFluxo()">
+              <span>Cadastrar direto como Confirmada</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Legenda -->
+      <div class="legenda-header">
+        <div class="legenda-item" *ngFor="let s of legendaAtual">
+          <span class="legenda-cor" [ngClass]="s.cor"></span>
+          <span>{{ s.label }}</span>
+        </div>
+      </div>
+
+
+
+    </div>
+
+    <div class="header-controls">
+      <!-- Navegação -->
+      <div class="nav-controls">
+        <button class="btn-nav btn-hoje" (click)="irParaHoje()">Hoje</button>
+        <button class="btn-nav btn-arrow" (click)="irParaAnterior()" title="Anterior">
+          <i class="fa-solid fa-chevron-left"></i>
+        </button>
+        <button class="btn-nav btn-arrow" (click)="irParaProximo()" title="Próximo">
+          <i class="fa-solid fa-chevron-right"></i>
+        </button>
+      </div>
+
+      <!-- Tipo de Visualização -->
+      <div class="view-switcher">
+        <button
+          class="btn-view"
+          [class.active]="tipoVisualizacao === 'mes'"
+          (click)="mudarVisualizacao('mes')">
+          <i class="fa-solid fa-table-cells-large"></i>
+          Mês
+        </button>
+        <button
+          class="btn-view"
+          [class.active]="tipoVisualizacao === 'semana'"
+          (click)="mudarVisualizacao('semana')">
+          <i class="fa-solid fa-table-columns"></i>
+          Semana
+        </button>
+        <button
+          class="btn-view"
+          [class.active]="tipoVisualizacao === 'dia'"
+          (click)="mudarVisualizacao('dia')">
+          <i class="fa-regular fa-calendar-check"></i>
+          Dia
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== CORPO ===== -->
+  <div class="calendario-body">
+
+    <!-- ===== PAINEL LATERAL ===== -->
+    <aside class="filtros-panel">
+
+      <!-- ── Sempre visível: mini-calendário ── -->
+      <div class="painel-fixo">
+
+        <div class="mini-calendar-wrapper">
+          <mat-calendar
+            [selected]="dataSelecionada"
+            (selectedChange)="selecionarDia({ data: $event })">
+          </mat-calendar>
+        </div>
+
+      </div>
+
+      <hr class="divider">
+
+      <!-- ── Cabeçalho dos filtros com toggle ── -->
+      <div class="filtros-panel-header" (click)="filtrosRecolhidos = !filtrosRecolhidos">
+        <span class="filtros-panel-titulo">
+          <i class="fa-solid fa-sliders"></i> Filtros
+        </span>
+        <button class="filtros-toggle-btn" [title]="filtrosRecolhidos ? 'Expandir' : 'Recolher'">
+          <i class="fa-solid"
+             [class.fa-chevron-up]="!filtrosRecolhidos"
+             [class.fa-chevron-down]="filtrosRecolhidos"></i>
+        </button>
+      </div>
+
+      <!-- ── Filtros retráteis ── -->
+      <div class="filtros-conteudo" [class.filtros-conteudo--recolhido]="filtrosRecolhidos">
+
+        <!-- Tipo -->
+        <div class="filtro-grupo">
+          <label class="filtro-label"><i class="fa-solid fa-layer-group"></i> Tipo</label>
+          <div class="filtro-toggle-group">
+            <button class="filtro-toggle-btn" [class.active]="!filtroFinalizadas" (click)="definirTipoConsulta(false)">
+              <i class="fa-solid fa-calendar-check"></i> Agendadas
+            </button>
+            <button class="filtro-toggle-btn" [class.active]="filtroFinalizadas" (click)="definirTipoConsulta(true)">
+              <i class="fa-solid fa-clipboard-check"></i> Finalizadas
+            </button>
+          </div>
+        </div>
+
+        <!-- Busca por paciente -->
+        <div class="filtro-grupo">
+          <label class="filtro-label"><i class="fa-solid fa-magnifying-glass"></i> Buscar paciente</label>
+          <div class="filtro-search-row">
+            <input class="filtro-input" type="text" placeholder="Nome do paciente..."
+              [(ngModel)]="filtroBusca" (keyup.enter)="aplicarFiltros()">
+            <button class="filtro-search-btn" (click)="aplicarFiltros()" title="Buscar">
+              <i class="fa-solid fa-search"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Especialidade -->
+        <div class="filtro-grupo" *ngIf="podeVerTodosProfissionais()">
+          <label class="filtro-label"><i class="fa-solid fa-stethoscope"></i> Especialidade</label>
+          <select class="filtro-select" [(ngModel)]="filtroEspecialidade" (change)="aplicarFiltros()">
+            <option value="">— Todas —</option>
+            <option *ngFor="let e of especialidadesDisponiveis" [value]="e">{{ e }}</option>
+          </select>
+        </div>
+
+        <!-- Clínico -->
+        <div class="filtro-grupo" *ngIf="podeVerTodosProfissionais()">
+          <label class="filtro-label"><i class="fa-solid fa-user-doctor"></i> Clínico</label>
+          <select class="filtro-select" [(ngModel)]="filtroProfissional" (change)="aplicarFiltros()">
+            <option value="">— Todos —</option>
+            <option *ngFor="let p of profissionaisDisponiveis" [value]="p.id">{{ p.nome }}</option>
+          </select>
+        </div>
+
+        <!-- Status -->
+        <div class="filtro-grupo">
+          <label class="filtro-label"><i class="fa-solid fa-circle-dot"></i> Status</label>
+          <div class="filtro-checkbox-grid">
+            <label class="filtro-checkbox-item" *ngFor="let s of legendaAtual">
+              <input type="checkbox"
+                [checked]="filtroStatusSelecionados.includes(s.value)"
+                (change)="toggleStatus(s.value)">
+              <span class="filtro-checkbox-dot" [ngClass]="s.cor"></span>
+              <span>{{ s.label }}</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Ações -->
+        <div class="filtro-acoes">
+          <button class="filtro-btn-ghost" (click)="limparFiltros()">
+            <i class="fa-solid fa-rotate-left"></i> Limpar
+          </button>
+          <button class="filtro-btn-primary" (click)="aplicarFiltros()">
+            <i class="fa-solid fa-filter"></i> Aplicar
+          </button>
+        </div>
+
+      </div><!-- /filtros-conteudo -->
+
+    </aside>
+
+    <!-- ===== CALENDÁRIO PRINCIPAL ===== -->
+    <div class="calendario-main">
+
+      <!-- Loading -->
+      <div class="overlay-loading" *ngIf="carregando">
+        <i class="fa-solid fa-spinner fa-spin"></i>
+        <span>Carregando...</span>
+      </div>
+
+      <app-agenda-visao-mes *ngIf="tipoVisualizacao === 'mes'"
+        [diasCalendario]="diasCalendario"
+        (diaSelecionado)="selecionarDia($event)"
+        (consultaAberta)="abrirPopover($event)">
+      </app-agenda-visao-mes>
+
+      <app-agenda-visao-semana *ngIf="tipoVisualizacao === 'semana'"
+        [diasSemana]="diasSemana"
+        [horasDia]="horasDia"
+        [podeVerTodosProfissionais]="podeVerTodosProfissionais()"
+        (diaSelecionado)="selecionarDia($event)"
+        (consultaAberta)="abrirPopover($event)">
+      </app-agenda-visao-semana>
+
+      <app-agenda-visao-dia *ngIf="tipoVisualizacao === 'dia'"
+        [dataAtual]="dataAtual"
+        [horasDia]="horasDia"
+        [podeVerTodosProfissionais]="podeVerTodosProfissionais()"
+        (consultaAberta)="abrirPopover($event)">
+      </app-agenda-visao-dia>
+
+    </div>
+  </div>
+
+  <!-- ===== DRAWER LATERAL DIREITO ===== -->
+  <app-agenda-drawer *ngIf="consultaSelecionada"
+    [consulta]="consultaSelecionada"
+    [aberto]="popoverAberto"
+    [usuarioLogado]="UsuarioLogado"
+    [consultasComRascunho]="consultasComRascunho"
+    [questionariosRespondidos]="questionariosRespondidos"
+    [planejamentosAssinados]="planejamentosAssinados"
+    (fechar)="fecharPopover()"
+    (recarregar)="carregarConsultas()"
+    (editar)="abrirEdicao()">
+  </app-agenda-drawer>
+
+</div>

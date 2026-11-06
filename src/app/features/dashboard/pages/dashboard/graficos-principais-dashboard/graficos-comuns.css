@@ -1,0 +1,8 @@
+/* Base de todos os gráficos filhos: o host some do layout para os itens continuarem filhos diretos do grid. */
+:host {
+  display: contents;
+}
+
+.grafico-item {
+  min-width: 0;
+}

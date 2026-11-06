@@ -1,0 +1,71 @@
+<div class="grafico-item chart-container">
+  <!-- Filtros de Período Padronizados -->
+  <div class="chart-filters-wrapper">
+    <div class="filter-header">
+      <span class="filter-title">
+        <i class="fa-solid fa-filter"></i>
+        Consultas - Filtrar por Período
+      </span>
+      <div class="quick-filters-inline">
+        <button
+                class="quick-filter-btn quick-filter-btn--small"
+                [class.quick-filter-btn--active]="diaSelecionadoConsultas === 1"
+                (click)="diaSelecionadoConsultas = 1; atualizarGraficoConsultas()">
+            7 dias
+        </button>
+        <button
+                class="quick-filter-btn quick-filter-btn--small"
+                [class.quick-filter-btn--active]="diaSelecionadoConsultas === 2"
+                (click)="diaSelecionadoConsultas = 2; atualizarGraficoConsultas()">
+            30 dias
+        </button>
+        <button
+                class="quick-filter-btn quick-filter-btn--small"
+                [class.quick-filter-btn--active]="diaSelecionadoConsultas === 3"
+                (click)="diaSelecionadoConsultas = 3; atualizarGraficoConsultas()">
+            60 dias
+        </button>
+      </div>
+    </div>
+
+    <!-- Período Personalizado Abaixo -->
+    <mat-form-field appearance="fill" class="custom-period-field">
+      <mat-label>
+        <i class="fa-solid fa-calendar-range"></i>
+      </mat-label>
+      <mat-date-range-input [rangePicker]="pickerConsultas" [formGroup]="IntervaloDeDatasConsultas">
+        <input matStartDate formControlName="start" placeholder="Data inicial">
+        <input matEndDate formControlName="end" placeholder="Data final" (dateChange)="atualizarGraficoConsultasPersonalizado()">
+      </mat-date-range-input>
+      <mat-datepicker-toggle matIconSuffix [for]="pickerConsultas"></mat-datepicker-toggle>
+      <mat-date-range-picker #pickerConsultas></mat-date-range-picker>
+    </mat-form-field>
+  </div>
+
+  <!-- Loading State -->
+  <div class="chart-loading" *ngIf="isLoadingConsultas">
+    <i class="fa-solid fa-spinner fa-spin"></i>
+    <span>Carregando dados...</span>
+  </div>
+
+  <!-- Error State -->
+  <div class="chart-error" *ngIf="hasErrorConsultas && !isLoadingConsultas">
+    <i class="fa-solid fa-exclamation-triangle"></i>
+    <span>{{ errorMessageConsultas }}</span>
+    <button class="retry-btn" (click)="atualizarGraficoConsultas()">
+      <i class="fa-solid fa-rotate-right"></i>
+      Tentar novamente
+    </button>
+  </div>
+
+  <!-- Empty State -->
+  <div class="chart-empty" *ngIf="!isLoadingConsultas && !hasErrorConsultas && TodasConsultas.length === 0">
+    <i class="fa-solid fa-chart-bar"></i>
+    <span>Nenhuma consulta encontrada no período</span>
+  </div>
+
+  <!-- Gráfico -->
+  <div class="chart-wrapper" [class.chart-wrapper--hidden]="isLoadingConsultas || hasErrorConsultas || TodasConsultas.length === 0">
+    <canvas #canvasConsultas></canvas>
+  </div>
+</div>

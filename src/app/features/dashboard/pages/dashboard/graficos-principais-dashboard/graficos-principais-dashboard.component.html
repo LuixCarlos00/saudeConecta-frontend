@@ -1,0 +1,18 @@
+<!-- Grid genérico de gráficos principais. Novos gráficos podem ser -->
+<!-- adicionados via projeção de conteúdo (ng-content) sem alterar este componente. -->
+<div class="graficos-principais-grid">
+
+  <app-grafico-consultas *ngIf="exibirConsultasPorPeriodo" [medicoId]="medicoId"></app-grafico-consultas>
+
+  <app-grafico-agendamentos *ngIf="exibirAgendamentos" [medicoId]="medicoId"></app-grafico-agendamentos>
+
+  <app-grafico-saldo *ngIf="exibirSaldoFinanceiro"></app-grafico-saldo>
+
+  <app-grafico-categoria *ngIf="exibirMedicosPorEspecialidade"></app-grafico-categoria>
+
+  <app-grafico-media-tempo *ngIf="exibirMediaTempoConsulta"></app-grafico-media-tempo>
+
+  <!-- Slot genérico para inserção futura de novos gráficos -->
+  <ng-content></ng-content>
+
+</div>

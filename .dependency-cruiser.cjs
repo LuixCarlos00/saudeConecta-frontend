@@ -11,8 +11,11 @@
  * Regras (plano de arquitetura, seção 3.2):
  * - shared não importa de core nem de features;
  * - core não importa de features;
- * - uma feature não importa outra;
+ * - uma feature não importa outra, exceto pelo `features/<area>/index.ts` (API pública da área: só o que outra área precisa, como um service de data-access ou um diálogo);
  * - ninguém importa de testing/ fora de specs;
+ * - só data-access (e core) usa HttpClient: features e shared fora de data-access não importam @angular/common/http (guards só tratam HttpErrorResponse);
+ * - components/ (e shared/ui) não importam data-access: só as pages injetam;
+ * - as pastas legadas util/ e services/ não existem mais;
  * - sem dependência circular.
  */
 /** @type {import('dependency-cruiser').IConfiguration} */
@@ -41,10 +44,10 @@ module.exports = {
     },
     {
       name: 'feature-nao-importa-outra-feature',
-      comment: 'Uma feature não importa outra; o item compartilhado sobe para shared ou vira data-access público.',
+      comment: 'Uma feature não importa outra; o item compartilhado sobe para shared ou vira API pública em features/<area>/index.ts (única porta de entrada permitida).',
       severity: 'error',
       from: { path: '^src/app/features/([^/]+)/' },
-      to: { path: '^src/app/features/', pathNot: '^src/app/features/$1/' },
+      to: { path: '^src/app/features/', pathNot: '^src/app/features/($1/|[^/]+/index\\.ts$)' },
     },
     {
       name: 'testing-so-em-spec',
@@ -52,6 +55,27 @@ module.exports = {
       severity: 'error',
       from: { pathNot: '\\.spec\\.ts$' },
       to: { path: '^src/app/testing/' },
+    },
+    {
+      name: 'http-so-em-data-access',
+      comment: 'Só a camada data-access (e o core) fala HTTP; telas e componentes consomem os services.',
+      severity: 'error',
+      from: { path: '^src/app/(features|shared)/', pathNot: '(/data-access/|/guards/|\\.spec\\.ts$)' },
+      to: { path: '^node_modules/@angular/common/.*/http\\.mjs$' },
+    },
+    {
+      name: 'components-nao-injeta-data-access',
+      comment: 'components/ é apresentação (@Input/@Output): quem injeta service de data-access é a page (container) ou um facade.',
+      severity: 'error',
+      from: { path: '^src/app/(features/[^/]+|shared)/(components|ui)/', pathNot: '\\.spec\\.ts$' },
+      to: { path: '^src/app/(core|features/[^/]+)/data-access/' },
+    },
+    {
+      name: 'sem-pastas-legadas',
+      comment: 'util/ e services/ foram dissolvidos na F4: o código novo vai para core/, shared/ ou features/<area>/.',
+      severity: 'error',
+      from: {},
+      to: { path: '^src/app/(util|services)/' },
     },
     {
       name: 'sem-dependencia-circular',

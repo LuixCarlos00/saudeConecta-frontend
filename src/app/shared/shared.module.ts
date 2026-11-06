@@ -6,6 +6,9 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DiaSemanaPipe } from './pipes/dia-semana.pipe';
 import { HorarioPipe } from './pipes/horario.pipe';
 
+// Componentes de apresentação
+import { ObservacoesComponent } from './ui/observacoes/observacoes.component';
+
 // Angular Material Modules
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
@@ -66,7 +69,7 @@ const MATERIAL_MODULES = [
  */
 @NgModule({
   declarations: [
-    // Componentes compartilhados serão adicionados aqui
+    ObservacoesComponent,
     DiaSemanaPipe,
     HorarioPipe
   ],
@@ -83,6 +86,8 @@ const MATERIAL_MODULES = [
     ReactiveFormsModule,
     // Material modules
     ...MATERIAL_MODULES,
+    // Componentes
+    ObservacoesComponent,
     // Pipes
     DiaSemanaPipe,
     HorarioPipe

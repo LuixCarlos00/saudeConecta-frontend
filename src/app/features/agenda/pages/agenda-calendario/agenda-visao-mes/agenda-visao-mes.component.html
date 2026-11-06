@@ -1,0 +1,37 @@
+<div class="view-mes">
+  <!-- Cabeçalho dos dias da semana -->
+  <div class="grade-mes-header">
+    <div class="dia-semana-header" *ngFor="let dia of DIAS_SEMANA_NOMES">{{ dia }}</div>
+  </div>
+  <!-- Grade dos dias -->
+  <div class="grade-mes">
+    <div
+      *ngFor="let dia of diasCalendario"
+      class="celula-dia"
+      [class.outro-mes]="!dia.mesAtual"
+      [class.hoje]="dia.hoje"
+      [class.tem-consultas]="dia.consultas.length > 0"
+      (click)="selecionarDia(dia)">
+
+      <div class="celula-header">
+        <span class="numero-dia">{{ dia.data.getDate() }}</span>
+        <span class="badge-count" *ngIf="dia.consultas.length > 0">{{ dia.consultas.length }}</span>
+      </div>
+
+      <div class="eventos-lista">
+        <div
+          *ngFor="let c of dia.consultas.slice(0, 3)"
+          class="evento-chip"
+          [class]="getStatusClass(c.status)"
+          (click)="abrirConsulta(c, $event)"
+          [title]="c.pacienteNome">
+          <span class="evento-hora">{{ getHorario(c.dataHora) }}</span>
+          <span class="evento-nome">{{ c.pacienteNome }}</span>
+        </div>
+        <div class="mais-eventos" *ngIf="dia.consultas.length > 3">
+          +{{ dia.consultas.length - 3 }} mais
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

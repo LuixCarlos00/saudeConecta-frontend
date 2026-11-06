@@ -1,0 +1,684 @@
+// ============================================================
+// Agenda Calendário — inspirado no estilo Projuris
+// ============================================================
+
+@use './agenda-variaveis' as *;
+
+
+// ── Dropdown Configuration ─────────────────────────────────
+.nova-consulta-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.dropdown-config {
+  position: relative;
+}
+
+.btn-dropdown-config {
+  width: 32px;
+  height: 32px;
+  border: 1px solid $border;
+  background: $surface;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: $text-muted;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    background: $bg;
+    color: $text;
+  }
+  
+  &.active {
+    background: $primary;
+    color: white;
+    border-color: $primary;
+  }
+  
+  i {
+    font-size: 12px;
+    transition: transform 0.2s ease;
+  }
+  
+  &.active i {
+    transform: rotate(180deg);
+  }
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: $radius;
+  box-shadow: $shadow;
+  min-width: 220px;
+  padding: 8px 0;
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-8px);
+  transition: all 0.2s ease;
+  
+  &.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  margin: 0;
+  
+  &:hover {
+    background: $bg;
+  }
+  
+  input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    accent-color: $primary;
+  }
+  
+  span {
+    font-size: 14px;
+    color: $text;
+    user-select: none;
+  }
+}
+
+// ── Status colors ──────────────────────────────────────────
+
+@each $name, $color in $status {
+  .status-#{$name} {
+    background-color: rgba($color, .15);
+    border-left: 3px solid $color;
+    color: darken($color, 15%);
+  }
+  .legenda-cor.status-#{$name} {
+    background-color: $color;
+  }
+  .popover-header.status-#{$name} {
+    background-color: rgba($color, .12);
+    border-bottom: 2px solid $color;
+  }
+}
+
+// ── Page ──────────────────────────────────────────────────
+.calendario-page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  max-width: 100%;
+  background: $bg;
+  font-family: 'Segoe UI', sans-serif;
+  color: $text;
+  overflow: hidden;
+  position: relative;
+  font-size: 11px;
+}
+
+// ── Header ────────────────────────────────────────────────
+.calendario-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 12px;
+  background: $surface;
+  border-bottom: 1px solid $border;
+  box-shadow: $shadow;
+  flex-shrink: 0;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.header-left {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.titulo-pagina {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: $primary;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  i { font-size: 0.75rem; }
+}
+
+.subtitulo {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: $text;
+}
+
+.legenda-header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.legenda-header .legenda-item {
+  font-size: 0.65rem;
+  color: $text;
+}
+
+.legenda-header .legenda-cor {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+}
+
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+// Navegação
+.nav-controls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.btn-nav {
+  border: 1px solid $border;
+  background: $surface;
+  color: $text;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.75rem;
+  transition: all .15s;
+
+  &:hover { background: $bg; }
+
+  &.btn-hoje {
+    padding: 5px 10px;
+    font-weight: 600;
+  }
+
+  &.btn-arrow {
+    padding: 5px 8px;
+    font-size: 0.7rem;
+  }
+}
+
+// View switcher
+.view-switcher {
+  display: flex;
+  background: $bg;
+  border-radius: 8px;
+  padding: 3px;
+  gap: 2px;
+}
+
+.btn-view {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  border: none;
+  background: transparent;
+  border-radius: 6px;
+  color: $text-muted;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all .15s;
+
+  i { font-size: 0.7rem; }
+
+  &.active {
+    background: $surface;
+    color: $primary;
+    font-weight: 600;
+    box-shadow: 0 1px 4px rgba(0,0,0,.1);
+  }
+
+  &:hover:not(.active) { background: darken($bg, 4%); }
+}
+
+// Botão Nova Consulta (no header)
+.header-left .btn-nova-consulta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  width: auto;
+  padding: 5px 12px;
+  background: $primary;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.3px;
+  transition: background .15s, box-shadow .15s, transform .1s;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+  margin-top: 0;
+  flex-shrink: 0;
+
+  i { font-size: 0.65rem; }
+
+  &:hover {
+    background: $primary-dk;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+    transform: translateY(-1px);
+  }
+  &:active { transform: translateY(0); }
+}
+
+// ── Body ──────────────────────────────────────────────────
+.calendario-body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+// ── Painel Lateral ────────────────────────────────────────
+.filtros-panel {
+  width: 200px;
+  min-width: 200px;
+  background: $surface;
+  border-right: 1px solid $border;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+
+// Bloco fixo: Nova Consulta + mini-calendário
+.painel-fixo {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px 16px 0;
+  flex-shrink: 0;
+}
+
+// Legenda sempre visível no rodapé do painel
+.painel-legenda {
+  padding: 0 16px 16px;
+  flex-shrink: 0;
+}
+
+// Filtros retráteis com animação max-height
+.filtros-conteudo {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px 16px;
+  overflow-y: auto;
+  max-height: 500px;
+  opacity: 1;
+  transition: max-height .32s cubic-bezier(.4, 0, .2, 1),
+              padding .3s ease,
+              opacity .25s ease;
+
+  &--recolhido {
+    max-height: 0 !important;
+    padding-top: 0;
+    padding-bottom: 0;
+    opacity: 0;
+  }
+}
+
+// ── Cabeçalho dos filtros (clicável) ─────────────────────
+.filtros-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  cursor: pointer;
+  user-select: none;
+  flex-shrink: 0;
+  background: $bg;
+  border-top: 1px solid $border;
+  border-bottom: 1px solid $border;
+  transition: background .15s;
+
+  &:hover { background: darken($bg, 3%); }
+}
+
+.filtros-panel-titulo {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: $text-muted;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.filtros-toggle-btn {
+  background: none;
+  border: none;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: $text-muted;
+  font-size: 0.75rem;
+  pointer-events: none;
+  cursor: pointer;
+}
+
+.filtros-titulo {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: $text-muted;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+}
+
+.mini-calendar-wrapper {
+  ::ng-deep {
+    .mat-calendar { font-size: 0.6rem; }
+    .mat-calendar-header { padding: 2px 0; }
+    .mat-calendar-content { padding: 0; }
+    .mat-calendar-table { width: 100%; }
+    
+    // Month/year header
+    .mat-calendar-period-button {
+      font-size: 0.65rem !important;
+      font-weight: 600 !important;
+      padding: 2px 4px !important;
+    }
+    
+    // Navigation buttons
+    .mat-calendar-arrow {
+      font-size: 0.6rem !important;
+    }
+    
+    // Day cells
+    .mat-calendar-body-cell {
+      padding: 0 !important;
+      height: 24px !important;
+    }
+    
+    .mat-calendar-body-cell-content {
+      font-size: 0.55rem !important;
+      width: 20px !important;
+      height: 20px !important;
+      line-height: 20px !important;
+    }
+    
+    // Weekday headers
+    .mat-calendar-table-header th {
+      font-size: 0.5rem !important;
+      padding: 2px 0 !important;
+    }
+  }
+}
+
+.divider { border: none; border-top: 1px solid $border; margin: 4px 0; }
+
+.filtro-grupo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.filtro-label {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: $text-muted;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  i { font-size: 0.6rem; }
+}
+
+.filtro-select {
+  border: 1px solid $border;
+  border-radius: 5px;
+  padding: 4px 6px;
+  font-size: 0.7rem;
+  color: $text;
+  background: $bg;
+  cursor: pointer;
+  outline: none;
+  &:focus { border-color: $primary; }
+}
+
+.legenda { display: flex; flex-direction: column; gap: 6px; }
+.legenda-titulo {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: $text-muted;
+  text-transform: uppercase;
+  margin: 0 0 4px;
+}
+.legenda-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  color: $text;
+}
+.legenda-cor {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+// ── Toggle Agendadas / Finalizadas ────────────────────────
+.filtro-toggle-group {
+  display: flex;
+  gap: 4px;
+}
+
+.filtro-toggle-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  padding: 4px 6px;
+  background: $bg;
+  border: 1px solid $border;
+  border-radius: 5px;
+  font-size: 0.64rem;
+  font-weight: 500;
+  color: $text-muted;
+  cursor: pointer;
+  transition: all .15s;
+  white-space: nowrap;
+
+  i { font-size: 0.55rem; }
+
+  &:hover { background: lighten($primary, 45%); border-color: $primary; color: $primary; }
+
+  &.active {
+    background: $primary;
+    border-color: $primary;
+    color: #fff;
+    font-weight: 600;
+  }
+}
+
+// ── Search Row ────────────────────────────────────────────
+.filtro-search-row {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.filtro-input {
+  flex: 1;
+  padding: 4px 6px;
+  border: 1px solid $border;
+  border-radius: 5px;
+  font-size: 0.7rem;
+  color: $text;
+  background: $bg;
+  outline: none;
+  min-width: 0;
+
+  &:focus { border-color: $primary; }
+}
+
+.filtro-search-btn {
+  padding: 6px 10px;
+  background: $primary;
+  border: none;
+  border-radius: 6px;
+  color: #fff;
+  cursor: pointer;
+  font-size: 0.8rem;
+  flex-shrink: 0;
+  transition: background .15s;
+
+  &:hover { background: darken($primary, 10%); }
+}
+
+// ── Checkbox Grid de Status ───────────────────────────────
+.filtro-checkbox-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.filtro-checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  color: $text;
+
+  input[type="checkbox"] {
+    width: 13px;
+    height: 13px;
+    accent-color: $primary;
+    cursor: pointer;
+    margin: 0;
+    flex-shrink: 0;
+  }
+}
+
+.filtro-checkbox-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  flex-shrink: 0;
+
+  @each $name, $color in $status {
+    &.status-#{$name} { background-color: $color; }
+  }
+}
+
+// ── Botões de Ação ────────────────────────────────────────
+.filtro-acoes {
+  display: flex;
+  gap: 6px;
+}
+
+.filtro-btn-ghost {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 7px 10px;
+  background: none;
+  border: 1px solid $border;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: $text-muted;
+  cursor: pointer;
+  transition: all .15s;
+
+  &:hover { background: $bg; border-color: darken($border, 10%); }
+}
+
+.filtro-btn-primary {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 7px 10px;
+  background: $primary;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #fff;
+  cursor: pointer;
+  transition: background .15s;
+
+  &:hover { background: darken($primary, 10%); }
+}
+
+// ── Calendário Principal ──────────────────────────────────
+.calendario-main {
+  flex: 1;
+  overflow: auto;
+  padding: 8px;
+  position: relative;
+}
+
+.overlay-loading {
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,.7);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  z-index: 10;
+  font-size: 1rem;
+  color: $primary;
+  i { font-size: 2rem; }
+}
+
+
+// ─────────────────────────────────────────────────────────
+// RESPONSIVO
+// ─────────────────────────────────────────────────────────
+@media (max-width: 900px) {
+  .filtros-panel {
+    display: none; // collapsa em mobile — pode implementar drawer depois
+  }
+}
+
+@media (max-width: 600px) {
+  .calendario-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .header-controls { width: 100%; justify-content: space-between; }
+}

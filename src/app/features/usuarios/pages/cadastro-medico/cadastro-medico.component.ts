@@ -1,0 +1,329 @@
+import { Component, OnInit, OnDestroy, Optional, ViewChild, ElementRef } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Subscription } from 'rxjs';
+import { Router } from '@angular/router';
+import { MatDialogRef } from '@angular/material/dialog';
+import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
+
+import { ProfissionalApiService } from 'src/app/core/data-access/profissional-api.service';
+import { ufOptions } from 'src/app/shared/constants/options';
+import { FiltroStateService } from 'src/app/core/data-access/filtro-state.service';
+import { CepApiService } from 'src/app/core/data-access/cep-api.service';
+import { cpfValidator } from 'src/app/shared/validators/cpf-form.validator';
+import { CpfValidator } from 'src/app/shared/validators/cpf.validator';
+import { logradouro } from 'src/app/shared/models/logradouro';
+import { EspecialidadeApiService, EspecialidadeResponse } from 'src/app/core/data-access/especialidade-api.service';
+import { getFieldError } from 'src/app/shared/validators/field-errors';
+import {
+  nomeCompletoValidator,
+  dataNascimentoValidator,
+  rgValidator,
+  registroConselhoValidator,
+  telefoneValidator,
+  emailValidator,
+  cepValidator,
+  textoBrValidator,
+  nacionalidadeValidator,
+  numeroEnderecoValidator,
+  tempoConsultaValidator,
+  formacaoValidator,
+  antiInjectionValidator,
+} from 'src/app/shared/validators/form-validators';
+import { extrairMensagemErro } from 'src/app/shared/utils/mensagem-erro-http';
+
+
+@Component({
+  selector: 'app-cadastro-medico',
+  templateUrl: './cadastro-medico.component.html',
+  styleUrls: ['./cadastro-medico.component.css'],
+})
+export class CadastroMedicoComponent implements OnInit, OnDestroy {
+
+  private usuarioSubscription: Subscription | undefined;
+  FormularioMedico!: FormGroup;
+  FormularioEndereco!: FormGroup;
+  especialidades: EspecialidadeResponse[] = [];
+  ufOptions = ufOptions;
+  isLoading = false;
+  isLoadingEspecialidades = false;
+  getFieldError = getFieldError;
+  secaoVisivel = 'pessoal';
+
+  @ViewChild('scrollArea', { static: false }) scrollArea!: ElementRef;
+
+
+  logradouro: logradouro = {
+    codigo: 0,
+    nacionalidade: '',
+    uf: '',
+    municipio: '',
+    bairro: '',
+    cep: '',
+    rua: '',
+    numero: 0,
+    complemento: 0,
+  };
+
+  constructor(
+    private notificacao: NotificacaoService,
+    private form: FormBuilder,
+    private profissionalApiService: ProfissionalApiService,
+    private route: Router,
+    @Optional() private dialogRef: MatDialogRef<CadastroMedicoComponent>,
+    private filtroStateService: FiltroStateService,
+    private cepApiService: CepApiService,
+    private especialidadeService: EspecialidadeApiService
+  ) { }
+
+
+  ngOnInit(): void {
+    this.FormularioMedico = this.form.group({
+      nome: ['', [Validators.required, nomeCompletoValidator(), antiInjectionValidator()]],
+      sexo: ['', Validators.required],
+      dataNascimento: ['', [Validators.required, dataNascimentoValidator()]],
+      cpf: ['', [Validators.required, cpfValidator()]],
+      rg: ['', rgValidator()],
+      registroConselho: ['', [Validators.required, registroConselhoValidator()]],
+      especialidade: ['', Validators.required],
+      telefone: ['', telefoneValidator()],
+      email: ['', [Validators.required, emailValidator()]],
+      formacao: ['', formacaoValidator()],
+      instituicao: ['', formacaoValidator()],
+      tempoConsultaMinutos: [30, tempoConsultaValidator()],
+      tipoProfissional: ['MEDICO', Validators.required],
+    });
+
+    this.FormularioEndereco = this.form.group({
+      nacionalidade: ['', nacionalidadeValidator()],
+      uf: ['', [Validators.required, Validators.maxLength(2)]],
+      cep: ['', [Validators.required, cepValidator()]],
+      municipio: ['', [Validators.required, textoBrValidator(), antiInjectionValidator()]],
+      bairro: ['', [Validators.required, textoBrValidator(), antiInjectionValidator()]],
+      rua: ['', [Validators.required, textoBrValidator(), antiInjectionValidator()]],
+      numero: ['', [Validators.required, numeroEnderecoValidator()]],
+      complemento: ['', antiInjectionValidator()],
+    });
+
+    // Formatar CPF ao digitar
+    this.FormularioMedico.get('cpf')?.valueChanges.subscribe(value => {
+      if (value && value.length <= 14) {
+        const formatted = CpfValidator.format(value);
+        if (formatted !== value) {
+          this.FormularioMedico.get('cpf')?.setValue(formatted, { emitEvent: false });
+        }
+      }
+      this.FormularioMedico.get('cpf')?.updateValueAndValidity({ onlySelf: true, emitEvent: false });
+    });
+
+    // Quando tipoProfissional muda, revalida o registroConselho (CRM ↔ CRO)
+    this.FormularioMedico.get('tipoProfissional')?.valueChanges.subscribe(() => {
+      this.FormularioMedico.get('registroConselho')?.updateValueAndValidity();
+    });
+
+    // Formatar e buscar CEP
+    this.FormularioEndereco.get('cep')?.valueChanges.subscribe(value => {
+      if (value && value.length <= 9) {
+        const formatted = this.cepApiService.formatarCep(value);
+        if (formatted !== value) {
+          this.FormularioEndereco.get('cep')?.setValue(formatted, { emitEvent: false });
+        }
+        if (this.cepApiService.limparCep(value).length === 8) {
+          this.buscarEnderecoPorCep(this.cepApiService.limparCep(value));
+        }
+      }
+    });
+
+    
+    this.carregarEspecialidades();
+  }
+
+
+  irParaSecao(secao: string) {
+    this.secaoVisivel = secao;
+    const el = document.getElementById('sec-' + secao);
+    if (el && this.scrollArea) {
+      const container = this.scrollArea.nativeElement;
+      const top = el.offsetTop - container.offsetTop;
+      container.scrollTo({ top, behavior: 'smooth' });
+    }
+  }
+
+  onScroll(event?: Event) {
+    if (!this.scrollArea) { return; }
+    const container = this.scrollArea.nativeElement;
+    const scrollTop = container.scrollTop;
+    const secoes = ['pessoal', 'profissional', 'endereco'];
+    for (const secao of secoes) {
+      const el = document.getElementById('sec-' + secao);
+      if (!el) { continue; }
+      const offsetTop = el.offsetTop - container.offsetTop;
+      const offsetBottom = offsetTop + el.offsetHeight;
+      if (scrollTop >= offsetTop - 40 && scrollTop < offsetBottom - 40) {
+        this.secaoVisivel = secao;
+      }
+    }
+  }
+
+  fechar() {
+    if (this.dialogRef) {
+      this.dialogRef.close(false);
+    }
+  }
+
+  validateCpfOnBlur() {
+    const cpfControl = this.FormularioMedico.get('cpf');
+    if (cpfControl) {
+      // Marca o campo como 'touched' para mostrar erros
+      cpfControl.markAsTouched();
+      // Força a validação
+      cpfControl.updateValueAndValidity();
+    }
+  }
+
+  /**
+   * Busca endereço pelo CEP e preenche os campos do formulário
+   * @param cep CEP para busca (apenas números)
+   */
+  buscarEnderecoPorCep(cep: string) {
+    this.cepApiService.buscarEnderecoPorCep(cep).subscribe({
+      next: (endereco) => {
+        // Preenche os campos do formulário com os dados do endereço
+        this.FormularioEndereco.patchValue({
+          rua: endereco.logradouro,
+          bairro: endereco.bairro,
+          municipio: endereco.localidade,
+          uf: endereco.uf,
+          complemento: endereco.complemento
+        });
+
+        // Mostra feedback visual de sucesso
+        this.mostrarFeedbackCep('success', 'Endereço encontrado!');
+      },
+      error: (error) => {
+        console.error('Erro ao buscar CEP:', error);
+        this.mostrarFeedbackCep('error', 'CEP não encontrado. Preencha o endereço manualmente.');
+      }
+    });
+  }
+
+  /**
+   * Mostra feedback visual sobre a busca de CEP
+   * @param tipo Tipo do feedback (success/error)
+   * @param mensagem Mensagem a ser exibida
+   */
+  private mostrarFeedbackCep(tipo: 'success' | 'error', mensagem: string) {
+    this.notificacao.mostrarToast(tipo, mensagem);
+  }
+
+  private getTipoProfissionalSelecionado(): string {
+    return this.FormularioMedico.get('tipoProfissional')?.value || 'MEDICO';
+  }
+
+  carregarEspecialidades() {
+    this.isLoadingEspecialidades = true;
+    this.especialidadeService.carregarEspecialidades().subscribe({
+      next: (especialidades) => {
+        this.especialidades = especialidades.sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'));
+        this.isLoadingEspecialidades = false;
+      },
+      error: (error) => {
+        console.error('Erro ao carregar especialidades:', error);
+        this.isLoadingEspecialidades = false;
+        this.notificacao.fire({
+          icon: 'error',
+          title: 'Erro',
+          text: 'Não foi possível carregar as especialidades. Tente novamente.',
+        });
+      }
+    });
+  }
+
+  cadastra() {
+    this.FormularioMedico.markAllAsTouched();
+    this.FormularioEndereco.markAllAsTouched();
+
+    if (!this.FormularioEndereco.valid || !this.FormularioMedico.valid) {
+      this.notificacao.fire({
+        icon: 'warning',
+        title: 'Formulário incompleto',
+        text: 'Por favor, preencha todos os campos obrigatórios corretamente.',
+      });
+      return;
+    }
+
+    const dadosCompletos = {
+      ...this.FormularioMedico.value,
+      ...this.FormularioEndereco.value,
+      tipoProfissional: this.getTipoProfissionalSelecionado()
+    };
+
+    if (!dadosCompletos.cpf || dadosCompletos.cpf.length < 11) {
+      this.notificacao.fire({
+        icon: 'warning',
+        title: 'CPF inválido',
+        text: 'O CPF é obrigatório e será usado como login do usuário.',
+      });
+      return;
+    }
+
+    this.isLoading = true;
+    this.profissionalApiService.cadastraClinicoByOrg(dadosCompletos).subscribe({
+      next: () => {
+        this.isLoading = false;
+        this.notificacao.fire({
+          icon: 'success',
+          title: 'Sucesso!',
+          text: 'Médico cadastrado com sucesso. As credenciais serão enviadas por email.',
+        }).then(() => {
+          if (this.dialogRef) {
+            this.dialogRef.close(true);
+            // Emite evento de recarga para atualizar a tabela
+            this.filtroStateService.setRecarregar(true);
+          }
+        });
+      },
+      error: (error) => {
+
+        this.isLoading = false;
+        this.handleHttpError(error);
+      }
+    });
+  }
+
+  private handleHttpError(error: any) {
+    console.error('Erro HTTP:', error);
+    let errorMessage = 'Erro desconhecido ao realizar o cadastro.';
+    let titulo = 'Erro';
+    let icone: 'error' | 'warning' = 'error';
+
+    const mensagemBack = extrairMensagemErro(error);
+
+    if (error.status === 422 && error.error?.message) {
+      icone = 'warning';
+      titulo = 'Limite do plano atingido';
+      errorMessage = error.error.message;
+    } else if (mensagemBack?.includes('Duplicate entry') && mensagemBack.includes('medico.MedEmail_UNIQUE')) {
+      errorMessage = 'Já existe um Médico registrado com esse email.';
+    } else if (mensagemBack?.includes('Duplicate entry') && mensagemBack.includes('medico.MedCrm_UNIQUE')) {
+      errorMessage = 'Já existe um Médico registrado com esse CRM.';
+    } else if (mensagemBack) {
+      errorMessage = mensagemBack;
+    } else if (error.status === 0) {
+      errorMessage = 'Sem conexão com o servidor.';
+    } else if (error.status >= 500) {
+      errorMessage = 'Erro no servidor, tente novamente.';
+    }
+
+    this.notificacao.fire({
+      icon: icone,
+      title: titulo,
+      text: errorMessage,
+    });
+  }
+
+  ngOnDestroy(): void {
+    if (this.usuarioSubscription) {
+      this.usuarioSubscription.unsubscribe();
+    }
+  }
+}

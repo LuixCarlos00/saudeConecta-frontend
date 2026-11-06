@@ -1,0 +1,71 @@
+<div class="grafico-item chart-container">
+  <!-- Filtros de Período Padronizados -->
+  <div class="chart-filters-wrapper">
+    <div class="filter-header">
+      <span class="filter-title">
+        <i class="fa-solid fa-filter"></i>
+        Agendamentos - Filtrar por Período
+      </span>
+      <div class="quick-filters-inline">
+        <button
+                class="quick-filter-btn quick-filter-btn--small"
+                [class.quick-filter-btn--active]="diaSelecionadoAgendamentos === 1"
+                (click)="diaSelecionadoAgendamentos = 1; atualizarGraficoAgendamentos()">
+            7 dias
+        </button>
+        <button
+                class="quick-filter-btn quick-filter-btn--small"
+                [class.quick-filter-btn--active]="diaSelecionadoAgendamentos === 2"
+                (click)="diaSelecionadoAgendamentos = 2; atualizarGraficoAgendamentos()">
+            30 dias
+        </button>
+        <button
+                class="quick-filter-btn quick-filter-btn--small"
+                [class.quick-filter-btn--active]="diaSelecionadoAgendamentos === 3"
+                (click)="diaSelecionadoAgendamentos = 3; atualizarGraficoAgendamentos()">
+            60 dias
+        </button>
+      </div>
+    </div>
+
+    <!-- Período Personalizado Abaixo -->
+    <mat-form-field appearance="fill" class="custom-period-field">
+      <mat-label>
+        <i class="fa-solid fa-calendar-range"></i>
+      </mat-label>
+      <mat-date-range-input [rangePicker]="pickerAgendamentos" [formGroup]="IntervaloDeDatasAgendamentos">
+        <input matStartDate formControlName="start" placeholder="Data inicial">
+        <input matEndDate formControlName="end" placeholder="Data final" (dateChange)="atualizarGraficoAgendamentosPersonalizado()">
+      </mat-date-range-input>
+      <mat-datepicker-toggle matIconSuffix [for]="pickerAgendamentos"></mat-datepicker-toggle>
+      <mat-date-range-picker #pickerAgendamentos></mat-date-range-picker>
+    </mat-form-field>
+  </div>
+
+  <!-- Loading State -->
+  <div class="chart-loading" *ngIf="isLoadingAgendamentos">
+    <i class="fa-solid fa-spinner fa-spin"></i>
+    <span>Carregando dados...</span>
+  </div>
+
+  <!-- Error State -->
+  <div class="chart-error" *ngIf="hasErrorAgendamentos && !isLoadingAgendamentos">
+    <i class="fa-solid fa-exclamation-triangle"></i>
+    <span>{{ errorMessageAgendamentos }}</span>
+    <button class="retry-btn" (click)="atualizarGraficoAgendamentos()">
+      <i class="fa-solid fa-rotate-right"></i>
+      Tentar novamente
+    </button>
+  </div>
+
+  <!-- Empty State -->
+  <div class="chart-empty" *ngIf="!isLoadingAgendamentos && !hasErrorAgendamentos && TodasAgendamentos.length === 0">
+    <i class="fa-solid fa-calendar-xmark"></i>
+    <span>Nenhum agendamento encontrado no período</span>
+  </div>
+
+  <!-- Gráfico -->
+  <div class="chart-wrapper" [class.chart-wrapper--hidden]="isLoadingAgendamentos || hasErrorAgendamentos || TodasAgendamentos.length === 0">
+    <canvas #canvasAgendamentos></canvas>
+  </div>
+</div>

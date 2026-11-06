@@ -1,0 +1,37 @@
+<div class="view-dia">
+  <div class="dia-titulo">
+    <span class="dia-nome-completo">
+      {{ DIAS_SEMANA_NOMES[dataAtual.getDay()] }},
+      {{ dataAtual.getDate() }} de {{ MESES_NOMES[dataAtual.getMonth()] }}
+    </span>
+    <span class="total-consultas">{{ horasDia | totalConsultasDia }} consultas</span>
+  </div>
+
+  <div class="grade-dia">
+    <div class="slot-dia" *ngFor="let hora of horasDia">
+      <div class="hora-label">{{ hora.label }}</div>
+      <div class="hora-eventos">
+        <div
+          *ngFor="let c of hora.consultas"
+          class="evento-card-dia"
+          [class]="getStatusClass(c.status)"
+          (click)="abrirConsulta(c, $event)">
+          <div class="evento-dia-header">
+            <span class="evento-hora-dia">{{ getHorario(c.dataHora) }}</span>
+            <span class="evento-status-badge">{{ STATUS_LABELS[c.status] }}</span>
+          </div>
+          <div class="evento-paciente">
+            <i class="fa-solid fa-user"></i> {{ c.pacienteNome }}
+          </div>
+          <div class="evento-especialidade">
+            <i class="fa-solid fa-stethoscope"></i> {{ c.especialidadeNome }}
+          </div>
+          <div class="evento-medico" *ngIf="podeVerTodosProfissionais">
+            <i class="fa-solid fa-user-doctor"></i> {{ c.profissionalNome }}
+          </div>
+        </div>
+        <div class="hora-vazia" *ngIf="hora.consultas.length === 0"></div>
+      </div>
+    </div>
+  </div>
+</div>

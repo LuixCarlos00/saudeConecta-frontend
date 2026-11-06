@@ -1,0 +1,125 @@
+@use '../agenda-variaveis' as *;
+
+:host {
+  display: contents;
+}
+
+// Cor de cada status nos cartões e chips.
+@each $name, $color in $status {
+  .status-#{$name} {
+    background-color: rgba($color, .15);
+    border-left: 3px solid $color;
+    color: darken($color, 15%);
+  }
+}
+
+// ─────────────────────────────────────────────────────────
+// VISUALIZAÇÃO MÊS
+// ─────────────────────────────────────────────────────────
+.grade-mes-header {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 1px;
+  margin-bottom: 4px;
+}
+
+.dia-semana-header {
+  text-align: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: $text-muted;
+  padding: 6px 0;
+  text-transform: uppercase;
+}
+
+.grade-mes {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.celula-dia {
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: $radius;
+  min-height: 55px;
+  padding: 4px;
+  cursor: pointer;
+  transition: all .15s;
+  overflow: hidden;
+
+  &:hover { border-color: $primary; box-shadow: 0 0 0 2px rgba($primary,.1); }
+
+  &.outro-mes {
+    background: $bg;
+    opacity: .6;
+    .numero-dia { color: $text-muted; }
+  }
+
+  &.hoje {
+    border-color: $primary;
+    .numero-dia {
+      background: $primary;
+      color: #fff;
+    }
+  }
+
+  &.tem-consultas { border-left: 3px solid $primary; }
+}
+
+.celula-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.numero-dia {
+  font-size: 0.65rem;
+  font-weight: 600;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: $text;
+}
+
+.badge-count {
+  font-size: 0.7rem;
+  background: $primary;
+  color: #fff;
+  border-radius: 10px;
+  padding: 1px 6px;
+  font-weight: 600;
+}
+
+.eventos-lista { display: flex; flex-direction: column; gap: 2px; }
+
+.evento-chip {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding: 3px 5px;
+  border-radius: 4px;
+  font-size: 0.52rem;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: filter .1s;
+
+  &:hover { filter: brightness(.9); }
+
+  .evento-hora { font-weight: 700; flex-shrink: 0; }
+  .evento-nome { overflow: hidden; text-overflow: ellipsis; }
+}
+
+.mais-eventos {
+  font-size: 0.68rem;
+  color: $primary;
+  font-weight: 600;
+  padding: 1px 3px;
+  cursor: pointer;
+}

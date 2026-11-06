@@ -1,0 +1,20 @@
+// Variáveis de design e cores de status compartilhadas pela agenda e seus componentes filhos.
+$primary:    #2563eb;
+$primary-dk: #1d4ed8;
+$surface:    #ffffff;
+$bg:         #f1f5f9;
+$border:     #e2e8f0;
+$text:       #1e293b;
+$text-muted: #64748b;
+$radius:     10px;
+$shadow:     0 2px 12px rgba(0,0,0,.08);
+
+$status: (
+  agendada:   #f97316,
+  confirmada: #06b6d4,
+  realizada:  #059669,
+  cancelada:  #ef4444,
+  pago:       #4f46e5,
+  faltou:     #f59e0b,
+  remarcada:  #a855f7,
+);

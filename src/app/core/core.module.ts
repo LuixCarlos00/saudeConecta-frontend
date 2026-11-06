@@ -3,18 +3,18 @@ import { CommonModule } from '@angular/common';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 
 // Services
-import { AuthService } from './services/auth.service';
+import { AuthService } from './auth/auth.service';
 import { NotificacaoService } from './notificacao/notificacao.service';
 
 // Guards
-import { AuthGuard } from './guards/auth.guard';
-import { GuestGuard } from './guards/guest.guard';
-import { RoleGuard } from './guards/role.guard';
+import { AuthGuard } from './auth/guards/auth.guard';
+import { GuestGuard } from './auth/guards/guest.guard';
+import { RoleGuard } from './auth/guards/role.guard';
 
 // Interceptors
-import { AuthInterceptor } from './interceptors/auth.interceptor';
-import { ErrorInterceptor } from './interceptors/error.interceptor';
-import { NgrokInterceptor } from './interceptors/ngrok.interceptor';
+import { AuthInterceptor } from './auth/interceptors/auth.interceptor';
+import { ErrorInterceptor } from './http/interceptors/error.interceptor';
+import { NgrokInterceptor } from './http/interceptors/ngrok.interceptor';
 import { environment } from '../../environments/environment';
 
 /**
