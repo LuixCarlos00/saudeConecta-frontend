@@ -5,7 +5,7 @@ import { of, throwError } from 'rxjs';
 import { AuthService } from 'src/app/core/auth/auth.service';
 import { AssinaturaApiService } from 'src/app/core/data-access/assinatura-api.service';
 import { LoginComponent } from './login.component';
-import { IMPORTS_TESTE_PADRAO, PROVIDERS_TESTE_PADRAO, SCHEMAS_TESTE_PADRAO } from '../../../testing/configuracao-teste';
+import { IMPORTS_TESTE_PADRAO, PROVIDERS_TESTE_PADRAO, SCHEMAS_TESTE_PADRAO } from 'src/app/testing/configuracao-teste';
 
 describe('LoginComponent', () => {
   let component: LoginComponent;

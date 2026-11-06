@@ -8,9 +8,9 @@ import { NotFoundComponent } from './core/layout/not-found/not-found.component';
 // ========== FEATURES PÚBLICAS ==========
 import { LandingPageComponent } from './features/publico/landing-page/landing-page.component';
 import { LandingPageGuard } from './features/publico/landing-page/guards/landing-page.guard';
-import { LoginComponent } from './features/publico/login/login.component';
-import { GuardaRotasLogin } from './features/publico/login/guards/GuardaRotasLogin';
-import { RecuperaCadastroComponent } from './features/publico/recupera-cadastro/recupera-cadastro/recupera-cadastro.component';
+import { LoginComponent } from './features/auth/pages/login/login.component';
+import { GuardaRotasLogin } from './features/auth/guards/GuardaRotasLogin';
+import { RecuperaCadastroComponent } from './features/auth/pages/recupera-cadastro/recupera-cadastro.component';
 import { CadastroSaasComponent } from './features/publico/cadastro-saas/cadastro-saas.component';
 import { AssinaturaRetornoComponent } from './features/publico/assinatura-retorno/assinatura-retorno.component';
 
@@ -23,7 +23,7 @@ import { CadastroAdmComponent } from './features/usuarios/pages/cadastro-adm/cad
 import { CadastroAdminOrgComponent } from './features/usuarios/pages/cadastro-admin-org/cadastro-admin-org.component';
 import { CadastroSecretariaComponent } from './features/usuarios/pages/cadastro-secretaria/cadastro-secretaria.component';
 import { ConfiguracoesSistemaComponent } from './features/administrador/configuracoes/configuracoes-sistema.component';
-import { TrocaSenhaComponent } from './features/administrador/troca-senha/troca-senha.component';
+import { TrocaSenhaComponent } from './features/auth/pages/troca-senha/troca-senha.component';
 import { SuporteComponent } from './features/administrador/suporte/suporte.component';
 import { GestaoChamadosComponent } from './features/administrador/suporte/gestao-chamados/gestao-chamados.component';
 import { MensageriaComponent } from './features/administrador/mensageria/mensageria.component';

@@ -81,7 +81,7 @@ import { PendenciasManuaisComponent } from './administrador/assinaturas/pendenci
 // Componentes de Suporte
 import { SuporteComponent } from './administrador/suporte/suporte.component';
 import { GestaoChamadosComponent } from './administrador/suporte/gestao-chamados/gestao-chamados.component';
-import { TrocaSenhaComponent } from './administrador/troca-senha/troca-senha.component';
+import { TrocaSenhaComponent } from './auth/pages/troca-senha/troca-senha.component';
 
 const routes: Routes = [
   {

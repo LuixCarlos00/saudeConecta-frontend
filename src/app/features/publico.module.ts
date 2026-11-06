@@ -9,9 +9,9 @@ import { AssinaturaPlanejamentoComponent } from './publico/assinatura-planejamen
 import { AssinaturaRetornoComponent } from './publico/assinatura-retorno/assinatura-retorno.component';
 import { CadastroSaasComponent } from './publico/cadastro-saas/cadastro-saas.component';
 import { LandingPageComponent } from './publico/landing-page/landing-page.component';
-import { LoginComponent } from './publico/login/login.component';
+import { LoginComponent } from './auth/pages/login/login.component';
 import { QuestionarioSaudeComponent } from './publico/questionario-saude/questionario-saude.component';
-import { RecuperaCadastroComponent } from './publico/recupera-cadastro/recupera-cadastro/recupera-cadastro.component';
+import { RecuperaCadastroComponent } from './auth/pages/recupera-cadastro/recupera-cadastro.component';
 
 const routes: Routes = [
   // Rotas públicas serão adicionadas aqui
