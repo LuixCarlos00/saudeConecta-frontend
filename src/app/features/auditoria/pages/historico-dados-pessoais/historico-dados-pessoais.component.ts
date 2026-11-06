@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { HistoricoDadosPessoaisApiService } from 'src/app/services/api/historico-dados-pessoais-api.service';
-import { HistoricoDadosPessoais } from 'src/app/util/variados/interfaces/historico-dados-pessoais/historico-dados-pessoais';
+import { HistoricoDadosPessoaisApiService } from 'src/app/features/auditoria/data-access/historico-dados-pessoais-api.service';
+import { HistoricoDadosPessoais } from 'src/app/features/auditoria/models/historico-dados-pessoais';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 

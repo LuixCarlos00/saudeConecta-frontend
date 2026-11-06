@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { HistoricoDadosPessoais } from 'src/app/util/variados/interfaces/historico-dados-pessoais/historico-dados-pessoais';
+import { HistoricoDadosPessoais } from 'src/app/features/auditoria/models/historico-dados-pessoais';
 
 @Injectable({
   providedIn: 'root'

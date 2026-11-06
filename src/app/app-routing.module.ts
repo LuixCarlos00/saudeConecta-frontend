@@ -32,7 +32,7 @@ import { GestaoAssinaturasComponent } from './features/administrador/assinaturas
 import { PendenciasManuaisComponent } from './features/administrador/assinaturas/pendencias-manuais/pendencias-manuais.component';
 import { DetalheAssinaturaComponent } from './features/administrador/planos/detalhe-assinatura/detalhe-assinatura.component';
  
-import { HistoricoDadosPessoaisComponent } from './features/administrador/historico-dados-pessoais/historico-dados-pessoais.component';
+import { HistoricoDadosPessoaisComponent } from './features/auditoria/pages/historico-dados-pessoais/historico-dados-pessoais.component';
  
 
 // ========== FEATURES MÉDICO ==========
