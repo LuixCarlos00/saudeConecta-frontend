@@ -2,7 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
 import { throwError } from 'rxjs';
-import { QuestionarioPublicoApiService } from 'src/app/services/api/questionario-publico-api.service';
+import { QuestionarioPublicoApiService } from 'src/app/features/publico/data-access/questionario-publico-api.service';
 import { QuestionarioSaudeComponent } from './questionario-saude.component';
 
 describe('QuestionarioSaudeComponent - erro no envio', () => {

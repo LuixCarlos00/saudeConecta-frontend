@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
-import { CadastroPublicoApiService } from 'src/app/services/api/cadastro-publico-api.service';
+import { CadastroPublicoApiService } from 'src/app/features/publico/data-access/cadastro-publico-api.service';
 import { CepApiService } from 'src/app/core/data-access/cep-api.service';
 import { PlanoApiService } from 'src/app/core/data-access/plano-api.service';
 import { CpfValidator } from 'src/app/shared/validators/cpf.validator';

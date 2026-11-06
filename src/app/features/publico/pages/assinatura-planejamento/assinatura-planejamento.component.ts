@@ -1,22 +1,15 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { QuestionarioPublicoApiService } from 'src/app/services/api/questionario-publico-api.service';
-
-interface PerguntaSaude {
-  id: number;
-  texto: string;
-  resposta: string;
-  observacao: string;
-}
+import { QuestionarioPublicoApiService } from 'src/app/features/publico/data-access/questionario-publico-api.service';
 
 import { extrairMensagemErro } from 'src/app/shared/utils/mensagem-erro-http';
 
 @Component({
-  selector: 'app-questionario-saude',
-  templateUrl: './questionario-saude.component.html',
-  styleUrls: ['./questionario-saude.component.scss'],
+  selector: 'app-assinatura-planejamento',
+  templateUrl: './assinatura-planejamento.component.html',
+  styleUrls: ['./assinatura-planejamento.component.scss'],
 })
-export class QuestionarioSaudeComponent implements OnInit {
+export class AssinaturaPlanejamentoComponent implements OnInit {
 
   token = '';
   loading = true;
@@ -29,30 +22,9 @@ export class QuestionarioSaudeComponent implements OnInit {
   pacienteNome = '';
   profissionalNome = '';
   clinicaNome = '';
-  dataConsulta: Date | null = null;
+  itens: any[] = [];
+  totalValor = 0;
 
-  perguntas: PerguntaSaude[] = [
-    { id: 1, texto: 'Está sob tratamento médico?', resposta: '', observacao: '' },
-    { id: 2, texto: 'Está tomando algum medicamento? Qual?', resposta: '', observacao: '' },
-    { id: 3, texto: 'É alérgico a algum medicamento ou substância?', resposta: '', observacao: '' },
-    { id: 4, texto: 'Já foi submetido a alguma cirurgia?', resposta: '', observacao: '' },
-    { id: 5, texto: 'Já teve alguma reação a anestesia?', resposta: '', observacao: '' },
-    { id: 6, texto: 'Tem ou teve algum problema cardíaco?', resposta: '', observacao: '' },
-    { id: 7, texto: 'Tem pressão alta ou baixa?', resposta: '', observacao: '' },
-    { id: 8, texto: 'Tem diabetes?', resposta: '', observacao: '' },
-    { id: 9, texto: 'Tem problemas de coagulação ou sangramento?', resposta: '', observacao: '' },
-    { id: 10, texto: 'Tem hepatite, HIV ou outra doença infectocontagiosa?', resposta: '', observacao: '' },
-    { id: 11, texto: 'Tem problema respiratório (asma, bronquite)?', resposta: '', observacao: '' },
-    { id: 12, texto: 'Tem epilepsia ou convulsões?', resposta: '', observacao: '' },
-    { id: 13, texto: 'Tem problemas renais?', resposta: '', observacao: '' },
-    { id: 14, texto: 'Tem problemas gástricos (úlcera, gastrite)?', resposta: '', observacao: '' },
-    { id: 15, texto: 'Está grávida ou amamentando?', resposta: '', observacao: '' },
-    { id: 16, texto: 'É fumante?', resposta: '', observacao: '' },
-    { id: 17, texto: 'Consome bebidas alcoólicas com frequência?', resposta: '', observacao: '' },
-    { id: 18, texto: 'Tem alguma outra doença ou condição não mencionada?', resposta: '', observacao: '' },
-  ];
-
-  // Assinatura digital — digitada
   @ViewChild('canvasOculto') canvasOcultoRef!: ElementRef<HTMLCanvasElement>;
   assinaturaNome = '';
   fonteSelecionada: 'dancing' | 'allura' = 'dancing';
@@ -65,7 +37,7 @@ export class QuestionarioSaudeComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private questionarioApi: QuestionarioPublicoApiService
+    private questionarioApiService: QuestionarioPublicoApiService
   ) { }
 
   ngOnInit(): void {
@@ -75,31 +47,32 @@ export class QuestionarioSaudeComponent implements OnInit {
       this.loading = false;
       return;
     }
-    this.carregarQuestionario();
+    this.carregarPlanejamento();
   }
 
 
-  carregarQuestionario(): void {
-    this.questionarioApi.buscarQuestionario(this.token).subscribe({
+  carregarPlanejamento(): void {
+    this.questionarioApiService.buscarPlanejamento(this.token).subscribe({
       next: (resp) => {
         this.pacienteNome = resp?.pacienteNome || '';
         this.profissionalNome = resp?.profissionalNome || '';
         this.clinicaNome = resp?.clinicaNome || '';
-        this.dataConsulta = resp?.dataConsulta ? new Date(resp.dataConsulta) : null;
+        this.itens = resp?.itens || [];
 
 
-        if (resp?.respondido) {
+        this.totalValor = this.itens.reduce((sum: number, item: any) => sum + (item.valor || 0), 0);
+        if (resp?.assinado) {
           this.enviado = true;
         }
         this.loading = false;
       },
       error: (err) => {
         if (err.status === 404) {
-          this.erro = 'Questionário não encontrado ou link expirado.';
+          this.erro = 'Planejamento não encontrado ou link expirado.';
         } else if (err.status === 410) {
-          this.erro = 'Este link já foi utilizado e expirou.';
+          this.erro = 'Este link já foi utilizado.';
         } else {
-          this.erro = 'Erro ao carregar questionário. Tente novamente.';
+          this.erro = 'Erro ao carregar planejamento. Tente novamente.';
         }
         this.loading = false;
       }
@@ -143,34 +116,19 @@ export class QuestionarioSaudeComponent implements OnInit {
   }
 
   // =========================================================================
-  // VALIDAÇÃO E ENVIO
+  // ENVIO
   // =========================================================================
-  get formularioValido(): boolean {
-    return this.perguntas.every(p => p.resposta !== '') && this.assinaturaPreenchida;
-  }
-
-  get perguntasPendentes(): number {
-    return this.perguntas.filter(p => p.resposta === '').length;
-  }
-
-  enviarQuestionario(): void {
-    if (!this.formularioValido) return;
+  assinarPlanejamento(): void {
+    if (!this.assinaturaPreenchida) return;
     this.enviando = true;
     this.erroEnvio = '';
 
-    const respostas = this.perguntas.map(p => ({
-      pergunta: p.texto,
-      resposta: p.resposta,
-      observacao: p.observacao || ''
-    }));
-
     const payload = {
       token: this.token,
-      respostasQuestionario: JSON.stringify(respostas),
       assinaturaBase64: this.obterAssinaturaBase64()
     };
 
-    this.questionarioApi.responderQuestionario(payload).subscribe({
+    this.questionarioApiService.assinarPlanejamento(payload).subscribe({
       next: () => {
         this.enviado = true;
         this.enviando = false;
@@ -180,10 +138,10 @@ export class QuestionarioSaudeComponent implements OnInit {
         if (err.status === 404 || err.status === 410) {
           // Link expirado ou já usado: reenviar não adianta, então troca o formulário pela tela de erro.
           this.erro = mensagem ?? (err.status === 404
-            ? 'Questionário não encontrado ou link expirado.'
-            : 'Este link já foi utilizado e expirou.');
+            ? 'Planejamento não encontrado ou link expirado.'
+            : 'Este link já foi utilizado.');
         } else {
-          this.erroEnvio = mensagem ?? 'Erro ao enviar questionário. Tente novamente.';
+          this.erroEnvio = mensagem ?? 'Erro ao enviar assinatura. Tente novamente.';
         }
         this.enviando = false;
       }

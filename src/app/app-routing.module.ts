@@ -6,13 +6,13 @@ import { Role } from './shared/constants/roles.constant';
 import { NotFoundComponent } from './core/layout/not-found/not-found.component';
 
 // ========== FEATURES PÚBLICAS ==========
-import { LandingPageComponent } from './features/publico/landing-page/landing-page.component';
-import { LandingPageGuard } from './features/publico/landing-page/guards/landing-page.guard';
+import { LandingPageComponent } from './features/publico/pages/landing-page/landing-page.component';
+import { LandingPageGuard } from './features/publico/guards/landing-page.guard';
 import { LoginComponent } from './features/auth/pages/login/login.component';
 import { GuardaRotasLogin } from './features/auth/guards/GuardaRotasLogin';
 import { RecuperaCadastroComponent } from './features/auth/pages/recupera-cadastro/recupera-cadastro.component';
-import { CadastroSaasComponent } from './features/publico/cadastro-saas/cadastro-saas.component';
-import { AssinaturaRetornoComponent } from './features/publico/assinatura-retorno/assinatura-retorno.component';
+import { CadastroSaasComponent } from './features/publico/pages/cadastro-saas/cadastro-saas.component';
+import { AssinaturaRetornoComponent } from './features/publico/pages/assinatura-retorno/assinatura-retorno.component';
 
 // ========== FEATURES ADMINISTRADOR ==========
 import { DashboardComponent } from './features/administrador/dashboard/dashboard.component';
@@ -41,8 +41,8 @@ import { ProntuarioMedicoComponent } from './features/atendimento/pages/prontuar
 import { ProntuarioComponent } from './features/atendimento/pages/prontuario/prontuario.component';
 import { AgendaCalendarioComponent } from './features/agenda/pages/agenda-calendario/agenda-calendario.component';
 import { ProntuarioDentistaComponent } from './features/atendimento/pages/prontuario-dentista/prontuario-dentista.component';
-import { QuestionarioSaudeComponent } from './features/publico/questionario-saude/questionario-saude.component';
-import { AssinaturaPlanejamentoComponent } from './features/publico/assinatura-planejamento/assinatura-planejamento.component';
+import { QuestionarioSaudeComponent } from './features/publico/pages/questionario-saude/questionario-saude.component';
+import { AssinaturaPlanejamentoComponent } from './features/publico/pages/assinatura-planejamento/assinatura-planejamento.component';
 import { RelatoriosPacientesComponent } from './features/relatorio/relatorios-pacientes/relatorios-pacientes.component';
 
 
