@@ -44,9 +44,9 @@ export class AuthInterceptor implements HttpInterceptor {
   }
 
   /**
-   * Verifica se o endpoint é público (não requer autenticação)
+   * Verifica se o endpoint é público (não requer autenticação); arquivos estáticos de assets/ também não levam token
    */
   private isPublicEndpoint(url: string): boolean {
-    return url.includes('/publico/') || PUBLIC_ENDPOINTS.some(endpoint => url.includes(endpoint));
+    return url.startsWith('assets/') || url.startsWith('/assets/') || url.includes('/publico/') || PUBLIC_ENDPOINTS.some(endpoint => url.includes(endpoint));
   }
 }

@@ -40,7 +40,7 @@ describe('CodigosTussCidService', () => {
   it('CID e TUSS vêm de arquivos separados, cada um baixado só quando usado', async () => {
     const r = service.buscarCid('a00', 15);
     http.expectOne('assets/codigos/cid.json').flush(CID);
-    await r;
+    expect((await r).map(i => i.codigo)).toEqual(['A00', 'A00.0']);
     http.expectNone('assets/codigos/tuss.json');
   });
 

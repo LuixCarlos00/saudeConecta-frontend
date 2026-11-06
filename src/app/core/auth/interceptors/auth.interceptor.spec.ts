@@ -29,4 +29,9 @@ describe('AuthInterceptor', () => {
     http.get('/api/publico/questionario/abc').subscribe();
     expect(ctrl.expectOne('/api/publico/questionario/abc').request.headers.has('Authorization')).toBeFalse();
   });
+
+  it('não envia Bearer para arquivos estáticos de assets/', () => {
+    http.get('assets/codigos/cid.json').subscribe();
+    expect(ctrl.expectOne('assets/codigos/cid.json').request.headers.has('Authorization')).toBeFalse();
+  });
 });

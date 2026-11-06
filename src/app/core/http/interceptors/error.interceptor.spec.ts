@@ -38,6 +38,15 @@ describe('ErrorInterceptor (401)', () => {
     expect(logout).toHaveBeenCalled();
   });
 
+  it('não faz logout em 401 de arquivo estático de assets/ e repassa o erro', () => {
+    urlAtual = '/Dashboard';
+    let recebido: any;
+    http.get('assets/codigos/cid.json').subscribe({ error: e => recebido = e });
+    ctrl.expectOne('assets/codigos/cid.json').flush({}, { status: 401, statusText: 'Unauthorized' });
+    expect(logout).not.toHaveBeenCalled();
+    expect(recebido.status).toBe(401);
+  });
+
   it('não faz logout em 401 de chamada /publico/', () => {
     urlAtual = '/Dashboard';
     dispara401('/api/publico/questionario/abc');

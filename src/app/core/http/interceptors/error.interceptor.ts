@@ -31,6 +31,10 @@ export class ErrorInterceptor implements HttpInterceptor {
   ) {}
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+    // Arquivos estáticos (assets/) não são da API: um erro neles não pode deslogar nem avisar plano.
+    if (request.url.startsWith('assets/') || request.url.startsWith('/assets/')) {
+      return next.handle(request);
+    }
     return next.handle(request).pipe(
       catchError((error: HttpErrorResponse) => {
         // Trata erros de autenticação

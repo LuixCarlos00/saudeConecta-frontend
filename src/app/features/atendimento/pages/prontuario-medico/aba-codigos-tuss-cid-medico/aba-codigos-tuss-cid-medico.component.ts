@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
+import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
 import { CodigosTussCidService } from 'src/app/features/atendimento/data-access/codigos/codigos-tuss-cid.service';
 import { extrairItensCodigo, extrairItensSolicitacaoExame } from 'src/app/shared/utils/codigos-tuss-cid';
 
@@ -15,6 +16,9 @@ export class AbaCodigosTussCidMedicoComponent {
 
   private readonly MAX_AUTOCOMPLETE_RESULTS = 15;
   private readonly codigosService = inject(CodigosTussCidService);
+  private readonly notificacao = inject(NotificacaoService);
+  /** Já avisou da falha ao baixar as tabelas? Evita repetir o aviso a cada tecla até uma busca dar certo. */
+  private avisouFalhaTabelas = false;
 
   // ── Registros TUSS ──
   tussSelecionados: any[] = [];
@@ -44,7 +48,8 @@ export class AbaCodigosTussCidMedicoComponent {
   async filtrarTuss(): Promise<void> {
     const termo = this.buscaTuss?.trim().toLowerCase();
     if (!termo || termo.length < 2) { this.tussResultados = []; return; }
-    const resultados = await this.codigosService.buscarTuss(termo, this.MAX_AUTOCOMPLETE_RESULTS);
+    const resultados = await this.buscarSeguro(() => this.codigosService.buscarTuss(termo, this.MAX_AUTOCOMPLETE_RESULTS));
+    if (!resultados) { return; }
     // Descarta resposta atrasada se o usuário já digitou outra coisa durante o carregamento.
     if (this.buscaTuss?.trim().toLowerCase() === termo) { this.tussResultados = resultados; }
   }
@@ -72,7 +77,8 @@ export class AbaCodigosTussCidMedicoComponent {
   async filtrarCid(): Promise<void> {
     const termo = this.buscaCid?.trim().toLowerCase();
     if (!termo || termo.length < 2) { this.cidResultados = []; return; }
-    const resultados = await this.codigosService.buscarCid(termo, this.MAX_AUTOCOMPLETE_RESULTS);
+    const resultados = await this.buscarSeguro(() => this.codigosService.buscarCid(termo, this.MAX_AUTOCOMPLETE_RESULTS));
+    if (!resultados) { return; }
     // Descarta resposta atrasada se o usuário já digitou outra coisa durante o carregamento.
     if (this.buscaCid?.trim().toLowerCase() === termo) { this.cidResultados = resultados; }
   }
@@ -100,7 +106,8 @@ export class AbaCodigosTussCidMedicoComponent {
   async filtrarTussExame(): Promise<void> {
     const termo = this.buscaTussExame?.trim().toLowerCase();
     if (!termo || termo.length < 2) { this.tussExameResultados = []; return; }
-    const resultados = await this.codigosService.buscarTuss(termo, this.MAX_AUTOCOMPLETE_RESULTS);
+    const resultados = await this.buscarSeguro(() => this.codigosService.buscarTuss(termo, this.MAX_AUTOCOMPLETE_RESULTS));
+    if (!resultados) { return; }
     // Descarta resposta atrasada se o usuário já digitou outra coisa durante o carregamento.
     if (this.buscaTussExame?.trim().toLowerCase() === termo) { this.tussExameResultados = resultados; }
   }
@@ -123,7 +130,8 @@ export class AbaCodigosTussCidMedicoComponent {
   async filtrarCidExame(): Promise<void> {
     const termo = this.buscaCidExame?.trim().toLowerCase();
     if (!termo || termo.length < 2) { this.cidExameResultados = []; return; }
-    const resultados = await this.codigosService.buscarCid(termo, this.MAX_AUTOCOMPLETE_RESULTS);
+    const resultados = await this.buscarSeguro(() => this.codigosService.buscarCid(termo, this.MAX_AUTOCOMPLETE_RESULTS));
+    if (!resultados) { return; }
     // Descarta resposta atrasada se o usuário já digitou outra coisa durante o carregamento.
     if (this.buscaCidExame?.trim().toLowerCase() === termo) { this.cidExameResultados = resultados; }
   }
@@ -207,5 +215,26 @@ export class AbaCodigosTussCidMedicoComponent {
       tussExameSelecionados: this.tussExameSelecionados,
       cidExameSelecionados: this.cidExameSelecionados,
     };
+  }
+
+  /**
+   * Executa uma busca nas tabelas TUSS/CID. Se o download da tabela falhar, avisa o usuário
+   * (uma vez, até a próxima busca dar certo) em vez de deixar a promise rejeitada sem tratamento.
+   *
+   * @param busca função que consulta o CodigosTussCidService
+   * @returns os resultados, ou null se a tabela não pôde ser carregada
+   */
+  private async buscarSeguro<T>(busca: () => Promise<T[]>): Promise<T[] | null> {
+    try {
+      const resultados = await busca();
+      this.avisouFalhaTabelas = false;
+      return resultados;
+    } catch {
+      if (!this.avisouFalhaTabelas) {
+        this.avisouFalhaTabelas = true;
+        this.notificacao.fire('Erro', 'Não foi possível carregar a tabela de códigos. Tente de novo.', 'error');
+      }
+      return null;
+    }
   }
 }
