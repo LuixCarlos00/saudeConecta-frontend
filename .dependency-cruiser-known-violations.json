@@ -1,1 +1,436 @@
-[]
+[
+  {
+    "type": "dependency",
+    "from": "src/app/features/agenda/components/agenda/agenda.component.ts",
+    "to": "src/app/core/data-access/consulta-api.service.ts",
+    "unresolvedTo": "src/app/core/data-access/consulta-api.service",
+    "dependencyTypes": [
+      "undetermined",
+      "import"
+    ],
+    "rule": {
+      "severity": "error",
+      "name": "components-nao-injeta-data-access"
+    }
+  },
+  {
+    "type": "dependency",
+    "from": "src/app/features/agenda/components/agenda/agenda.component.ts",
+    "to": "src/app/core/data-access/planejamento-terapeutico-api.service.ts",
+    "unresolvedTo": "src/app/core/data-access/planejamento-terapeutico-api.service",
+    "dependencyTypes": [
+      "undetermined",
+      "import"
+    ],
+    "rule": {
+      "severity": "error",
+      "name": "components-nao-injeta-data-access"
+    }
+  },
+  {
+    "type": "dependency",
+    "from": "src/app/features/agenda/components/agenda/agenda.component.ts",
+    "to": "src/app/core/data-access/prontuario-dentista-api.service.ts",
+    "unresolvedTo": "src/app/core/data-access/prontuario-dentista-api.service",
+    "dependencyTypes": [
+      "undetermined",
+      "import"
+    ],
+    "rule": {
+      "severity": "error",
+      "name": "components-nao-injeta-data-access"
+    }
+  },
+  {
+    "type": "dependency",
+    "from": "src/app/features/agenda/components/agenda/agenda.component.ts",
+    "to": "src/app/features/agenda/data-access/acoes-consulta.service.ts",
+    "unresolvedTo": "../../data-access/acoes-consulta.service",
+    "dependencyTypes": [
+      "local",
+      "import"
+    ],
+    "rule": {
+      "severity": "error",
+      "name": "components-nao-injeta-data-access"
+    }
+  },
+  {
+    "type": "dependency",
+    "from": "src/app/features/agenda/components/agenda/agenda.component.ts",
+    "to": "src/app/features/agenda/data-access/consulta-state.service.ts",
+    "unresolvedTo": "src/app/features/agenda/data-access/consulta-state.service",
+    "dependencyTypes": [
+      "undetermined",
+      "import"
+    ],
+    "rule": {
+      "severity": "error",
+      "name": "components-nao-injeta-data-access"
+    }
+  },
+  {
+    "type": "dependency",
+    "from": "src/app/features/agenda/components/agenda/Editar-Consultas/Editar-Consultas.component.ts",
+    "to": "src/app/core/data-access/consulta-api.service.ts",
+    "unresolvedTo": "src/app/core/data-access/consulta-api.service",
+    "dependencyTypes": [
+      "undetermined",
+      "import"
+    ],
+    "rule": {
+      "severity": "error",
+      "name": "components-nao-injeta-data-access"
+    }
+  },
+  {
+    "type": "dependency",
+    "from": "src/app/features/agenda/components/agenda/Editar-Consultas/Editar-Consultas.component.ts",
+    "to": "src/app/core/data-access/paciente-api.service.ts",
+    "unresolvedTo": "src/app/core/data-access/paciente-api.service",
+    "dependencyTypes": [
+      "undetermined",
+      "import"
+    ],
+    "rule": {
+      "severity": "error",
+      "name": "components-nao-injeta-data-access"
+    }
+  },
+  {
+    "type": "dependency",
+    "from": "src/app/features/agenda/components/agenda/Editar-Consultas/Editar-Consultas.component.ts",
+    "to": "src/app/core/data-access/profissional-api.service.ts",
+    "unresolvedTo": "src/app/core/data-access/profissional-api.service",
+    "dependencyTypes": [
+      "undetermined",
+      "import"
+    ],
+    "rule": {
+      "severity": "error",
+      "name": "components-nao-injeta-data-access"
+    }
+  },
+  {
+    "type": "dependency",
+    "from": "src/app/features/agenda/components/agendar-consulta/agendar-consulta.component.ts",
+    "to": "src/app/core/data-access/consulta-api.service.ts",
+    "unresolvedTo": "src/app/core/data-access/consulta-api.service",
+    "dependencyTypes": [
+      "undetermined",
+      "import"
+    ],
+    "rule": {
+      "severity": "error",
+      "name": "components-nao-injeta-data-access"
+    }
+  },
+  {
+    "type": "dependency",
+    "from": "src/app/features/agenda/components/agendar-consulta/agendar-consulta.component.ts",
+    "to": "src/app/core/data-access/paciente-api.service.ts",
+    "unresolvedTo": "src/app/core/data-access/paciente-api.service",
+    "dependencyTypes": [
+      "undetermined",
+      "import"
+    ],
+    "rule": {
+      "severity": "error",
+      "name": "components-nao-injeta-data-access"
+    }
+  },
+  {
+    "type": "dependency",
+    "from": "src/app/features/agenda/components/agendar-consulta/agendar-consulta.component.ts",
+    "to": "src/app/core/data-access/profissional-api.service.ts",
+    "unresolvedTo": "src/app/core/data-access/profissional-api.service",
+    "dependencyTypes": [
+      "undetermined",
+      "import"
+    ],
+    "rule": {
+      "severity": "error",
+      "name": "components-nao-injeta-data-access"
+    }
+  },
+  {
+    "type": "dependency",
+    "from": "src/app/features/agenda/components/agendar-consulta/agendar-consulta.component.ts",
+    "to": "src/app/features/agenda/data-access/consulta-state.service.ts",
+    "unresolvedTo": "src/app/features/agenda/data-access/consulta-state.service",
+    "dependencyTypes": [
+      "undetermined",
+      "import"
+    ],
+    "rule": {
+      "severity": "error",
+      "name": "components-nao-injeta-data-access"
+    }
+  },
+  {
+    "type": "dependency",
+    "from": "src/app/features/agenda/components/cronologia/cronologia.component.ts",
+    "to": "src/app/core/data-access/consulta-api.service.ts",
+    "unresolvedTo": "src/app/core/data-access/consulta-api.service",
+    "dependencyTypes": [
+      "undetermined",
+      "import"
+    ],
+    "rule": {
+      "severity": "error",
+      "name": "components-nao-injeta-data-access"
+    }
+  },
+  {
+    "type": "dependency",
+    "from": "src/app/features/agenda/components/cronologia/cronologia.component.ts",
+    "to": "src/app/core/data-access/controle-acesso-api.service.ts",
+    "unresolvedTo": "src/app/core/data-access/controle-acesso-api.service",
+    "dependencyTypes": [
+      "undetermined",
+      "import"
+    ],
+    "rule": {
+      "severity": "error",
+      "name": "components-nao-injeta-data-access"
+    }
+  },
+  {
+    "type": "dependency",
+    "from": "src/app/features/agenda/components/cronologia/cronologia.component.ts",
+    "to": "src/app/core/data-access/especialidade-api.service.ts",
+    "unresolvedTo": "src/app/core/data-access/especialidade-api.service",
+    "dependencyTypes": [
+      "undetermined",
+      "import"
+    ],
+    "rule": {
+      "severity": "error",
+      "name": "components-nao-injeta-data-access"
+    }
+  },
+  {
+    "type": "dependency",
+    "from": "src/app/features/agenda/components/cronologia/cronologia.component.ts",
+    "to": "src/app/core/data-access/profissional-api.service.ts",
+    "unresolvedTo": "src/app/core/data-access/profissional-api.service",
+    "dependencyTypes": [
+      "undetermined",
+      "import"
+    ],
+    "rule": {
+      "severity": "error",
+      "name": "components-nao-injeta-data-access"
+    }
+  },
+  {
+    "type": "dependency",
+    "from": "src/app/features/agenda/components/cronologia/cronologia.component.ts",
+    "to": "src/app/features/agenda/data-access/consulta-state.service.ts",
+    "unresolvedTo": "src/app/features/agenda/data-access/consulta-state.service",
+    "dependencyTypes": [
+      "undetermined",
+      "import"
+    ],
+    "rule": {
+      "severity": "error",
+      "name": "components-nao-injeta-data-access"
+    }
+  },
+  {
+    "type": "dependency",
+    "from": "src/app/features/agenda/components/nova-consuta/nova-consuta.component.ts",
+    "to": "src/app/core/data-access/consulta-api.service.ts",
+    "unresolvedTo": "src/app/core/data-access/consulta-api.service",
+    "dependencyTypes": [
+      "undetermined",
+      "import"
+    ],
+    "rule": {
+      "severity": "error",
+      "name": "components-nao-injeta-data-access"
+    }
+  },
+  {
+    "type": "dependency",
+    "from": "src/app/features/agenda/components/nova-consuta/nova-consuta.component.ts",
+    "to": "src/app/core/data-access/paciente-api.service.ts",
+    "unresolvedTo": "src/app/core/data-access/paciente-api.service",
+    "dependencyTypes": [
+      "undetermined",
+      "import"
+    ],
+    "rule": {
+      "severity": "error",
+      "name": "components-nao-injeta-data-access"
+    }
+  },
+  {
+    "type": "dependency",
+    "from": "src/app/features/agenda/components/nova-consuta/nova-consuta.component.ts",
+    "to": "src/app/core/data-access/profissional-api.service.ts",
+    "unresolvedTo": "src/app/core/data-access/profissional-api.service",
+    "dependencyTypes": [
+      "undetermined",
+      "import"
+    ],
+    "rule": {
+      "severity": "error",
+      "name": "components-nao-injeta-data-access"
+    }
+  },
+  {
+    "type": "dependency",
+    "from": "src/app/features/agenda/components/nova-consuta/nova-consuta.component.ts",
+    "to": "src/app/features/agenda/data-access/consulta-state.service.ts",
+    "unresolvedTo": "src/app/features/agenda/data-access/consulta-state.service",
+    "dependencyTypes": [
+      "undetermined",
+      "import"
+    ],
+    "rule": {
+      "severity": "error",
+      "name": "components-nao-injeta-data-access"
+    }
+  },
+  {
+    "type": "dependency",
+    "from": "src/app/features/assinatura/components/modal-associar-plano/modal-associar-plano.component.ts",
+    "to": "src/app/core/data-access/assinatura-api.service.ts",
+    "unresolvedTo": "src/app/core/data-access/assinatura-api.service",
+    "dependencyTypes": [
+      "undetermined",
+      "import"
+    ],
+    "rule": {
+      "severity": "error",
+      "name": "components-nao-injeta-data-access"
+    }
+  },
+  {
+    "type": "dependency",
+    "from": "src/app/features/assinatura/components/modal-associar-plano/modal-associar-plano.component.ts",
+    "to": "src/app/core/data-access/plano-api.service.ts",
+    "unresolvedTo": "src/app/core/data-access/plano-api.service",
+    "dependencyTypes": [
+      "undetermined",
+      "import"
+    ],
+    "rule": {
+      "severity": "error",
+      "name": "components-nao-injeta-data-access"
+    }
+  },
+  {
+    "type": "dependency",
+    "from": "src/app/features/assinatura/components/modal-associar-plano/modal-associar-plano.component.ts",
+    "to": "src/app/features/assinatura/data-access/cobranca-api.service.ts",
+    "unresolvedTo": "src/app/features/assinatura/data-access/cobranca-api.service",
+    "dependencyTypes": [
+      "undetermined",
+      "import"
+    ],
+    "rule": {
+      "severity": "error",
+      "name": "components-nao-injeta-data-access"
+    }
+  },
+  {
+    "type": "dependency",
+    "from": "src/app/features/atendimento/components/tabela-agenda/tabela-agenda-medico.component.ts",
+    "to": "src/app/core/data-access/consulta-api.service.ts",
+    "unresolvedTo": "src/app/core/data-access/consulta-api.service",
+    "dependencyTypes": [
+      "undetermined",
+      "import"
+    ],
+    "rule": {
+      "severity": "error",
+      "name": "components-nao-injeta-data-access"
+    }
+  },
+  {
+    "type": "dependency",
+    "from": "src/app/features/atendimento/components/tabela-agenda/tabela-agenda-medico.component.ts",
+    "to": "src/app/core/data-access/prontuario-state.service.ts",
+    "unresolvedTo": "src/app/core/data-access/prontuario-state.service",
+    "dependencyTypes": [
+      "undetermined",
+      "import"
+    ],
+    "rule": {
+      "severity": "error",
+      "name": "components-nao-injeta-data-access"
+    }
+  },
+  {
+    "type": "dependency",
+    "from": "src/app/features/atendimento/components/tabela-agenda/tabela-agenda-medico.component.ts",
+    "to": "src/app/core/data-access/rascunho-atendimento-api.service.ts",
+    "unresolvedTo": "src/app/core/data-access/rascunho-atendimento-api.service",
+    "dependencyTypes": [
+      "undetermined",
+      "import"
+    ],
+    "rule": {
+      "severity": "error",
+      "name": "components-nao-injeta-data-access"
+    }
+  },
+  {
+    "type": "dependency",
+    "from": "src/app/features/relatorios/components/impressoes-comuns/historico-completo/historico-completo.component.ts",
+    "to": "src/app/core/data-access/consulta-api.service.ts",
+    "unresolvedTo": "src/app/core/data-access/consulta-api.service",
+    "dependencyTypes": [
+      "undetermined",
+      "import"
+    ],
+    "rule": {
+      "severity": "error",
+      "name": "components-nao-injeta-data-access"
+    }
+  },
+  {
+    "type": "dependency",
+    "from": "src/app/features/relatorios/components/impressoes-dentista/questionario-saude-dentista/questionario-saude-dentista.component.ts",
+    "to": "src/app/core/data-access/prontuario-dentista-api.service.ts",
+    "unresolvedTo": "src/app/core/data-access/prontuario-dentista-api.service",
+    "dependencyTypes": [
+      "undetermined",
+      "import"
+    ],
+    "rule": {
+      "severity": "error",
+      "name": "components-nao-injeta-data-access"
+    }
+  },
+  {
+    "type": "dependency",
+    "from": "src/app/features/relatorios/components/impressoes-medico/questionario-saude-medico/questionario-saude-medico.component.ts",
+    "to": "src/app/core/data-access/prontuario-api.service.ts",
+    "unresolvedTo": "src/app/core/data-access/prontuario-api.service",
+    "dependencyTypes": [
+      "undetermined",
+      "import"
+    ],
+    "rule": {
+      "severity": "error",
+      "name": "components-nao-injeta-data-access"
+    }
+  },
+  {
+    "type": "dependency",
+    "from": "src/app/features/relatorios/components/impressoes-medico/questionario-saude-medico/questionario-saude-medico.component.ts",
+    "to": "src/app/core/data-access/prontuario-dentista-api.service.ts",
+    "unresolvedTo": "src/app/core/data-access/prontuario-dentista-api.service",
+    "dependencyTypes": [
+      "undetermined",
+      "import"
+    ],
+    "rule": {
+      "severity": "error",
+      "name": "components-nao-injeta-data-access"
+    }
+  }
+]

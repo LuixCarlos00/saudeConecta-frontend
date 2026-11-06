@@ -14,6 +14,7 @@
  * - uma feature não importa outra, exceto pelo `features/<area>/index.ts` (API pública da área: só o que outra área precisa, como um service de data-access ou um diálogo);
  * - ninguém importa de testing/ fora de specs;
  * - só data-access (e core) usa HttpClient: features e shared fora de data-access não importam @angular/common/http (guards só tratam HttpErrorResponse);
+ * - components/ (e shared/ui) não importam data-access: só as pages injetam;
  * - as pastas legadas util/ e services/ não existem mais;
  * - sem dependência circular.
  */
@@ -61,6 +62,13 @@ module.exports = {
       severity: 'error',
       from: { path: '^src/app/(features|shared)/', pathNot: '(/data-access/|/guards/|\\.spec\\.ts$)' },
       to: { path: '^node_modules/@angular/common/.*/http\\.mjs$' },
+    },
+    {
+      name: 'components-nao-injeta-data-access',
+      comment: 'components/ é apresentação (@Input/@Output): quem injeta service de data-access é a page (container) ou um facade.',
+      severity: 'error',
+      from: { path: '^src/app/(features/[^/]+|shared)/(components|ui)/', pathNot: '\\.spec\\.ts$' },
+      to: { path: '^src/app/(core|features/[^/]+)/data-access/' },
     },
     {
       name: 'sem-pastas-legadas',
