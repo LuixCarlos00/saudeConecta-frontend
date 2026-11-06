@@ -57,6 +57,14 @@ describe('EdicaoProntuarioService', () => {
       expect(servico.ehDonoDoProntuario(9)).toBeFalse();
     });
 
+    it('id em string (item ou token) é comparado como número', () => {
+      expect(servico.ehDonoDoProntuario('8' as any)).toBeTrue();
+      usuarioLogado = { id: '8' as any };
+      expect(servico.ehDonoDoProntuario(8)).toBeTrue();
+      expect(servico.ehDonoDoProntuario('9' as any)).toBeFalse();
+      expect(servico.ehDonoDoProntuario('abc' as any)).toBeFalse();
+    });
+
     it('false quando o item não traz o id ou não há usuário logado', () => {
       expect(servico.ehDonoDoProntuario(undefined)).toBeFalse();
       expect(servico.ehDonoDoProntuario(null)).toBeFalse();

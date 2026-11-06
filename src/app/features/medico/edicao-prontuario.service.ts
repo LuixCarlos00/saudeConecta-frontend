@@ -26,7 +26,10 @@ export class EdicaoProntuarioService {
    */
   ehDonoDoProntuario(profissionalUsuarioId: number | null | undefined): boolean {
     const logadoId = this.authService.getCurrentUser()?.id;
-    return profissionalUsuarioId != null && logadoId != null && profissionalUsuarioId === logadoId;
+    if (profissionalUsuarioId == null || logadoId == null) { return false; }
+    // O JWT e o DTO devem trazer número, mas comparar como número evita que "8" !== 8 esconda o botão
+    const dono = Number(profissionalUsuarioId);
+    return !Number.isNaN(dono) && dono === Number(logadoId);
   }
 
   /**
