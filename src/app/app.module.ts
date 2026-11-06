@@ -8,7 +8,6 @@ import { AppComponent } from './app.component';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
 import { PublicoModule } from './features/publico.module';
-import { UtilModule } from './util/util/util.module';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -17,6 +16,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { BarraLateraComponent } from './core/layout/barra-lateral/barra-Latera.component';
+import { NotFoundComponent } from './core/layout/not-found/not-found.component';
 import { BarraSuperiorComponent } from './core/layout/barra-superior/barra-superior.component';
 import { NgChartsModule } from 'ng2-charts';
 import { MatBadgeModule } from '@angular/material/badge';
@@ -29,7 +29,7 @@ import { RelatorioModule } from './features/relatorios/relatorios.module';
 registerLocaleData(localePt);
 
 @NgModule({
-  declarations: [AppComponent, BarraLateraComponent, BarraSuperiorComponent],
+  declarations: [AppComponent, BarraLateraComponent, BarraSuperiorComponent, NotFoundComponent],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
@@ -39,7 +39,6 @@ registerLocaleData(localePt);
     AdministradorModule,
     MedicoModule,
     RelatorioModule,
-    UtilModule,
     MatIconModule,
     MatToolbarModule,
     CommonModule,

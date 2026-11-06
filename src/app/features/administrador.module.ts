@@ -43,6 +43,7 @@ import { DashboardPlataformaComponent } from './dashboard/pages/dashboard/plataf
 import { GraficosPrincipaisDashboardComponent } from './dashboard/pages/dashboard/graficos-principais-dashboard/graficos-principais-dashboard.component';
 
 // Componentes de Agenda Calendário
+import { CronologiaComponent } from 'src/app/features/agenda/components/cronologia/cronologia.component';
 import { AgendaCalendarioComponent } from './agenda/pages/agenda-calendario/agenda-calendario.component';
 import { TotalConsultasDiaPipe } from './agenda/pages/agenda-calendario/total-consultas-dia.pipe';
 import { AgendarConsultaComponent } from 'src/app/features/agenda/components/agendar-consulta/agendar-consulta.component';
@@ -123,6 +124,7 @@ const routes: Routes = [
     
     // Componentes de Agenda Calendário
     AgendaCalendarioComponent,
+    CronologiaComponent,
     TotalConsultasDiaPipe,
     AgendarConsultaComponent,
 
