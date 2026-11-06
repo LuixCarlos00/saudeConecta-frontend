@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subject, Subscription, takeUntil } from 'rxjs';
 
 import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
-import { AssinaturaAdminApiService, PendenciaManual } from 'src/app/services/api/assinatura-admin-api.service';
+import { AssinaturaAdminApiService, PendenciaManual } from 'src/app/features/assinatura/data-access/assinatura-admin-api.service';
 import { formatarDataBr } from 'src/app/shared/utils/data-local';
 import { extrairCodigoErro, mensagemErroAssinaturaAdmin } from 'src/app/shared/utils/mensagem-erro-http';
 import { DescricaoMotivoPendencia, descreverMotivoPendencia, MOTIVOS_PENDENCIA } from './pendencias-motivos';

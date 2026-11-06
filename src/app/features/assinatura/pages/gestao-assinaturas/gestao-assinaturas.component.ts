@@ -11,11 +11,11 @@ import {
   PaginaAssinaturas,
   StatusAssinaturaFiltro,
   TipoPlanoFiltro
-} from 'src/app/services/api/assinatura-admin-api.service';
+} from 'src/app/features/assinatura/data-access/assinatura-admin-api.service';
 import { AssinaturaApiService } from 'src/app/core/data-access/assinatura-api.service';
 import { formatarDataBr } from 'src/app/shared/utils/data-local';
 import { mensagemErroAssinaturaAdmin } from 'src/app/shared/utils/mensagem-erro-http';
-import { ModalAssociarPlanoComponent } from '../../gerenciamento-usuarios/tabela-todos-usuarios/modal-associar-plano/modal-associar-plano.component';
+import { ModalAssociarPlanoComponent } from '../../components/modal-associar-plano/modal-associar-plano.component';
 
 /** Valor do filtro de cortesia na tela: vazio = todas. */
 export type FiltroCortesia = '' | 'true' | 'false';

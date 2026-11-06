@@ -4,7 +4,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { of, throwError } from 'rxjs';
 import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
 import { AssinaturaApiService } from 'src/app/core/data-access/assinatura-api.service';
-import { CobrancaApiService } from 'src/app/services/api/cobranca-api.service';
+import { CobrancaApiService } from 'src/app/features/assinatura/data-access/cobranca-api.service';
 import { PlanoApiService } from 'src/app/core/data-access/plano-api.service';
 import { MENSAGEM_MP_VALOR_NAO_ATUALIZADO } from 'src/app/shared/utils/mensagem-erro-http';
 import { ModalAssociarPlanoComponent } from './modal-associar-plano.component';

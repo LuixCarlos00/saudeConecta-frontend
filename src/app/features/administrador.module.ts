@@ -59,7 +59,7 @@ import { TabelasPesquisasMedicosComponent } from './agenda/components/nova-consu
 
 // Componentes de Gerenciamento de Usuários
 import { GerenciamentoUsuarioComponent } from './usuarios/pages/gerenciamento-usuarios/gerenciamento-usuario.component';
-import { ModalAssociarPlanoComponent } from './administrador/gerenciamento-usuarios/tabela-todos-usuarios/modal-associar-plano/modal-associar-plano.component';
+import { ModalAssociarPlanoComponent } from './assinatura/components/modal-associar-plano/modal-associar-plano.component';
 import { TabelaTodosUsuariosComponent } from './usuarios/pages/gerenciamento-usuarios/tabela-todos-usuarios/tabela-todos-usuarios.component';
 import { TrocaSenhaUsuariosComponent } from './usuarios/pages/gerenciamento-usuarios/tabela-todos-usuarios/TrocaSenhaUsuarios/TrocaSenhaUsuarios.component';
 import { VisualizarEditarUsuarioComponent } from './usuarios/pages/gerenciamento-usuarios/tabela-todos-usuarios/VisualizarEditarUsuario/visualizar-editar-usuario.component';
@@ -68,15 +68,15 @@ import { VisualizarEditarUsuarioComponent } from './usuarios/pages/gerenciamento
 import { MensageriaComponent } from './mensageria/pages/mensageria/mensageria.component';
 
 // Componentes de Planos
-import { ListaPlanosComponent } from './administrador/planos/lista-planos/lista-planos.component';
-import { DetalheAssinaturaComponent } from './administrador/planos/detalhe-assinatura/detalhe-assinatura.component';
-import { GerenciarPlanosComponent } from './administrador/planos/gerenciar-planos/gerenciar-planos.component';
- import { ModalValoresAdicionaisComponent } from './administrador/planos/gerenciar-planos/modal-valores-adicionais/modal-valores-adicionais.component';
+import { ListaPlanosComponent } from './assinatura/pages/lista-planos/lista-planos.component';
+import { DetalheAssinaturaComponent } from './assinatura/pages/detalhe-assinatura/detalhe-assinatura.component';
+import { GerenciarPlanosComponent } from './assinatura/pages/gerenciar-planos/gerenciar-planos.component';
+ import { ModalValoresAdicionaisComponent } from './assinatura/pages/gerenciar-planos/modal-valores-adicionais/modal-valores-adicionais.component';
  
 
 // Componentes de Assinaturas (SUPER_ADMIN)
-import { GestaoAssinaturasComponent } from './administrador/assinaturas/gestao-assinaturas/gestao-assinaturas.component';
-import { PendenciasManuaisComponent } from './administrador/assinaturas/pendencias-manuais/pendencias-manuais.component';
+import { GestaoAssinaturasComponent } from './assinatura/pages/gestao-assinaturas/gestao-assinaturas.component';
+import { PendenciasManuaisComponent } from './assinatura/pages/pendencias-manuais/pendencias-manuais.component';
 
 // Componentes de Suporte
 import { SuporteComponent } from './suporte/pages/suporte/suporte.component';

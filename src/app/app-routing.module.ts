@@ -27,10 +27,10 @@ import { TrocaSenhaComponent } from './features/auth/pages/troca-senha/troca-sen
 import { SuporteComponent } from './features/suporte/pages/suporte/suporte.component';
 import { GestaoChamadosComponent } from './features/suporte/pages/suporte/gestao-chamados/gestao-chamados.component';
 import { MensageriaComponent } from './features/mensageria/pages/mensageria/mensageria.component';
-import { GerenciarPlanosComponent } from './features/administrador/planos/gerenciar-planos/gerenciar-planos.component';
-import { GestaoAssinaturasComponent } from './features/administrador/assinaturas/gestao-assinaturas/gestao-assinaturas.component';
-import { PendenciasManuaisComponent } from './features/administrador/assinaturas/pendencias-manuais/pendencias-manuais.component';
-import { DetalheAssinaturaComponent } from './features/administrador/planos/detalhe-assinatura/detalhe-assinatura.component';
+import { GerenciarPlanosComponent } from './features/assinatura/pages/gerenciar-planos/gerenciar-planos.component';
+import { GestaoAssinaturasComponent } from './features/assinatura/pages/gestao-assinaturas/gestao-assinaturas.component';
+import { PendenciasManuaisComponent } from './features/assinatura/pages/pendencias-manuais/pendencias-manuais.component';
+import { DetalheAssinaturaComponent } from './features/assinatura/pages/detalhe-assinatura/detalhe-assinatura.component';
  
 import { HistoricoDadosPessoaisComponent } from './features/auditoria/pages/historico-dados-pessoais/historico-dados-pessoais.component';
  

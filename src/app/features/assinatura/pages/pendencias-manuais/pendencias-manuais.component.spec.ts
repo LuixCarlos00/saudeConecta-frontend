@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of, Subject, throwError } from 'rxjs';
 
 import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
-import { AssinaturaAdminApiService, PendenciaManual } from 'src/app/services/api/assinatura-admin-api.service';
+import { AssinaturaAdminApiService, PendenciaManual } from 'src/app/features/assinatura/data-access/assinatura-admin-api.service';
 import { IMPORTS_TESTE_PADRAO, SCHEMAS_TESTE_PADRAO } from 'src/app/testing/configuracao-teste';
 import { PendenciasManuaisComponent } from './pendencias-manuais.component';
 

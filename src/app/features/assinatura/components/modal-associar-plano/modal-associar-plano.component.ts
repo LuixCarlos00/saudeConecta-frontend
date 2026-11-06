@@ -3,7 +3,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { PlanoApiService } from 'src/app/core/data-access/plano-api.service';
 import { AssinaturaApiService } from 'src/app/core/data-access/assinatura-api.service';
-import { CobrancaApiService } from 'src/app/services/api/cobranca-api.service';
+import { CobrancaApiService } from 'src/app/features/assinatura/data-access/cobranca-api.service';
 import { PlanoAssinatura, AssinaturaTenant, CobrancaTenant, CustomizarPlanoTenantRequest } from 'src/app/shared/models/PlanoAssinatura';
 import { forkJoin } from 'rxjs';
 import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
