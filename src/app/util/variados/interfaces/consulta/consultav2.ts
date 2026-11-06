@@ -1,6 +1,8 @@
 export interface Consultav2 {
   id: number;
   profissionalId: number;
+  /** Id do usuário do profissional, quando o back informa (decide se o atalho de edição aparece). */
+  profissionalUsuarioId?: number;
   profissionalNome: string;
   profissionalConselho: string;
   tipoProfissionalId: number | null;

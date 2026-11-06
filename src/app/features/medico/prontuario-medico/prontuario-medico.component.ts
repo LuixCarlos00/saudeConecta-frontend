@@ -347,16 +347,18 @@ export class ProntuarioMedicoComponent implements OnInit, OnDestroy, AfterViewIn
    * @param mensagem texto do back explicando que a consulta já foi finalizada
    */
   private oferecerEdicaoDoProntuarioFinalizado(mensagem: string): void {
+    // Só o dono edita: sem prova de que o usuário logado é o dono, o atalho some e fica só o "voltar".
+    const podeEditar = this.edicaoProntuario.ehDonoDoProntuario(this.Consulta?.profissionalUsuarioId);
     this.notificacao.fire({
       icon: 'warning',
       title: 'Consulta já finalizada',
       text: mensagem,
-      showCancelButton: true,
-      confirmButtonText: 'Editar prontuário',
+      showCancelButton: podeEditar,
+      confirmButtonText: podeEditar ? 'Editar prontuário' : 'Voltar para a agenda',
       cancelButtonText: 'Voltar para a agenda',
     }).then(resultado => {
       const voltar = () => this.router.navigate(['/agenda-calendario']);
-      if (!resultado.isConfirmed || !this.Consulta) { voltar(); return; }
+      if (!podeEditar || !resultado.isConfirmed || !this.Consulta) { voltar(); return; }
       this.edicaoProntuario.editar('MEDICO', {
         id: this.Consulta.id,
         pacienteId: this.Consulta.pacienteId,

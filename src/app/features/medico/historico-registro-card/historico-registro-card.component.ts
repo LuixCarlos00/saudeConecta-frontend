@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
-import { AuthService } from 'src/app/core/services/auth.service';
+import { EdicaoProntuarioService } from '../edicao-prontuario.service';
 
 import {
   DenteResponse,
@@ -48,20 +48,16 @@ export class HistoricoRegistroCardComponent {
   /** Pedido de edição do prontuário deste registro (a tela que hospeda abre o dialog). */
   @Output() editar = new EventEmitter<HistoricoCompletoPacienteResponse>();
 
-  constructor(private authService: AuthService) {}
+  constructor(private edicaoProntuario: EdicaoProntuarioService) {}
 
   /**
-   * Só o profissional dono do prontuário edita. O histórico do clínico já vem filtrado pelo back
-   * para os registros dele, então aqui basta ser clínico do mesmo tipo do registro (médico não
-   * edita prontuário de dentista e vice-versa) e o registro ter prontuário gravado. O back
-   * ainda precisa validar o dono no PUT.
+   * Só o profissional dono do prontuário edita (contrato §1): `profissionalUsuarioId` do item igual
+   * ao id do usuário logado. Item sem esse campo ou sem prontuário gravado não mostra o botão.
+   * O back ainda valida o dono no PUT (404 para os demais).
    */
   get podeEditar(): boolean {
-    const tipoRegistro = this.registro?.tipoProntuario?.toUpperCase();
-    const tipoLogado = this.authService.getTipoProfissional();
-    return this.authService.isClinico()
-      && !!this.registro?.codigoProntuario
-      && !!tipoRegistro && tipoRegistro === tipoLogado;
+    return !!this.registro?.codigoProntuario
+      && this.edicaoProntuario.ehDonoDoProntuario(this.registro?.profissionalUsuarioId);
   }
 
   get isDentista(): boolean {

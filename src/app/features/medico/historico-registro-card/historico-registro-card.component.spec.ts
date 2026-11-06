@@ -130,15 +130,15 @@ describe('HistoricoRegistroCardComponent', () => {
 describe('HistoricoRegistroCardComponent - botão "Editar prontuário"', () => {
   let fixture: ComponentFixture<HistoricoRegistroCardComponent>;
 
-  /** Monta o card com o usuário logado descrito por `logado` (isClinico + tipo do profissional). */
-  async function montar(registro: any, logado: { clinico: boolean; tipo: string }) {
+  /** Monta o card com `usuarioLogadoId` como id do usuário logado (null = sem sessão). */
+  async function montar(registro: any, usuarioLogadoId: number | null) {
     await TestBed.configureTestingModule({
       declarations: [HistoricoRegistroCardComponent],
       imports: IMPORTS_TESTE_PADRAO,
       schemas: SCHEMAS_TESTE_PADRAO,
       providers: [{
         provide: AuthService,
-        useValue: { isClinico: () => logado.clinico, getTipoProfissional: () => logado.tipo },
+        useValue: { getCurrentUser: () => (usuarioLogadoId === null ? null : { id: usuarioLogadoId }) },
       }],
     }).compileComponents();
     fixture = TestBed.createComponent(HistoricoRegistroCardComponent);
@@ -148,32 +148,38 @@ describe('HistoricoRegistroCardComponent - botão "Editar prontuário"', () => {
 
   const botao = () => (fixture.nativeElement as HTMLElement).querySelector('button.hr-badge--acao') as HTMLButtonElement | null;
 
-  it('médico dono do registro médico vê o botão, e o clique emite o registro', async () => {
-    await montar(MEDICO, { clinico: true, tipo: 'MEDICO' });
+  it('dono do registro médico vê o botão, e o clique emite o registro', async () => {
+    const registro = { ...MEDICO, profissionalUsuarioId: 8 };
+    await montar(registro, 8);
     const emitidos: any[] = [];
     fixture.componentInstance.editar.subscribe(r => emitidos.push(r));
     expect(botao()?.textContent).toContain('Editar prontuário');
     botao()!.click();
-    expect(emitidos).toEqual([MEDICO]);
+    expect(emitidos).toEqual([registro]);
   });
 
-  it('dentista vê o botão no registro odontológico (com prontuário gravado)', async () => {
-    await montar({ ...DENTISTA, codigoProntuario: '12' }, { clinico: true, tipo: 'DENTISTA' });
+  it('dono do registro odontológico (com prontuário gravado) vê o botão', async () => {
+    await montar({ ...DENTISTA, codigoProntuario: '12', profissionalUsuarioId: 8 }, 8);
     expect(botao()).not.toBeNull();
   });
 
-  it('não aparece para quem não é clínico (admin/secretária)', async () => {
-    await montar(MEDICO, { clinico: false, tipo: '' });
+  it('não aparece para quem não é o dono (outro profissional, gestor, secretária)', async () => {
+    await montar({ ...MEDICO, profissionalUsuarioId: 8 }, 9);
     expect(botao()).toBeNull();
   });
 
-  it('não aparece quando o tipo do profissional não bate com o do registro', async () => {
-    await montar(MEDICO, { clinico: true, tipo: 'DENTISTA' });
+  it('não aparece quando o item não traz profissionalUsuarioId', async () => {
+    await montar(MEDICO, 8);
+    expect(botao()).toBeNull();
+  });
+
+  it('não aparece sem usuário logado', async () => {
+    await montar({ ...MEDICO, profissionalUsuarioId: 8 }, null);
     expect(botao()).toBeNull();
   });
 
   it('não aparece em registro sem prontuário gravado', async () => {
-    await montar({ ...MEDICO, codigoProntuario: undefined }, { clinico: true, tipo: 'MEDICO' });
+    await montar({ ...MEDICO, codigoProntuario: undefined, profissionalUsuarioId: 8 }, 8);
     expect(botao()).toBeNull();
   });
 });

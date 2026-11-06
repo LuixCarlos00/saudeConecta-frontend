@@ -4,6 +4,7 @@ import { of, Subject, throwError } from 'rxjs';
 import Swal from 'sweetalert2';
 
 import { EdicaoProntuarioService } from '../edicao-prontuario.service';
+import { AuthService } from 'src/app/core/services/auth.service';
 import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
 import { ProntuarioApiService } from 'src/app/services/api/prontuario-api.service';
 import { RascunhoAtendimentoApiService } from 'src/app/services/api/rascunho-atendimento-api.service';
@@ -24,7 +25,7 @@ describe('ProntuarioMedicoComponent: rascunho do atendimento', () => {
   let notificacao: jasmine.SpyObj<NotificacaoService>;
 
   const consulta = {
-    id: 822, pacienteId: 3, pacienteNome: 'Ana', profissionalId: 9, observacoes: 'Obs da consulta',
+    id: 822, pacienteId: 3, pacienteNome: 'Ana', profissionalId: 9, profissionalUsuarioId: 5, observacoes: 'Obs da consulta',
   };
 
   const rascunho: RascunhoAtendimentoResponse = {
@@ -54,6 +55,7 @@ describe('ProntuarioMedicoComponent: rascunho do atendimento', () => {
         { provide: RascunhoAtendimentoApiService, useValue: rascunhoApi },
         { provide: ProntuarioApiService, useValue: prontuarioApi },
         { provide: NotificacaoService, useValue: notificacao },
+        { provide: AuthService, useValue: { getCurrentUser: () => ({ id: 5 }) } },
       ],
     });
     TestBed.inject(ProntuarioStateService).setConsulta(consulta);
@@ -238,6 +240,36 @@ describe('ProntuarioMedicoComponent: rascunho do atendimento', () => {
         component.abaExameObjetivo.diagnostico = 'digitado depois';
         tick(2000 + 5000);
         expect(rascunhoApi.salvar).not.toHaveBeenCalled();
+        fixture.destroy();
+        discardPeriodicTasks();
+      }));
+
+      it('sem prova de que o usuário logado é o dono, não oferece editar: só volta para a agenda', fakeAsync(() => {
+        TestBed.inject(ProntuarioStateService).setConsulta({ ...consulta, profissionalUsuarioId: 99 } as any);
+        fixture.detectChanges();
+        tick(0);
+        (component as any).concluido();
+        flushMicrotasks();
+        flushMicrotasks();
+        expect(Swal.fire).toHaveBeenCalledWith(jasmine.objectContaining({
+          title: 'Consulta já finalizada', showCancelButton: false, confirmButtonText: 'Voltar para a agenda',
+        }));
+        expect(editar).not.toHaveBeenCalled();
+        expect(TestBed.inject(Router).navigate).toHaveBeenCalledWith(['/agenda-calendario']);
+        fixture.destroy();
+        discardPeriodicTasks();
+      }));
+
+      it('consulta sem profissionalUsuarioId também não oferece editar', fakeAsync(() => {
+        const { profissionalUsuarioId, ...semDono } = consulta;
+        TestBed.inject(ProntuarioStateService).setConsulta(semDono as any);
+        fixture.detectChanges();
+        tick(0);
+        (component as any).concluido();
+        flushMicrotasks();
+        flushMicrotasks();
+        expect(Swal.fire).toHaveBeenCalledWith(jasmine.objectContaining({ showCancelButton: false }));
+        expect(editar).not.toHaveBeenCalled();
         fixture.destroy();
         discardPeriodicTasks();
       }));

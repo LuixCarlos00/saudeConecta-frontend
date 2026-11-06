@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { map, Observable } from 'rxjs';
 
+import { AuthService } from 'src/app/core/services/auth.service';
 import { ConsultaEdicao, TipoProntuario } from './consulta-edicao';
 import { EditarProntuarioMedicoComponent } from './prontuario-medico/editar-prontuario-medico/editar-prontuario-medico.component';
 import { EditarProntuarioDentistaComponent } from './prontuario-dentista/editar-prontuario-dentista/editar-prontuario-dentista.component';
@@ -14,7 +15,19 @@ import { EditarProntuarioDentistaComponent } from './prontuario-dentista/editar-
 @Injectable({ providedIn: 'root' })
 export class EdicaoProntuarioService {
 
-  constructor(private dialog: MatDialog) {}
+  constructor(private dialog: MatDialog, private authService: AuthService) {}
+
+  /**
+   * Regra de dono do contrato: só o profissional que atendeu edita o prontuário (nem o gestor).
+   * Sem `profissionalUsuarioId` no item ou sem usuário logado, não há como provar que é o dono: nega.
+   *
+   * @param profissionalUsuarioId id do usuário do profissional da consulta, como vem do back
+   * @returns true quando o usuário logado é o dono do prontuário
+   */
+  ehDonoDoProntuario(profissionalUsuarioId: number | null | undefined): boolean {
+    const logadoId = this.authService.getCurrentUser()?.id;
+    return profissionalUsuarioId != null && logadoId != null && profissionalUsuarioId === logadoId;
+  }
 
   /**
    * Abre a edição do prontuário da consulta.

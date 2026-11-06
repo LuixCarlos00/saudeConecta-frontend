@@ -53,6 +53,8 @@ export interface HistoricoCompletoPacienteResponse {
 
   // Dados do Profissional
   profissionalId: number;
+  /** Id do usuário do profissional: o botão "Editar prontuário" só aparece quando é o do usuário logado. */
+  profissionalUsuarioId?: number;
   profissionalNome: string;
   profissionalEspecialidade: string;
   profissionalCrm: string;
