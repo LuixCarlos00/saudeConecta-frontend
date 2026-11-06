@@ -17,7 +17,7 @@ import { AssinaturaRetornoComponent } from './features/publico/assinatura-retorn
 // ========== FEATURES ADMINISTRADOR ==========
 import { DashboardComponent } from './features/administrador/dashboard/dashboard.component';
 import { GerenciamentoUsuarioComponent } from './features/administrador/gerenciamento-usuarios/gerenciamento-usuario.component';
-import { CadastroPacienteComponent } from './features/administrador/cadastros/cadastro-paciente/cadastro-paciente.component';
+import { CadastroPacienteComponent } from './features/agenda/pages/cadastro-paciente/cadastro-paciente.component';
 import { CadastroMedicoComponent } from './features/administrador/cadastros/cadastro-medico/cadastro-medico.component';
 import { CadastroAdmComponent } from './features/administrador/cadastros/cadastro-adm/cadastro-adm.component';
 import { CadastroAdminOrgComponent } from './features/administrador/cadastros/cadastro-admin-org/cadastro-admin-org.component';
@@ -39,7 +39,7 @@ import { HistoricoDadosPessoaisComponent } from './features/administrador/histor
 import { DadosPessoaisComponent } from './features/medico/dados-pessoais/DadosPessoais.component';
 import { ProntuarioMedicoComponent } from './features/atendimento/pages/prontuario-medico/prontuario-medico.component';
 import { ProntuarioComponent } from './features/atendimento/pages/prontuario/prontuario.component';
-import { AgendaCalendarioComponent } from './features/administrador/agenda-calendario/agenda-calendario.component';
+import { AgendaCalendarioComponent } from './features/agenda/pages/agenda-calendario/agenda-calendario.component';
 import { ProntuarioDentistaComponent } from './features/atendimento/pages/prontuario-dentista/prontuario-dentista.component';
 import { QuestionarioSaudeComponent } from './features/publico/questionario-saude/questionario-saude.component';
 import { AssinaturaPlanejamentoComponent } from './features/publico/assinatura-planejamento/assinatura-planejamento.component';

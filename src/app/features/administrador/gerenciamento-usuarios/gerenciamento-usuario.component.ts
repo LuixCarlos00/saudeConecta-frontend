@@ -3,7 +3,7 @@ import { Subject, asapScheduler, observeOn, takeUntil } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { FiltroStateService } from 'src/app/core/data-access/filtro-state.service';
 import { CadastroMedicoComponent } from '../cadastros/cadastro-medico/cadastro-medico.component';
-import { CadastroPacienteComponent } from '../cadastros/cadastro-paciente/cadastro-paciente.component';
+import { CadastroPacienteComponent } from '../../agenda/pages/cadastro-paciente/cadastro-paciente.component';
 import { CadastroSecretariaComponent } from '../cadastros/cadastro-secretaria/cadastro-secretaria.component';
 import { CadastroAdmComponent } from '../cadastros/cadastro-adm/cadastro-adm.component';
 import { CadastroAdminOrgComponent } from '../cadastros/cadastro-admin-org/cadastro-admin-org.component';

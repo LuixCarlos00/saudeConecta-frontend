@@ -31,7 +31,7 @@ import { RelatorioModule } from 'src/app/features/relatorio/relatorio.module';
 import { CadastroAdmComponent } from './administrador/cadastros/cadastro-adm/cadastro-adm.component';
 import { CadastroAdminOrgComponent } from './administrador/cadastros/cadastro-admin-org/cadastro-admin-org.component';
 import { CadastroMedicoComponent } from './administrador/cadastros/cadastro-medico/cadastro-medico.component';
-import { CadastroPacienteComponent } from './administrador/cadastros/cadastro-paciente/cadastro-paciente.component';
+import { CadastroPacienteComponent } from './agenda/pages/cadastro-paciente/cadastro-paciente.component';
 import { CadastroSecretariaComponent } from './administrador/cadastros/cadastro-secretaria/cadastro-secretaria.component';
 
 // Componentes de Configurações
@@ -43,19 +43,19 @@ import { DashboardPlataformaComponent } from './administrador/dashboard/platafor
 import { GraficosPrincipaisDashboardComponent } from './administrador/dashboard/graficos-principais-dashboard/graficos-principais-dashboard.component';
 
 // Componentes de Agenda Calendário
-import { AgendaCalendarioComponent } from './administrador/agenda-calendario/agenda-calendario.component';
-import { TotalConsultasDiaPipe } from './administrador/agenda-calendario/total-consultas-dia.pipe';
-import { AgendarConsultaComponent } from 'src/app/features/publico/agendar-consulta/agendar-consulta.component';
+import { AgendaCalendarioComponent } from './agenda/pages/agenda-calendario/agenda-calendario.component';
+import { TotalConsultasDiaPipe } from './agenda/pages/agenda-calendario/total-consultas-dia.pipe';
+import { AgendarConsultaComponent } from 'src/app/features/agenda/components/agendar-consulta/agendar-consulta.component';
 
 // Componentes de Gerenciamento de Agenda
-import { AgendaComponent } from './administrador/gerenciamento-agenda/agenda/agenda.component';
-import { EditarConsultasComponent } from './administrador/gerenciamento-agenda/agenda/Editar-Consultas/Editar-Consultas.component';
-import { TabelaEditarMedicosConsultasComponent } from './administrador/gerenciamento-agenda/agenda/Editar-Consultas/tabela-editar-Medicos-Consultas/tabela-editar-Medicos-Consultas.component';
-import { TabelaEditarPacienteConsultasComponent } from './administrador/gerenciamento-agenda/agenda/Editar-Consultas/tabela-editar-Paciente-Consultas/tabela-editar-Paciente-Consultas.component';
-import { ObservacoesComponent } from './administrador/gerenciamento-agenda/agenda/Observacoes/Observacoes.component';
-import { NovaConsultaComponent } from './administrador/gerenciamento-agenda/nova-consuta/nova-consuta.component';
-import { TabelaDePacientesComponent } from './administrador/gerenciamento-agenda/nova-consuta/tabela-de-pacientes/tabela-de-pacientes.component';
-import { TabelasPesquisasMedicosComponent } from './administrador/gerenciamento-agenda/nova-consuta/tabelas-Pesquisas-Medicos/tabelas-Pesquisas-Medicos.component';
+import { AgendaComponent } from './agenda/components/agenda/agenda.component';
+import { EditarConsultasComponent } from './agenda/components/agenda/Editar-Consultas/Editar-Consultas.component';
+import { TabelaEditarMedicosConsultasComponent } from './agenda/components/agenda/Editar-Consultas/tabela-editar-Medicos-Consultas/tabela-editar-Medicos-Consultas.component';
+import { TabelaEditarPacienteConsultasComponent } from './agenda/components/agenda/Editar-Consultas/tabela-editar-Paciente-Consultas/tabela-editar-Paciente-Consultas.component';
+import { ObservacoesComponent } from './agenda/components/agenda/Observacoes/Observacoes.component';
+import { NovaConsultaComponent } from './agenda/components/nova-consuta/nova-consuta.component';
+import { TabelaDePacientesComponent } from './agenda/components/nova-consuta/tabela-de-pacientes/tabela-de-pacientes.component';
+import { TabelasPesquisasMedicosComponent } from './agenda/components/nova-consuta/tabelas-Pesquisas-Medicos/tabelas-Pesquisas-Medicos.component';
 
 // Componentes de Gerenciamento de Usuários
 import { GerenciamentoUsuarioComponent } from './administrador/gerenciamento-usuarios/gerenciamento-usuario.component';

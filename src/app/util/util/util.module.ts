@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NotFoundComponent } from '../../core/layout/not-found/not-found.component';
-import { CronologiaComponent } from '../variados/Cronologia/cronologia.component';
+import { CronologiaComponent } from '../../features/agenda/components/cronologia/cronologia.component';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';

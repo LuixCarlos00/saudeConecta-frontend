@@ -9,7 +9,7 @@ import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { PageEvent } from '@angular/material/paginator';
 import { MatDialog } from '@angular/material/dialog';
 import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
-import { ObservacoesComponent } from 'src/app/features/administrador/gerenciamento-agenda/agenda/Observacoes/Observacoes.component';
+import { ObservacoesComponent } from 'src/app/features/agenda/components/agenda/Observacoes/Observacoes.component';
 import { Router } from '@angular/router';
 import { formatarDataLocal } from 'src/app/shared/utils/data-local';
 
