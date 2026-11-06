@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { HoraDia } from './agenda-calendario.component';
+import { HoraDia } from './agenda-calendario.calculos';
 
 @Pipe({ name: 'totalConsultasDia' })
 export class TotalConsultasDiaPipe implements PipeTransform {

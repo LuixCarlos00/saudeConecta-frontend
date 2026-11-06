@@ -1,0 +1,547 @@
+@use '../agenda-variaveis' as *;
+
+:host {
+  display: contents;
+}
+
+// ─────────────────────────────────────────────────────────
+// DRAWER LATERAL DIREITO
+// ─────────────────────────────────────────────────────────
+
+// Overlay escuro que cobre apenas a área fora do drawer
+.drawer-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: clamp(260px, 34%, 480px);
+  background: rgba(0, 0, 0, .52);
+  z-index: 1100;
+  animation: fadeIn .2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+// Painel lateral
+.drawer-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 34%;
+  min-width: 260px;
+  max-width: 480px;
+  height: 100vh;
+  background: #fff;
+  z-index: 1200;
+  display: flex;
+  flex-direction: column;
+  box-shadow: -6px 0 32px rgba(0, 0, 0, .22);
+  transform: translateX(100%);
+  transition: transform .28s cubic-bezier(.4, 0, .2, 1);
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  font-size: 10px;
+}
+
+.drawer-panel.drawer-aberto {
+  transform: translateX(0);
+}
+
+// ══════════════════════════════════════════════════════════
+//  DRAWER — novo design drw-*
+// ══════════════════════════════════════════════════════════
+
+// ── BLOCO 1: Header ───────────────────────────────────────
+.drw-header {
+  padding: 8px 10px 6px;
+  border-bottom: 1px solid #e5eaf0;
+  flex-shrink: 0;
+  background: #fff;
+}
+
+.drw-header-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.drw-consulta-id {
+  font-size: 0.72rem;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+// ── Pills de status ───────────────────────────────────────
+.drw-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 999px;
+
+  i { font-size: 0.75rem; }
+
+  &--status-agendada   { background: #dbeafe; color: #1d4ed8; }
+  &--status-confirmada { background: #dcfce7; color: #15803d; }
+  &--status-realizada  { background: #d1fae5; color: #0f766e; }
+  &--status-pago       { background: #ede9fe; color: #6d28d9; }
+  &--status-cancelada  { background: #fee2e2; color: #b91c1c; }
+  &--status-faltou     { background: #fef9c3; color: #a16207; }
+  &--status-remarcada  { background: #ffedd5; color: #c2410c; }
+}
+
+// ── Linha paciente ────────────────────────────────────────
+.drw-paciente-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.drw-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #eff6ff;
+  color: #2563eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.65rem;
+  flex-shrink: 0;
+}
+
+.drw-paciente-info {
+  flex: 1;
+  min-width: 0;
+
+  p { margin: 0; }
+}
+
+.drw-paciente-nome {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.drw-paciente-tel {
+  font-size: 0.72rem;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 2px !important;
+
+  i { font-size: 0.65rem; }
+}
+
+.drw-fechar-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #94a3b8;
+  font-size: 1rem;
+  padding: 6px 8px;
+  border-radius: 6px;
+  transition: background .15s, color .15s;
+  flex-shrink: 0;
+
+  &:hover { background: #f1f5f9; color: #475569; }
+}
+
+// ── BLOCO 2: Data e hora ──────────────────────────────────
+.drw-datetime {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 10px;
+  border-bottom: 1px solid #e5eaf0;
+  flex-shrink: 0;
+  background: #fff;
+}
+
+.drw-datetime-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  i { font-size: 0.75rem; color: #64748b; }
+}
+
+.drw-datetime-date {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #0f172a;
+  margin: 0;
+}
+
+.drw-datetime-time {
+  font-size: 0.72rem;
+  color: #64748b;
+  margin: 2px 0 0;
+}
+
+// ── Corpo scrollável ──────────────────────────────────────
+.drawer-corpo {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  scrollbar-width: thin;
+  scrollbar-color: #d1d9e0 transparent;
+
+  &::-webkit-scrollbar       { width: 4px; }
+  &::-webkit-scrollbar-thumb { background: #d1d9e0; border-radius: 3px; }
+}
+
+// ── BLOCO 3: Grid clínico + pagamento ─────────────────────
+.drw-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  padding: 14px 0;
+  border-bottom: 1px solid #e5eaf0;
+}
+
+.drw-mini-card {
+  background: #f8fafc;
+  border-radius: 4px;
+  padding: 6px;
+
+  p { margin: 0; }
+}
+
+.drw-mini-label {
+  font-size: 0.65rem;
+  color: #94a3b8;
+  margin-bottom: 5px !important;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+
+  i { font-size: 0.7rem; }
+}
+
+.drw-mini-value {
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: #0f172a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.drw-mini-sub {
+  font-size: 0.68rem;
+  color: #64748b;
+  margin-top: 2px !important;
+}
+
+// ── Seções genéricas ──────────────────────────────────────
+.drw-section {
+  padding: 12px 0;
+  border-bottom: 1px solid #e5eaf0;
+
+  &:last-child { border-bottom: none; }
+}
+
+.drw-section-label {
+  font-size: 0.68rem;
+  color: #94a3b8;
+  margin: 0 0 8px;
+  font-weight: 500;
+}
+
+// ── BLOCO 4: Stepper ──────────────────────────────────────
+
+// Duração base de cada segmento (dot + linha)
+// Sequência: dot1 → linha1 → dot2 → linha2 → dot3 → linha3 → dot4
+// Cada etapa dura 220ms, linha dura 280ms
+$seg: 220ms;
+$lin: 280ms;
+
+// dot1 começa em 0
+$t1: 0ms;
+// linha1 começa depois que dot1 termina
+$t-l1: $t1 + $seg;
+// dot2 começa depois que linha1 termina
+$t2: $t-l1 + $lin;
+// linha2
+$t-l2: $t2 + $seg;
+// dot3
+$t3: $t-l2 + $lin;
+// linha3
+$t-l3: $t3 + $seg;
+// dot4
+$t4: $t-l3 + $lin;
+// pulso do dot ativo começa após ele aparecer
+$pulse-delay: $seg * 0.8;
+
+@keyframes dotAppear {
+  0%   { transform: scale(0);    opacity: 0; }
+  60%  { transform: scale(1.2);  opacity: 1; }
+  100% { transform: scale(1);    opacity: 1; }
+}
+
+@keyframes lineFill {
+  0%   { transform: scaleX(0); }
+  100% { transform: scaleX(1); }
+}
+
+@keyframes checkPop {
+  0%   { transform: scale(0); opacity: 0; }
+  70%  { transform: scale(1.3); }
+  100% { transform: scale(1);   opacity: 1; }
+}
+
+@keyframes dotPulse {
+  0%, 100% { box-shadow: 0 0 0 0   rgba(37,99,235,.5); }
+  50%       { box-shadow: 0 0 0 7px rgba(37,99,235,.0); }
+}
+
+.drw-stepper {
+  display: flex;
+  align-items: center;
+}
+
+.drw-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+
+  span {
+    font-size: 0.64rem;
+    color: #94a3b8;
+    white-space: nowrap;
+  }
+
+  &--active span { font-weight: 700; color: #0f172a; }
+  &--done   span { color: #64748b; }
+}
+
+.drw-step-dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #f1f5f9;
+  border: 1.5px solid #d1d9e0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  // base: aparece imediatamente sem animar (steps futuros)
+  opacity: 1;
+
+  i { font-size: 0.55rem; display: none; }
+
+  // ── Step concluído ──
+  .drw-step--done & {
+    background: #dcfce7;
+    border-color: #86efac;
+    animation: dotAppear $seg cubic-bezier(.34,1.56,.64,1) both;
+
+    i {
+      display: block;
+      color: #15803d;
+      animation: checkPop 200ms ease-out both;
+    }
+  }
+
+  // ── Step ativo ──
+  .drw-step--active & {
+    background: #2563eb;
+    border-color: #2563eb;
+    animation: dotAppear $seg cubic-bezier(.34,1.56,.64,1) both,
+               dotPulse 1.8s ease-in-out infinite;
+  }
+}
+
+// ── Delays sequenciais: dot1 → linha1 → dot2 → linha2 → dot3 → linha3 → dot4 ──
+// nth-child conta: step(1) linha(2) step(3) linha(4) step(5) linha(6) step(7)
+
+.drw-step:nth-child(1) .drw-step-dot {
+  animation-delay: #{$t1}, #{$t1 + $pulse-delay};
+}
+.drw-step:nth-child(3) .drw-step-dot {
+  animation-delay: #{$t2}, #{$t2 + $pulse-delay};
+}
+.drw-step:nth-child(5) .drw-step-dot {
+  animation-delay: #{$t3}, #{$t3 + $pulse-delay};
+}
+.drw-step:nth-child(7) .drw-step-dot {
+  animation-delay: #{$t4}, #{$t4 + $pulse-delay};
+}
+
+// ── Check icons com delay alinhado ao dot pai ──
+.drw-step:nth-child(1) .drw-step-dot i { animation-delay: #{$t1 + $seg * 0.5}; }
+.drw-step:nth-child(3) .drw-step-dot i { animation-delay: #{$t2 + $seg * 0.5}; }
+.drw-step:nth-child(5) .drw-step-dot i { animation-delay: #{$t3 + $seg * 0.5}; }
+.drw-step:nth-child(7) .drw-step-dot i { animation-delay: #{$t4 + $seg * 0.5}; }
+
+// ── Linhas ──
+.drw-step-line {
+  height: 2px;
+  flex: 1;
+  background: #e5eaf0;
+  margin-bottom: 18px;
+  position: relative;
+  overflow: hidden;
+
+  &--done::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, #86efac, #4ade80);
+    transform-origin: left center;
+    animation: lineFill $lin ease-in-out both;
+  }
+}
+
+// Linha 1 começa após dot1
+.drw-step-line:nth-child(2).drw-step-line--done::after  { animation-delay: #{$t-l1}; }
+// Linha 2 começa após dot2
+.drw-step-line:nth-child(4).drw-step-line--done::after  { animation-delay: #{$t-l2}; }
+// Linha 3 começa após dot3
+.drw-step-line:nth-child(6).drw-step-line--done::after  { animation-delay: #{$t-l3}; }
+
+.drw-cancelada-badge {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 10px;
+  padding: 6px 10px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  font-size: 0.72rem;
+  color: #b91c1c;
+  font-weight: 500;
+  animation: dotAppear .4s cubic-bezier(.34,1.56,.64,1) both;
+
+  i { font-size: 0.78rem; }
+  span { color: #7f1d1d; font-weight: 400; }
+}
+
+// ── BLOCO 5: Observações ──────────────────────────────────
+.drw-obs-text {
+  font-size: 0.78rem;
+  color: #334155;
+  line-height: 1.6;
+  background: #f8fafc;
+  border-radius: 8px;
+  padding: 8px 10px;
+  margin: 0;
+}
+
+// ── BLOCO 6: Select de status ─────────────────────────────
+.drw-select {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #1e293b;
+  background: #f8fafc;
+  cursor: pointer;
+  outline: none;
+  transition: border-color .15s, box-shadow .15s;
+
+  &:focus {
+    border-color: $primary;
+    box-shadow: 0 0 0 3px rgba(37,99,235,.10);
+    background: #fff;
+  }
+
+  &.tooltip-ativo {
+    border-color: #22c55e;
+    background: #dcfce7;
+    color: #15803d;
+  }
+  &:disabled { opacity: .55; cursor: not-allowed; }
+}
+
+// ── BLOCO 7: Ações rápidas ────────────────────────────────
+.drw-acoes-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.drw-acao-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  padding: 6px 2px;
+  border-radius: 6px;
+  font-size: 0.6rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid #e5eaf0;
+  background: #f8fafc;
+  color: #475569;
+  text-decoration: none;
+  transition: background .15s, border-color .15s, color .15s, transform .12s;
+
+  i { font-size: 0.75rem; color: #64748b; transition: color .15s; }
+
+  &:hover {
+    background: #f1f5f9;
+    border-color: #d1d9e0;
+    transform: translateY(-1px);
+  }
+
+  &.tooltip-ativo {
+    background: #dcfce7;
+    border-color: #22c55e;
+    color: #15803d;
+
+    i { color: #15803d; }
+  }
+
+  &--success {
+    border-color: #bbf7d0;
+    color: #15803d;
+    background: #f0fdf4;
+    i { color: #22c55e; }
+    &:hover {
+      background: #dcfce7;
+      border-color: #86efac;
+    }
+  }
+
+  &--whatsapp {
+    border-color: #bbf7d0;
+    color: #15803d;
+    i { color: #22c55e; }
+    &:hover { background: #f0fdf4; }
+  }
+
+  &--danger {
+    border-color: #fecaca;
+    color: #dc2626;
+    i { color: #ef4444; }
+    &:hover { background: #fef2f2; }
+  }
+}
+
+// Responsivo: drawer vira 80% em telas menores
+@media (max-width: 900px) {
+  .drawer-panel { width: 80%; }
+}

@@ -1,0 +1,120 @@
+@use '../agenda-variaveis' as *;
+
+:host {
+  display: contents;
+}
+
+// Cor de cada status nos cartões e chips.
+@each $name, $color in $status {
+  .status-#{$name} {
+    background-color: rgba($color, .15);
+    border-left: 3px solid $color;
+    color: darken($color, 15%);
+  }
+}
+
+// ─────────────────────────────────────────────────────────
+// VISUALIZAÇÃO SEMANA
+// ─────────────────────────────────────────────────────────
+.grade-semana-header {
+  display: grid;
+  grid-template-columns: 40px repeat(7, 1fr);
+  border-bottom: 2px solid $border;
+  background: $surface;
+  border-radius: $radius $radius 0 0;
+  overflow: hidden;
+}
+
+.col-hora-header { padding: 4px; }
+
+.dia-semana-col-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 4px 1px;
+  cursor: pointer;
+  border-left: 1px solid $border;
+  transition: background .15s;
+
+  &:hover { background: $bg; }
+  &.hoje { background: rgba($primary,.05); }
+
+  .dia-nome {
+    font-size: 0.55rem;
+    font-weight: 600;
+    color: $text-muted;
+    text-transform: uppercase;
+  }
+
+  .dia-numero {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: $text;
+
+    &.hoje-numero {
+      background: $primary;
+      color: #fff;
+      width: 18px;
+      height: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+    }
+  }
+}
+
+.grade-semana-corpo {
+  display: grid;
+  grid-template-columns: 40px repeat(7, 1fr);
+  background: $surface;
+  border-radius: 0 0 $radius $radius;
+  overflow: hidden;
+  border: 1px solid $border;
+  border-top: none;
+  min-height: 250px;
+}
+
+.col-horas { border-right: 1px solid $border; }
+
+.slot-hora {
+  height: 40px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 1px;
+  font-size: 0.55rem;
+  color: $text-muted;
+  border-bottom: 1px solid $border;
+}
+
+.col-dia-semana {
+  border-left: 1px solid $border;
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-height: 400px;
+  background: $surface;
+
+  &.hoje { background: rgba($primary,.02); }
+}
+
+.evento-card {
+  border-radius: 3px;
+  padding: 2px 4px;
+  font-size: 0.58rem;
+  cursor: pointer;
+  transition: filter .1s;
+
+  &:hover { filter: brightness(.92); }
+}
+
+.slot-evento-semana {
+  @extend .evento-card;
+  .evento-hora-semana { font-weight: 700; font-size: 0.72rem; }
+  .evento-nome-semana { font-weight: 600; }
+  .evento-prof-semana { font-size: 0.7rem; opacity: .8; }
+}
+
+.sem-consultas-semana { flex: 1; }

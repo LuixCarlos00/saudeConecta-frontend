@@ -31,6 +31,10 @@ import { TabelaDePacientesComponent } from 'src/app/features/agenda/components/n
 import { TabelasPesquisasMedicosComponent } from 'src/app/features/agenda/components/nova-consuta/tabelas-Pesquisas-Medicos/tabelas-Pesquisas-Medicos.component';
 import { AgendaCalendarioComponent } from 'src/app/features/agenda/pages/agenda-calendario/agenda-calendario.component';
 import { TotalConsultasDiaPipe } from 'src/app/features/agenda/pages/agenda-calendario/total-consultas-dia.pipe';
+import { AgendaDrawerComponent } from 'src/app/features/agenda/pages/agenda-calendario/agenda-drawer/agenda-drawer.component';
+import { AgendaVisaoMesComponent } from 'src/app/features/agenda/pages/agenda-calendario/agenda-visao-mes/agenda-visao-mes.component';
+import { AgendaVisaoSemanaComponent } from 'src/app/features/agenda/pages/agenda-calendario/agenda-visao-semana/agenda-visao-semana.component';
+import { AgendaVisaoDiaComponent } from 'src/app/features/agenda/pages/agenda-calendario/agenda-visao-dia/agenda-visao-dia.component';
 import { CadastroPacienteComponent } from 'src/app/features/agenda/pages/cadastro-paciente/cadastro-paciente.component';
 
 /**
@@ -41,6 +45,10 @@ import { CadastroPacienteComponent } from 'src/app/features/agenda/pages/cadastr
   declarations: [
     AgendaCalendarioComponent,
     TotalConsultasDiaPipe,
+    AgendaDrawerComponent,
+    AgendaVisaoMesComponent,
+    AgendaVisaoSemanaComponent,
+    AgendaVisaoDiaComponent,
     CronologiaComponent,
     AgendarConsultaComponent,
     AgendaComponent,

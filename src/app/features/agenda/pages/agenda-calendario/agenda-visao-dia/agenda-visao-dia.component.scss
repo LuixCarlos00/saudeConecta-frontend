@@ -1,0 +1,120 @@
+@use '../agenda-variaveis' as *;
+
+:host {
+  display: contents;
+}
+
+// Cor de cada status nos cartões e chips.
+@each $name, $color in $status {
+  .status-#{$name} {
+    background-color: rgba($color, .15);
+    border-left: 3px solid $color;
+    color: darken($color, 15%);
+  }
+}
+
+// ─────────────────────────────────────────────────────────
+// VISUALIZAÇÃO DIA
+// ─────────────────────────────────────────────────────────
+.dia-titulo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: $surface;
+  border-radius: $radius;
+  margin-bottom: 12px;
+  border: 1px solid $border;
+
+  .dia-nome-completo {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: $text;
+  }
+
+  .total-consultas {
+    font-size: 0.82rem;
+    color: $primary;
+    font-weight: 600;
+    background: rgba($primary,.08);
+    padding: 4px 10px;
+    border-radius: 20px;
+  }
+}
+
+.grade-dia {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.slot-dia {
+  display: grid;
+  grid-template-columns: 40px 1fr;
+  min-height: 40px;
+  border: 1px solid $border;
+  border-radius: $radius;
+  background: $surface;
+  overflow: hidden;
+}
+
+.hora-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: $bg;
+  font-size: 0.6rem;
+  font-weight: 600;
+  color: $text-muted;
+  border-right: 1px solid $border;
+  padding: 0 4px;
+}
+
+.hora-eventos {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 6px;
+}
+
+.hora-vazia { min-height: 40px; }
+
+.evento-card-dia {
+  border-radius: 3px;
+  padding: 4px 6px;
+  cursor: pointer;
+  transition: filter .1s;
+
+  &:hover { filter: brightness(.92); }
+}
+
+.evento-dia-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.evento-hora-dia {
+  font-weight: 700;
+  font-size: 0.6rem;
+}
+
+.evento-status-badge {
+  font-size: 0.52rem;
+  font-weight: 600;
+  background: rgba(0,0,0,.08);
+  padding: 1px 3px;
+  border-radius: 8px;
+}
+
+.evento-paciente,
+.evento-especialidade,
+.evento-medico {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 0.58rem;
+  margin-top: 1px;
+  i { font-size: 0.55rem; opacity: .7; }
+}

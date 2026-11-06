@@ -1,40 +1,41 @@
 import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
-import { Subject, takeUntil, take, filter, Observable } from 'rxjs';
+import { Subject, takeUntil, take, filter } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
-import { Router } from '@angular/router';
 import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
-import { extrairMensagemErro } from 'src/app/shared/utils/mensagem-erro-http';
 import { ConsultaApiService } from 'src/app/core/data-access/consulta-api.service';
 import { ConsultaStateService } from 'src/app/features/agenda/data-access/consulta-state.service';
-import { ProntuarioStateService } from 'src/app/core/data-access/prontuario-state.service';
 import { AuthService } from 'src/app/core/auth/auth.service';
 import { ControleAcessoApiService } from 'src/app/core/data-access/controle-acesso-api.service';
-import { Consultav2, StatusConsulta } from 'src/app/shared/models/consultav2';
+import { Consultav2 } from 'src/app/shared/models/consultav2';
 import { Usuario } from 'src/app/shared/models/usuario';
 import { AgendarConsultaComponent } from 'src/app/features/agenda/components/agendar-consulta/agendar-consulta.component';
-import { RelatorioService } from 'src/app/features/relatorios/data-access/relatorio.service';
-import { ProntuarioDentistaApiService } from 'src/app/core/data-access/prontuario-dentista-api.service';
 import { AcoesConsultaService } from '../../data-access/acoes-consulta.service';
-import { PlanejamentoTerapeuticoApiService } from 'src/app/core/data-access/planejamento-terapeutico-api.service';
 import { RascunhoAtendimentoApiService } from 'src/app/core/data-access/rascunho-atendimento-api.service';
 import { ConfiguracoesConsultaApiService, ConfiguracoesConsulta } from 'src/app/features/agenda/data-access/configuracoes-consulta-api.service';
-import { formatarDataLocal, formatarHoraLocal } from 'src/app/shared/utils/data-local';
+import { formatarDataLocal } from 'src/app/shared/utils/data-local';
+import {
+  DiaCalendario,
+  FiltrosAgenda,
+  HoraDia,
+  STATUS_FINALIZADAS,
+  STATUS_AGENDADAS,
+  STATUS_OPCOES,
+  TipoVisualizacao,
+  deslocarPeriodo,
+  extrairProfissionaisEEspecialidades,
+  filtrarConsultas,
+  gerarDiasMes,
+  gerarDiasSemana,
+  gerarHorasDia,
+  legendaDoTipo,
+  tituloDoPeriodo,
+} from './agenda-calendario.calculos';
 
-export type TipoVisualizacao = 'mes' | 'semana' | 'dia';
-
-export interface DiaCalendario {
-  data: Date;
-  mesAtual: boolean;
-  consultas: Consultav2[];
-  hoje: boolean;
-}
-
-export interface HoraDia {
-  hora: number;
-  label: string;
-  consultas: Consultav2[];
-}
-
+/**
+ * Tela da agenda: cabeçalho, painel de filtros, navegação por período e carga das consultas.
+ * A grade (mês, semana ou dia) e o drawer de detalhes são componentes filhos; a lógica de
+ * filtros, grades e datas fica em agenda-calendario.calculos.ts.
+ */
 @Component({
   selector: 'app-agenda-calendario',
   templateUrl: './agenda-calendario.component.html',
@@ -56,10 +57,9 @@ export class AgendaCalendarioComponent implements OnInit, OnDestroy {
   horasDia: HoraDia[] = [];
 
   // Filtros
-  filtroStatus: string = 'TODOS';
-  filtroProfissional: string = '';
   filtroFinalizadas: boolean = false;
   filtroBusca: string = '';
+  filtroProfissional: string = '';
   filtroEspecialidade: string = '';
   filtroStatusSelecionados: string[] = [];
   profissionaisDisponiveis: { id: number; nome: string }[] = [];
@@ -69,63 +69,31 @@ export class AgendaCalendarioComponent implements OnInit, OnDestroy {
   /** IDs das consultas que já têm rascunho de atendimento (uma chamada por carregamento da tela). */
   consultasComRascunho = new Set<number>();
 
-  readonly statusOpcoes = [
-    { value: 'AGENDADA',   label: 'Agendada',   cor: 'status-agendada'   },
-    { value: 'CONFIRMADA', label: 'Confirmada', cor: 'status-confirmada' },
-    { value: 'REALIZADA',  label: 'Realizada',  cor: 'status-realizada'  },
-    { value: 'CANCELADA',  label: 'Cancelada',  cor: 'status-cancelada'  },
-    { value: 'PAGO',       label: 'Pago',       cor: 'status-pago'       },
-  ];
-
-  readonly STATUS_FINALIZADAS = ['REALIZADA', 'PAGO', 'CANCELADA'];
-  readonly STATUS_AGENDADAS   = ['AGENDADA', 'CONFIRMADA'];
+  readonly statusOpcoes = STATUS_OPCOES;
+  readonly STATUS_FINALIZADAS = STATUS_FINALIZADAS;
+  readonly STATUS_AGENDADAS = STATUS_AGENDADAS;
 
   get legendaAtual() {
-    return this.filtroFinalizadas
-      ? this.statusOpcoes.filter(s => ['REALIZADA', 'PAGO', 'CANCELADA'].includes(s.value))
-      : this.statusOpcoes.filter(s => ['AGENDADA', 'CONFIRMADA'].includes(s.value));
+    return legendaDoTipo(this.filtroFinalizadas);
   }
 
-  // Popover / evento selecionado
+  // Drawer / evento selecionado
   consultaSelecionada: Consultav2 | null = null;
   popoverAberto = false;
-  popoverTop = 0;
-  popoverLeft = 0;
 
   // Estado
   filtrosRecolhidos = false;
   carregando = false;
   tituloAtual = '';
   UsuarioLogado: Usuario = { id: 0, aud: '', exp: '', iss: '', sub: '', nome: '' };
-  private dadosCarregados = false;
 
   // Configuração de fluxo de consulta
   dropdownConfigAberto = false;
   pularParaConfirmado = false;
   configuracaoFluxo: ConfiguracoesConsulta | null = null;
 
-  // Mensagens de tooltip
-  mensagemTooltipQuestionario = '';
-  mensagemTooltipStatus = '';
-
   // Referência para o event listener
   private dropdownClickListener: any;
-
-  readonly STATUS_LABELS: Record<string, string> = {
-    AGENDADA: 'Agendada',
-    CONFIRMADA: 'Confirmada',
-    REALIZADA: 'Realizada',
-    CANCELADA: 'Cancelada',
-    PAGO: 'Pago',
-    FALTOU: 'Faltou',
-    REMARCADA: 'Remarcada',
-  };
-
-  readonly DIAS_SEMANA_NOMES = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
-  readonly MESES_NOMES = [
-    'Janeiro','Fevereiro','Março','Abril','Maio','Junho',
-    'Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'
-  ];
 
   private destroy$ = new Subject<void>();
 
@@ -133,16 +101,11 @@ export class AgendaCalendarioComponent implements OnInit, OnDestroy {
     private notificacao: NotificacaoService,
     private consultaService: ConsultaApiService,
     private consultaState: ConsultaStateService,
-    private prontuarioState: ProntuarioStateService,
     private authService: AuthService,
     public controleAcesso: ControleAcessoApiService,
     private dialog: MatDialog,
     private cdr: ChangeDetectorRef,
-    private relatorioService: RelatorioService,
-    private prontuarioDentistaApiService: ProntuarioDentistaApiService,
     private acoesConsulta: AcoesConsultaService,
-    private planejamentoApi: PlanejamentoTerapeuticoApiService,
-    private router: Router,
     private configuracoesConsultaService: ConfiguracoesConsultaApiService,
     private rascunhoApi: RascunhoAtendimentoApiService,
   ) {}
@@ -228,32 +191,22 @@ export class AgendaCalendarioComponent implements OnInit, OnDestroy {
   }
 
   private extrairProfissionais(): void {
-    const mapProf = new Map<number, string>();
-    const setEspec = new Set<string>();
-    this.todasConsultas.forEach(c => {
-      mapProf.set(c.profissionalId, c.profissionalNome);
-      if (c.especialidadeNome) setEspec.add(c.especialidadeNome);
-    });
-    this.profissionaisDisponiveis = Array.from(mapProf.entries()).map(([id, nome]) => ({ id, nome }));
-    this.especialidadesDisponiveis = Array.from(setEspec).sort();
+    const { profissionais, especialidades } = extrairProfissionaisEEspecialidades(this.todasConsultas);
+    this.profissionaisDisponiveis = profissionais;
+    this.especialidadesDisponiveis = especialidades;
   }
 
   // ========== FILTROS ==========
 
   aplicarFiltros(): void {
-    const statusPermitidos = this.filtroFinalizadas ? this.STATUS_FINALIZADAS : this.STATUS_AGENDADAS;
-    this.consultasFiltradas = this.todasConsultas.filter(c => {
-      const passaTipo       = statusPermitidos.includes(c.status);
-      const passaStatus     = this.filtroStatusSelecionados.length === 0 ||
-                              this.filtroStatusSelecionados.includes(c.status);
-      const passaProfissional = !this.filtroProfissional ||
-                              c.profissionalId === Number(this.filtroProfissional);
-      const passaEspecialidade = !this.filtroEspecialidade ||
-                              c.especialidadeNome === this.filtroEspecialidade;
-      const passaBusca      = !this.filtroBusca ||
-                              c.pacienteNome?.toLowerCase().includes(this.filtroBusca.toLowerCase());
-      return passaTipo && passaStatus && passaProfissional && passaEspecialidade && passaBusca;
-    });
+    const filtros: FiltrosAgenda = {
+      finalizadas: this.filtroFinalizadas,
+      status: this.filtroStatusSelecionados,
+      profissional: this.filtroProfissional,
+      especialidade: this.filtroEspecialidade,
+      busca: this.filtroBusca,
+    };
+    this.consultasFiltradas = filtrarConsultas(this.todasConsultas, filtros);
     this.gerarCalendario();
     this.cdr.markForCheck();
   }
@@ -286,125 +239,19 @@ export class AgendaCalendarioComponent implements OnInit, OnDestroy {
   // ========== GERAÇÃO DO CALENDÁRIO ==========
 
   gerarCalendario(): void {
-    if (this.tipoVisualizacao === 'mes') this.gerarVisualizacaoMes();
-    else if (this.tipoVisualizacao === 'semana') this.gerarVisualizacaoSemana();
-    else this.gerarVisualizacaoDia();
-  }
-
-  private gerarVisualizacaoMes(): void {
-    const ano = this.dataAtual.getFullYear();
-    const mes = this.dataAtual.getMonth();
-    const primeiroDia = new Date(ano, mes, 1);
-    const ultimoDia = new Date(ano, mes + 1, 0);
-    const hoje = new Date();
-
-    const dias: DiaCalendario[] = [];
-
-    // Preencher dias antes do primeiro dia do mês
-    for (let i = primeiroDia.getDay(); i > 0; i--) {
-      const data = new Date(ano, mes, 1 - i);
-      dias.push({ data, mesAtual: false, consultas: this.getConsultasDia(data), hoje: false });
+    if (this.tipoVisualizacao === 'mes') {
+      this.diasCalendario = gerarDiasMes(this.dataAtual, this.consultasFiltradas, new Date());
+    } else if (this.tipoVisualizacao === 'semana') {
+      this.diasSemana = gerarDiasSemana(this.dataAtual, this.consultasFiltradas, new Date());
+    } else {
+      this.horasDia = gerarHorasDia(this.dataAtual, this.consultasFiltradas);
     }
-
-    // Dias do mês atual
-    for (let d = 1; d <= ultimoDia.getDate(); d++) {
-      const data = new Date(ano, mes, d);
-      dias.push({
-        data,
-        mesAtual: true,
-        consultas: this.getConsultasDia(data),
-        hoje: this.isMesmaData(data, hoje)
-      });
-    }
-
-    // Preencher dias após o último dia do mês para completar a grade
-    const restante = 42 - dias.length;
-    for (let i = 1; i <= restante; i++) {
-      const data = new Date(ano, mes + 1, i);
-      dias.push({ data, mesAtual: false, consultas: this.getConsultasDia(data), hoje: false });
-    }
-
-    this.diasCalendario = dias;
-  }
-
-  private gerarVisualizacaoSemana(): void {
-    const inicio = this.getInicioDaSemana(this.dataAtual);
-    const hoje = new Date();
-    this.diasSemana = Array.from({ length: 7 }, (_, i) => {
-      const data = new Date(inicio);
-      data.setDate(inicio.getDate() + i);
-      return {
-        data,
-        mesAtual: true,
-        consultas: this.getConsultasDia(data),
-        hoje: this.isMesmaData(data, hoje)
-      };
-    });
-  }
-
-  private gerarVisualizacaoDia(): void {
-    const hoje = new Date();
-    this.horasDia = Array.from({ length: 13 }, (_, i) => {
-      const hora = 7 + i; // 07h às 19h
-      return {
-        hora,
-        label: `${hora.toString().padStart(2, '0')}:00`,
-        consultas: this.getConsultasDiaHora(this.dataAtual, hora)
-      };
-    });
-  }
-
-  // ========== HELPERS DE DATA ==========
-
-  private getConsultasDia(data: Date): Consultav2[] {
-    return this.consultasFiltradas.filter(c => {
-      const dataConsulta = new Date(c.dataHora);
-      return this.isMesmaData(dataConsulta, data);
-    });
-  }
-
-  private getConsultasDiaHora(data: Date, hora: number): Consultav2[] {
-    return this.consultasFiltradas.filter(c => {
-      const dataConsulta = new Date(c.dataHora);
-      return this.isMesmaData(dataConsulta, data) && dataConsulta.getHours() === hora;
-    });
-  }
-
-  private isMesmaData(a: Date, b: Date): boolean {
-    return a.getFullYear() === b.getFullYear() &&
-      a.getMonth() === b.getMonth() &&
-      a.getDate() === b.getDate();
-  }
-
-  private getInicioDaSemana(data: Date): Date {
-    const d = new Date(data);
-    d.setDate(d.getDate() - d.getDay());
-    return d;
-  }
-
-  private getInicioMes(): string {
-    const d = new Date(this.dataAtual.getFullYear(), this.dataAtual.getMonth(), 1);
-    return formatarDataLocal(d);
-  }
-
-  private getFimMes(): string {
-    const d = new Date(this.dataAtual.getFullYear(), this.dataAtual.getMonth() + 1, 0);
-    return formatarDataLocal(d);
   }
 
   // ========== NAVEGAÇÃO ==========
 
   private atualizarTitulo(): void {
-    if (this.tipoVisualizacao === 'mes') {
-      this.tituloAtual = `${this.MESES_NOMES[this.dataAtual.getMonth()]} ${this.dataAtual.getFullYear()}`;
-    } else if (this.tipoVisualizacao === 'semana') {
-      const inicio = this.getInicioDaSemana(this.dataAtual);
-      const fim = new Date(inicio);
-      fim.setDate(inicio.getDate() + 6);
-      this.tituloAtual = `${inicio.getDate()}/${inicio.getMonth() + 1} – ${fim.getDate()}/${fim.getMonth() + 1}/${fim.getFullYear()}`;
-    } else {
-      this.tituloAtual = `${this.dataAtual.getDate()} de ${this.MESES_NOMES[this.dataAtual.getMonth()]} de ${this.dataAtual.getFullYear()}`;
-    }
+    this.tituloAtual = tituloDoPeriodo(this.tipoVisualizacao, this.dataAtual);
   }
 
   irParaHoje(): void {
@@ -414,29 +261,13 @@ export class AgendaCalendarioComponent implements OnInit, OnDestroy {
   }
 
   irParaAnterior(): void {
-    if (this.tipoVisualizacao === 'mes') {
-      this.dataAtual = new Date(this.dataAtual.getFullYear(), this.dataAtual.getMonth() - 1, 1);
-    } else if (this.tipoVisualizacao === 'semana') {
-      this.dataAtual = new Date(this.dataAtual);
-      this.dataAtual.setDate(this.dataAtual.getDate() - 7);
-    } else {
-      this.dataAtual = new Date(this.dataAtual);
-      this.dataAtual.setDate(this.dataAtual.getDate() - 1);
-    }
+    this.dataAtual = deslocarPeriodo(this.tipoVisualizacao, this.dataAtual, -1);
     this.atualizarTitulo();
     this.carregarConsultas();
   }
 
   irParaProximo(): void {
-    if (this.tipoVisualizacao === 'mes') {
-      this.dataAtual = new Date(this.dataAtual.getFullYear(), this.dataAtual.getMonth() + 1, 1);
-    } else if (this.tipoVisualizacao === 'semana') {
-      this.dataAtual = new Date(this.dataAtual);
-      this.dataAtual.setDate(this.dataAtual.getDate() + 7);
-    } else {
-      this.dataAtual = new Date(this.dataAtual);
-      this.dataAtual.setDate(this.dataAtual.getDate() + 1);
-    }
+    this.dataAtual = deslocarPeriodo(this.tipoVisualizacao, this.dataAtual, 1);
     this.atualizarTitulo();
     this.carregarConsultas();
   }
@@ -464,10 +295,9 @@ export class AgendaCalendarioComponent implements OnInit, OnDestroy {
     }
   }
 
-  // ========== POPOVER / EVENTO ==========
+  // ========== DRAWER / EVENTO ==========
 
-  abrirPopover(consulta: Consultav2, event: MouseEvent): void {
-    event.stopPropagation();
+  abrirPopover(consulta: Consultav2): void {
     this.consultaSelecionada = consulta;
     this.popoverAberto = true;
   }
@@ -511,40 +341,6 @@ export class AgendaCalendarioComponent implements OnInit, OnDestroy {
       this.carregando = false;
       this.carregarConsultas();
     });
-  }
-
-  // ========== AÇÕES DO DRAWER ==========
-
-  alterarStatusDrawer(novoStatus: string): void {
-    const c = this.consultaSelecionada;
-    if (!c || novoStatus === c.status) return;
-
-    this.consultaService.alterarStatusConsulta(c.id, novoStatus)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: () => {
-          this.mensagemTooltipStatus = `Status alterado para ${this.STATUS_LABELS[novoStatus]}`;
-          this.cdr.markForCheck();
-          this.fecharPopover();
-          this.carregarConsultas();
-          setTimeout(() => {
-            this.mensagemTooltipStatus = '';
-            this.cdr.markForCheck();
-          }, 3000);
-        },
-        error: (erro) => {
-          this.mensagemTooltipStatus = extrairMensagemErro(erro) || 'Erro ao alterar status';
-          this.cdr.markForCheck();
-          setTimeout(() => {
-            this.mensagemTooltipStatus = '';
-            this.cdr.markForCheck();
-          }, 3000);
-        }
-      });
-  }
-
-  podeEditar(consulta: Consultav2): boolean {
-    return consulta?.status === 'AGENDADA';
   }
 
   // ========== CONFIGURAÇÃO DE FLUXO DE CONSULTA ==========
@@ -602,38 +398,6 @@ export class AgendaCalendarioComponent implements OnInit, OnDestroy {
       });
   }
 
-  deletarConsultaDrawer(): void {
-    const c = this.consultaSelecionada;
-    if (!c) return;
-    this.notificacao.fire({
-      title: 'Confirmar exclusão',
-      text: `Deseja excluir a consulta de ${c.pacienteNome}? O questionário de saúde será excluído.`,
-      icon: 'warning', showCancelButton: true,
-      confirmButtonColor: '#d33', cancelButtonColor: '#3085d6',
-      confirmButtonText: 'Sim, excluir', cancelButtonText: 'Cancelar',
-    }).then(r => {
-      if (!r.isConfirmed) return;
-      this.consultaService.deletarConsulta(c.id)
-        .pipe(takeUntil(this.destroy$))
-        .subscribe({
-          next: () => { this.notificacao.fire('Deletado', 'Consulta deletada com sucesso.', 'success'); this.fecharPopover(); this.carregarConsultas(); },
-          error: (err: any) => {
-            if (err?.status === 409) this.notificacao.fire('Exclusão bloqueada', 'Esta consulta possui prontuário clínico e não pode ser excluída. Os dados clínicos devem ser preservados.', 'info');
-            else this.notificacao.fire('Erro', 'Erro ao deletar consulta.', 'error');
-          },
-        });
-    });
-  }
-
-  abrirImpressaoDrawer(): void {
-    if (!this.consultaSelecionada) return;
-    const consulta = this.consultaSelecionada;
-    this.fecharPopover();
-    setTimeout(() => {
-      this.relatorioService.abrirRelatorioAdmin(consulta);
-    }, 100);
-  }
-
   /** Busca de uma vez os rascunhos do profissional logado para trocar "Iniciar" por "Retomar atendimento". */
   private carregarRascunhos(): void {
     if (this.UsuarioLogado?.perfil !== 'CLINICO') { return; }
@@ -649,221 +413,7 @@ export class AgendaCalendarioComponent implements OnInit, OnDestroy {
       });
   }
 
-  /** A consulta já tem um atendimento em andamento (rascunho salvo)? */
-  temRascunho(consulta: Consultav2 | null | undefined): boolean {
-    return !!consulta && this.consultasComRascunho.has(consulta.id);
-  }
-
-  iniciarConsultaDrawer(): void {
-    if (!this.consultaSelecionada) return;
-
-    const element = this.consultaSelecionada;
-    const retomando = this.temRascunho(element);
-    const dataFormatada = element.dataHora
-      ? new Date(element.dataHora).toLocaleDateString('pt-BR')
-      : 'Não informada';
-    const horarioFormatado = element.dataHora
-      ? new Date(element.dataHora).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
-      : 'Não informado';
-
-    // Fechar o drawer antes de abrir o SweetAlert para evitar conflito de z-index
-    this.fecharPopover();
-
-    setTimeout(() => {
-      this.notificacao.fire({
-        title: retomando ? 'Retomar Atendimento' : 'Iniciar Atendimento',
-        html: `
-          <div style="text-align: left; padding: 10px;">
-            <p style="margin-bottom: 15px; color: #666;">
-              <i class="fa-solid fa-user" style="margin-right: 8px; color: #5ccf6c;"></i>
-              <strong>Paciente:</strong> ${element.pacienteNome || 'Não informado'}
-            </p>
-            <p style="margin-bottom: 15px; color: #666;">
-              <i class="fa-solid fa-calendar" style="margin-right: 8px; color: #5ccf6c;"></i>
-              <strong>Data:</strong> ${dataFormatada}
-            </p>
-            <p style="margin-bottom: 15px; color: #666;">
-              <i class="fa-solid fa-clock" style="margin-right: 8px; color: #5ccf6c;"></i>
-              <strong>Horário:</strong> ${horarioFormatado}
-            </p>
-          </div>
-          <p style="margin-top: 20px; font-size: 14px; color: #888;">
-            Deseja ${retomando ? 'retomar' : 'iniciar'} o atendimento deste paciente?
-          </p>
-        `,
-        showCancelButton: true,
-        confirmButtonColor: '#5ccf6c',
-        cancelButtonColor: '#6c757d',
-        confirmButtonText: retomando
-          ? '<i class="fa-solid fa-rotate-right"></i> Retomar Atendimento'
-          : '<i class="fa-solid fa-stethoscope"></i> Iniciar Atendimento',
-        cancelButtonText: '<i class="fa-solid fa-times"></i> Cancelar',
-      }).then((result) => {
-        if (result.isConfirmed) {
-          this.notificacao.fire({
-            title: 'Iniciando consulta...',
-            html: 'Aguarde enquanto preparamos o prontuário.',
-            allowOutsideClick: false,
-            showConfirmButton: false,
-            timer: 1500,
-            timerProgressBar: true,
-            didOpen: () => { this.notificacao.mostrarCarregando(); },
-          }).then(() => {
-            this.prontuarioState.changeConsulta(element);
-            if (this.UsuarioLogado.tipoProfissional === 'MEDICO') {
-              this.router.navigate(['startconsulta', element.id]);
-            } else if (this.UsuarioLogado.tipoProfissional === 'DENTISTA') {
-              this.router.navigate(['startconsulta-dentista', element.id]);
-            }
-          });
-        }
-      });
-    }, 300);
-  }
-
-  gerarWhatsAppDrawer(): string {
-    return this.acoesConsulta.gerarLinkWhatsApp(this.consultaSelecionada);
-  }
-
-  // ========== QUESTIONÁRIO E PLANEJAMENTO ==========
-
-  gerarLinkQuestionarioDrawer(): void {
-    const element = this.consultaSelecionada;
-    if (!element?.id) return;
-    this.prontuarioDentistaApiService.buscarQuestionarioSaude(element.id)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (resp: any) => {
-          if (resp?.respondido) {
-            this.questionariosRespondidos.add(element.id);
-            this.cdr.markForCheck();
-            return;
-          }
-          this.executarGeracaoLinkQuestionario(element);
-        },
-        error: () => this.executarGeracaoLinkQuestionario(element)
-      });
-  }
-
-  private executarGeracaoLinkQuestionario(element: Consultav2): void {
-    this.prontuarioDentistaApiService.gerarLinkQuestionario(element.id)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (resp) => {
-          const baseUrl = window.location.origin;
-          const link = `${baseUrl}/#/questionario-saude/${resp.token}`;
-          navigator.clipboard.writeText(link).then(() => {
-            this.mensagemTooltipQuestionario = 'Link copiado para a área de transferência!';
-            this.cdr.markForCheck();
-            setTimeout(() => {
-              this.mensagemTooltipQuestionario = '';
-              this.cdr.markForCheck();
-            }, 3000);
-          }).catch(() => {
-            this.mensagemTooltipQuestionario = 'Não foi possível copiar automaticamente';
-            this.cdr.markForCheck();
-            setTimeout(() => {
-              this.mensagemTooltipQuestionario = '';
-              this.cdr.markForCheck();
-            }, 3000);
-          });
-        },
-        error: () => {
-          this.mensagemTooltipQuestionario = 'Erro ao gerar link';
-          this.cdr.markForCheck();
-          setTimeout(() => {
-            this.mensagemTooltipQuestionario = '';
-            this.cdr.markForCheck();
-          }, 3000);
-        }
-      });
-  }
-
-  gerarLinkPlanejamentoDrawer(): void {
-    const element = this.consultaSelecionada;
-    if (!element?.id) return;
-    const tipoProfissional = this.relatorioService.detectarTipoProfissional(element);
-    this.acoesConsulta.buscarProntuarioMaisRecente(element)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (prontuario: any) => {
-          const codigoProntuario = this.acoesConsulta.extrairCodigoProntuario(prontuario);
-          if (!codigoProntuario) {
-            this.notificacao.fire('Aviso', 'Nenhum prontuário encontrado para esta consulta.', 'warning');
-            return;
-          }
-          const plans = prontuario?.planejamentosTerapeuticos || prontuario?.planejamentos || [];
-          if (plans.length > 0 && plans.every((p: any) => p.statusAssinatura === 'ASSINADO')) {
-            this.planejamentosAssinados.add(element.id);
-            this.cdr.markForCheck();
-            this.notificacao.fire('Aviso', 'Todos os itens do planejamento já foram assinados pelo paciente.', 'info');
-            return;
-          }
-          this.planejamentoApi.gerarLinkAssinatura(codigoProntuario, tipoProfissional)
-            .pipe(takeUntil(this.destroy$))
-            .subscribe({
-              next: (resp) => {
-                const baseUrl = window.location.origin;
-                const link = `${baseUrl}/#/assinatura-planejamento/${resp.token}`;
-                navigator.clipboard.writeText(link).catch(() => {});
-                this.notificacao.fire({
-                  icon: 'success', title: 'Link Gerado!',
-                  html: `<p style="font-size:0.9rem;">Copie o link abaixo e envie ao paciente:</p>
-                         <input type="text" value="${link}" readonly
-                           style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px;margin-top:8px;font-size:0.82rem;" />`,
-                  confirmButtonText: 'OK'
-                });
-              },
-              error: () => this.notificacao.fire('Erro', 'Não foi possível gerar o link do planejamento.', 'error')
-            });
-        },
-        error: () => this.notificacao.fire('Erro', 'Não foi possível buscar o prontuário desta consulta.', 'error')
-      });
-  }
-
-  // ========== HELPERS DE STATUS ==========
-
-  getStatusClass(status: string): string {
-    const map: Record<string, string> = {
-      AGENDADA: 'status-agendada',
-      CONFIRMADA: 'status-confirmada',
-      REALIZADA: 'status-realizada',
-      CANCELADA: 'status-cancelada',
-      PAGO: 'status-pago',
-      FALTOU: 'status-faltou',
-      REMARCADA: 'status-remarcada',
-    };
-    return map[status] || '';
-  }
-
-  getHorario(dataHora: string): string {
-    if (!dataHora) return '';
-    return formatarHoraLocal(new Date(dataHora));
-  }
-
-  isStatusDone(etapa: string, statusAtual: string): boolean {
-    const ordem = ['AGENDADA', 'CONFIRMADA', 'REALIZADA', 'PAGO'];
-    return ordem.indexOf(statusAtual) > ordem.indexOf(etapa);
-  }
-
   podeVerTodosProfissionais(): boolean {
     return this.controleAcesso.isAdmin() || this.controleAcesso.isRecepcionista();
-  }
-
-  /**
-   * Define se o botao de edicao da consulta deve ser exibido no drawer.
-   * Consultas confirmadas nao podem ser editadas por clinico ou gestor.
-   *
-   * @param status status atual da consulta
-   * @returns true quando a edicao e permitida para o perfil logado
-   */
-  podeEditarConsulta(status: string): boolean {
-    const perfilRestrito = this.controleAcesso.isAdmin() || this.controleAcesso.isProfissional();
-
-    if (status === 'CONFIRMADA' && perfilRestrito) {
-      return false;
-    }
-
-    return (status === 'AGENDADA' || status === 'CONFIRMADA') && this.controleAcesso.isAdmin();
   }
 }
