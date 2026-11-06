@@ -3,12 +3,12 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
 import { convertToParamMap } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
-import { ModalAssociarPlanoComponent } from './modal-associar-plano/modal-associar-plano.component';
+import { ModalAssociarPlanoComponent } from 'src/app/features/administrador/gerenciamento-usuarios/tabela-todos-usuarios/modal-associar-plano/modal-associar-plano.component';
 import { By } from '@angular/platform-browser';
 import { DebugElement } from '@angular/core';
 
 import { TabelaTodosUsuariosComponent } from './tabela-todos-usuarios.component';
-import { IMPORTS_TESTE_PADRAO, PROVIDERS_TESTE_PADRAO, SCHEMAS_TESTE_PADRAO } from '../../../../testing/configuracao-teste';
+import { IMPORTS_TESTE_PADRAO, PROVIDERS_TESTE_PADRAO, SCHEMAS_TESTE_PADRAO } from 'src/app/testing/configuracao-teste';
 
 describe('TabelaTodosUsuariosComponent', () => {
   let component: TabelaTodosUsuariosComponent;

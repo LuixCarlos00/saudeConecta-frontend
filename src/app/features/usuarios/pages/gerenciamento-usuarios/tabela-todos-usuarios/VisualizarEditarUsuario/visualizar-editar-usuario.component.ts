@@ -9,7 +9,7 @@ import { PacienteApiService } from 'src/app/core/data-access/paciente-api.servic
 import { ProfissionalApiService } from 'src/app/core/data-access/profissional-api.service';
 import { AdministradorApiService } from 'src/app/core/data-access/administrador-api.service';
 import { UsuarioUnificado } from '../tabela-todos-usuarios.component';
-import { SecretariaApiService } from 'src/app/services/api/secretaria-api.service';
+import { SecretariaApiService } from 'src/app/features/usuarios/data-access/secretaria-api.service';
 import { ufOptions } from 'src/app/shared/constants/options';
 import { EspecialidadeApiService, EspecialidadeResponse } from 'src/app/core/data-access/especialidade-api.service';
 import { ControleAcessoApiService } from 'src/app/core/data-access/controle-acesso-api.service';

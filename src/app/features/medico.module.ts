@@ -13,7 +13,7 @@ import { RelatorioModule } from 'src/app/features/relatorio/relatorio.module';
 import { TabelaAgendaMedicoComponent } from './atendimento/components/tabela-agenda/tabela-agenda-medico.component';
 
 // Componentes de Dados Pessoais
-import { DadosPessoaisComponent } from './medico/dados-pessoais/DadosPessoais.component';
+import { DadosPessoaisComponent } from './usuarios/pages/dados-pessoais/DadosPessoais.component';
 
 // Componentes de Prontuario Dentista
 import { AbaCodigosTussCidComponent } from './atendimento/pages/prontuario-dentista/aba-codigos-tuss-cid/aba-codigos-tuss-cid.component';

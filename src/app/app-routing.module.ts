@@ -16,12 +16,12 @@ import { AssinaturaRetornoComponent } from './features/publico/assinatura-retorn
 
 // ========== FEATURES ADMINISTRADOR ==========
 import { DashboardComponent } from './features/administrador/dashboard/dashboard.component';
-import { GerenciamentoUsuarioComponent } from './features/administrador/gerenciamento-usuarios/gerenciamento-usuario.component';
+import { GerenciamentoUsuarioComponent } from './features/usuarios/pages/gerenciamento-usuarios/gerenciamento-usuario.component';
 import { CadastroPacienteComponent } from './features/agenda/pages/cadastro-paciente/cadastro-paciente.component';
-import { CadastroMedicoComponent } from './features/administrador/cadastros/cadastro-medico/cadastro-medico.component';
-import { CadastroAdmComponent } from './features/administrador/cadastros/cadastro-adm/cadastro-adm.component';
-import { CadastroAdminOrgComponent } from './features/administrador/cadastros/cadastro-admin-org/cadastro-admin-org.component';
-import { CadastroSecretariaComponent } from './features/administrador/cadastros/cadastro-secretaria/cadastro-secretaria.component';
+import { CadastroMedicoComponent } from './features/usuarios/pages/cadastro-medico/cadastro-medico.component';
+import { CadastroAdmComponent } from './features/usuarios/pages/cadastro-adm/cadastro-adm.component';
+import { CadastroAdminOrgComponent } from './features/usuarios/pages/cadastro-admin-org/cadastro-admin-org.component';
+import { CadastroSecretariaComponent } from './features/usuarios/pages/cadastro-secretaria/cadastro-secretaria.component';
 import { ConfiguracoesSistemaComponent } from './features/administrador/configuracoes/configuracoes-sistema.component';
 import { TrocaSenhaComponent } from './features/administrador/troca-senha/troca-senha.component';
 import { SuporteComponent } from './features/administrador/suporte/suporte.component';
@@ -36,7 +36,7 @@ import { HistoricoDadosPessoaisComponent } from './features/administrador/histor
  
 
 // ========== FEATURES MÉDICO ==========
-import { DadosPessoaisComponent } from './features/medico/dados-pessoais/DadosPessoais.component';
+import { DadosPessoaisComponent } from './features/usuarios/pages/dados-pessoais/DadosPessoais.component';
 import { ProntuarioMedicoComponent } from './features/atendimento/pages/prontuario-medico/prontuario-medico.component';
 import { ProntuarioComponent } from './features/atendimento/pages/prontuario/prontuario.component';
 import { AgendaCalendarioComponent } from './features/agenda/pages/agenda-calendario/agenda-calendario.component';

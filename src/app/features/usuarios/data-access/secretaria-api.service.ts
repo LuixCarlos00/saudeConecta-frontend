@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Secretaria } from 'src/app/util/variados/interfaces/secretaria/secretaria';
+import { Secretaria } from 'src/app/features/usuarios/models/secretaria';
 import { environment } from 'src/environments/environment';
 
 

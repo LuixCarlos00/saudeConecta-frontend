@@ -28,11 +28,11 @@ import { NgChartsModule } from 'ng2-charts';
 import { RelatorioModule } from 'src/app/features/relatorio/relatorio.module';
 
 // Componentes de Cadastros
-import { CadastroAdmComponent } from './administrador/cadastros/cadastro-adm/cadastro-adm.component';
-import { CadastroAdminOrgComponent } from './administrador/cadastros/cadastro-admin-org/cadastro-admin-org.component';
-import { CadastroMedicoComponent } from './administrador/cadastros/cadastro-medico/cadastro-medico.component';
+import { CadastroAdmComponent } from './usuarios/pages/cadastro-adm/cadastro-adm.component';
+import { CadastroAdminOrgComponent } from './usuarios/pages/cadastro-admin-org/cadastro-admin-org.component';
+import { CadastroMedicoComponent } from './usuarios/pages/cadastro-medico/cadastro-medico.component';
 import { CadastroPacienteComponent } from './agenda/pages/cadastro-paciente/cadastro-paciente.component';
-import { CadastroSecretariaComponent } from './administrador/cadastros/cadastro-secretaria/cadastro-secretaria.component';
+import { CadastroSecretariaComponent } from './usuarios/pages/cadastro-secretaria/cadastro-secretaria.component';
 
 // Componentes de Configurações
 import { ConfiguracoesSistemaComponent } from './administrador/configuracoes/configuracoes-sistema.component';
@@ -58,11 +58,11 @@ import { TabelaDePacientesComponent } from './agenda/components/nova-consuta/tab
 import { TabelasPesquisasMedicosComponent } from './agenda/components/nova-consuta/tabelas-Pesquisas-Medicos/tabelas-Pesquisas-Medicos.component';
 
 // Componentes de Gerenciamento de Usuários
-import { GerenciamentoUsuarioComponent } from './administrador/gerenciamento-usuarios/gerenciamento-usuario.component';
+import { GerenciamentoUsuarioComponent } from './usuarios/pages/gerenciamento-usuarios/gerenciamento-usuario.component';
 import { ModalAssociarPlanoComponent } from './administrador/gerenciamento-usuarios/tabela-todos-usuarios/modal-associar-plano/modal-associar-plano.component';
-import { TabelaTodosUsuariosComponent } from './administrador/gerenciamento-usuarios/tabela-todos-usuarios/tabela-todos-usuarios.component';
-import { TrocaSenhaUsuariosComponent } from './administrador/gerenciamento-usuarios/tabela-todos-usuarios/TrocaSenhaUsuarios/TrocaSenhaUsuarios.component';
-import { VisualizarEditarUsuarioComponent } from './administrador/gerenciamento-usuarios/tabela-todos-usuarios/VisualizarEditarUsuario/visualizar-editar-usuario.component';
+import { TabelaTodosUsuariosComponent } from './usuarios/pages/gerenciamento-usuarios/tabela-todos-usuarios/tabela-todos-usuarios.component';
+import { TrocaSenhaUsuariosComponent } from './usuarios/pages/gerenciamento-usuarios/tabela-todos-usuarios/TrocaSenhaUsuarios/TrocaSenhaUsuarios.component';
+import { VisualizarEditarUsuarioComponent } from './usuarios/pages/gerenciamento-usuarios/tabela-todos-usuarios/VisualizarEditarUsuario/visualizar-editar-usuario.component';
 
 // Componentes de Mensageria
 import { MensageriaComponent } from './administrador/mensageria/mensageria.component';

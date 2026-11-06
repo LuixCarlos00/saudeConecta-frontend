@@ -9,7 +9,7 @@ import { FiltroStateService } from 'src/app/core/data-access/filtro-state.servic
 import { cpfValidator } from 'src/app/shared/validators/cpf-form.validator';
 import { CpfValidator } from 'src/app/shared/validators/cpf.validator';
 import { getFieldError } from 'src/app/shared/validators/field-errors';
-import { extrairMensagemErro } from '../../../../shared/utils/mensagem-erro-http';
+import { extrairMensagemErro } from 'src/app/shared/utils/mensagem-erro-http';
 
 @Component({
   selector: 'app-cadastro-adm',

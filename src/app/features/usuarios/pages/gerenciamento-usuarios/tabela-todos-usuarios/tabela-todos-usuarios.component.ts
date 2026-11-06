@@ -7,20 +7,20 @@ import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service
 import { UsuarioApiService } from 'src/app/core/data-access/usuario-api.service';
 import { PacienteApiService } from 'src/app/core/data-access/paciente-api.service';
 import { AdministradorApiService } from 'src/app/core/data-access/administrador-api.service';
-import { SecretariaApiService } from 'src/app/services/api/secretaria-api.service';
+import { SecretariaApiService } from 'src/app/features/usuarios/data-access/secretaria-api.service';
 import { FiltroStateService } from 'src/app/core/data-access/filtro-state.service';
 import { TrocaSenhaUsuariosComponent } from './TrocaSenhaUsuarios/TrocaSenhaUsuarios.component';
 import { VisualizarEditarUsuarioComponent } from './VisualizarEditarUsuario/visualizar-editar-usuario.component';
 
 import { Adiministrador } from 'src/app/shared/models/adiministrador';
-import { Secretaria } from 'src/app/util/variados/interfaces/secretaria/secretaria';
+import { Secretaria } from 'src/app/features/usuarios/models/secretaria';
 import { Paciente } from 'src/app/shared/models/paciente';
 import { ProfissionalApiService } from 'src/app/core/data-access/profissional-api.service';
 import { is } from 'date-fns/locale';
 import { extrairMensagemErro } from 'src/app/shared/utils/mensagem-erro-http';
 import { Profissional } from 'src/app/shared/models/Profissional';
 import { ControleAcessoApiService } from 'src/app/core/data-access/controle-acesso-api.service';
-import { ModalAssociarPlanoComponent } from './modal-associar-plano/modal-associar-plano.component';
+import { ModalAssociarPlanoComponent } from 'src/app/features/administrador/gerenciamento-usuarios/tabela-todos-usuarios/modal-associar-plano/modal-associar-plano.component';
 
 export enum CategoriaUsuario {
   PACIENTE = 1,

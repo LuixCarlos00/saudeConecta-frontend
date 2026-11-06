@@ -2,7 +2,7 @@ import { AdministradorApiService } from 'src/app/core/data-access/administrador-
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ProfissionalApiService } from 'src/app/core/data-access/profissional-api.service';
-import { SecretariaApiService } from 'src/app/services/api/secretaria-api.service';
+import { SecretariaApiService } from 'src/app/features/usuarios/data-access/secretaria-api.service';
 import { UsuarioApiService } from 'src/app/core/data-access/usuario-api.service';
 import { CepApiService } from 'src/app/core/data-access/cep-api.service';
 import { AuthService } from 'src/app/core/auth/auth.service';

@@ -4,7 +4,7 @@ import { Subscription } from 'rxjs';
 import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
 import { Router } from '@angular/router';
 import { MatDialogRef } from '@angular/material/dialog';
-import { SecretariaApiService } from 'src/app/services/api/secretaria-api.service';
+import { SecretariaApiService } from 'src/app/features/usuarios/data-access/secretaria-api.service';
 import { FiltroStateService } from 'src/app/core/data-access/filtro-state.service';
 import { cpfValidator } from 'src/app/shared/validators/cpf-form.validator';
 import { CpfValidator } from 'src/app/shared/validators/cpf.validator';

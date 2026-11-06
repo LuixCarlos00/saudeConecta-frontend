@@ -29,7 +29,7 @@ import {
   formacaoValidator,
   antiInjectionValidator,
 } from 'src/app/shared/validators/form-validators';
-import { extrairMensagemErro } from '../../../../shared/utils/mensagem-erro-http';
+import { extrairMensagemErro } from 'src/app/shared/utils/mensagem-erro-http';
 
 
 @Component({

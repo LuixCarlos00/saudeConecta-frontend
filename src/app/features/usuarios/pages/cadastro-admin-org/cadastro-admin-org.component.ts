@@ -10,7 +10,7 @@ import { AdministradorApiService } from 'src/app/core/data-access/administrador-
 import { FiltroStateService } from 'src/app/core/data-access/filtro-state.service';
 import { CpfValidator } from 'src/app/shared/validators/cpf.validator';
 import { cpfValidator } from 'src/app/shared/validators/cpf-form.validator';
-import { extrairMensagemErro } from '../../../../shared/utils/mensagem-erro-http';
+import { extrairMensagemErro } from 'src/app/shared/utils/mensagem-erro-http';
 import { getFieldError } from 'src/app/shared/validators/field-errors';
 import {
   nomeCompletoValidator,
