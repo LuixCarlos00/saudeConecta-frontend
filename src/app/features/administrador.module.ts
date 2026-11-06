@@ -38,9 +38,9 @@ import { CadastroSecretariaComponent } from './usuarios/pages/cadastro-secretari
 import { ConfiguracoesSistemaComponent } from './administrador/configuracoes/configuracoes-sistema.component';
 
 // Componentes de Dashboard
-import { DashboardComponent } from './administrador/dashboard/dashboard.component';
-import { DashboardPlataformaComponent } from './administrador/dashboard/plataforma/dashboard-plataforma.component';
-import { GraficosPrincipaisDashboardComponent } from './administrador/dashboard/graficos-principais-dashboard/graficos-principais-dashboard.component';
+import { DashboardComponent } from './dashboard/pages/dashboard/dashboard.component';
+import { DashboardPlataformaComponent } from './dashboard/pages/dashboard/plataforma/dashboard-plataforma.component';
+import { GraficosPrincipaisDashboardComponent } from './dashboard/pages/dashboard/graficos-principais-dashboard/graficos-principais-dashboard.component';
 
 // Componentes de Agenda Calendário
 import { AgendaCalendarioComponent } from './agenda/pages/agenda-calendario/agenda-calendario.component';

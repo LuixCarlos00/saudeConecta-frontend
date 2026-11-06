@@ -1,4 +1,4 @@
-import { MotivoAtencaoPlataforma, StatusAssinaturaPlataforma } from 'src/app/services/api/plataforma-dashboard-api.service';
+import { MotivoAtencaoPlataforma, StatusAssinaturaPlataforma } from 'src/app/features/dashboard/data-access/plataforma-dashboard-api.service';
 
 const MESES_ABREV = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
 

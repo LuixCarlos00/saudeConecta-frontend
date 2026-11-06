@@ -15,7 +15,7 @@ import { CadastroSaasComponent } from './features/publico/pages/cadastro-saas/ca
 import { AssinaturaRetornoComponent } from './features/publico/pages/assinatura-retorno/assinatura-retorno.component';
 
 // ========== FEATURES ADMINISTRADOR ==========
-import { DashboardComponent } from './features/administrador/dashboard/dashboard.component';
+import { DashboardComponent } from './features/dashboard/pages/dashboard/dashboard.component';
 import { GerenciamentoUsuarioComponent } from './features/usuarios/pages/gerenciamento-usuarios/gerenciamento-usuario.component';
 import { CadastroPacienteComponent } from './features/agenda/pages/cadastro-paciente/cadastro-paciente.component';
 import { CadastroMedicoComponent } from './features/usuarios/pages/cadastro-medico/cadastro-medico.component';

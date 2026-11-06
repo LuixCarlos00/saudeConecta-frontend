@@ -6,7 +6,7 @@ import { Subject, takeUntil, finalize } from 'rxjs';
 import { ControleAcessoApiService } from 'src/app/core/data-access/controle-acesso-api.service';
 import { AuthService } from 'src/app/core/auth/auth.service';
 import { ProfissionalApiService } from 'src/app/core/data-access/profissional-api.service';
-import { formatarDataLocal } from '../../../../shared/utils/data-local';
+import { formatarDataLocal } from 'src/app/shared/utils/data-local';
 
 // Registrar todos os componentes do Chart.js
 Chart.register(...registerables);

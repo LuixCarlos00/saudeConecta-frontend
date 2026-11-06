@@ -6,7 +6,7 @@ import {
   ClinicaAtencao,
   DashboardPlataforma,
   PlataformaDashboardApiService
-} from 'src/app/services/api/plataforma-dashboard-api.service';
+} from 'src/app/features/dashboard/data-access/plataforma-dashboard-api.service';
 import { ThemeService } from 'src/app/core/theme/theme.service';
 import { extrairMensagemErro } from 'src/app/shared/utils/mensagem-erro-http';
 import { formatarDataBr } from 'src/app/shared/utils/data-local';

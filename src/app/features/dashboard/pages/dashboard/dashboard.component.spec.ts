@@ -13,7 +13,7 @@ import { ConsultaApiService } from 'src/app/core/data-access/consulta-api.servic
 import { ProfissionalApiService } from 'src/app/core/data-access/profissional-api.service';
 import { ConfiguracaoCardService } from 'src/app/core/data-access/configuracao-card.service';
 import { ConfiguracaoGraficoDashboardService } from 'src/app/core/data-access/configuracao-grafico-dashboard.service';
-import { IMPORTS_TESTE_PADRAO, SCHEMAS_TESTE_PADRAO } from '../../../testing/configuracao-teste';
+import { IMPORTS_TESTE_PADRAO, SCHEMAS_TESTE_PADRAO } from 'src/app/testing/configuracao-teste';
 
 @Component({ selector: 'app-dashboard-plataforma', template: '' })
 class DashboardPlataformaStubComponent {}

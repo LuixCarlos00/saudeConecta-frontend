@@ -3,8 +3,8 @@ import { NgChartsModule } from 'ng2-charts';
 import { Subject, of, throwError } from 'rxjs';
 
 import { DashboardPlataformaComponent } from './dashboard-plataforma.component';
-import { DashboardPlataforma, PlataformaDashboardApiService } from 'src/app/services/api/plataforma-dashboard-api.service';
-import { IMPORTS_TESTE_PADRAO } from '../../../../testing/configuracao-teste';
+import { DashboardPlataforma, PlataformaDashboardApiService } from 'src/app/features/dashboard/data-access/plataforma-dashboard-api.service';
+import { IMPORTS_TESTE_PADRAO } from 'src/app/testing/configuracao-teste';
 
 function criarDashboard(sobrepor: Partial<DashboardPlataforma['resumo']> = {}): DashboardPlataforma {
   return {

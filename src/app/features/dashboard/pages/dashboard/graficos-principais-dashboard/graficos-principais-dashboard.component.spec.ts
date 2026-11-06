@@ -3,7 +3,7 @@ import { FormControl, FormGroup } from '@angular/forms';
 import { Subject, throwError } from 'rxjs';
 
 import { GraficosPrincipaisDashboardComponent } from './graficos-principais-dashboard.component';
-import { IMPORTS_TESTE_PADRAO, PROVIDERS_TESTE_PADRAO, SCHEMAS_TESTE_PADRAO } from '../../../../testing/configuracao-teste';
+import { IMPORTS_TESTE_PADRAO, PROVIDERS_TESTE_PADRAO, SCHEMAS_TESTE_PADRAO } from 'src/app/testing/configuracao-teste';
 
 describe('GraficosPrincipaisDashboardComponent - fetchConsultasPersonalizadas', () => {
   let component: GraficosPrincipaisDashboardComponent;

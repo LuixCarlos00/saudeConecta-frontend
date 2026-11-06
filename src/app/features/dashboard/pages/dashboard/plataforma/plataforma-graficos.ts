@@ -2,7 +2,7 @@ import { ChartConfiguration } from 'chart.js';
 import {
   DashboardPlataforma,
   StatusAssinaturaPlataforma
-} from 'src/app/services/api/plataforma-dashboard-api.service';
+} from 'src/app/features/dashboard/data-access/plataforma-dashboard-api.service';
 import { formatarInteiro, formatarMoeda, ROTULO_STATUS, rotuloMes } from './plataforma-formatadores';
 
 /** Cores semânticas por status (contraste mantido em fundo claro e escuro). */
