@@ -7,7 +7,6 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
-import { PublicoModule } from './features/publico.module';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -21,10 +20,7 @@ import { BarraSuperiorComponent } from './core/layout/barra-superior/barra-super
 import { NgChartsModule } from 'ng2-charts';
 import { MatBadgeModule } from '@angular/material/badge';
 import { CoreModule } from './core/core.module';
-import { AdministradorModule } from './features/administrador.module';
 
-import { MedicoModule } from './features/medico.module';
-import { RelatorioModule } from './features/relatorios/relatorios.module';
 
 registerLocaleData(localePt);
 
@@ -35,10 +31,6 @@ registerLocaleData(localePt);
     BrowserAnimationsModule,
     CoreModule,
     AppRoutingModule,
-    PublicoModule,
-    AdministradorModule,
-    MedicoModule,
-    RelatorioModule,
     MatIconModule,
     MatToolbarModule,
     CommonModule,

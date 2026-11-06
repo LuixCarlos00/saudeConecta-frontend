@@ -36,8 +36,8 @@ import { RegistroConsulataMedicoComponent } from './components/impressoes-medico
  * Agrupa todos os componentes de impressão (médico e dentista),
  * o seletor de relatório e o serviço de lógica de negócio.
  *
- * Deve ser importado pelos módulos que precisam abrir relatórios
- * (AdministradorModule, MedicoModule, AppModule).
+ * Declara os componentes abertos em dialogo pelo RelatorioService (que a agenda usa) e a tela
+ * de relatórios por paciente. É importado apenas por relatorios-routing.module.ts (entrada lazy da área).
  */
 @NgModule({
   declarations: [
