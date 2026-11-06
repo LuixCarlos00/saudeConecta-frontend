@@ -1,4 +1,4 @@
-import { extrairCodigoErro, extrairMensagemErro, MENSAGEM_MP_VALOR_NAO_ATUALIZADO, mensagemErroAssinaturaAdmin, mensagemErroTrocaPlano } from './mensagem-erro-http';
+import { extrairCodigoErro, extrairMensagemErro, MENSAGEM_MP_VALOR_NAO_ATUALIZADO, MENSAGEM_PREAPPROVAL_EM_ANALISE_CLIENTE, mensagemErroAssinaturaAdmin, mensagemErroTrocaPlano } from './mensagem-erro-http';
 
 describe('extrairMensagemErro', () => {
   it('corpo string', () => expect(extrairMensagemErro({ error: ' CPF inválido ' })).toBe('CPF inválido'));
@@ -59,5 +59,12 @@ describe('mensagemErroAssinaturaAdmin', () => {
     expect(mensagemErroAssinaturaAdmin({ status: 503, error: {} }, 'p')).toContain('Mercado Pago indisponível');
     expect(mensagemErroAssinaturaAdmin(erro(502, 'BUSINESS_ERROR', 'MP fora do ar'), 'p')).toBe('MP fora do ar');
     expect(mensagemErroAssinaturaAdmin({ status: 0 }, 'padrão')).toBe('padrão');
+  });
+});
+
+describe('mensagemErroTrocaPlano - 409 em análise', () => {
+  it('cliente recebe o texto "aguarde ou contate o suporte"', () => {
+    expect(mensagemErroTrocaPlano({ status: 409, error: { code: 'PREAPPROVAL_SUBSTITUIDO_EM_ANALISE' } }, 'p'))
+      .toBe(MENSAGEM_PREAPPROVAL_EM_ANALISE_CLIENTE);
   });
 });

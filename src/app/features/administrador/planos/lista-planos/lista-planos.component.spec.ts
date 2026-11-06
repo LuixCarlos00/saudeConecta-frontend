@@ -3,7 +3,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { of, throwError } from 'rxjs';
 import { AssinaturaApiService } from 'src/app/services/api/assinatura-api.service';
 import { PlanoApiService } from 'src/app/services/api/plano-api.service';
-import { MENSAGEM_MP_VALOR_NAO_ATUALIZADO } from 'src/app/shared/utils/mensagem-erro-http';
+import { MENSAGEM_MP_VALOR_NAO_ATUALIZADO, MENSAGEM_PREAPPROVAL_EM_ANALISE_CLIENTE } from 'src/app/shared/utils/mensagem-erro-http';
 import { ListaPlanosComponent } from './lista-planos.component';
 
 describe('ListaPlanosComponent - troca de plano', () => {
@@ -44,5 +44,14 @@ describe('ListaPlanosComponent - troca de plano', () => {
     expect(snackBar.open).toHaveBeenCalledOnceWith(MENSAGEM_MP_VALOR_NAO_ATUALIZADO, 'Fechar', { duration: 5000 });
     expect(c.assinaturaAtiva).toBe(atual);
     expect(c.planoSelecionado).toBe(novo);
+  });
+
+  it('409 PREAPPROVAL_SUBSTITUIDO_EM_ANALISE mostra o texto do cliente e mantém a tela', () => {
+    api.trocarPlano.and.returnValue(throwError(() => ({
+      status: 409, error: { code: 'PREAPPROVAL_SUBSTITUIDO_EM_ANALISE', message: 'interno' }
+    })));
+    c.assinarPlano(novo);
+    expect(snackBar.open).toHaveBeenCalledOnceWith(MENSAGEM_PREAPPROVAL_EM_ANALISE_CLIENTE, 'Fechar', { duration: 5000 });
+    expect(c.assinaturaAtiva).toBe(atual);
   });
 });

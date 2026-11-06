@@ -3,7 +3,7 @@ import { AssinaturaApiService } from 'src/app/services/api/assinatura-api.servic
 import { ControleAcessoApiService } from 'src/app/services/api/controle-acesso-api.service';
 import { AssinaturaTenant, CobrancaTenant, LimitesPlano } from 'src/app/util/variados/interfaces/planos/PlanoAssinatura';
 import { diasCalendarioAte, formatarDataBr } from 'src/app/shared/utils/data-local';
-import { extrairCodigoErro } from 'src/app/shared/utils/mensagem-erro-http';
+import { extrairCodigoErro, MENSAGEM_PREAPPROVAL_EM_ANALISE_CLIENTE } from 'src/app/shared/utils/mensagem-erro-http';
 import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
 
 @Component({
@@ -155,6 +155,14 @@ export class DetalheAssinaturaComponent implements OnInit {
             title: 'Pagamento recebido',
             text: 'O pagamento já foi recebido e sua assinatura foi renovada'
           }).then(() => this.carregarDados());
+          return;
+        }
+        if (err.status === 409 && extrairCodigoErro(err) === 'PREAPPROVAL_SUBSTITUIDO_EM_ANALISE') {
+          this.notificacao.fire({
+            icon: 'warning',
+            title: 'Pagamento em análise',
+            text: MENSAGEM_PREAPPROVAL_EM_ANALISE_CLIENTE
+          });
           return;
         }
         this.notificacao.fire({

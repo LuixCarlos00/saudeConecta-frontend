@@ -3,6 +3,7 @@ import { of, throwError } from 'rxjs';
 import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
 import { AssinaturaApiService } from 'src/app/services/api/assinatura-api.service';
 import { ControleAcessoApiService } from 'src/app/services/api/controle-acesso-api.service';
+import { MENSAGEM_PREAPPROVAL_EM_ANALISE_CLIENTE } from 'src/app/shared/utils/mensagem-erro-http';
 import { formatarDataLocal } from 'src/app/shared/utils/data-local';
 import { DetalheAssinaturaComponent } from './detalhe-assinatura.component';
 
@@ -125,6 +126,19 @@ describe('DetalheAssinaturaComponent - pagamento e SUSPENSA', () => {
     }));
     expect(api.minhaAssinatura).toHaveBeenCalledTimes(1);
     expect(c.assinatura?.status).toBe('ATIVA');
+    expect(c.gerandoLink).toBeFalse();
+  });
+
+  it('409 PREAPPROVAL_SUBSTITUIDO_EM_ANALISE avisa para aguardar ou falar com o suporte e não recarrega', () => {
+    const c = criar();
+    api.gerarLinkPagamento.and.returnValue(throwError(() => ({
+      status: 409, error: { code: 'PREAPPROVAL_SUBSTITUIDO_EM_ANALISE', message: 'x' }
+    })));
+    c.ativarAssinatura();
+    expect(notificacao.fire).toHaveBeenCalledWith(jasmine.objectContaining({
+      icon: 'warning', text: MENSAGEM_PREAPPROVAL_EM_ANALISE_CLIENTE
+    }));
+    expect(api.minhaAssinatura).not.toHaveBeenCalled();
     expect(c.gerandoLink).toBeFalse();
   });
 

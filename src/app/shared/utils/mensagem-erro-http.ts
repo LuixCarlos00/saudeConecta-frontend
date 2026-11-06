@@ -43,16 +43,22 @@ export function extrairCodigoErro(error: any): string | null {
 export const MENSAGEM_MP_VALOR_NAO_ATUALIZADO =
   'Não foi possível atualizar o valor no Mercado Pago. Nenhuma alteração foi feita; tente novamente.';
 
+/** Texto para o cliente (gestor da clínica) quando há um pagamento antigo em análise (409 PREAPPROVAL_SUBSTITUIDO_EM_ANALISE). */
+export const MENSAGEM_PREAPPROVAL_EM_ANALISE_CLIENTE =
+  'Há um pagamento anterior em análise. Aguarde a conclusão ou entre em contato com o suporte.';
+
 /**
- * Mensagem de erro para trocar de plano ou customizar limites: o 502 `MP_VALOR_NAO_ATUALIZADO`
- * ganha texto próprio; os demais usam a mensagem do back ou o texto padrão.
+ * Mensagem de erro para trocar de plano ou customizar limites: o 502 `MP_VALOR_NAO_ATUALIZADO` e o 409
+ * `PREAPPROVAL_SUBSTITUIDO_EM_ANALISE` ganham texto próprio; os demais usam a mensagem do back ou o texto padrão.
  *
  * @param error HttpErrorResponse da troca/customização
  * @param padrao texto quando o back não trouxe mensagem
  * @returns mensagem pronta para o usuário
  */
 export function mensagemErroTrocaPlano(error: any, padrao: string): string {
-  if (extrairCodigoErro(error) === 'MP_VALOR_NAO_ATUALIZADO') { return MENSAGEM_MP_VALOR_NAO_ATUALIZADO; }
+  const codigo = extrairCodigoErro(error);
+  if (codigo === 'MP_VALOR_NAO_ATUALIZADO') { return MENSAGEM_MP_VALOR_NAO_ATUALIZADO; }
+  if (codigo === 'PREAPPROVAL_SUBSTITUIDO_EM_ANALISE') { return MENSAGEM_PREAPPROVAL_EM_ANALISE_CLIENTE; }
   return extrairMensagemErro(error) || padrao;
 }
 
