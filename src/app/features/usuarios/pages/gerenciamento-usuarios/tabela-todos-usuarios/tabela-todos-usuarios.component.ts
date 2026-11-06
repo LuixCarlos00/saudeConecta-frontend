@@ -20,7 +20,7 @@ import { is } from 'date-fns/locale';
 import { extrairMensagemErro } from 'src/app/shared/utils/mensagem-erro-http';
 import { Profissional } from 'src/app/shared/models/Profissional';
 import { ControleAcessoApiService } from 'src/app/core/data-access/controle-acesso-api.service';
-import { ModalAssociarPlanoComponent } from 'src/app/features/assinatura/components/modal-associar-plano/modal-associar-plano.component';
+import { ModalAssociarPlanoComponent } from 'src/app/features/assinatura';
 import { UsuarioUnificado } from 'src/app/features/usuarios/models/usuario-unificado';
 
 export enum CategoriaUsuario {

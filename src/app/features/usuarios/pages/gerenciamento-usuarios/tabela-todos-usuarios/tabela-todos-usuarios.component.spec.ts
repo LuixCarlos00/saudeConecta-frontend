@@ -3,7 +3,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
 import { convertToParamMap } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
-import { ModalAssociarPlanoComponent } from 'src/app/features/assinatura/components/modal-associar-plano/modal-associar-plano.component';
+import { ModalAssociarPlanoComponent } from 'src/app/features/assinatura';
 import { By } from '@angular/platform-browser';
 import { DebugElement } from '@angular/core';
 
