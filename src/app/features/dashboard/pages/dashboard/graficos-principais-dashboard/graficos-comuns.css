@@ -1,6 +1,4 @@
-/* Base de todos os gráficos filhos: estilos compartilhados e o host transparente para o grid. */
-@import '../shared-chart-styles.css';
-
+/* Base de todos os gráficos filhos: o host some do layout para os itens continuarem filhos diretos do grid. */
 :host {
   display: contents;
 }

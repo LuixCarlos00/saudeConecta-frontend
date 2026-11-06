@@ -1,4 +1,5 @@
 /* Filtros de período (botões 7/30/60 dias e seletor de datas), usados por consultas, agendamentos e tempo médio. */
+@import '../shared-chart-styles.css';
 
 /* Filtros */
 .filter-header {
