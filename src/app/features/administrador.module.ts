@@ -65,7 +65,7 @@ import { TrocaSenhaUsuariosComponent } from './usuarios/pages/gerenciamento-usua
 import { VisualizarEditarUsuarioComponent } from './usuarios/pages/gerenciamento-usuarios/tabela-todos-usuarios/VisualizarEditarUsuario/visualizar-editar-usuario.component';
 
 // Componentes de Mensageria
-import { MensageriaComponent } from './administrador/mensageria/mensageria.component';
+import { MensageriaComponent } from './mensageria/pages/mensageria/mensageria.component';
 
 // Componentes de Planos
 import { ListaPlanosComponent } from './administrador/planos/lista-planos/lista-planos.component';

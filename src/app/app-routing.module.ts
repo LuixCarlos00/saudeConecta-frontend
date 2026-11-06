@@ -26,7 +26,7 @@ import { ConfiguracoesSistemaComponent } from './features/configuracoes/pages/co
 import { TrocaSenhaComponent } from './features/auth/pages/troca-senha/troca-senha.component';
 import { SuporteComponent } from './features/suporte/pages/suporte/suporte.component';
 import { GestaoChamadosComponent } from './features/suporte/pages/suporte/gestao-chamados/gestao-chamados.component';
-import { MensageriaComponent } from './features/administrador/mensageria/mensageria.component';
+import { MensageriaComponent } from './features/mensageria/pages/mensageria/mensageria.component';
 import { GerenciarPlanosComponent } from './features/administrador/planos/gerenciar-planos/gerenciar-planos.component';
 import { GestaoAssinaturasComponent } from './features/administrador/assinaturas/gestao-assinaturas/gestao-assinaturas.component';
 import { PendenciasManuaisComponent } from './features/administrador/assinaturas/pendencias-manuais/pendencias-manuais.component';

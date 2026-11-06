@@ -8,7 +8,7 @@ import {
   PageResponse,
   StatusMensagem,
   TipoMensagem
-} from 'src/app/services/api/mensageria-api.service';
+} from 'src/app/features/mensageria/data-access/mensageria-api.service';
 
 @Component({
   selector: 'app-mensageria',

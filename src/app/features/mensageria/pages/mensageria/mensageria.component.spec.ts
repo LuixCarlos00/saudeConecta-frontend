@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { MensageriaApiService } from 'src/app/services/api/mensageria-api.service';
+import { MensageriaApiService } from 'src/app/features/mensageria/data-access/mensageria-api.service';
 import { MensageriaComponent } from './mensageria.component';
 
 describe('MensageriaComponent - sanitização de HTML', () => {
