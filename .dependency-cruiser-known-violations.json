@@ -1,11 +1,11 @@
 [
   {
     "type": "dependency",
-    "from": "src/app/features/administrador/agenda-calendario/agenda-calendario.component.ts",
-    "to": "src/app/features/publico/agendar-consulta/agendar-consulta.component.ts",
-    "unresolvedTo": "src/app/features/publico/agendar-consulta/agendar-consulta.component",
+    "from": "src/app/features/administrador/gerenciamento-usuarios/gerenciamento-usuario.component.ts",
+    "to": "src/app/features/agenda/pages/cadastro-paciente/cadastro-paciente.component.ts",
+    "unresolvedTo": "../../agenda/pages/cadastro-paciente/cadastro-paciente.component",
     "dependencyTypes": [
-      "undetermined",
+      "local",
       "import"
     ],
     "rule": {
@@ -15,7 +15,7 @@
   },
   {
     "type": "dependency",
-    "from": "src/app/features/administrador/agenda-calendario/agenda-calendario.component.ts",
+    "from": "src/app/features/agenda/components/agenda/agenda.component.ts",
     "to": "src/app/features/relatorio/relatorio.service.ts",
     "unresolvedTo": "src/app/features/relatorio/relatorio.service",
     "dependencyTypes": [
@@ -29,7 +29,7 @@
   },
   {
     "type": "dependency",
-    "from": "src/app/features/administrador/gerenciamento-agenda/acoes-consulta.service.spec.ts",
+    "from": "src/app/features/agenda/data-access/acoes-consulta.service.spec.ts",
     "to": "src/app/features/relatorio/relatorio.service.ts",
     "unresolvedTo": "src/app/features/relatorio/relatorio.service",
     "dependencyTypes": [
@@ -43,7 +43,7 @@
   },
   {
     "type": "dependency",
-    "from": "src/app/features/administrador/gerenciamento-agenda/acoes-consulta.service.ts",
+    "from": "src/app/features/agenda/data-access/acoes-consulta.service.ts",
     "to": "src/app/features/relatorio/relatorio.service.ts",
     "unresolvedTo": "src/app/features/relatorio/relatorio.service",
     "dependencyTypes": [
@@ -57,7 +57,7 @@
   },
   {
     "type": "dependency",
-    "from": "src/app/features/administrador/gerenciamento-agenda/agenda/agenda.component.ts",
+    "from": "src/app/features/agenda/pages/agenda-calendario/agenda-calendario.component.ts",
     "to": "src/app/features/relatorio/relatorio.service.ts",
     "unresolvedTo": "src/app/features/relatorio/relatorio.service",
     "dependencyTypes": [
@@ -72,52 +72,10 @@
   {
     "type": "dependency",
     "from": "src/app/features/atendimento/components/tabela-agenda/tabela-agenda-medico.component.ts",
-    "to": "src/app/features/administrador/gerenciamento-agenda/agenda/Observacoes/Observacoes.component.ts",
-    "unresolvedTo": "src/app/features/administrador/gerenciamento-agenda/agenda/Observacoes/Observacoes.component",
+    "to": "src/app/features/agenda/components/agenda/Observacoes/Observacoes.component.ts",
+    "unresolvedTo": "src/app/features/agenda/components/agenda/Observacoes/Observacoes.component",
     "dependencyTypes": [
       "undetermined",
-      "import"
-    ],
-    "rule": {
-      "severity": "error",
-      "name": "feature-nao-importa-outra-feature"
-    }
-  },
-  {
-    "type": "dependency",
-    "from": "src/app/features/publico/agendar-consulta/agendar-consulta.component.ts",
-    "to": "src/app/features/administrador/cadastros/cadastro-paciente/cadastro-paciente.component.ts",
-    "unresolvedTo": "../../administrador/cadastros/cadastro-paciente/cadastro-paciente.component",
-    "dependencyTypes": [
-      "local",
-      "import"
-    ],
-    "rule": {
-      "severity": "error",
-      "name": "feature-nao-importa-outra-feature"
-    }
-  },
-  {
-    "type": "dependency",
-    "from": "src/app/features/publico/agendar-consulta/agendar-consulta.component.ts",
-    "to": "src/app/features/administrador/gerenciamento-agenda/nova-consuta/tabela-de-pacientes/tabela-de-pacientes.component.ts",
-    "unresolvedTo": "../../administrador/gerenciamento-agenda/nova-consuta/tabela-de-pacientes/tabela-de-pacientes.component",
-    "dependencyTypes": [
-      "local",
-      "import"
-    ],
-    "rule": {
-      "severity": "error",
-      "name": "feature-nao-importa-outra-feature"
-    }
-  },
-  {
-    "type": "dependency",
-    "from": "src/app/features/publico/agendar-consulta/agendar-consulta.component.ts",
-    "to": "src/app/features/administrador/gerenciamento-agenda/nova-consuta/tabelas-Pesquisas-Medicos/tabelas-Pesquisas-Medicos.component.ts",
-    "unresolvedTo": "../../administrador/gerenciamento-agenda/nova-consuta/tabelas-Pesquisas-Medicos/tabelas-Pesquisas-Medicos.component",
-    "dependencyTypes": [
-      "local",
       "import"
     ],
     "rule": {
