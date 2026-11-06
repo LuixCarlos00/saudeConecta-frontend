@@ -11,19 +11,6 @@ import {
   getStatusOption,
 } from 'src/app/util/variados/interfaces/Prontuario/ProntuarioDentista';
 
-export interface QuadranteConfig {
-  id: number;
-  label: string;
-  dentes: number[];
-}
-
-export const QUADRANTES: QuadranteConfig[] = [
-  { id: 1, label: 'Q1 · Sup. Direito', dentes: [18, 17, 16, 15, 14, 13, 12, 11] },
-  { id: 2, label: 'Q2 · Sup. Esquerdo', dentes: [21, 22, 23, 24, 25, 26, 27, 28] },
-  { id: 4, label: 'Q4 · Inf. Direito', dentes: [48, 47, 46, 45, 44, 43, 42, 41] },
-  { id: 3, label: 'Q3 · Inf. Esquerdo', dentes: [31, 32, 33, 34, 35, 36, 37, 38] },
-];
-
 @Component({
   selector: 'app-aba-exame-objetivo',
  
@@ -88,7 +75,8 @@ export class AbaExameObjetivoComponent implements OnInit {
   ];
 
   ngOnInit(): void {
-    this.inicializarOdontograma();
+    // setDados() pode ter chegado antes do OnInit (restauração de rascunho): não apagar o odontograma.
+    if (this.odontograma.length === 0) { this.inicializarOdontograma(); }
   }
 
   private inicializarOdontograma(): void {
@@ -192,9 +180,17 @@ export class AbaExameObjetivoComponent implements OnInit {
     this.Prescricao = dados.prescricao || '';
     this.Orientacoes = dados.orientacoes || '';
 
-    // Restaurar odontograma a partir dos dentes salvos
-    if (dados.dentes && Array.isArray(dados.dentes)) {
-      for (const dente of dados.dentes) {
+    // Restaurar odontograma: aceita o formato do getDados() (`odontograma`) e o do prontuário salvo (`dentes`).
+    const dentes = Array.isArray(dados.odontograma) ? dados.odontograma
+      : Array.isArray(dados.dentes) ? dados.dentes : null;
+    if (dentes) {
+      if (this.odontograma.length === 0) { this.inicializarOdontograma(); }
+      // Só os dentes alterados são serializados; os demais voltam a "sadio".
+      for (const d of this.odontograma) {
+        d.status = 'sadio';
+        d.observacao = undefined;
+      }
+      for (const dente of dentes) {
         const d = this.odontograma.find(o => o.numero === dente.numeroFdi);
         if (d) {
           d.status = dente.status || 'sadio';

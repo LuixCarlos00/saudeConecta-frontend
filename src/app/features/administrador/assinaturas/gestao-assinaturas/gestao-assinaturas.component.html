@@ -1,0 +1,111 @@
+<section class="gestao" aria-labelledby="gestao-titulo">
+  <header class="gestao__header">
+    <div>
+      <h1 id="gestao-titulo"><i class="fa-solid fa-file-invoice-dollar" aria-hidden="true"></i> Gestão de assinaturas</h1>
+      <p class="gestao__subtitulo">Assinatura vigente de cada clínica. Cortesia, suspensão e cancelamento mexem no Mercado Pago.</p>
+    </div>
+    <a class="gestao__link" routerLink="/pendencias-manuais" data-testid="link-pendencias">
+      <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i> Pendências manuais
+    </a>
+  </header>
+
+  <form class="filtros" (ngSubmit)="aplicarFiltros()" role="search" aria-label="Filtros de assinaturas">
+    <label class="filtros__campo filtros__campo--busca">
+      <span>Clínica</span>
+      <input type="search" name="busca" [(ngModel)]="filtroBusca" placeholder="Parte do nome" data-testid="filtro-busca" autocomplete="off">
+    </label>
+    <label class="filtros__campo">
+      <span>Status</span>
+      <select name="status" [(ngModel)]="filtroStatus" (ngModelChange)="aplicarFiltros()" data-testid="filtro-status">
+        <option value="">Todos</option>
+        <option *ngFor="let s of statusOpcoes" [value]="s">{{ s }}</option>
+      </select>
+    </label>
+    <label class="filtros__campo">
+      <span>Plano</span>
+      <select name="plano" [(ngModel)]="filtroPlano" (ngModelChange)="aplicarFiltros()" data-testid="filtro-plano">
+        <option value="">Todos</option>
+        <option *ngFor="let p of planoOpcoes" [value]="p.valor">{{ p.rotulo }}</option>
+      </select>
+    </label>
+    <label class="filtros__campo">
+      <span>Cortesia</span>
+      <select name="cortesia" [(ngModel)]="filtroCortesia" (ngModelChange)="aplicarFiltros()" data-testid="filtro-cortesia">
+        <option value="">Todas</option>
+        <option value="true">Só cortesias</option>
+        <option value="false">Sem cortesia</option>
+      </select>
+    </label>
+    <div class="filtros__acoes">
+      <button type="submit" class="btn btn--primario" data-testid="btn-buscar">Buscar</button>
+      <button type="button" class="btn" (click)="limparFiltros()" [disabled]="!temFiltro" data-testid="btn-limpar">Limpar</button>
+    </div>
+  </form>
+
+  <div class="estado estado--erro" *ngIf="erro" role="alert" data-testid="erro">
+    {{ erro }}
+    <button type="button" class="btn" (click)="carregar()">Tentar de novo</button>
+  </div>
+
+  <div class="tabela-wrap" [class.tabela-wrap--carregando]="carregando" *ngIf="!erro">
+    <table class="tabela" data-testid="tabela-assinaturas">
+      <thead>
+        <tr>
+          <th scope="col" [attr.aria-sort]="ariaSort('organizacaoNome')">
+            <button type="button" class="ordem" (click)="ordenarPor('organizacaoNome')" data-testid="ordenar-organizacaoNome">Clínica</button>
+          </th>
+          <th scope="col" [attr.aria-sort]="ariaSort('plano')">
+            <button type="button" class="ordem" (click)="ordenarPor('plano')" data-testid="ordenar-plano">Plano</button>
+          </th>
+          <th scope="col" [attr.aria-sort]="ariaSort('status')">
+            <button type="button" class="ordem" (click)="ordenarPor('status')" data-testid="ordenar-status">Status</button>
+          </th>
+          <th scope="col" class="num" [attr.aria-sort]="ariaSort('valorMensal')">
+            <button type="button" class="ordem" (click)="ordenarPor('valorMensal')" data-testid="ordenar-valorMensal">Valor mensal</button>
+          </th>
+          <th scope="col" [attr.aria-sort]="ariaSort('dataVencimento')">
+            <button type="button" class="ordem" (click)="ordenarPor('dataVencimento')" data-testid="ordenar-dataVencimento">Vencimento</button>
+          </th>
+          <th scope="col">Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of itens; trackBy: trackPorAssinatura" data-testid="linha-assinatura">
+          <td>
+            <strong>{{ item.organizacaoNome }}</strong>
+            <span class="selo selo--cortesia" *ngIf="item.cortesia" data-testid="selo-cortesia">Cortesia</span>
+            <span class="selo selo--alerta" *ngIf="item.preapprovalSubstituidoPendente" data-testid="selo-substituido"
+                  title="Um pagamento antigo no Mercado Pago ainda espera cancelamento. Enquanto estiver em análise, cortesia e troca de plano podem ser recusadas.">
+              <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i> Pagamento anterior pendente
+            </span>
+          </td>
+          <td>{{ item.planoNome }}</td>
+          <td><span class="status" [ngClass]="'status--' + item.status.toLowerCase()">{{ item.status }}</span></td>
+          <td class="num">{{ item.valorMensal | currency:'BRL' }}</td>
+          <td>{{ formatarData(item.dataVencimento) }}</td>
+          <td class="acoes">
+            <button type="button" class="btn btn--pequeno" (click)="associarPlano(item)" [disabled]="acaoEmAndamento === item.assinaturaId" data-testid="btn-associar">
+              {{ encerrada(item) ? 'Nova assinatura' : 'Trocar plano' }}
+            </button>
+            <button type="button" class="btn btn--pequeno" (click)="alternarCortesia(item)" *ngIf="!encerrada(item)"
+                    [disabled]="acaoEmAndamento === item.assinaturaId" data-testid="btn-cortesia">
+              {{ item.cortesia ? 'Remover cortesia' : 'Dar cortesia' }}
+            </button>
+            <button type="button" class="btn btn--pequeno" (click)="suspender(item)" *ngIf="!encerrada(item) && item.status !== 'SUSPENSA'"
+                    [disabled]="acaoEmAndamento === item.assinaturaId" data-testid="btn-suspender">Suspender</button>
+            <button type="button" class="btn btn--pequeno btn--perigo" (click)="cancelar(item)" *ngIf="!encerrada(item)"
+                    [disabled]="acaoEmAndamento === item.assinaturaId" data-testid="btn-cancelar">Cancelar</button>
+          </td>
+        </tr>
+        <tr *ngIf="!carregando && itens.length === 0" data-testid="vazio">
+          <td colspan="6" class="vazio">Nenhuma assinatura encontrada{{ temFiltro ? ' para esses filtros' : '' }}.</td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="carregando" *ngIf="carregando" role="status">Carregando...</p>
+  </div>
+
+  <mat-paginator *ngIf="!erro" [length]="total" [pageIndex]="pagina" [pageSize]="tamanho"
+                 [pageSizeOptions]="tamanhosPagina" (page)="mudarPagina($event)" aria-label="Página de assinaturas">
+  </mat-paginator>
+</section>

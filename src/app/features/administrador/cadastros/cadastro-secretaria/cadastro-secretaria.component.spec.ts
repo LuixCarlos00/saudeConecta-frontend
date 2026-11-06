@@ -4,6 +4,7 @@ import { By } from '@angular/platform-browser';
 import { DebugElement } from '@angular/core';
 
 import { CadastroSecretariaComponent } from './cadastro-secretaria.component';
+import { IMPORTS_TESTE_PADRAO, PROVIDERS_TESTE_PADRAO, SCHEMAS_TESTE_PADRAO } from '../../../../testing/configuracao-teste';
 
 describe('CadastroSecretariaComponent', () => {
   let component: CadastroSecretariaComponent;
@@ -11,7 +12,10 @@ describe('CadastroSecretariaComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ CadastroSecretariaComponent ]
+      declarations: [CadastroSecretariaComponent],
+      imports: IMPORTS_TESTE_PADRAO,
+      providers: PROVIDERS_TESTE_PADRAO,
+      schemas: SCHEMAS_TESTE_PADRAO
     })
     .compileComponents();
   }));

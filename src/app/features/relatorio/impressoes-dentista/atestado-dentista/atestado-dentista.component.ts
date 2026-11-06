@@ -1,6 +1,7 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { jsPDF } from 'jspdf';
+import { formatarDataLocal } from '../../../../shared/utils/data-local';
 
 @Component({
   selector: 'app-atestado-dentista',
@@ -9,7 +10,7 @@ import { jsPDF } from 'jspdf';
 })
 export class AtestadoDentistaComponent implements OnInit {
 
-  dataAtual = new Date().toISOString().split('T')[0];
+  dataAtual = formatarDataLocal(new Date());
 
   // Dados do profissional
   nomeDentista = '';

@@ -1,6 +1,6 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import Swal from 'sweetalert2';
+import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
 import { UsuarioApiService } from 'src/app/services/api/usuario-api.service';
 
 @Component({
@@ -13,6 +13,7 @@ export class TrocaSenhaUsuariosComponent implements OnInit {
   showPassword: boolean = false;
 
   constructor(
+    private notificacao: NotificacaoService,
     public dialogRef: MatDialogRef<TrocaSenhaUsuariosComponent>,
     @Inject(MAT_DIALOG_DATA) public elements: { elements: any },
     private usuarioApiService: UsuarioApiService
@@ -62,7 +63,7 @@ export class TrocaSenhaUsuariosComponent implements OnInit {
 
   TrocaSenha() {
     if (this.novaSenha == '') {
-      Swal.fire({
+      this.notificacao.fire({
         icon: 'error',
         title: 'Oops...',
         text: 'Preencha todos os campos',
@@ -74,7 +75,7 @@ export class TrocaSenhaUsuariosComponent implements OnInit {
     const codigo = this.elements.elements.usuarioId || 0;
 
     if (!codigo) {
-      Swal.fire({
+      this.notificacao.fire({
         icon: 'error',
         title: 'Erro',
         text: 'ID do usuário não encontrado',
@@ -85,7 +86,7 @@ export class TrocaSenhaUsuariosComponent implements OnInit {
 
     this.usuarioApiService.trocarSenharUsuariobyOrg(codigo, this.novaSenha).subscribe({
       next: () => {
-        Swal.fire({
+        this.notificacao.fire({
           icon: 'success',
           title: 'Sucesso',
           text: 'Senha alterada com sucesso',
@@ -96,7 +97,7 @@ export class TrocaSenhaUsuariosComponent implements OnInit {
       },
       error: (error) => {
         console.error('Erro ao trocar senha:', error);
-        Swal.fire({
+        this.notificacao.fire({
           icon: 'error',
           title: 'Erro',
           text: 'Não foi possível alterar a senha. Tente novamente.',

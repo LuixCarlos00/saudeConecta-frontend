@@ -2,8 +2,10 @@ import { Component, Input, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Subject, takeUntil } from 'rxjs';
 import { ConsultaApiService } from 'src/app/services/api/consulta-api.service';
+import { TipoProntuario } from '../../consulta-edicao';
+import { EdicaoProntuarioService } from '../../edicao-prontuario.service';
+import { HistoricoCompletoPacienteResponse } from 'src/app/util/variados/interfaces/historico/historico-completo-paciente-response.interface';
 import { IALocalService, ResumoClinico } from 'src/app/services/ia-local.service';
-import { tokenService } from 'src/app/util/Token/Token.service';
 
 type AbaResumo = 'visao' | 'vitais' | 'timeline' | 'recomendacoes';
 
@@ -17,6 +19,9 @@ type AbaResumo = 'visao' | 'vitais' | 'timeline' | 'recomendacoes';
 export class AbaHistoricoComponent implements OnInit, OnDestroy {
 
   @Input() pacienteId: number | undefined;
+
+  /** Tipo de prontuário que esta aba edita. */
+  private readonly tipoProntuario: TipoProntuario = 'DENTISTA';
 
   historicoProntuarios: any[] = [];
   historicoCarregado = false;
@@ -32,7 +37,7 @@ export class AbaHistoricoComponent implements OnInit, OnDestroy {
   constructor(
     private consultaApi: ConsultaApiService,
     private iaLocal: IALocalService,
-    private tokenSvc: tokenService
+    private edicaoProntuario: EdicaoProntuarioService
   ) {}
 
   ngOnInit(): void {
@@ -81,6 +86,28 @@ export class AbaHistoricoComponent implements OnInit, OnDestroy {
       if (d.observacao) texto += ` — ${d.observacao}`;
       return texto;
     }).join('; ');
+  }
+
+  /**
+   * Abre a edição do prontuário do registro. Se o usuário salvar, recarrega o histórico
+   * (a tela de edição já mostra a mensagem de sucesso).
+   *
+   * @param registro item do histórico que o profissional pediu para editar
+   */
+  editarRegistro(registro: HistoricoCompletoPacienteResponse): void {
+    const pacienteId = registro.pacienteId || this.pacienteId;
+    if (!pacienteId) return;
+    this.edicaoProntuario.editar(this.tipoProntuario, {
+      id: registro.consultaId,
+      pacienteId,
+      profissionalId: registro.profissionalId,
+      pacienteNome: registro.pacienteNome,
+    }).pipe(takeUntil(this.destroy$)).subscribe(salvou => {
+      if (salvou) {
+        this.historicoCarregado = false;
+        this.carregarHistoricoPaciente(pacienteId);
+      }
+    });
   }
 
   toggleResumo(): void {

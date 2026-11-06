@@ -16,20 +16,6 @@ export interface EstatisticasDashboardAdminOrg {
   confirmadosSemana: number;
 }
 
-/**
- * Estatísticas exibidas no dashboard após tratamento no frontend.
- * Inclui médicos ativos que vem de requisição separada.
- */
-export interface DashboardAdminOrgStats {
-  consultasHoje: number;
-  consultasAguardando: number;
-  consultasAtendidas: number;
-  consultasSemana: number;
-  canceladosSemana: number;
-  confirmadosSemana: number;
-  medicosAtivos: number;
-}
-
 @Injectable({
   providedIn: 'root'
 })

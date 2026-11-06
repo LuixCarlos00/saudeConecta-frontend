@@ -6,14 +6,13 @@ import {
   trigger,
 } from '@angular/animations';
 import { AdministradorApiService } from 'src/app/services/api/administrador-api.service';
-import { AuthApiService } from 'src/app/services/api/auth-api.service';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { el } from 'date-fns/locale';
-import { tokenService } from "src/app/util/Token/Token.service";
+import { AuthService } from 'src/app/core/services/auth.service';
 import { Adiministrador } from 'src/app/util/variados/interfaces/administrado/adiministrador';
-import Swal from 'sweetalert2';
-import { map, take } from 'rxjs';
+import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
+import { map, take, filter } from 'rxjs';
 import { Usuario } from 'src/app/util/variados/interfaces/usuario/usuario';
 import { UsuarioApiService } from 'src/app/services/api/usuario-api.service';
 
@@ -33,13 +32,13 @@ export class TrocaSenhaComponent implements OnInit {
   codigoDeSegurancaValidao: Boolean = false;
   PesquisandoEmail: Boolean = false;
   constructor(
+    private notificacao: NotificacaoService,
     private form: FormBuilder,
     private administradorApiService: AdministradorApiService,
     private usuarioApiService: UsuarioApiService,
-    private tokenService: tokenService
+    private authService: AuthService
   ) {
-    this.tokenService.decodificaToken();
-    this.tokenService.UsuarioLogadoValue$.subscribe((paciente) => {
+    this.authService.currentUser$.pipe(filter(Boolean), take(1)).subscribe((paciente) => {
       if (paciente) {
 
         this.UsuarioLogado = paciente;
@@ -78,7 +77,7 @@ export class TrocaSenhaComponent implements OnInit {
           (response: any) => {
 
             this.FormularioTrocaSenha.reset();
-            Swal.fire({
+            this.notificacao.fire({
               icon: 'success',
               title: ' OK...',
               text: 'Senha alterada com sucesso',
@@ -86,15 +85,15 @@ export class TrocaSenhaComponent implements OnInit {
 
           },
           (error: any) => {
-            Swal.fire({
+            this.notificacao.fire({
               icon: 'error',
               title: 'Oops...',
               text: 'Senha inválida',
             });
           }
         );
-      } {
-        Swal.fire({
+      } else {
+        this.notificacao.fire({
           icon: 'error',
           title: 'Oops...',
           text: 'Senhas diferentes',

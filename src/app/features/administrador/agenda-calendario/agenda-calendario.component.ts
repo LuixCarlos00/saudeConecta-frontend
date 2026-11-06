@@ -2,20 +2,23 @@ import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRe
 import { Subject, takeUntil, take, filter, Observable } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import Swal from 'sweetalert2';
+import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
+import { extrairMensagemErro } from 'src/app/shared/utils/mensagem-erro-http';
 import { ConsultaApiService } from 'src/app/services/api/consulta-api.service';
 import { ConsultaStateService } from 'src/app/services/state/consulta-state.service';
 import { ProntuarioStateService } from 'src/app/services/state/prontuario-state.service';
-import { tokenService } from 'src/app/util/Token/Token.service';
+import { AuthService } from 'src/app/core/services/auth.service';
 import { ControleAcessoApiService } from 'src/app/services/api/controle-acesso-api.service';
 import { Consultav2, StatusConsulta } from 'src/app/util/variados/interfaces/consulta/consultav2';
 import { Usuario } from 'src/app/util/variados/interfaces/usuario/usuario';
 import { AgendarConsultaComponent } from 'src/app/features/publico/agendar-consulta/agendar-consulta.component';
 import { RelatorioService } from 'src/app/features/relatorio/relatorio.service';
 import { ProntuarioDentistaApiService } from 'src/app/services/api/prontuario-dentista-api.service';
-import { ProntuarioApiService } from 'src/app/services/api/prontuario-api.service';
+import { AcoesConsultaService } from '../gerenciamento-agenda/acoes-consulta.service';
 import { PlanejamentoTerapeuticoApiService } from 'src/app/services/api/planejamento-terapeutico-api.service';
+import { RascunhoAtendimentoApiService } from 'src/app/services/api/rascunho-atendimento-api.service';
 import { ConfiguracoesConsultaApiService, ConfiguracoesConsulta } from 'src/app/services/api/configuracoes-consulta-api.service';
+import { formatarDataLocal, formatarHoraLocal } from '../../../shared/utils/data-local';
 
 export type TipoVisualizacao = 'mes' | 'semana' | 'dia';
 
@@ -63,6 +66,8 @@ export class AgendaCalendarioComponent implements OnInit, OnDestroy {
   especialidadesDisponiveis: string[] = [];
   planejamentosAssinados = new Set<number>();
   questionariosRespondidos = new Set<number>();
+  /** IDs das consultas que já têm rascunho de atendimento (uma chamada por carregamento da tela). */
+  consultasComRascunho = new Set<number>();
 
   readonly statusOpcoes = [
     { value: 'AGENDADA',   label: 'Agendada',   cor: 'status-agendada'   },
@@ -125,25 +130,27 @@ export class AgendaCalendarioComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
   constructor(
+    private notificacao: NotificacaoService,
     private consultaService: ConsultaApiService,
     private consultaState: ConsultaStateService,
     private prontuarioState: ProntuarioStateService,
-    private tokenService: tokenService,
+    private authService: AuthService,
     public controleAcesso: ControleAcessoApiService,
     private dialog: MatDialog,
     private cdr: ChangeDetectorRef,
     private relatorioService: RelatorioService,
     private prontuarioDentistaApiService: ProntuarioDentistaApiService,
-    private prontuarioApiService: ProntuarioApiService,
+    private acoesConsulta: AcoesConsultaService,
     private planejamentoApi: PlanejamentoTerapeuticoApiService,
     private router: Router,
     private configuracoesConsultaService: ConfiguracoesConsultaApiService,
+    private rascunhoApi: RascunhoAtendimentoApiService,
   ) {}
 
   ngOnInit(): void {
     this.atualizarTitulo();
     this.carregarConfiguracaoFluxo();
-    this.tokenService.UsuarioLogadoValue$
+    this.authService.currentUser$
       .pipe(
         filter(u => !!u && !!u.id),
         take(1),
@@ -152,6 +159,7 @@ export class AgendaCalendarioComponent implements OnInit, OnDestroy {
       .subscribe(usuario => {
         this.UsuarioLogado = usuario!;
         this.carregarConsultas();
+        this.carregarRascunhos();
       });
 
     this.consultaState.cadastroRealizado$
@@ -191,7 +199,7 @@ export class AgendaCalendarioComponent implements OnInit, OnDestroy {
     this.carregando = true;
     this.cdr.markForCheck();
 
-    const dataRef = this.formatarDataParaApi(this.dataAtual);
+    const dataRef = formatarDataLocal(this.dataAtual);
     const request$ = this.tipoVisualizacao === 'dia'
       ? this.consultaService.buscarDoDiaAtual(dataRef)
       : this.tipoVisualizacao === 'semana'
@@ -204,9 +212,9 @@ export class AgendaCalendarioComponent implements OnInit, OnDestroy {
           this.extrairProfissionais();
           this.aplicarFiltros();
           if (this.filtroFinalizadas) {
-            this.verificarPlanejamentosAssinados();
+            this.acoesConsulta.verificarPlanejamentosAssinados(this.todasConsultas, this.planejamentosAssinados, this.destroy$, () => this.cdr.markForCheck());
           } else {
-            this.verificarQuestionariosRespondidos();
+            this.acoesConsulta.verificarQuestionariosRespondidos(this.todasConsultas, this.questionariosRespondidos, this.destroy$, () => this.cdr.markForCheck());
           }
           this.carregando = false;
           this.cdr.markForCheck();
@@ -214,7 +222,7 @@ export class AgendaCalendarioComponent implements OnInit, OnDestroy {
         error: () => {
           this.carregando = false;
           this.cdr.markForCheck();
-          Swal.fire('Erro', 'Não foi possível carregar as consultas.', 'error');
+          this.notificacao.fire('Erro', 'Não foi possível carregar as consultas.', 'error');
         }
       });
   }
@@ -376,26 +384,12 @@ export class AgendaCalendarioComponent implements OnInit, OnDestroy {
 
   private getInicioMes(): string {
     const d = new Date(this.dataAtual.getFullYear(), this.dataAtual.getMonth(), 1);
-    return this.formatarDataParaApi(d);
+    return formatarDataLocal(d);
   }
 
   private getFimMes(): string {
     const d = new Date(this.dataAtual.getFullYear(), this.dataAtual.getMonth() + 1, 0);
-    return this.formatarDataParaApi(d);
-  }
-
-  /**
-   * Formata uma data local no padrão YYYY-MM-DD, sem sofrer o deslocamento
-   * de fuso horário que `toISOString()` (baseado em UTC) causaria.
-   *
-   * @param data Data a ser formatada
-   * @returns Data no formato YYYY-MM-DD
-   */
-  private formatarDataParaApi(data: Date): string {
-    const ano = data.getFullYear();
-    const mes = (data.getMonth() + 1).toString().padStart(2, '0');
-    const dia = data.getDate().toString().padStart(2, '0');
-    return `${ano}-${mes}-${dia}`;
+    return formatarDataLocal(d);
   }
 
   // ========== NAVEGAÇÃO ==========
@@ -538,8 +532,8 @@ export class AgendaCalendarioComponent implements OnInit, OnDestroy {
             this.cdr.markForCheck();
           }, 3000);
         },
-        error: () => {
-          this.mensagemTooltipStatus = 'Erro ao alterar status';
+        error: (erro) => {
+          this.mensagemTooltipStatus = extrairMensagemErro(erro) || 'Erro ao alterar status';
           this.cdr.markForCheck();
           setTimeout(() => {
             this.mensagemTooltipStatus = '';
@@ -592,7 +586,7 @@ export class AgendaCalendarioComponent implements OnInit, OnDestroy {
           this.configuracaoFluxo = config;
           this.dropdownConfigAberto = false;
           this.cdr.markForCheck();
-          Swal.fire(
+          this.notificacao.fire(
             'Sucesso', 
             this.pularParaConfirmado 
               ? 'Configuração atualizada: novas consultas serão cadastradas diretamente como Confirmada' 
@@ -601,7 +595,7 @@ export class AgendaCalendarioComponent implements OnInit, OnDestroy {
           );
         },
         error: () => {
-          Swal.fire('Erro', 'Não foi possível atualizar a configuração.', 'error');
+          this.notificacao.fire('Erro', 'Não foi possível atualizar a configuração.', 'error');
           this.pularParaConfirmado = !this.pularParaConfirmado;
           this.cdr.markForCheck();
         }
@@ -611,7 +605,7 @@ export class AgendaCalendarioComponent implements OnInit, OnDestroy {
   deletarConsultaDrawer(): void {
     const c = this.consultaSelecionada;
     if (!c) return;
-    Swal.fire({
+    this.notificacao.fire({
       title: 'Confirmar exclusão',
       text: `Deseja excluir a consulta de ${c.pacienteNome}? O questionário de saúde será excluído.`,
       icon: 'warning', showCancelButton: true,
@@ -622,10 +616,10 @@ export class AgendaCalendarioComponent implements OnInit, OnDestroy {
       this.consultaService.deletarConsulta(c.id)
         .pipe(takeUntil(this.destroy$))
         .subscribe({
-          next: () => { Swal.fire('Deletado', 'Consulta deletada com sucesso.', 'success'); this.fecharPopover(); this.carregarConsultas(); },
+          next: () => { this.notificacao.fire('Deletado', 'Consulta deletada com sucesso.', 'success'); this.fecharPopover(); this.carregarConsultas(); },
           error: (err: any) => {
-            if (err?.status === 409) Swal.fire('Exclusão bloqueada', 'Esta consulta possui prontuário clínico e não pode ser excluída. Os dados clínicos devem ser preservados.', 'info');
-            else Swal.fire('Erro', 'Erro ao deletar consulta.', 'error');
+            if (err?.status === 409) this.notificacao.fire('Exclusão bloqueada', 'Esta consulta possui prontuário clínico e não pode ser excluída. Os dados clínicos devem ser preservados.', 'info');
+            else this.notificacao.fire('Erro', 'Erro ao deletar consulta.', 'error');
           },
         });
     });
@@ -640,10 +634,31 @@ export class AgendaCalendarioComponent implements OnInit, OnDestroy {
     }, 100);
   }
 
+  /** Busca de uma vez os rascunhos do profissional logado para trocar "Iniciar" por "Retomar atendimento". */
+  private carregarRascunhos(): void {
+    if (this.UsuarioLogado?.perfil !== 'CLINICO') { return; }
+    this.rascunhoApi.listarMeus()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: lista => {
+          this.consultasComRascunho = new Set((lista || []).map(r => r.consultaId));
+          this.cdr.markForCheck();
+        },
+        // Sem a lista a agenda continua funcionando: só mostra "Iniciar" em todas.
+        error: () => { this.consultasComRascunho = new Set<number>(); },
+      });
+  }
+
+  /** A consulta já tem um atendimento em andamento (rascunho salvo)? */
+  temRascunho(consulta: Consultav2 | null | undefined): boolean {
+    return !!consulta && this.consultasComRascunho.has(consulta.id);
+  }
+
   iniciarConsultaDrawer(): void {
     if (!this.consultaSelecionada) return;
 
     const element = this.consultaSelecionada;
+    const retomando = this.temRascunho(element);
     const dataFormatada = element.dataHora
       ? new Date(element.dataHora).toLocaleDateString('pt-BR')
       : 'Não informada';
@@ -655,8 +670,8 @@ export class AgendaCalendarioComponent implements OnInit, OnDestroy {
     this.fecharPopover();
 
     setTimeout(() => {
-      Swal.fire({
-        title: 'Iniciar Atendimento',
+      this.notificacao.fire({
+        title: retomando ? 'Retomar Atendimento' : 'Iniciar Atendimento',
         html: `
           <div style="text-align: left; padding: 10px;">
             <p style="margin-bottom: 15px; color: #666;">
@@ -673,30 +688,32 @@ export class AgendaCalendarioComponent implements OnInit, OnDestroy {
             </p>
           </div>
           <p style="margin-top: 20px; font-size: 14px; color: #888;">
-            Deseja iniciar o atendimento deste paciente?
+            Deseja ${retomando ? 'retomar' : 'iniciar'} o atendimento deste paciente?
           </p>
         `,
         showCancelButton: true,
         confirmButtonColor: '#5ccf6c',
         cancelButtonColor: '#6c757d',
-        confirmButtonText: '<i class="fa-solid fa-stethoscope"></i> Iniciar Atendimento',
+        confirmButtonText: retomando
+          ? '<i class="fa-solid fa-rotate-right"></i> Retomar Atendimento'
+          : '<i class="fa-solid fa-stethoscope"></i> Iniciar Atendimento',
         cancelButtonText: '<i class="fa-solid fa-times"></i> Cancelar',
       }).then((result) => {
         if (result.isConfirmed) {
-          Swal.fire({
+          this.notificacao.fire({
             title: 'Iniciando consulta...',
             html: 'Aguarde enquanto preparamos o prontuário.',
             allowOutsideClick: false,
             showConfirmButton: false,
             timer: 1500,
             timerProgressBar: true,
-            didOpen: () => { Swal.showLoading(); },
+            didOpen: () => { this.notificacao.mostrarCarregando(); },
           }).then(() => {
             this.prontuarioState.changeConsulta(element);
             if (this.UsuarioLogado.tipoProfissional === 'MEDICO') {
-              this.router.navigate(['startconsulta']);
+              this.router.navigate(['startconsulta', element.id]);
             } else if (this.UsuarioLogado.tipoProfissional === 'DENTISTA') {
-              this.router.navigate(['startconsulta-dentista']);
+              this.router.navigate(['startconsulta-dentista', element.id]);
             }
           });
         }
@@ -705,75 +722,10 @@ export class AgendaCalendarioComponent implements OnInit, OnDestroy {
   }
 
   gerarWhatsAppDrawer(): string {
-    const c = this.consultaSelecionada;
-    if (!c?.pacienteTelefone) return '';
-    const telefone = this.formatarTelefoneWhatsApp(c.pacienteTelefone);
-    const mensagem = this.gerarMensagemWhatsApp(c);
-    return `https://wa.me/${telefone}?text=${encodeURIComponent(mensagem)}`;
-  }
-
-  private gerarMensagemWhatsApp(consulta: Consultav2): string {
-    const dataHora = new Date(consulta.dataHora);
-    const data = dataHora.toLocaleDateString('pt-BR');
-    const horario = dataHora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-    const paciente = consulta.pacienteNome || 'Paciente';
-    const medico = consulta.profissionalNome || 'Profissional';
-    return `Olá ${paciente}, tudo bem?\n\nGostaríamos de confirmar sua consulta com ${medico} no dia ${data} às ${horario}.\n\nPor favor, confirme sua presença respondendo esta mensagem.\n\nAtenciosamente,\nEquipe da Clínica.`;
-  }
-
-  private formatarTelefoneWhatsApp(telefone: string): string {
-    const numeros = telefone.replace(/\D/g, '');
-    return numeros.startsWith('55') ? numeros : '55' + numeros;
+    return this.acoesConsulta.gerarLinkWhatsApp(this.consultaSelecionada);
   }
 
   // ========== QUESTIONÁRIO E PLANEJAMENTO ==========
-
-  private buscarProntuarioMaisRecente(consulta: Consultav2): Observable<any> {
-    const tipo = this.relatorioService.detectarTipoProfissional(consulta);
-    if (tipo === 'DENTISTA') {
-      return this.prontuarioDentistaApiService.buscarProntuarioDentistaById(consulta.id);
-    }
-    return this.prontuarioApiService.buscarMaisRecentePorConsulta(consulta.id);
-  }
-
-  private extrairCodigoProntuario(prontuario: any): number | null {
-    return prontuario?.codigo ?? prontuario?.codigoProntuario ?? null;
-  }
-
-  private verificarPlanejamentosAssinados(): void {
-    const finalizadas = this.todasConsultas.filter(c => c.status === 'REALIZADA');
-    for (const consulta of finalizadas) {
-      if (!consulta?.id || this.planejamentosAssinados.has(consulta.id)) continue;
-      this.buscarProntuarioMaisRecente(consulta)
-        .pipe(takeUntil(this.destroy$))
-        .subscribe({
-          next: (prontuario: any) => {
-            const plans = prontuario?.planejamentosTerapeuticos || prontuario?.planejamentos || [];
-            if (plans.length > 0 && plans.every((p: any) => p.statusAssinatura === 'ASSINADO')) {
-              this.planejamentosAssinados.add(consulta.id);
-              this.cdr.markForCheck();
-            }
-          }
-        });
-    }
-  }
-
-  private verificarQuestionariosRespondidos(): void {
-    const confirmadas = this.todasConsultas.filter(c => c.status === 'CONFIRMADA');
-    for (const consulta of confirmadas) {
-      if (!consulta?.id || this.questionariosRespondidos.has(consulta.id)) continue;
-      this.prontuarioDentistaApiService.buscarQuestionarioSaude(consulta.id)
-        .pipe(takeUntil(this.destroy$))
-        .subscribe({
-          next: (resp: any) => {
-            if (resp?.respondido) {
-              this.questionariosRespondidos.add(consulta.id);
-              this.cdr.markForCheck();
-            }
-          }
-        });
-    }
-  }
 
   gerarLinkQuestionarioDrawer(): void {
     const element = this.consultaSelecionada;
@@ -831,20 +783,20 @@ export class AgendaCalendarioComponent implements OnInit, OnDestroy {
     const element = this.consultaSelecionada;
     if (!element?.id) return;
     const tipoProfissional = this.relatorioService.detectarTipoProfissional(element);
-    this.buscarProntuarioMaisRecente(element)
+    this.acoesConsulta.buscarProntuarioMaisRecente(element)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (prontuario: any) => {
-          const codigoProntuario = this.extrairCodigoProntuario(prontuario);
+          const codigoProntuario = this.acoesConsulta.extrairCodigoProntuario(prontuario);
           if (!codigoProntuario) {
-            Swal.fire('Aviso', 'Nenhum prontuário encontrado para esta consulta.', 'warning');
+            this.notificacao.fire('Aviso', 'Nenhum prontuário encontrado para esta consulta.', 'warning');
             return;
           }
           const plans = prontuario?.planejamentosTerapeuticos || prontuario?.planejamentos || [];
           if (plans.length > 0 && plans.every((p: any) => p.statusAssinatura === 'ASSINADO')) {
             this.planejamentosAssinados.add(element.id);
             this.cdr.markForCheck();
-            Swal.fire('Aviso', 'Todos os itens do planejamento já foram assinados pelo paciente.', 'info');
+            this.notificacao.fire('Aviso', 'Todos os itens do planejamento já foram assinados pelo paciente.', 'info');
             return;
           }
           this.planejamentoApi.gerarLinkAssinatura(codigoProntuario, tipoProfissional)
@@ -854,7 +806,7 @@ export class AgendaCalendarioComponent implements OnInit, OnDestroy {
                 const baseUrl = window.location.origin;
                 const link = `${baseUrl}/#/assinatura-planejamento/${resp.token}`;
                 navigator.clipboard.writeText(link).catch(() => {});
-                Swal.fire({
+                this.notificacao.fire({
                   icon: 'success', title: 'Link Gerado!',
                   html: `<p style="font-size:0.9rem;">Copie o link abaixo e envie ao paciente:</p>
                          <input type="text" value="${link}" readonly
@@ -862,10 +814,10 @@ export class AgendaCalendarioComponent implements OnInit, OnDestroy {
                   confirmButtonText: 'OK'
                 });
               },
-              error: () => Swal.fire('Erro', 'Não foi possível gerar o link do planejamento.', 'error')
+              error: () => this.notificacao.fire('Erro', 'Não foi possível gerar o link do planejamento.', 'error')
             });
         },
-        error: () => Swal.fire('Erro', 'Não foi possível buscar o prontuário desta consulta.', 'error')
+        error: () => this.notificacao.fire('Erro', 'Não foi possível buscar o prontuário desta consulta.', 'error')
       });
   }
 
@@ -886,8 +838,7 @@ export class AgendaCalendarioComponent implements OnInit, OnDestroy {
 
   getHorario(dataHora: string): string {
     if (!dataHora) return '';
-    const d = new Date(dataHora);
-    return `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`;
+    return formatarHoraLocal(new Date(dataHora));
   }
 
   isStatusDone(etapa: string, statusAtual: string): boolean {

@@ -5,11 +5,12 @@ import { PlanoApiService } from 'src/app/services/api/plano-api.service';
 import { Router } from '@angular/router';
 import { MatDialogRef } from '@angular/material/dialog';
 import { Subscription } from 'rxjs';
-import Swal from 'sweetalert2';
+import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
 import { AdministradorApiService } from 'src/app/services/api/administrador-api.service';
 import { FiltroStateService } from 'src/app/services/state/filtro-state.service';
 import { CpfValidator } from 'src/app/util/validators/cpf.validator';
 import { cpfValidator } from 'src/app/util/validators/cpf-form.validator';
+import { extrairMensagemErro } from '../../../../shared/utils/mensagem-erro-http';
 import { getFieldError } from 'src/app/util/validators/field-errors';
 import {
   nomeCompletoValidator,
@@ -64,6 +65,7 @@ export class CadastroAdminOrgComponent implements OnInit, OnDestroy {
   ];
 
   constructor(
+    private notificacao: NotificacaoService,
     private fb: FormBuilder,
     private administradorApi: AdministradorApiService,
     private filtroStateService: FiltroStateService,
@@ -143,7 +145,7 @@ export class CadastroAdminOrgComponent implements OnInit, OnDestroy {
       },
       error: () => {
         this.isLoadingPlanos = false;
-        Swal.fire({ icon: 'error', title: 'Erro', text: 'Erro ao carregar planos disponíveis.' });
+        this.notificacao.fire({ icon: 'error', title: 'Erro', text: 'Erro ao carregar planos disponíveis.' });
       }
     });
   }
@@ -225,7 +227,7 @@ export class CadastroAdminOrgComponent implements OnInit, OnDestroy {
       },
       error: () => {
         this.isBuscandoCep = false;
-        Swal.fire({ icon: 'warning', title: 'CEP não encontrado', text: 'Verifique o CEP informado.' });
+        this.notificacao.fire({ icon: 'warning', title: 'CEP não encontrado', text: 'Verifique o CEP informado.' });
       }
     });
   }
@@ -247,7 +249,7 @@ export class CadastroAdminOrgComponent implements OnInit, OnDestroy {
 
     if (!this.formulario.valid) {
       this.formulario.markAllAsTouched();
-      Swal.fire({ icon: 'warning', title: 'Formulário incompleto', text: 'Preencha todos os campos obrigatórios.' });
+      this.notificacao.fire({ icon: 'warning', title: 'Formulário incompleto', text: 'Preencha todos os campos obrigatórios.' });
       return;
     }
 
@@ -261,7 +263,7 @@ export class CadastroAdminOrgComponent implements OnInit, OnDestroy {
     this.administradorApi.cadastrarAdminOrgCompleto(payload).subscribe({
       next: () => {
         this.isLoading = false;
-        Swal.fire({
+        this.notificacao.fire({
           icon: 'success',
           title: 'Sucesso!',
           text: 'Organização e administrador cadastrados. O login é o CNPJ e a senha foi enviada por email.',
@@ -293,12 +295,10 @@ export class CadastroAdminOrgComponent implements OnInit, OnDestroy {
     return n.replace(/(\d{5})(\d+)/, '$1-$2');
   } 
   private handleHttpError(error: any): void {
-    let msg = 'Erro desconhecido ao realizar o cadastro.';
-    if (error.status === 409) {
-      msg = typeof error.error === 'string' ? error.error : 'CPF ou CNPJ já cadastrado no sistema.';
-    } else if (error.error && typeof error.error === 'string') {
-      msg = error.error;
-    }
-    Swal.fire({ icon: 'error', title: 'Erro', text: msg });
+    const padrao = error.status === 409
+      ? 'CPF ou CNPJ já cadastrado no sistema.'
+      : 'Erro desconhecido ao realizar o cadastro.';
+    const msg = extrairMensagemErro(error) || padrao;
+    this.notificacao.fire({ icon: 'error', title: 'Erro', text: msg });
   }
 }

@@ -1,7 +1,7 @@
 import { ComponentType } from '@angular/cdk/portal';
 import { Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import Swal from 'sweetalert2';
+import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
 
 import { ProntuarioApiService } from 'src/app/services/api/prontuario-api.service';
 import { ProntuarioDentistaApiService } from 'src/app/services/api/prontuario-dentista-api.service';
@@ -57,6 +57,7 @@ export class RelatorioService {
   private readonly DIALOG_HEIGHT = '90%';
 
   constructor(
+    private notificacao: NotificacaoService,
     private dialog: MatDialog,
     private prontuarioApiService: ProntuarioApiService,
     private prontuarioDentistaApiService: ProntuarioDentistaApiService,
@@ -120,48 +121,6 @@ export class RelatorioService {
   // O profissional vê apenas seus próprios relatórios.
   // O tipo é determinado pelo perfil do usuário logado.
   // ─────────────────────────────────────────────────────────────────────────────
-
-  /**
-   * Abre o seletor de relatório no contexto do profissional.
-   * @param element - Dados da consulta (Consultav2)
-   * @param perfilUsuario - Perfil do usuário logado ('MEDICO' ou 'DENTISTA')
-   */
-  abrirRelatorioProfissional(element: Consultav2, perfilUsuario: string): void {
-    const consultaNaoRealizada = (element.status as any) === 'AGENDADA';
-    const dialogRef = this.dialog.open(RelatorioComponent, {
-      maxWidth: 'auto',
-      panelClass: 'selecao-relatorio-dialog',
-      data: {
-        consulta: element,
-        consultaNaoRealizada,
-        isAdmin: false,
-        isProfissional: true,
-        tipoProfissional: perfilUsuario,
-      },
-    });
-
-    dialogRef.afterClosed().subscribe((opcaoSelecionada: string) => {
-      if (!opcaoSelecionada) { return; }
-
-      // Histórico Completo não precisa de prontuário
-      if (opcaoSelecionada === '3') {
-        this.abrirHistoricoCompleto(element);
-        return;
-      }
-
-      if (perfilUsuario === 'MEDICO') {
-        this.prontuarioApiService.buscarProntuarioById(element.id).subscribe(
-          (dados: Prontuario) => this.abrirDialogImpressaoMedico(opcaoSelecionada, dados),
-          () => this.mostrarErroProntuarioNaoEncontrado()
-        );
-      } else if (perfilUsuario === 'DENTISTA') {
-        this.prontuarioDentistaApiService.buscarProntuarioDentistaById(element.id).subscribe(
-          (dados: Prontuario) => this.abrirDialogImpressaoDentista(opcaoSelecionada, dados),
-          () => this.mostrarErroProntuarioNaoEncontrado()
-        );
-      }
-    });
-  }
 
   // ─────────────────────────────────────────────────────────────────────────────
   // Fluxo direto — Tela de relatórios por paciente
@@ -410,7 +369,7 @@ export class RelatorioService {
    * Exibe mensagem de erro quando o prontuário não é encontrado.
    */
   mostrarErroProntuarioNaoEncontrado(): void {
-    Swal.fire({
+    this.notificacao.fire({
       title: 'Prontuário não encontrado',
       html: `
         <p>Não foi possível encontrar o prontuário desta consulta.</p>

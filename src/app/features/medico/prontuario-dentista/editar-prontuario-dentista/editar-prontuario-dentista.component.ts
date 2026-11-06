@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Subject, takeUntil } from 'rxjs';
-import Swal from 'sweetalert2';
+import { extrairMensagemErro } from 'src/app/shared/utils/mensagem-erro-http';
+import { formatarDataLocal } from '../../../../shared/utils/data-local';
 
 import { ProntuarioDentistaApiService } from 'src/app/services/api/prontuario-dentista-api.service';
-import { ErrorHandlerService } from 'src/app/core/services/error-handler.service';
-import { Consultav2 } from 'src/app/util/variados/interfaces/consulta/consultav2';
+import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
+import { ConsultaEdicao } from '../../consulta-edicao';
 
 import { AbaIdentificacaoComponent } from '../aba-identificacao/aba-identificacao.component';
 import { AbaExameObjetivoComponent } from '../aba-exame-objetivo/aba-exame-objetivo.component';
@@ -32,16 +33,16 @@ export class EditarProntuarioDentistaComponent implements OnInit, OnDestroy, Aft
   salvando = false;
   erro = '';
 
-  consulta: Consultav2;
+  consulta: ConsultaEdicao;
   private prontuarioData: any = null;
   private prontuarioId: number | null = null;
   private readonly destroy$ = new Subject<void>();
 
   constructor(
     private dialogRef: MatDialogRef<EditarProntuarioDentistaComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { consulta: Consultav2 },
+    @Inject(MAT_DIALOG_DATA) public data: { consulta: ConsultaEdicao },
     private prontuarioDentistaApi: ProntuarioDentistaApiService,
-    private errorHandler: ErrorHandlerService
+    private notificacao: NotificacaoService
   ) {
     this.consulta = data.consulta;
   }
@@ -105,11 +106,11 @@ export class EditarProntuarioDentistaComponent implements OnInit, OnDestroy, Aft
    */
   salvar(): void {
     if (!this.prontuarioId) {
-      this.errorHandler.showError('ID do prontuário não encontrado');
+      this.notificacao.showError('ID do prontuário não encontrado');
       return;
     }
 
-    Swal.fire({
+    this.notificacao.fire({
       icon: 'question',
       title: 'Confirmar edição',
       text: 'Deseja salvar as alterações no prontuário?',
@@ -133,13 +134,31 @@ export class EditarProntuarioDentistaComponent implements OnInit, OnDestroy, Aft
     const dadosIdentificacao = this.abaIdentificacao?.getDados() || {};
     const dadosExame = this.abaExameObjetivo?.getDados() || {};
     const dadosCodigos = this.abaCodigosTussCid?.getDados() || {};
-    const dadosPlanejamento = this.abaPlanejamento?.getDados() || {};
+
+    // O back apaga e recria os planejamentos a partir do payload: precisa ir a lista inteira
+    // (getDados() só leva os itens novos e apagaria os já gravados).
+    const planejamentos = (this.abaPlanejamento?.getDadosRascunho().planejamentos || []).map((p: any) => ({
+      dataProcedimento: p.dataProcedimento || formatarDataLocal(new Date()),
+      procedimentoRealizado: p.procedimentoRealizado,
+      valor: p.valor,
+      pacienteId: this.consulta.pacienteId,
+    }));
+
+    // O back zera o que não vem no payload: devolve os campos que nenhuma aba edita.
+    const preservados = {
+      planoTratamento: this.prontuarioData?.planoTratamento,
+      procedimentos: this.prontuarioData?.procedimentos,
+      tituloExame: this.prontuarioData?.tituloExame,
+      dataExame: this.prontuarioData?.dataExame,
+      dataPrescricao: this.prontuarioData?.dataPrescricao,
+    };
 
     const payload: any = {
       ...dadosIdentificacao,
       ...dadosExame,
       ...dadosCodigos,
-      ...dadosPlanejamento,
+      ...preservados,
+      planejamentos,
       codigoMedico: this.consulta.profissionalId,
       consulta: this.consulta.id,
     };
@@ -149,12 +168,12 @@ export class EditarProntuarioDentistaComponent implements OnInit, OnDestroy, Aft
       .subscribe({
         next: () => {
           this.salvando = false;
-          this.errorHandler.showSuccessToast('Prontuário atualizado com sucesso');
+          this.notificacao.showSuccessToast('Prontuário atualizado com sucesso');
           this.dialogRef.close(true);
         },
         error: (err) => {
           console.error('Erro ao atualizar prontuário:', err);
-          this.errorHandler.showError('Erro ao salvar alterações do prontuário');
+          this.notificacao.showError(extrairMensagemErro(err) || 'Erro ao salvar alterações do prontuário');
           this.salvando = false;
         }
       });

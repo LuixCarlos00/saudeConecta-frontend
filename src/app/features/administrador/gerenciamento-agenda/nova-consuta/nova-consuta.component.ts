@@ -7,18 +7,21 @@ import { MatDialog } from '@angular/material/dialog';
 import { TabelasPesquisasMedicosComponent } from './tabelas-Pesquisas-Medicos/tabelas-Pesquisas-Medicos.component';
 import { PacienteApiService } from 'src/app/services/api/paciente-api.service';
 import { TabelaDePacientesComponent } from './tabela-de-pacientes/tabela-de-pacientes.component';
-import Swal from 'sweetalert2';
+import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
 import { HoradaConsulta } from 'src/app/util/variados/options/options';
-import { ConsultaApiService } from 'src/app/services/api/consulta-api.service';
+import { extrairMensagemErro } from 'src/app/shared/utils/mensagem-erro-http';
+import { ConsultaApiService, HorarioOcupado } from 'src/app/services/api/consulta-api.service';
 import { ConsultaStateService } from 'src/app/services/state/consulta-state.service';
-import { tokenService } from 'src/app/util/Token/Token.service';
-import { AuthApiService } from 'src/app/services/api/auth-api.service';
+import { AuthService } from 'src/app/core/services/auth.service';
 import { Usuario } from 'src/app/util/variados/interfaces/usuario/usuario';
-import { async } from 'rxjs';
-import { DialogService } from 'src/app/util/variados/dialogo-confirmação/dialog.service';
+import { async, take, filter } from 'rxjs';
 import { Profissional } from 'src/app/util/variados/interfaces/medico/Profissional';
 import { CadastroPacienteComponent } from '../../cadastros/cadastro-paciente/cadastro-paciente.component';
+import { idFormaPagamentoPorRotulo } from 'src/app/shared/constants/forma-pagamento.constant';
+import { formatarDataLocal, formatarHoraLocal } from '../../../../shared/utils/data-local';
 const STATUS_AGENDADAS = ['AGENDADA'];
+
+const DURACAO_PADRAO_MINUTOS = 30;
 
 @Component({
   selector: 'app-nova-consulta',
@@ -107,6 +110,7 @@ export class NovaConsultaComponent implements OnInit {
   }
 
   constructor(
+    private notificacao: NotificacaoService,
     private router: Router,
     private FormBuilder: FormBuilder,
     private profissionalApiService: ProfissionalApiService,
@@ -114,11 +118,9 @@ export class NovaConsultaComponent implements OnInit {
     private pacienteApi: PacienteApiService,
     private consultaApi: ConsultaApiService,
     private consultaState: ConsultaStateService,
-    private authApi: AuthApiService,
-    private tokenService: tokenService,
-    private DialogService: DialogService
+    private authService: AuthService
   ) {
-    this.tokenService.UsuarioLogadoValue$.subscribe((UsuarioLogado) => {
+    this.authService.currentUser$.pipe(filter(Boolean), take(1)).subscribe((UsuarioLogado) => {
       if (UsuarioLogado) this.UsuarioLogado = UsuarioLogado;
     });
   }
@@ -151,7 +153,7 @@ export class NovaConsultaComponent implements OnInit {
         const dados = await this.pacienteApi.pesquisarComFiltro(FiltroPesquisa, pesquisa, 'ATIVO').toPromise();
         this.AbirTabela(dados, 'paciente');
       } catch (error) {
-        Swal.fire('Erro', 'Erro ao pesquisar pacientes', 'error');
+        this.notificacao.fire('Erro', 'Erro ao pesquisar pacientes', 'error');
       }
     }
     if (value === 'medico') {
@@ -165,7 +167,7 @@ export class NovaConsultaComponent implements OnInit {
         const dados = await this.profissionalApiService.pesquisarComFiltro(FiltroPesquisa, pesquisa, 'ATIVO').toPromise();
         this.AbirTabela(dados, 'medico');
       } catch (error) {
-        Swal.fire('Erro', 'Erro ao pesquisar médicos', 'error');
+        this.notificacao.fire('Erro', 'Erro ao pesquisar médicos', 'error');
       }
     }
   }
@@ -221,14 +223,14 @@ export class NovaConsultaComponent implements OnInit {
     this.horariosDisponiveis = [];
     if (this.Medico && selectedDate) {
       if (!this.Medico.tempoConsultaMinutos) {
-        Swal.fire({
+        this.notificacao.fire({
           icon: 'warning',
           title: 'Atenção',
           text: 'O médico ainda não informou o tempo de consulta. Portanto, serão utilizados os horários padrão.',
           showCloseButton: true,
         }).then((result) => {
           if (result.isConfirmed) {
-            Swal.fire({
+            this.notificacao.fire({
               text: 'É altamente recomendado que o tempo de consulta seja definido pelo médico para evitar problemas futuros.',
             });
           }
@@ -238,13 +240,12 @@ export class NovaConsultaComponent implements OnInit {
       }
 
       // Busca os horários já ocupados e gera os novos slots respeitando as consultas existentes
-      this.consultaApi.buscarHorariosOcupadosByOrg(this.Medico.id!, selectedDate as any).subscribe(
+      this.consultaApi.buscarHorariosOcupadosComDuracao(
+        this.Medico.id!, selectedDate as any, this.Medico.tempoConsultaMinutos || DURACAO_PADRAO_MINUTOS
+      ).subscribe(
         (data) => {
-          this.horariosDisponiveis = data;
-          this.generateAvailableTimesRespeitandoOcupados(
-            this.Medico.tempoConsultaMinutos!,
-            this.horariosDisponiveis
-          );
+          this.horariosDisponiveis = data.map(o => o.inicio);
+          this.generateAvailableTimesRespeitandoOcupados(this.Medico.tempoConsultaMinutos!, data);
         },
         (error) => {
           console.error('Erro ao buscar horários ocupados:', error);
@@ -263,9 +264,9 @@ export class NovaConsultaComponent implements OnInit {
    * (ex.: fim do último bloco ocupado) e avançam com o novo intervalo.
    *
    * @param novoIntervalo Novo tempo de consulta em minutos
-   * @param horariosOcupados Lista de horários ocupados no formato "HH:mm:ss" ou "HH:mm"
+   * @param horariosOcupados Blocos ocupados: início "HH:mm:ss" e duração real em minutos
    */
-  generateAvailableTimesRespeitandoOcupados(novoIntervalo: number, horariosOcupados: string[]) {
+  generateAvailableTimesRespeitandoOcupados(novoIntervalo: number, horariosOcupados: HorarioOcupado[]) {
     const startTime = this.convertToDateObject('08:00');
     const endTime = this.convertToDateObject('18:00');
 
@@ -277,20 +278,17 @@ export class NovaConsultaComponent implements OnInit {
 
     // Converte horários ocupados para objetos Date e ordena
     const ocupados = horariosOcupados
-      .map(h => this.convertToDateObject(h.substring(0, 5)))
-      .sort((a, b) => a.getTime() - b.getTime());
-
-    // Deduz o intervalo antigo pela diferença entre horários consecutivos
-    let intervaloAntigo = novoIntervalo;
-    if (ocupados.length >= 2) {
-      intervaloAntigo = (ocupados[1].getTime() - ocupados[0].getTime()) / 60000;
-    }
+      .map(h => ({
+        inicio: this.convertToDateObject(h.inicio.substring(0, 5)),
+        duracao: h.duracaoMinutos > 0 ? h.duracaoMinutos : DURACAO_PADRAO_MINUTOS,
+      }))
+      .sort((a, b) => a.inicio.getTime() - b.inicio.getTime());
 
     // Monta blocos ocupados e mescla em grupos contíguos
     // Cada grupo contíguo representa uma sequência ininterrupta de consultas
     const gruposOcupados: { inicio: Date; fim: Date }[] = [];
-    for (const inicio of ocupados) {
-      const fim = new Date(inicio.getTime() + intervaloAntigo * 60000);
+    for (const { inicio, duracao } of ocupados) {
+      const fim = new Date(inicio.getTime() + duracao * 60000);
       const ultimoGrupo = gruposOcupados[gruposOcupados.length - 1];
       if (ultimoGrupo && inicio.getTime() <= ultimoGrupo.fim.getTime()) {
         // Extende o grupo existente
@@ -326,8 +324,8 @@ export class NovaConsultaComponent implements OnInit {
       while (currentTime.getTime() + novoIntervalo * 60000 <= endTime.getTime()
         && currentTime.getTime() < intervalo.fim.getTime()) {
         this.Hora.push({
-          value: this.formatTime(currentTime),
-          label: this.formatTime(currentTime),
+          value: formatarHoraLocal(currentTime),
+          label: formatarHoraLocal(currentTime),
         });
         currentTime = new Date(currentTime.getTime() + novoIntervalo * 60000);
       }
@@ -345,8 +343,8 @@ export class NovaConsultaComponent implements OnInit {
     while (currentTime <= endDateTime) {
       // Adiciona o horário formatado ao array
       this.Hora.push({
-        value: this.formatTime(currentTime),
-        label: this.formatTime(currentTime),
+        value: formatarHoraLocal(currentTime),
+        label: formatarHoraLocal(currentTime),
       });
       // Incrementa o tempo atual de acordo com o tempo de consulta
       currentTime = new Date(
@@ -369,12 +367,6 @@ export class NovaConsultaComponent implements OnInit {
     }
   }
 
-  formatTime(date: Date): string {
-    const hours = date.getHours().toString().padStart(2, '0');
-    const minutes = date.getMinutes().toString().padStart(2, '0');
-    return `${hours}:${minutes}`;
-  }
-
   convertToDateObject(timeString: string): Date {
     const [hours, minutes] = timeString.split(':').map(Number);
     // Usa uma data fixa (01/01/2000) para evitar problemas com data/hora atual
@@ -391,7 +383,7 @@ export class NovaConsultaComponent implements OnInit {
     const input_HORA = this.FormularioConsulta.get('Hora')?.value;
     const input_OBSERVACAO = this.FormularioConsulta.get('observacao')?.value;
     const input_VALOR = this.FormularioConsulta.get('valor')?.value; // NOVO
-    const dataAtual = new Date().toISOString().split('T')[0];
+    const dataAtual = formatarDataLocal(new Date());
 
 
 
@@ -418,14 +410,14 @@ export class NovaConsultaComponent implements OnInit {
           this.Medico.id
         ).toPromise();
         if (dados) {
-          this.DialogService.JaexisteDadosCAdastradosComEssesParamentros();
+          this.notificacao.mostrarSnackbar('Ja Existe uma consulta marcadas para esse dia com esse horário.\nTente outro horário. Ou altere o dia.', 10000);
           this.FormularioConsulta.reset();
           return;
         }
 
         this.consultaApi.cadastrarConsultaByOrg(consult).subscribe((response) => {
           const texto: string = `O cadastro da consulta foi realizado com sucesso.\nCodigo de consulta: ${response.id} `;
-          Swal.fire({
+          this.notificacao.fire({
             icon: 'success',
             title: 'OK',
             text: texto,
@@ -451,20 +443,23 @@ export class NovaConsultaComponent implements OnInit {
         },
           (error) => {
             console.error('Erro ao criar consulta:', error);
-            Swal.fire({
+            this.notificacao.fire({
               icon: 'error',
               title: 'Oops...',
-              text: 'Algo deu errado. Tente novamente mais tarde.',
+              text: extrairMensagemErro(error) || 'Algo deu errado. Tente novamente mais tarde.',
             });
           }
         );
       } catch (error) {
-        console.error('Erro ao verificar consultas:', error);
-        this.DialogService.JaexisteDadosCAdastradosComEssesParamentros();
-        this.FormularioConsulta.reset();
+        console.error('Erro ao verificar disponibilidade:', error);
+        this.notificacao.fire({
+          icon: 'error',
+          title: 'Erro',
+          text: 'Não foi possível verificar a disponibilidade do horário. Tente novamente.',
+        });
       }
     } else {
-      Swal.fire({
+      this.notificacao.fire({
         icon: 'warning',
         title: 'Atenção',
         text: 'Por favor, preencha todos os campos obrigatórios.',
@@ -478,33 +473,9 @@ export class NovaConsultaComponent implements OnInit {
 
 
 
-  transformaFormaPagamento() {
-    const pagamentoValue = this.FormularioConsulta.get('Pagamento')?.value;
-    let FornaPAgamento: number;
-
-    switch (pagamentoValue) {
-      case 'Particular':
-        return (FornaPAgamento = 1);
-        break;
-      case 'Convênio':
-        return (FornaPAgamento = 2);
-        break;
-      case 'Cartão de Crédito':
-        return (FornaPAgamento = 3);
-        break;
-      case 'Cartão de Débito':
-        return (FornaPAgamento = 4);
-        break;
-      case 'PIX':
-        return (FornaPAgamento = 5);
-      case 'Dinheiro':
-        return (FornaPAgamento = 6);
-      default:
-        return (FornaPAgamento = 0); // Valor padrão, caso nenhuma das opções seja selecionada
-    }
+  transformaFormaPagamento(): number {
+    return idFormaPagamentoPorRotulo(this.FormularioConsulta.get('Pagamento')?.value);
   }
-
-
 
   getPrimeiraEspecialidade(profissional: any): string {
     if (!profissional.especialidades || profissional.especialidades.length === 0) {

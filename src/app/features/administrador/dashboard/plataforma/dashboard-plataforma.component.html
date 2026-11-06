@@ -1,0 +1,223 @@
+<section class="plataforma" aria-labelledby="plataforma-titulo">
+  <header class="plataforma__header">
+    <div>
+      <h2 id="plataforma-titulo"><i class="fa-solid fa-chart-line" aria-hidden="true"></i> Painel da plataforma</h2>
+      <p class="plataforma__subtitulo">Saúde do negócio: clínicas, receita, cobrança e uso.</p>
+    </div>
+    <div class="plataforma__acoes">
+      <span class="plataforma__atualizado" *ngIf="atualizadoAs" data-testid="atualizado-as">Atualizado às {{ atualizadoAs }}</span>
+      <div class="periodo" role="group" aria-label="Período das séries mensais">
+        <button type="button" class="periodo__btn" *ngFor="let p of periodos"
+                [class.periodo__btn--ativo]="p === meses" [attr.aria-pressed]="p === meses"
+                [disabled]="carregando" (click)="selecionarPeriodo(p)" data-testid="periodo">{{ p }} meses</button>
+      </div>
+      <button type="button" class="btn-atualizar" (click)="carregar()" [disabled]="carregando"
+              aria-label="Atualizar dados" title="Atualizar" data-testid="atualizar">
+        <i class="fa-solid fa-rotate" [class.fa-spin]="carregando" aria-hidden="true"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- Carregando (primeira carga): skeleton -->
+  <div *ngIf="carregando && !dados" class="skeleton-grid" role="status" aria-live="polite" data-testid="carregando">
+    <span class="sr-only">Carregando dashboard da plataforma</span>
+    <div class="skeleton skeleton--kpi" *ngFor="let i of [1,2,3,4,5,6]"></div>
+    <div class="skeleton skeleton--grafico" *ngFor="let i of [1,2]"></div>
+  </div>
+
+  <!-- Erro -->
+  <div *ngIf="erro && !carregando" class="estado estado--erro" role="alert" data-testid="erro">
+    <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>
+    <p>{{ erro }}</p>
+    <button type="button" class="btn-primario" (click)="carregar()" data-testid="tentar-novamente">Tentar novamente</button>
+  </div>
+
+  <!-- Vazio -->
+  <div *ngIf="vazio && !erro" class="estado" data-testid="vazio">
+    <i class="fa-solid fa-hospital" aria-hidden="true"></i>
+    <p>Nenhuma clínica cadastrada na plataforma ainda.</p>
+  </div>
+
+  <ng-container *ngIf="dados && !vazio && !erro">
+    <div [class.plataforma__conteudo--atualizando]="carregando">
+
+      <!-- KPIs -->
+      <div class="kpis" data-testid="kpis">
+        <article class="kpi">
+          <span class="kpi__rotulo">Clínicas ativas</span>
+          <strong class="kpi__valor" data-testid="kpi-ativas">{{ formatarInteiro(dados.resumo.clinicasAtivas) }}</strong>
+          <span class="kpi__detalhe">de {{ formatarInteiro(dados.resumo.clinicasTotal) }} com assinatura</span>
+        </article>
+
+        <article class="kpi">
+          <span class="kpi__rotulo">MRR (receita recorrente mensal)</span>
+          <strong class="kpi__valor" data-testid="kpi-mrr">{{ formatarMoeda(dados.resumo.mrr) }}</strong>
+          <span class="kpi__detalhe">ticket médio por pagante {{ formatarMoeda(dados.resumo.ticketMedio) }}</span>
+        </article>
+
+        <article class="kpi">
+          <span class="kpi__rotulo">Receita recebida no mês</span>
+          <strong class="kpi__valor" data-testid="kpi-receita">{{ formatarMoeda(dados.resumo.receitaMesAtual) }}</strong>
+          <span class="kpi__detalhe variacao variacao--{{ sentidoVariacao }}" data-testid="kpi-variacao">
+            <ng-container [ngSwitch]="sentidoVariacao">
+              <ng-container *ngSwitchCase="'alta'"><i class="fa-solid fa-arrow-up" aria-hidden="true"></i> <span class="sr-only">Alta de</span>{{ textoVariacao }} vs. mês anterior</ng-container>
+              <ng-container *ngSwitchCase="'queda'"><i class="fa-solid fa-arrow-down" aria-hidden="true"></i> <span class="sr-only">Queda de</span>{{ textoVariacao }} vs. mês anterior</ng-container>
+              <ng-container *ngSwitchCase="'estavel'"><i class="fa-solid fa-minus" aria-hidden="true"></i> Igual ao mês anterior</ng-container>
+              <ng-container *ngSwitchDefault>Sem base no mês anterior</ng-container>
+            </ng-container>
+          </span>
+        </article>
+
+        <article class="kpi" [class.kpi--critico]="inadimplentesESuspensas > 0" data-testid="kpi-card-inadimplencia">
+          <span class="kpi__rotulo">Inadimplentes + suspensas</span>
+          <strong class="kpi__valor" data-testid="kpi-inadimplencia">{{ formatarInteiro(inadimplentesESuspensas) }}</strong>
+          <span class="kpi__detalhe">{{ dados.resumo.inadimplentes }} inadimplente(s), {{ dados.resumo.suspensas }} suspensa(s)</span>
+        </article>
+
+        <article class="kpi" [class.kpi--alerta]="dados.resumo.trialsVencendo7Dias > 0" data-testid="kpi-card-trials">
+          <span class="kpi__rotulo">Trials vencendo em 7 dias</span>
+          <strong class="kpi__valor" data-testid="kpi-trials">{{ formatarInteiro(dados.resumo.trialsVencendo7Dias) }}</strong>
+          <span class="kpi__detalhe">{{ dados.resumo.emTrial }} em trial</span>
+        </article>
+
+        <article class="kpi" [class.kpi--alerta]="dados.resumo.pendenciasManuais > 0" data-testid="kpi-card-pendencias">
+          <span class="kpi__rotulo">Pendências manuais</span>
+          <strong class="kpi__valor" data-testid="kpi-pendencias">{{ formatarInteiro(dados.resumo.pendenciasManuais) }}</strong>
+          <a class="kpi__detalhe" routerLink="/pendencias-manuais" data-testid="kpi-pendencias-link">pagamentos a conferir</a>
+        </article>
+      </div>
+
+      <!-- Atenção + status -->
+      <div class="grade grade--atencao">
+        <section class="cartao chart-container" aria-labelledby="atencao-titulo">
+          <h3 id="atencao-titulo" class="cartao__titulo">Precisa de atenção</h3>
+          <p class="cartao__vazio" *ngIf="!dados.atencao.length" data-testid="atencao-vazia">Nenhuma clínica precisa de atenção agora.</p>
+          <ul class="atencao" *ngIf="dados.atencao.length" data-testid="atencao">
+            <li *ngFor="let item of dados.atencao; trackBy: trackPorOrganizacao" class="atencao__item">
+              <ng-container *ngTemplateOutlet="temLink(item) ? comLink : semLink; context: { $implicit: item }"></ng-container>
+            </li>
+          </ul>
+        </section>
+
+        <section class="cartao chart-container" aria-labelledby="status-titulo">
+          <h3 id="status-titulo" class="cartao__titulo">Assinaturas por status</h3>
+          <div class="grafico grafico--rosca" *ngIf="graficoStatus">
+            <canvas baseChart type="doughnut" [data]="graficoStatus.data" [options]="graficoStatus.options"
+                    role="img" aria-label="Rosca de assinaturas por status"></canvas>
+          </div>
+        </section>
+      </div>
+
+      <!-- Receita e crescimento -->
+      <div class="grade">
+        <section class="cartao chart-container" aria-labelledby="receita-titulo">
+          <h3 id="receita-titulo" class="cartao__titulo">Receita recebida por mês</h3>
+          <div class="grafico" *ngIf="graficoReceita">
+            <canvas baseChart type="bar" [data]="graficoReceita.data" [options]="graficoReceita.options"
+                    role="img" aria-label="Barras de receita recebida por mês, em reais"></canvas>
+          </div>
+        </section>
+        <section class="cartao chart-container" aria-labelledby="novas-titulo">
+          <h3 id="novas-titulo" class="cartao__titulo">Novas clínicas × cancelamentos</h3>
+          <div class="grafico" *ngIf="graficoNovasCancelamentos">
+            <canvas baseChart type="line" [data]="graficoNovasCancelamentos.data" [options]="graficoNovasCancelamentos.options"
+                    role="img" aria-label="Linhas de novas clínicas e cancelamentos por mês"></canvas>
+          </div>
+        </section>
+        <section class="cartao chart-container" aria-labelledby="consultas-titulo">
+          <h3 id="consultas-titulo" class="cartao__titulo">Consultas por mês</h3>
+          <div class="grafico" *ngIf="graficoConsultas">
+            <canvas baseChart type="bar" [data]="graficoConsultas.data" [options]="graficoConsultas.options"
+                    role="img" aria-label="Barras de consultas por mês"></canvas>
+          </div>
+        </section>
+      </div>
+
+      <!-- Planos e perfis -->
+      <div class="grade">
+        <section class="cartao chart-container" aria-labelledby="clinicas-plano-titulo">
+          <h3 id="clinicas-plano-titulo" class="cartao__titulo">Clínicas por plano</h3>
+          <div class="grafico grafico--curto" *ngIf="graficoClinicasPlano">
+            <canvas baseChart type="bar" [data]="graficoClinicasPlano.data" [options]="graficoClinicasPlano.options"
+                    role="img" aria-label="Barras de clínicas por plano"></canvas>
+          </div>
+        </section>
+        <section class="cartao chart-container" aria-labelledby="mrr-plano-titulo">
+          <h3 id="mrr-plano-titulo" class="cartao__titulo">MRR por plano</h3>
+          <div class="grafico grafico--curto" *ngIf="graficoMrrPlano">
+            <canvas baseChart type="bar" [data]="graficoMrrPlano.data" [options]="graficoMrrPlano.options"
+                    role="img" aria-label="Barras de MRR por plano, em reais"></canvas>
+          </div>
+        </section>
+        <section class="cartao chart-container" aria-labelledby="perfil-titulo">
+          <h3 id="perfil-titulo" class="cartao__titulo">Usuários ativos por perfil</h3>
+          <div class="grafico grafico--curto" *ngIf="graficoUsuarios">
+            <canvas baseChart type="bar" [data]="graficoUsuarios.data" [options]="graficoUsuarios.options"
+                    role="img" aria-label="Barras de usuários ativos por perfil"></canvas>
+          </div>
+        </section>
+      </div>
+
+      <!-- Top clínicas -->
+      <section class="cartao chart-container" aria-labelledby="top-titulo">
+        <h3 id="top-titulo" class="cartao__titulo">Top clínicas por uso</h3>
+        <p class="cartao__vazio" *ngIf="!dados.topClinicasUso.length">Sem consultas registradas neste mês.</p>
+        <div class="tabela-wrap" *ngIf="dados.topClinicasUso.length">
+          <table class="tabela" data-testid="top-clinicas">
+            <thead>
+              <tr>
+                <th scope="col">Clínica</th>
+                <th scope="col">Plano</th>
+                <th scope="col">Status</th>
+                <th scope="col" class="num">Consultas no mês</th>
+                <th scope="col" class="num">Profissionais</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let c of dados.topClinicasUso; trackBy: trackPorOrganizacao">
+                <td><strong>{{ c.nome }}</strong></td>
+                <td>{{ c.plano }}</td>
+                <td><span class="status status--{{ c.status.toLowerCase() }}">{{ rotuloStatus[c.status] }}</span></td>
+                <td class="num">{{ formatarInteiro(c.consultasMes) }}</td>
+                <td class="num">{{ formatarInteiro(c.profissionais) }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </ng-container>
+</section>
+
+<ng-template #comLink let-item>
+  <a class="atencao__link" routerLink="/Gerenciamento-Usuarios"
+     [queryParams]="queryParamsClinica(item.organizacaoId, item.nome)"
+     [attr.aria-label]="'Gerenciar assinatura de ' + item.nome">
+    <span [class]="classeMotivo(item)" data-testid="atencao-motivo">{{ textoMotivo(item) }}</span>
+                <span class="atencao__nome">
+                  <strong>{{ item.nome }}</strong>
+                  <small *ngIf="item.plano">{{ item.plano }}</small>
+                </span>
+                <span class="atencao__dados">
+                  <span data-testid="atencao-vencimento" *ngIf="item.dataVencimento">{{ item.motivo === 'PENDENCIA_MANUAL' ? 'Chegou em' : 'Vence' }} {{ formatarData(item.dataVencimento) }}</span>
+                  <strong data-testid="atencao-valor" *ngIf="item.valorMensal !== null">{{ formatarMoeda(item.valorMensal) }}</strong>
+                </span>
+    <i class="fa-solid fa-chevron-right atencao__seta" aria-hidden="true"></i>
+  </a>
+</ng-template>
+
+<!-- Pendência manual: pode não ter clínica identificada; leva à tela de pendências manuais. -->
+<ng-template #semLink let-item>
+  <a class="atencao__link" routerLink="/pendencias-manuais" data-testid="atencao-pendencia-link" aria-label="Abrir pendências manuais">
+    <span [class]="classeMotivo(item)" data-testid="atencao-motivo">{{ textoMotivo(item) }}</span>
+                <span class="atencao__nome">
+                  <strong>{{ item.nome }}</strong>
+                  <small *ngIf="item.plano">{{ item.plano }}</small>
+                </span>
+                <span class="atencao__dados">
+                  <span data-testid="atencao-vencimento" *ngIf="item.dataVencimento">{{ item.motivo === 'PENDENCIA_MANUAL' ? 'Chegou em' : 'Vence' }} {{ formatarData(item.dataVencimento) }}</span>
+                  <strong data-testid="atencao-valor" *ngIf="item.valorMensal !== null">{{ formatarMoeda(item.valorMensal) }}</strong>
+                </span>
+    <i class="fa-solid fa-chevron-right atencao__seta" aria-hidden="true"></i>
+  </a>
+</ng-template>

@@ -9,9 +9,11 @@ import { Router } from '@angular/router';
 import { ThemeService } from 'src/app/services/theme/theme.service';
 import { Subscription, forkJoin } from 'rxjs';
 import { ConsultaApiService } from 'src/app/services/api/consulta-api.service';
-import { tokenService } from 'src/app/util/Token/Token.service';
+import { AuthService } from 'src/app/core/services/auth.service';
 import { ConfiguracaoGraficoDashboardService } from 'src/app/core/services/configuracao-grafico-dashboard.service';
 import { ConfiguracaoGraficoDashboard, TipoGraficoDashboard, TipoCardDashboard } from 'src/app/shared/models/configuracao-grafico-dashboard.interface';
+import { diasCalendarioAte } from 'src/app/shared/utils/data-local';
+import { calcularDataSuspensao } from 'src/app/shared/constants/regua-cobranca.constant';
 
 @Component({
   selector: 'app-dashboard',
@@ -29,6 +31,8 @@ import { ConfiguracaoGraficoDashboard, TipoGraficoDashboard, TipoCardDashboard }
 export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   today = new Date();
   isDarkMode = false;
+  /** true quando o usuário logado é SUPER_ADMIN: mostra o painel da plataforma em vez do da clínica. */
+  superAdmin = false;
   private themeSubscription?: Subscription;
 
   // Estatísticas do Dashboard
@@ -86,7 +90,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     private router: Router,
     public themeService: ThemeService,
     private consultaApiService: ConsultaApiService,
-    private tokenService: tokenService,
+    private authService: AuthService,
     private configuracaoGraficoService: ConfiguracaoGraficoDashboardService,
     private profissionalApiService: ProfissionalApiService,
     private configuracaoCardService: ConfiguracaoCardService,
@@ -95,13 +99,20 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
+    // SUPER_ADMIN vê o painel da plataforma; as chamadas abaixo são de clínica (exigem tenant).
+    this.superAdmin = this.ControleAcessoService.isSuperAdmin();
+    if (this.superAdmin) { return; }
     this.themeSubscription = this.themeService.currentTheme$.subscribe(
       (theme) => this.isDarkMode = theme.isDark
     );
+    this.verificarStatusAssinatura();
+  }
+
+  /** Carrega os dados do painel; só roda com a assinatura em dia (SUSPENSA devolve 403 em todas). */
+  private carregarPainel(): void {
     this.carregarConfiguracoesGraficos();
     this.carregarConfiguracoesCards();
     this.carregarEstatisticas();
-    this.verificarStatusAssinatura();
   }
 
   ngAfterViewInit(): void {
@@ -151,7 +162,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   
   private carregarEstatisticasAdmin(): void {
     this.carregandoEstatisticas = true;
-    const organizacaoId = this.tokenService.obterOrganizacaoId();
+    const organizacaoId = this.authService.getOrganizacaoId();
     if (organizacaoId) {
       forkJoin({
         consultas: this.consultaApiService.getEstatisticasDashboardAdminOrg(organizacaoId),
@@ -197,7 +208,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private carregarEstatisticasMedico(): void {
     this.carregandoEstatisticas = true;
-    const usuarioLogado = this.tokenService.getUsuarioLogado();
+    const usuarioLogado = this.authService.getCurrentUser();
     if (!usuarioLogado?.id) {
       console.error('Usuário não logado');
       this.carregandoEstatisticas = false;
@@ -236,18 +247,28 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.assinaturaApiService.minhaAssinatura().subscribe({
       next: (assinatura) => {
+        if (assinatura.status === 'SUSPENSA') {
+          // Sem acesso ao painel: evita a enxurrada de 403. Só quem pode abrir /minha-assinatura
+          // é levado para lá (os demais perfis cairiam no RoleGuard, que manda ao login).
+          if (this.authService.isOrgAdmin() || this.authService.isRecepcionista()) {
+            this.router.navigate(['/minha-assinatura']);
+          }
+          return;
+        }
+        this.carregarPainel();
         if (assinatura.status === 'INADIMPLENTE') {
           this.assinaturaInadimplente = true;
-          const dataVencimento = new Date(assinatura.dataVencimento);
-          this.dataLimiteAcesso = new Date(dataVencimento);
-          this.dataLimiteAcesso.setDate(this.dataLimiteAcesso.getDate() + 10);
-
-          const hoje = new Date();
-          const diffMs = this.dataLimiteAcesso.getTime() - hoje.getTime();
-          this.diasRestantes = Math.max(0, Math.ceil(diffMs / (1000 * 60 * 60 * 24)));
+          const dataLimite = calcularDataSuspensao(assinatura.dataVencimento);
+          if (dataLimite) {
+            this.dataLimiteAcesso = dataLimite;
+            this.diasRestantes = Math.max(0, diasCalendarioAte(dataLimite));
+          }
         }
       },
-      error: (err) => console.warn('Não foi possível verificar status da assinatura:', err)
+      error: (err) => {
+        console.warn('Não foi possível verificar status da assinatura:', err);
+        this.carregarPainel();
+      }
     });
   }
 

@@ -6,6 +6,8 @@ import { ReactiveFormsModule } from '@angular/forms';
 
 // Componentes Públicos
 import { AssinaturaPlanejamentoComponent } from './assinatura-planejamento/assinatura-planejamento.component';
+import { AssinaturaRetornoComponent } from './assinatura-retorno/assinatura-retorno.component';
+import { CadastroSaasComponent } from './cadastro-saas/cadastro-saas.component';
 import { LandingPageComponent } from './landing-page/landing-page.component';
 import { LoginComponent } from './login/login.component';
 import { QuestionarioSaudeComponent } from './questionario-saude/questionario-saude.component';
@@ -20,6 +22,8 @@ const routes: Routes = [
 @NgModule({
   declarations: [
     AssinaturaPlanejamentoComponent,
+    AssinaturaRetornoComponent,
+    CadastroSaasComponent,
     LandingPageComponent,
     LoginComponent,
     QuestionarioSaudeComponent,
@@ -31,6 +35,10 @@ const routes: Routes = [
     SharedModule,
     RouterModule.forChild(routes)
   ],
-  exports: [RouterModule]
+  exports: [
+    AssinaturaRetornoComponent,
+    CadastroSaasComponent,
+    RouterModule
+  ]
 })
 export class PublicoModule { }

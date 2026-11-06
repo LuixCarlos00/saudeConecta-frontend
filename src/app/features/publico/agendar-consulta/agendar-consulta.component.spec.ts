@@ -1,0 +1,109 @@
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { of, throwError } from 'rxjs';
+import Swal from 'sweetalert2';
+
+import { AgendarConsultaComponent } from './agendar-consulta.component';
+import { ConsultaApiService } from 'src/app/services/api/consulta-api.service';
+import {
+  IMPORTS_TESTE_PADRAO,
+  PROVIDERS_TESTE_PADRAO,
+  SCHEMAS_TESTE_PADRAO,
+} from 'src/app/testing/configuracao-teste';
+
+describe('AgendarConsultaComponent', () => {
+  let component: AgendarConsultaComponent;
+  let fixture: ComponentFixture<AgendarConsultaComponent>;
+  let atualizarConsulta: jasmine.Spy;
+
+  const consultaOriginal = {
+    id: 10,
+    profissionalId: 2,
+    pacienteId: 3,
+    dataHora: '2026-05-10T09:00:00',
+    especialidadeId: 1,
+    duracaoMinutos: 30,
+    formaPagamentoId: 2,
+    valor: 150,
+    observacoes: '',
+  };
+
+  beforeEach(async () => {
+    atualizarConsulta = jasmine.createSpy('atualizarConsultabyOrg').and.returnValue(of({}));
+
+    await TestBed.configureTestingModule({
+      declarations: [AgendarConsultaComponent],
+      imports: IMPORTS_TESTE_PADRAO,
+      providers: [
+        ...PROVIDERS_TESTE_PADRAO.filter((p) => p.provide !== MAT_DIALOG_DATA),
+        { provide: MAT_DIALOG_DATA, useValue: { consulta: consultaOriginal } },
+      ],
+      schemas: SCHEMAS_TESTE_PADRAO,
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(AgendarConsultaComponent);
+    component = fixture.componentInstance;
+    (component as any).consultaApi = { atualizarConsultabyOrg: atualizarConsulta } as Partial<ConsultaApiService>;
+    spyOn(Swal, 'fire').and.returnValue(Promise.resolve({ isConfirmed: true } as any));
+    fixture.detectChanges();
+  });
+
+  async function salvarComValor(valor: unknown): Promise<any> {
+    component.FormularioConsulta.patchValue({ valor });
+    await (component as any)._salvarEdicao();
+    return atualizarConsulta.calls.mostRecent().args[1];
+  }
+
+  it('deve criar', () => {
+    expect(component).toBeTruthy();
+  });
+
+  it('3.8: deve permitir zerar o valor na edição', async () => {
+    const payload = await salvarComValor(0);
+    expect(payload.valor).toBe(0);
+  });
+
+  it('3.8: deve manter o valor original quando o campo está vazio', async () => {
+    const payload = await salvarComValor(null);
+    expect(payload.valor).toBe(150);
+  });
+
+  it('3.8: deve enviar o valor informado', async () => {
+    const payload = await salvarComValor('99.5');
+    expect(payload.valor).toBe(99.5);
+  });
+
+  describe('_agendarNovaConsulta - verificarDisponibilidade', () => {
+    let verificar: jasmine.Spy;
+    let cadastrar: jasmine.Spy;
+    let dialogJaExiste: jasmine.Spy;
+
+    beforeEach(() => {
+      verificar = jasmine.createSpy('verificarDisponibilidadeByOrg');
+      cadastrar = jasmine.createSpy('cadastrarConsultaByOrg');
+      (component as any).consultaApi = { verificarDisponibilidadeByOrg: verificar, cadastrarConsultaByOrg: cadastrar };
+      dialogJaExiste = spyOn((component as any).notificacao, 'mostrarSnackbar');
+      spyOn(console, 'error');
+      component.Medico = { id: 1, especialidades: [{ id: 1 }] } as any;
+      component.Paciente = { codigo: 2 } as any;
+      component.DataSelecionada = '2026-11-10';
+      component.FormularioConsulta.patchValue({ Pagamento: 'PIX', Hora: '09:00', valor: '100' });
+    });
+
+    it('erro de rede/500 mostra erro genérico, não "horário ocupado" e NÃO limpa o form', async () => {
+      verificar.and.returnValue(throwError(() => ({ status: 500 })));
+      await (component as any)._agendarNovaConsulta();
+      expect(dialogJaExiste).not.toHaveBeenCalled();
+      expect(cadastrar).not.toHaveBeenCalled();
+      expect(Swal.fire).toHaveBeenCalledWith(jasmine.objectContaining({ icon: 'error' }));
+      expect(component.FormularioConsulta.get('Hora')?.value).toBe('09:00');
+    });
+
+    it('horário ocupado (true) mostra aviso de duplicidade', async () => {
+      verificar.and.returnValue(of(true));
+      await (component as any)._agendarNovaConsulta();
+      expect(dialogJaExiste).toHaveBeenCalledWith(jasmine.stringContaining('Ja Existe uma consulta marcadas'), 10000);
+      expect(cadastrar).not.toHaveBeenCalled();
+    });
+  });
+});

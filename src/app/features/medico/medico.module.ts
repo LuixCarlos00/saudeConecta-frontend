@@ -10,7 +10,6 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { RelatorioModule } from 'src/app/features/relatorio/relatorio.module';
 
 // Componentes de Agenda
-import { AgendaMedicoGerenciamentoComponent } from './agenda/agenda-medico-gerenciamento.component';
 import { TabelaAgendaMedicoComponent } from './tabela-agenda/tabela-agenda-medico.component';
 
 // Componentes de Dados Pessoais
@@ -30,6 +29,7 @@ import { ProntuarioDentistaComponent } from './prontuario-dentista/prontuario-de
 import { AbaCodigosTussCidMedicoComponent } from './prontuario-medico/aba-codigos-tuss-cid-medico/aba-codigos-tuss-cid-medico.component';
 import { AbaExameObjetivoMedicoComponent } from './prontuario-medico/aba-exame-objetivo-medico/aba-exame-objetivo-medico.component';
 import { AbaHistoricoMedicoComponent } from './prontuario-medico/aba-historico-medico/aba-historico-medico.component';
+import { HistoricoRegistroCardComponent } from './historico-registro-card/historico-registro-card.component';
 import { AbaIdentificacaoMedicoComponent } from './prontuario-medico/aba-identificacao-medico/aba-identificacao-medico.component';
 import { AbaPlanejamentoMedicoComponent } from './prontuario-medico/aba-planejamento-medico/aba-planejamento-medico.component';
  import { EditarProntuarioMedicoComponent } from './prontuario-medico/editar-prontuario-medico/editar-prontuario-medico.component';
@@ -46,7 +46,6 @@ const routes: Routes = [
 @NgModule({
   declarations: [
     // Componentes de Agenda
-    AgendaMedicoGerenciamentoComponent,
     TabelaAgendaMedicoComponent,
     
     // Componentes de Dados Pessoais
@@ -66,6 +65,7 @@ const routes: Routes = [
     AbaCodigosTussCidMedicoComponent,
     AbaExameObjetivoMedicoComponent,
     AbaHistoricoMedicoComponent,
+    HistoricoRegistroCardComponent,
     AbaIdentificacaoMedicoComponent,
     AbaPlanejamentoMedicoComponent,
     AbaQuestionarioSaudeComponent,

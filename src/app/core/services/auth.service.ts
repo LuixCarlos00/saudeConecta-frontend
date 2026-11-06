@@ -21,6 +21,7 @@ export interface DecodedToken {
   tipoUsuario?: number;
   perfil?: string;
   tipoProfissional?: string;
+  nome?: string;
 }
 
 /**
@@ -111,6 +112,15 @@ export class AuthService implements OnDestroy {
   }
 
   /**
+   * Solicita a recuperação de senha por e-mail.
+   * @param dados objeto com o e-mail informado (ex.: `{ email }`)
+   * @returns resposta do back (pode trazer `message`)
+   */
+  esqueciMinhaSenha(dados: any): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/Home/esqueciMinhaSenha`, dados);
+  }
+
+  /**
    * Processa resposta de login bem-sucedido
    */
   handleLoginSuccess(token: string): boolean {
@@ -170,13 +180,6 @@ export class AuthService implements OnDestroy {
    */
   hasToken(): boolean {
     return !!localStorage.getItem(STORAGE_KEYS.TOKEN);
-  }
-
-  /**
-   * Remove token do localStorage
-   */
-  removeToken(): void {
-    localStorage.removeItem(STORAGE_KEYS.TOKEN);
   }
 
   /**
@@ -300,13 +303,6 @@ export class AuthService implements OnDestroy {
   }
 
   /**
-   * Verifica se o usuário pertence a uma organização
-   */
-  hasOrganization(): boolean {
-    return this.getOrganizacaoId() !== null;
-  }
-
-  /**
    * Obtém o perfil do usuário atual
    */
   getUserProfile(): string {
@@ -323,31 +319,10 @@ export class AuthService implements OnDestroy {
   }
 
   /**
-   * Verifica se o usuário é ROOT (Super Administrador)
-   */
-  isRoot(): boolean {
-    return this.hasProfile('ROOT');
-  }
-
-  /**
-   * Verifica se o usuário é GESTOR
-   */
-  isGestor(): boolean {
-    return this.hasProfile('GESTOR');
-  }
-
-  /**
    * Verifica se o usuário é CLINICO
    */
   isClinico(): boolean {
     return this.hasProfile('CLINICO');
-  }
-
-  /**
-   * Verifica se o usuário é ASSISTENTE
-   */
-  isAssistente(): boolean {
-    return this.hasProfile('ASSISTENTE');
   }
 
   /**
@@ -410,11 +385,4 @@ export class AuthService implements OnDestroy {
      }
 
   // ========== Métodos de API ==========
-
-  /**
-   * Verifica se um usuário existe
-   */
-  checkUserExists(username: string): Observable<any> {
-    return this.http.get(`${this.apiUrl}${API_ENDPOINTS.AUTH.CHECK_USER}/${username}`);
-  }
 }

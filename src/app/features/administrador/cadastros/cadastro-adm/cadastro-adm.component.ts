@@ -3,12 +3,13 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MatDialogRef } from '@angular/material/dialog';
 import { Subscription } from 'rxjs';
-import Swal from 'sweetalert2';
+import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
 import { AdministradorApiService } from 'src/app/services/api/administrador-api.service';
 import { FiltroStateService } from 'src/app/services/state/filtro-state.service';
 import { cpfValidator } from 'src/app/util/validators/cpf-form.validator';
 import { CpfValidator } from 'src/app/util/validators/cpf.validator';
 import { getFieldError } from 'src/app/util/validators/field-errors';
+import { extrairMensagemErro } from '../../../../shared/utils/mensagem-erro-http';
 
 @Component({
   selector: 'app-cadastro-adm',
@@ -26,6 +27,7 @@ export class CadastroAdmComponent implements OnInit, OnDestroy {
   @ViewChild('scrollArea', { static: false }) scrollArea!: ElementRef;
 
   constructor(
+    private notificacao: NotificacaoService,
     private router: Router,
     private form: FormBuilder,
     private administradorApi: AdministradorApiService,
@@ -107,7 +109,7 @@ export class CadastroAdmComponent implements OnInit, OnDestroy {
 
   cadastra() {
     if (!this.FormularioADM.valid) {
-      Swal.fire({
+      this.notificacao.fire({
         icon: 'warning',
         title: 'Formulário incompleto',
         text: 'Por favor, preencha todos os campos obrigatórios.',
@@ -118,7 +120,7 @@ export class CadastroAdmComponent implements OnInit, OnDestroy {
     const form = this.FormularioADM.value;
 
     if (!form.cpf || form.cpf.length < 11) {
-      Swal.fire({
+      this.notificacao.fire({
         icon: 'warning',
         title: 'CPF inválido',
         text: 'O CPF é obrigatório e será usado como login.',
@@ -136,7 +138,7 @@ export class CadastroAdmComponent implements OnInit, OnDestroy {
         const duration = endTime - startTime;
 
         this.isLoading = false;
-        Swal.fire({
+        this.notificacao.fire({
           icon: 'success',
           title: 'Sucesso!',
           text: 'Administrador cadastrado com sucesso. As credenciais serão enviadas por email.',
@@ -162,23 +164,25 @@ export class CadastroAdmComponent implements OnInit, OnDestroy {
     let titulo = 'Erro';
     let icone: 'error' | 'warning' = 'error';
 
+    const mensagemBack = extrairMensagemErro(error);
+
     if (error.status === 422 && error.error?.message) {
       icone = 'warning';
       titulo = 'Limite do plano atingido';
       errorMessage = error.error.message;
+    } else if (mensagemBack?.includes('Duplicate entry') && mensagemBack.includes('administrador.AdmEmail_UNIQUE')) {
+      errorMessage = 'Já existe um(a) administrador(a) registrado com esse email.';
+    } else if (mensagemBack) {
+      errorMessage = mensagemBack;
     } else if (error.status === 409) {
-      errorMessage = 'CPF já cadastrado no sistema. Por favor, verifique os dados.';
-    } else if (error.error) {
-      if (error.error.includes && error.error.includes('Email já cadastrado no sistema')) {
-        errorMessage = 'Email já cadastrado no sistema. Por favor, utilize outro email.';
-      } else if (error.error.includes && error.error.includes('Duplicate entry') && error.error.includes('administrador.AdmEmail_UNIQUE')) {
-        errorMessage = 'Já existe um(a) administrador(a) registrado com esse email.';
-      } else {
-        errorMessage = typeof error.error === 'string' ? error.error : 'Erro ao processar cadastro.';
-      }
+      errorMessage = 'Já existe um cadastro com esses dados. Por favor, verifique as informações.';
+    } else if (error.status === 0) {
+      errorMessage = 'Sem conexão com o servidor.';
+    } else if (error.status >= 500) {
+      errorMessage = 'Erro no servidor, tente novamente.';
     }
 
-    Swal.fire({
+    this.notificacao.fire({
       icon: icone,
       title: titulo,
       text: errorMessage,

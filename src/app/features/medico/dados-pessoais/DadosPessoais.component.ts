@@ -5,9 +5,10 @@ import { ProfissionalApiService } from 'src/app/services/api/profissional-api.se
 import { SecretariaApiService } from 'src/app/services/api/secretaria-api.service';
 import { UsuarioApiService } from 'src/app/services/api/usuario-api.service';
 import { CepApiService } from 'src/app/services/api/cep-api.service';
-import { tokenService } from 'src/app/util/Token/Token.service';
+import { AuthService } from 'src/app/core/services/auth.service';
 import { Subscription } from 'rxjs';
-import Swal from 'sweetalert2';
+import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
+import { extrairMensagemErro } from 'src/app/shared/utils/mensagem-erro-http';
 import { EspecialidadeApiService } from "../../../services/api/especialidade-api.service";
 import { ufOptions } from '../../../util/variados/options/options';
 import { getFieldError } from 'src/app/util/validators/field-errors';
@@ -85,7 +86,8 @@ export class DadosPessoaisComponent implements OnInit, OnDestroy {
   getFieldError = getFieldError;
 
   constructor(
-    private tokenService: tokenService,
+    private notificacao: NotificacaoService,
+    private authService: AuthService,
     private profissionalApiService: ProfissionalApiService,
     private secretariaApiService: SecretariaApiService,
     private usuarioApiService: UsuarioApiService,
@@ -135,8 +137,7 @@ export class DadosPessoaisComponent implements OnInit, OnDestroy {
       nacionalidade: ['', nacionalidadeValidator()],
     });
 
-    this.tokenService.decodificaToken();
-    this.tokenService.UsuarioLogadoValue$.subscribe((paciente) => {
+    this.authService.currentUser$.subscribe((paciente) => {
       if (paciente) this.UsuarioLogado = paciente;
     });
   }
@@ -178,7 +179,7 @@ export class DadosPessoaisComponent implements OnInit, OnDestroy {
         error: (error) => {
           console.error('Erro ao carregar dados:', error);
           this.isLoading = false;
-          Swal.fire({
+          this.notificacao.fire({
             icon: 'error',
             title: 'Erro ao carregar dados',
             text: 'Não foi possível carregar seus dados. Tente novamente.',
@@ -224,22 +225,7 @@ export class DadosPessoaisComponent implements OnInit, OnDestroy {
   }
 
   private mostrarFeedbackCep(tipo: 'success' | 'error', mensagem: string): void {
-    const Toast = Swal.mixin({
-      toast: true,
-      position: 'top-end',
-      showConfirmButton: false,
-      timer: 3000,
-      timerProgressBar: true,
-      didOpen: (toast) => {
-        toast.addEventListener('mouseenter', Swal.stopTimer);
-        toast.addEventListener('mouseleave', Swal.resumeTimer);
-      }
-    });
-
-    Toast.fire({
-      icon: tipo,
-      title: mensagem
-    });
+    this.notificacao.mostrarToast(tipo, mensagem);
   }
 
   /**
@@ -426,7 +412,7 @@ export class DadosPessoaisComponent implements OnInit, OnDestroy {
       this.dadosPessoaisForm.markAllAsTouched();
       this.enderecoForm.markAllAsTouched();
 
-      Swal.fire({
+      this.notificacao.fire({
         icon: 'warning',
         title: 'Campos obrigatórios',
         text: 'Por favor, preencha todos os campos obrigatórios marcados com *',
@@ -443,10 +429,10 @@ export class DadosPessoaisComponent implements OnInit, OnDestroy {
         },
         error: (error) => {
           console.error('Erro ao atualizar dados pessoais:', error);
-          Swal.fire({
+          this.notificacao.fire({
             icon: 'error',
             title: 'Erro ao salvar',
-            text: 'Não foi possível atualizar os dados. Tente novamente.',
+            text: extrairMensagemErro(error) || 'Não foi possível atualizar os dados. Tente novamente.',
           });
         },
       });
@@ -458,7 +444,7 @@ export class DadosPessoaisComponent implements OnInit, OnDestroy {
       this.organizacaoForm.markAllAsTouched();
       this.enderecoForm.markAllAsTouched();
 
-      Swal.fire({
+      this.notificacao.fire({
         icon: 'warning',
         title: 'Campos obrigatórios',
         text: 'Por favor, preencha todos os campos obrigatórios marcados com *',
@@ -475,10 +461,10 @@ export class DadosPessoaisComponent implements OnInit, OnDestroy {
         },
         error: (error) => {
           console.error('Erro ao atualizar dados do administrador:', error);
-          Swal.fire({
+          this.notificacao.fire({
             icon: 'error',
             title: 'Erro ao salvar',
-            text: 'Não foi possível atualizar os dados. Tente novamente.',
+            text: extrairMensagemErro(error) || 'Não foi possível atualizar os dados. Tente novamente.',
           });
         },
       });
@@ -488,7 +474,7 @@ export class DadosPessoaisComponent implements OnInit, OnDestroy {
     if (this.dadosPessoaisForm.invalid) {
       this.dadosPessoaisForm.markAllAsTouched();
 
-      Swal.fire({
+      this.notificacao.fire({
         icon: 'warning',
         title: 'Campos obrigatórios',
         text: 'Por favor, preencha todos os campos obrigatórios marcados com *',
@@ -505,17 +491,17 @@ export class DadosPessoaisComponent implements OnInit, OnDestroy {
         },
         error: (error) => {
           console.error('Erro ao atualizar dados da secretária:', error);
-          Swal.fire({
+          this.notificacao.fire({
             icon: 'error',
             title: 'Erro ao salvar',
-            text: 'Não foi possível atualizar os dados. Tente novamente.',
+            text: extrairMensagemErro(error) || 'Não foi possível atualizar os dados. Tente novamente.',
           });
         },
       });
   }
 
   private exibirSucessoSalvar(): void {
-    Swal.fire({
+    this.notificacao.fire({
       icon: 'success',
       title: 'Dados atualizados com sucesso',
       showConfirmButton: false,

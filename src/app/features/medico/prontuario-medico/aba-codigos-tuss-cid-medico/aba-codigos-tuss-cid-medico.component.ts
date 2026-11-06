@@ -1,9 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
-import { Tuss_terminologia_Unificada_Saude_Suplementar } from 'src/app/util/variados/options/tuss-Terminologia-unificada-saude-splementar';
-import { Cid_codigo_internaciona_doecas } from 'src/app/util/variados/options/cid-codigo-internaciona-doecas';
+import { CodigosTussCidService } from 'src/app/services/codigos/codigos-tuss-cid.service';
+import { extrairItensCodigo, extrairItensSolicitacaoExame } from 'src/app/shared/utils/codigos-tuss-cid';
 
 @Component({
   selector: 'app-aba-codigos-tuss-cid-medico',
@@ -14,6 +14,7 @@ import { Cid_codigo_internaciona_doecas } from 'src/app/util/variados/options/ci
 export class AbaCodigosTussCidMedicoComponent {
 
   private readonly MAX_AUTOCOMPLETE_RESULTS = 15;
+  private readonly codigosService = inject(CodigosTussCidService);
 
   // ── Registros TUSS ──
   tussSelecionados: any[] = [];
@@ -40,12 +41,12 @@ export class AbaCodigosTussCidMedicoComponent {
   cidExameResultados: any[] = [];
 
   // ── TUSS ──
-  filtrarTuss(): void {
+  async filtrarTuss(): Promise<void> {
     const termo = this.buscaTuss?.trim().toLowerCase();
     if (!termo || termo.length < 2) { this.tussResultados = []; return; }
-    this.tussResultados = Tuss_terminologia_Unificada_Saude_Suplementar
-      .filter(item => item.codigo.toLowerCase().includes(termo) || item.descricao.toLowerCase().includes(termo))
-      .slice(0, this.MAX_AUTOCOMPLETE_RESULTS);
+    const resultados = await this.codigosService.buscarTuss(termo, this.MAX_AUTOCOMPLETE_RESULTS);
+    // Descarta resposta atrasada se o usuário já digitou outra coisa durante o carregamento.
+    if (this.buscaTuss?.trim().toLowerCase() === termo) { this.tussResultados = resultados; }
   }
 
   adicionarTuss(item: any): void {
@@ -68,12 +69,12 @@ export class AbaCodigosTussCidMedicoComponent {
   }
 
   // ── CID ──
-  filtrarCid(): void {
+  async filtrarCid(): Promise<void> {
     const termo = this.buscaCid?.trim().toLowerCase();
     if (!termo || termo.length < 2) { this.cidResultados = []; return; }
-    this.cidResultados = Cid_codigo_internaciona_doecas
-      .filter(item => item.codigo.toLowerCase().includes(termo) || item.label.toLowerCase().includes(termo))
-      .slice(0, this.MAX_AUTOCOMPLETE_RESULTS);
+    const resultados = await this.codigosService.buscarCid(termo, this.MAX_AUTOCOMPLETE_RESULTS);
+    // Descarta resposta atrasada se o usuário já digitou outra coisa durante o carregamento.
+    if (this.buscaCid?.trim().toLowerCase() === termo) { this.cidResultados = resultados; }
   }
 
   adicionarCid(item: any): void {
@@ -96,12 +97,12 @@ export class AbaCodigosTussCidMedicoComponent {
   }
 
   // ── Solicitação de Exame — TUSS ──
-  filtrarTussExame(): void {
+  async filtrarTussExame(): Promise<void> {
     const termo = this.buscaTussExame?.trim().toLowerCase();
     if (!termo || termo.length < 2) { this.tussExameResultados = []; return; }
-    this.tussExameResultados = Tuss_terminologia_Unificada_Saude_Suplementar
-      .filter(item => item.codigo.toLowerCase().includes(termo) || item.descricao.toLowerCase().includes(termo))
-      .slice(0, this.MAX_AUTOCOMPLETE_RESULTS);
+    const resultados = await this.codigosService.buscarTuss(termo, this.MAX_AUTOCOMPLETE_RESULTS);
+    // Descarta resposta atrasada se o usuário já digitou outra coisa durante o carregamento.
+    if (this.buscaTussExame?.trim().toLowerCase() === termo) { this.tussExameResultados = resultados; }
   }
 
   adicionarTussExame(item: any): void {
@@ -119,12 +120,12 @@ export class AbaCodigosTussCidMedicoComponent {
   }
 
   // ── Solicitação de Exame — CID ──
-  filtrarCidExame(): void {
+  async filtrarCidExame(): Promise<void> {
     const termo = this.buscaCidExame?.trim().toLowerCase();
     if (!termo || termo.length < 2) { this.cidExameResultados = []; return; }
-    this.cidExameResultados = Cid_codigo_internaciona_doecas
-      .filter(item => item.codigo.toLowerCase().includes(termo) || item.label.toLowerCase().includes(termo))
-      .slice(0, this.MAX_AUTOCOMPLETE_RESULTS);
+    const resultados = await this.codigosService.buscarCid(termo, this.MAX_AUTOCOMPLETE_RESULTS);
+    // Descarta resposta atrasada se o usuário já digitou outra coisa durante o carregamento.
+    if (this.buscaCidExame?.trim().toLowerCase() === termo) { this.cidExameResultados = resultados; }
   }
 
   adicionarCidExame(item: any): void {
@@ -155,12 +156,33 @@ export class AbaCodigosTussCidMedicoComponent {
     this.textoSolicitacaoExame = linhas.join('\n');
   }
 
+  /**
+   * Preenche a aba com dados existentes (modo edição) ou com um rascunho.
+   * As listas selecionadas só vêm no formato de getDadosRascunho(); sem elas, mantém as atuais.
+   * @param dados Objeto com os campos da aba
+   */
   setDados(dados: any): void {
     if (!dados) return;
     this.Prescricao = dados.prescricao || '';
     this.textoTuss = dados.tussTexto || '';
     this.textoCid = dados.cidTexto || '';
     this.textoSolicitacaoExame = dados.solicitacaoExameTexto || '';
+    if (Array.isArray(dados.tussSelecionados)) { this.tussSelecionados = [...dados.tussSelecionados]; }
+    else if (this.tussSelecionados.length === 0) {
+      // Edição: o back guarda só o texto. Sem reconstruir a lista, adicionar um código apagaria o texto salvo.
+      this.tussSelecionados = extrairItensCodigo(this.textoTuss);
+    }
+    if (Array.isArray(dados.cidSelecionados)) { this.cidSelecionados = [...dados.cidSelecionados]; }
+    else if (this.cidSelecionados.length === 0) {
+      this.cidSelecionados = extrairItensCodigo(this.textoCid).map(i => ({ codigo: i.codigo, label: i.descricao }));
+    }
+    const exames = extrairItensSolicitacaoExame(this.textoSolicitacaoExame);
+    if (Array.isArray(dados.tussExameSelecionados)) { this.tussExameSelecionados = [...dados.tussExameSelecionados]; }
+    else if (this.tussExameSelecionados.length === 0) { this.tussExameSelecionados = exames.tuss; }
+    if (Array.isArray(dados.cidExameSelecionados)) { this.cidExameSelecionados = [...dados.cidExameSelecionados]; }
+    else if (this.cidExameSelecionados.length === 0) {
+      this.cidExameSelecionados = exames.cid.map(i => ({ codigo: i.codigo, label: i.descricao }));
+    }
   }
 
   getDados(): any {
@@ -170,6 +192,20 @@ export class AbaCodigosTussCidMedicoComponent {
       tussTexto: this.textoTuss,
       cidTexto: this.textoCid,
       solicitacaoExameTexto: this.textoSolicitacaoExame,
+    };
+  }
+
+  /**
+   * Retorna getDados() mais as listas selecionadas (TUSS/CID e exames), que não vão no payload final
+   * mas são necessárias para o rascunho: sem elas, remover um item após restaurar apagaria o texto.
+   */
+  getDadosRascunho(): any {
+    return {
+      ...this.getDados(),
+      tussSelecionados: this.tussSelecionados,
+      cidSelecionados: this.cidSelecionados,
+      tussExameSelecionados: this.tussExameSelecionados,
+      cidExameSelecionados: this.cidExameSelecionados,
     };
   }
 }

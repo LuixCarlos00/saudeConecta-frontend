@@ -5,16 +5,18 @@ import { ConsultaApiService } from 'src/app/services/api/consulta-api.service';
 import { ConsultaStateService } from 'src/app/services/state/consulta-state.service';
 import { MatDialog } from '@angular/material/dialog';
 import { CronologiaComponent } from 'src/app/util/variados/Cronologia/cronologia.component';
-import Swal from 'sweetalert2';
+import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
+import { extrairMensagemErro } from 'src/app/shared/utils/mensagem-erro-http';
 import { EditarConsultasComponent } from './Editar-Consultas/Editar-Consultas.component';
 import { ObservacoesComponent } from './Observacoes/Observacoes.component';
 import { Consultav2 } from 'src/app/util/variados/interfaces/consulta/consultav2';
 import { Usuario } from 'src/app/util/variados/interfaces/usuario/usuario';
-import { tokenService } from 'src/app/util/Token/Token.service';
+import { AuthService } from 'src/app/core/services/auth.service';
 import { ProntuarioDentistaApiService } from 'src/app/services/api/prontuario-dentista-api.service';
-import { ProntuarioApiService } from 'src/app/services/api/prontuario-api.service';
+import { AcoesConsultaService } from '../acoes-consulta.service';
 import { PlanejamentoTerapeuticoApiService } from 'src/app/services/api/planejamento-terapeutico-api.service';
 import { RelatorioService } from 'src/app/features/relatorio/relatorio.service';
+import { formatarDataLocal } from '../../../../shared/utils/data-local';
     
 type TipoVisualizacao = 'AGENDADA' | 'REALIZADA';
 type TipoPeriodo = 'diario' | 'semanal' | 'mensal' | 'anual';
@@ -56,20 +58,20 @@ export class AgendaComponent implements OnInit, OnDestroy {
 
 
   constructor(
+    private notificacao: NotificacaoService,
     private formBuilder: FormBuilder,
     private consultaApi: ConsultaApiService,
     public dialog: MatDialog,
     private consultaState: ConsultaStateService,
-    private tokenService: tokenService,
+    private authService: AuthService,
     private prontuarioDentistaApiService: ProntuarioDentistaApiService,
-    private prontuarioApiService: ProntuarioApiService,
+    private acoesConsulta: AcoesConsultaService,
     private planejamentoApi: PlanejamentoTerapeuticoApiService,
     private relatorioService: RelatorioService
   ) { }
 
   async ngOnInit() {
-    this.tokenService.decodificaToken();
-    this.tokenService.UsuarioLogadoValue$
+    this.authService.currentUser$
       .pipe(takeUntil(this.destroy$))
       .subscribe((usuario) => {
         if (usuario?.id) { this.UsuarioLogado = usuario; }
@@ -78,13 +80,13 @@ export class AgendaComponent implements OnInit, OnDestroy {
     this.buscarDadosParaTabela();
     this.FormularioAgenda = this.formBuilder.group({ busca: [''] });
 
-    this.consultaState.dadosCronologia$.subscribe((dados) => {
+    this.consultaState.dadosCronologia$.pipe(takeUntil(this.destroy$)).subscribe((dados) => {
       if (!this.emModoBuscaLocal && dados && (Array.isArray(dados) || 'alteracao' in dados)) {
         this.processarDadosCronologia(dados);
       }
     });
 
-    this.consultaState.cadastroRealizado$.subscribe((dados) => {
+    this.consultaState.cadastroRealizado$.pipe(takeUntil(this.destroy$)).subscribe((dados) => {
       if (dados) { this.Recarregar(); }
     });
   }
@@ -109,14 +111,14 @@ export class AgendaComponent implements OnInit, OnDestroy {
         const tipo: TipoVisualizacao = this.Finalizadas ? 'REALIZADA' : 'AGENDADA';
         this.dataSource = this.filtrarConsultasPorTipo(dados, tipo);
         if (this.Finalizadas) {
-          this.verificarPlanejamentosAssinados();
+          this.acoesConsulta.verificarPlanejamentosAssinados(this.dataSource, this.planejamentosAssinados, this.destroy$);
         } else {
-          this.verificarQuestionariosRespondidos();
+          this.acoesConsulta.verificarQuestionariosRespondidos(this.dataSource, this.questionariosRespondidos, this.destroy$);
         }
       }
     } catch (error) {
       console.error(error);
-      Swal.fire('Erro', 'Erro ao buscar dados da tabela.', 'error');
+      this.notificacao.fire('Erro', 'Erro ao buscar dados da tabela.', 'error');
     }
   }
 
@@ -135,22 +137,8 @@ export class AgendaComponent implements OnInit, OnDestroy {
     this.buscarDadosParaTabela();
   }
 
-  /**
-   * Formata uma data local no padrão YYYY-MM-DD, sem sofrer o deslocamento
-   * de fuso horário que `toISOString()` (baseado em UTC) causaria.
-   *
-   * @param data Data a ser formatada
-   * @returns Data no formato YYYY-MM-DD
-   */
-  private formatarDataParaApi(data: Date): string {
-    const ano = data.getFullYear();
-    const mes = (data.getMonth() + 1).toString().padStart(2, '0');
-    const dia = data.getDate().toString().padStart(2, '0');
-    return `${ano}-${mes}-${dia}`;
-  }
-
   private async buscarConsultasPorPeriodo(): Promise<any[] | undefined> {
-    const dataRef = this.formatarDataParaApi(this.dataAtual);
+    const dataRef = formatarDataLocal(this.dataAtual);
     switch (this.tipoPeriodoSelecionado) {
       case 'diario': return this.consultaApi.buscarDoDiaAtual(dataRef).toPromise();
       case 'semanal': return this.consultaApi.buscarDaSemanaAtual(dataRef).toPromise();
@@ -172,10 +160,10 @@ export class AgendaComponent implements OnInit, OnDestroy {
         this.dataSource = dados;
       } else {
         this.buscarDadosParaTabela();
-        Swal.fire('Erro', 'Pesquisa não encontrada.', 'error');
+        this.notificacao.fire('Erro', 'Pesquisa não encontrada.', 'error');
       }
     } catch (error) {
-      Swal.fire('Erro', 'Falha ao fazer a busca.', 'error');
+      this.notificacao.fire('Erro', 'Falha ao fazer a busca.', 'error');
       console.error(error);
     } finally {
       setTimeout(() => {
@@ -217,7 +205,7 @@ export class AgendaComponent implements OnInit, OnDestroy {
   // ─────────────────────────────────────────────────────────────────────────────
 
   async Deletar(consulta: Consultav2) {
-    const confirmar = await Swal.fire({
+    const confirmar = await this.notificacao.fire({
       title: 'Confirmar exclusão',
       text: `Deseja excluir a consulta de ${consulta.pacienteNome}? O questionário de saúde será excluído.`,
       icon: 'warning',
@@ -232,14 +220,14 @@ export class AgendaComponent implements OnInit, OnDestroy {
 
     try {
       await this.consultaApi.deletarConsulta(consulta.id).toPromise();
-      Swal.fire('Deletado', 'Consulta deletada com sucesso', 'success');
+      this.notificacao.fire('Deletado', 'Consulta deletada com sucesso', 'success');
       this.buscarDadosParaTabela();
     } catch (error: any) {
       const status = error?.status;
       if (status === 409) {
-        Swal.fire('Exclusão bloqueada', 'Esta consulta possui prontuário clínico e não pode ser excluída. Os dados clínicos devem ser preservados.', 'info');
+        this.notificacao.fire('Exclusão bloqueada', 'Esta consulta possui prontuário clínico e não pode ser excluída. Os dados clínicos devem ser preservados.', 'info');
       } else {
-        Swal.fire('Erro', 'Erro ao deletar consulta', 'error');
+        this.notificacao.fire('Erro', 'Erro ao deletar consulta', 'error');
       }
     }
   }
@@ -305,7 +293,7 @@ Editar(consulta: any) {
     }
 
      if (config.requiresMotivo) {
-      Swal.fire({
+      this.notificacao.fire({
         title: config.title,
         text: config.text,
         icon: 'question',
@@ -330,7 +318,7 @@ Editar(consulta: any) {
       });
     } else {
       // Status que não precisam de motivo
-      Swal.fire({
+      this.notificacao.fire({
         title: config.title,
         text: config.text,
         icon: 'question',
@@ -370,7 +358,7 @@ Editar(consulta: any) {
           'REALIZADA': 'Realizada',
           'PAGO': 'Paga'
         };
-        Swal.fire(`${statusLabels[status]}!`, `Consulta marcada como ${statusLabels[status].toLowerCase()} com sucesso.`, 'success');
+        this.notificacao.fire(`${statusLabels[status]}!`, `Consulta marcada como ${statusLabels[status].toLowerCase()} com sucesso.`, 'success');
         this.buscarDadosParaTabela();
       },
       error: (err: any) => {
@@ -382,7 +370,7 @@ Editar(consulta: any) {
           'REALIZADA': 'Realizada',
           'PAGO': 'Paga'
         };
-        Swal.fire('Erro', `Não foi possível alterar a consulta para ${statusLabels[status].toLowerCase()}.`, 'error');
+        this.notificacao.fire('Erro', extrairMensagemErro(err) || `Não foi possível alterar a consulta para ${statusLabels[status].toLowerCase()}.`, 'error');
       },
     });
   }
@@ -410,7 +398,7 @@ Editar(consulta: any) {
   }
 
   VerMotivoCancelamento(motivo: string): void {
-    Swal.fire({
+    this.notificacao.fire({
       title: 'Motivo do Cancelamento',
       html: `<div style="text-align: left; padding: 10px;">
                <p style="margin: 0; color: #374151; font-size: 14px; line-height: 1.6;">
@@ -483,7 +471,7 @@ Editar(consulta: any) {
 
 
       if (dadosArray && Array.isArray(dadosArray) && dadosArray.length === 0) {
-        Swal.fire({
+        this.notificacao.fire({
           icon: 'info',
           title: 'Nenhum resultado',
           text: `Nenhuma consulta ${this.Finalizadas ? 'finalizada' : 'agendada'} encontrada com os filtros selecionados.`,
@@ -505,7 +493,7 @@ Editar(consulta: any) {
           // Recarrega os dados da tabela para refletir a alteração
           this.buscarDadosParaTabela();
 
-          Swal.fire({
+          this.notificacao.fire({
             icon: 'success',
             title: 'Alteração realizada!',
             text: `Consulta alterada para ${alteracao.novoStatus} com sucesso.`,
@@ -514,10 +502,10 @@ Editar(consulta: any) {
         },
         error: (error) => {
           console.error('Erro ao processar alteração específica:', error);
-          Swal.fire({
+          this.notificacao.fire({
             icon: 'error',
             title: 'Erro na alteração',
-            text: 'Não foi possível realizar a alteração. Tente novamente.',
+            text: extrairMensagemErro(error) || 'Não foi possível realizar a alteração. Tente novamente.',
             confirmButtonColor: '#dc2626'
           });
         }
@@ -528,59 +516,22 @@ Editar(consulta: any) {
   // Gerar Link do Planejamento Terapêutico
   // ─────────────────────────────────────────────────────────────────────────────
 
-  /**
-   * Busca o prontuário mais recente da consulta de acordo com o tipo de profissional.
-   * Dentista: usa ProntuarioDentistaApiService (retorna campo "codigo")
-   * Médico: usa ProntuarioApiService (retorna campo "codigoProntuario")
-   */
-  private buscarProntuarioMaisRecente(consulta: Consultav2): Observable<any> {
-    const tipo = this.relatorioService.detectarTipoProfissional(consulta);
-    if (tipo === 'DENTISTA') {
-      return this.prontuarioDentistaApiService.buscarProntuarioDentistaById(consulta.id);
-    }
-    return this.prontuarioApiService.buscarMaisRecentePorConsulta(consulta.id);
-  }
-
-  /**
-   * Extrai o ID do prontuário independente do tipo (dentista: "codigo", médico: "codigoProntuario")
-   */
-  private extrairCodigoProntuario(prontuario: any): number | null {
-    return prontuario?.codigo ?? prontuario?.codigoProntuario ?? null;
-  }
-
-  private verificarPlanejamentosAssinados(): void {
-    const finalizadas = this.dataSource.filter(c => c.status === 'REALIZADA');
-    for (const consulta of finalizadas) {
-      if (!consulta?.id || this.planejamentosAssinados.has(consulta.id)) continue;
-      this.buscarProntuarioMaisRecente(consulta)
-        .pipe(takeUntil(this.destroy$))
-        .subscribe({
-          next: (prontuario: any) => {
-            const plans = prontuario?.planejamentosTerapeuticos || prontuario?.planejamentos || [];
-            if (plans.length > 0 && plans.every((p: any) => p.statusAssinatura === 'ASSINADO')) {
-              this.planejamentosAssinados.add(consulta.id);
-            }
-          }
-        });
-    }
-  }
-
   gerarLinkPlanejamento(element: Consultav2): void {
     if (!element?.id) return;
     const tipoProfissional = this.relatorioService.detectarTipoProfissional(element);
-    this.buscarProntuarioMaisRecente(element)
+    this.acoesConsulta.buscarProntuarioMaisRecente(element)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (prontuario: any) => {
-          const codigoProntuario = this.extrairCodigoProntuario(prontuario);
+          const codigoProntuario = this.acoesConsulta.extrairCodigoProntuario(prontuario);
           if (!codigoProntuario) {
-            Swal.fire('Aviso', 'Nenhum prontuário encontrado para esta consulta.', 'warning');
+            this.notificacao.fire('Aviso', 'Nenhum prontuário encontrado para esta consulta.', 'warning');
             return;
           }
           const plans = prontuario?.planejamentosTerapeuticos || prontuario?.planejamentos || [];
           if (plans.length > 0 && plans.every((p: any) => p.statusAssinatura === 'ASSINADO')) {
             this.planejamentosAssinados.add(element.id);
-            Swal.fire('Aviso', 'Todos os itens do planejamento já foram assinados pelo paciente.', 'info');
+            this.notificacao.fire('Aviso', 'Todos os itens do planejamento já foram assinados pelo paciente.', 'info');
             return;
           }
           this.planejamentoApi.gerarLinkAssinatura(codigoProntuario, tipoProfissional)
@@ -590,7 +541,7 @@ Editar(consulta: any) {
                 const baseUrl = window.location.origin;
                 const link = `${baseUrl}/#/assinatura-planejamento/${resp.token}`;
                 navigator.clipboard.writeText(link).catch(() => {});
-                Swal.fire({
+                this.notificacao.fire({
                   icon: 'success',
                   title: 'Link Gerado!',
                   html: `<p style="font-size:0.9rem;">Copie o link abaixo e envie ao paciente:</p>
@@ -600,12 +551,12 @@ Editar(consulta: any) {
                 });
               },
               error: () => {
-                Swal.fire('Erro', 'Não foi possível gerar o link do planejamento.', 'error');
+                this.notificacao.fire('Erro', 'Não foi possível gerar o link do planejamento.', 'error');
               }
             });
         },
         error: () => {
-          Swal.fire('Erro', 'Não foi possível buscar o prontuário desta consulta.', 'error');
+          this.notificacao.fire('Erro', 'Não foi possível buscar o prontuário desta consulta.', 'error');
         }
       });
   }
@@ -613,21 +564,6 @@ Editar(consulta: any) {
   // ─────────────────────────────────────────────────────────────────────────────
   // Gerar Link do Questionário de Saúde
   // ─────────────────────────────────────────────────────────────────────────────
-  private verificarQuestionariosRespondidos(): void {
-    const confirmadas = this.dataSource.filter(c => c.status === 'CONFIRMADA');
-    for (const consulta of confirmadas) {
-      if (!consulta?.id || this.questionariosRespondidos.has(consulta.id)) continue;
-      this.prontuarioDentistaApiService.buscarQuestionarioSaude(consulta.id)
-        .pipe(takeUntil(this.destroy$))
-        .subscribe({
-          next: (resp: any) => {
-            if (resp?.respondido) {
-              this.questionariosRespondidos.add(consulta.id);
-            }
-          }
-        });
-    }
-  }
 
   gerarLinkQuestionario(element: Consultav2): void {
     if (!element?.id) return;
@@ -639,7 +575,7 @@ Editar(consulta: any) {
         next: (resp: any) => {
           if (resp?.respondido) {
             this.questionariosRespondidos.add(element.id);
-            Swal.fire('Aviso', 'O questionário de saúde já foi respondido e assinado pelo paciente.', 'info');
+            this.notificacao.fire('Aviso', 'O questionário de saúde já foi respondido e assinado pelo paciente.', 'info');
             return;
           }
           this.executarGeracaoLinkQuestionario(element);
@@ -659,7 +595,7 @@ Editar(consulta: any) {
           const baseUrl = window.location.origin;
           const link = `${baseUrl}/#/questionario-saude/${resp.token}`;
           navigator.clipboard.writeText(link).then(() => {
-            Swal.fire({
+            this.notificacao.fire({
               icon: 'success',
               title: 'Link Gerado!',
               html: `<p style="font-size:0.9rem;">Link copiado para a área de transferência.</p>
@@ -668,7 +604,7 @@ Editar(consulta: any) {
               confirmButtonText: 'OK'
             });
           }).catch(() => {
-            Swal.fire({
+            this.notificacao.fire({
               icon: 'info',
               title: 'Link Gerado',
               html: `<p style="font-size:0.9rem;">Copie o link abaixo e envie ao paciente:</p>
@@ -679,7 +615,7 @@ Editar(consulta: any) {
           });
         },
         error: () => {
-          Swal.fire('Erro', 'Não foi possível gerar o link do questionário.', 'error');
+          this.notificacao.fire('Erro', 'Não foi possível gerar o link do questionário.', 'error');
         }
       });
   }
@@ -694,36 +630,7 @@ Editar(consulta: any) {
    * @returns URL completa para wa.me com mensagem codificada
    */
   gerarLinkWhatsApp(consulta: Consultav2): string {
-    if (!consulta.pacienteTelefone) { return ''; }
-
-    const telefone = this.formatarTelefoneWhatsApp(consulta.pacienteTelefone);
-    const mensagem = this.gerarMensagemWhatsApp(consulta);
-    return `https://wa.me/${telefone}?text=${encodeURIComponent(mensagem)}`;
+    return this.acoesConsulta.gerarLinkWhatsApp(consulta);
   }
 
-  /**
-   * Gera a mensagem de confirmação de consulta com dados dinâmicos.
-   * @param consulta - Dados da consulta
-   * @returns Mensagem personalizada com nome, médico, data e horário
-   */
-  private gerarMensagemWhatsApp(consulta: Consultav2): string {
-    const dataHora = new Date(consulta.dataHora);
-    const data = dataHora.toLocaleDateString('pt-BR');
-    const horario = dataHora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-    const paciente = consulta.pacienteNome || 'Paciente';
-    const medico = consulta.profissionalNome || 'Profissional';
-
-    return `Olá ${paciente}, tudo bem?\n\nGostaríamos de confirmar sua consulta com ${medico} no dia ${data} às ${horario}.\n\nPor favor, confirme sua presença respondendo esta mensagem.\n\nAtenciosamente,\nEquipe da Clínica.`;
-  }
-
-  /**
-   * Formata o número de telefone para o padrão internacional brasileiro.
-   * Remove caracteres não numéricos e adiciona o código do país.
-   * @param telefone - Número de telefone em qualquer formato
-   * @returns Número formatado com código 55 do Brasil
-   */
-  private formatarTelefoneWhatsApp(telefone: string): string {
-    const numeros = telefone.replace(/\D/g, '');
-    return numeros.startsWith('55') ? numeros : '55' + numeros;
-  }
 }

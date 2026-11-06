@@ -1,7 +1,7 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import Swal from 'sweetalert2';
+import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
 
 import { ConsultaApiService } from 'src/app/services/api/consulta-api.service';
 import { ProfissionalApiService } from 'src/app/services/api/profissional-api.service';
@@ -9,6 +9,7 @@ import { EspecialidadeApiService, EspecialidadeResponse } from 'src/app/services
 import { ConsultaStateService } from 'src/app/services/state/consulta-state.service';
 import { Profissional } from '../interfaces/medico/Profissional';
 import { ControleAcessoApiService } from 'src/app/services/api/controle-acesso-api.service';
+import { formatarDataLocal } from '../../../shared/utils/data-local';
 
 interface FiltrosPesquisa {
   medico: Profissional | null;
@@ -71,6 +72,7 @@ export class CronologiaComponent implements OnInit {
   }
 
   constructor(
+    private notificacao: NotificacaoService,
     public dialogRef: MatDialogRef<CronologiaComponent>,
     @Inject(MAT_DIALOG_DATA) public data: { Pesquisa: boolean },
     private profissionalApiService: ProfissionalApiService,
@@ -133,7 +135,7 @@ export class CronologiaComponent implements OnInit {
       },
       error: (error) => {
         console.error('Erro ao carregar médicos:', error);
-        Swal.fire('Erro', 'Não foi possível carregar a lista de médicos', 'error');
+        this.notificacao.fire('Erro', 'Não foi possível carregar a lista de médicos', 'error');
         this.carregando = false;
       }
     });
@@ -153,7 +155,7 @@ export class CronologiaComponent implements OnInit {
       },
       error: (error) => {
         console.error('Erro ao carregar especialidades:', error);
-        Swal.fire('Erro', 'Não foi possível carregar a lista de especialidades', 'error');
+        this.notificacao.fire('Erro', 'Não foi possível carregar a lista de especialidades', 'error');
         this.carregandoEspecialidades = false;
       }
     });
@@ -194,7 +196,7 @@ export class CronologiaComponent implements OnInit {
   VerificaTipoDePesquisa(): void {
     const filtros = this.obterFiltros();
     if (!this.validarFiltros(filtros)) {
-      Swal.fire('Atenção', 'Selecione pelo menos um filtro para pesquisar.', 'warning');
+      this.notificacao.fire('Atenção', 'Selecione pelo menos um filtro para pesquisar.', 'warning');
       return;
     }
 
@@ -234,7 +236,7 @@ export class CronologiaComponent implements OnInit {
     }
 
     if (dataInicio > dataFim) {
-      Swal.fire('Atenção', 'A data inicial não pode ser posterior à data final', 'warning');
+      this.notificacao.fire('Atenção', 'A data inicial não pode ser posterior à data final', 'warning');
       return false;
     }
 
@@ -298,7 +300,7 @@ export class CronologiaComponent implements OnInit {
           this.consultaState.setDadosCronologia(dadosFiltrados);
           this.dialogRef.close();
         } else {
-          Swal.fire({
+          this.notificacao.fire({
             icon: 'info',
             title: 'Nenhum resultado',
             text: 'Nenhuma consulta encontrada com os filtros selecionados.',
@@ -310,7 +312,7 @@ export class CronologiaComponent implements OnInit {
         this.carregando = false;
         console.error('Erro na busca:', error);
 
-        Swal.fire({
+        this.notificacao.fire({
           icon: 'error',
           title: 'Erro na pesquisa',
           text: 'Não foi possível realizar a pesquisa. Tente novamente.',
@@ -337,10 +339,7 @@ export class CronologiaComponent implements OnInit {
   }
 
   private formatarData(data: Date): string {
-    return data.toISOString().split('T')[0];
+    return formatarDataLocal(data);
   }
 
-  fecharDialog(): void {
-    this.dialogRef.close();
-  }
 }

@@ -9,6 +9,8 @@ interface PerguntaSaude {
   observacao: string;
 }
 
+import { extrairMensagemErro } from 'src/app/shared/utils/mensagem-erro-http';
+
 @Component({
   selector: 'app-questionario-saude',
   templateUrl: './questionario-saude.component.html',
@@ -19,6 +21,8 @@ export class QuestionarioSaudeComponent implements OnInit {
   token = '';
   loading = true;
   erro = '';
+  /** Falha transitória no envio: o formulário continua visível para tentar de novo. */
+  erroEnvio = '';
   enviado = false;
   enviando = false;
 
@@ -152,6 +156,7 @@ export class QuestionarioSaudeComponent implements OnInit {
   enviarQuestionario(): void {
     if (!this.formularioValido) return;
     this.enviando = true;
+    this.erroEnvio = '';
 
     const respostas = this.perguntas.map(p => ({
       pergunta: p.texto,
@@ -170,8 +175,16 @@ export class QuestionarioSaudeComponent implements OnInit {
         this.enviado = true;
         this.enviando = false;
       },
-      error: () => {
-        this.erro = 'Erro ao enviar questionário. Tente novamente.';
+      error: (err) => {
+        const mensagem = extrairMensagemErro(err);
+        if (err.status === 404 || err.status === 410) {
+          // Link expirado ou já usado: reenviar não adianta, então troca o formulário pela tela de erro.
+          this.erro = mensagem ?? (err.status === 404
+            ? 'Questionário não encontrado ou link expirado.'
+            : 'Este link já foi utilizado e expirou.');
+        } else {
+          this.erroEnvio = mensagem ?? 'Erro ao enviar questionário. Tente novamente.';
+        }
         this.enviando = false;
       }
     });

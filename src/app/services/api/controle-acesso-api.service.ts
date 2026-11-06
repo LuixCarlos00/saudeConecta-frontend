@@ -1,20 +1,12 @@
 import { Injectable } from '@angular/core';
-import { tokenService } from 'src/app/util/Token/Token.service';
+import { AuthService } from 'src/app/core/services/auth.service';
 
 export interface UsuarioLogado {
   id: number;
   aud: string;
-  exp: string;
+  exp: number;
   iss: string;
   sub: string;
-}
-
-export enum TipoUsuario {
-  SUPER_ADMIN = 'ROLE_SUPER_ADMIN',
-  ADMIN = 'ROLE_ADMIN',
-  GERENTE = 'ROLE_GERENTE',
-  PROFISSIONAL = 'ROLE_PROFISSIONAL',
-  RECEPCIONISTA = 'ROLE_RECEPCIONISTA'
 }
 
 @Injectable({
@@ -24,45 +16,51 @@ export class ControleAcessoApiService {
   UsuarioLogado: UsuarioLogado = {
     id: 0,
     aud: '',
-    exp: '',
+    exp: 0,
     iss: '',
     sub: '',
   };
 
-  constructor(private tokenService: tokenService) {
-    this.tokenService.decodificaToken();
-    this.tokenService.UsuarioLogadoValue$.subscribe((usuario) => {
+  constructor(private authService: AuthService) {
+    this.authService.currentUser$.subscribe((usuario) => {
       if (usuario) {
         this.UsuarioLogado = usuario;
       }
     });
   }
 
-  private possuiRole(role: string): boolean {
-    const autorizacao = this.tokenService.obterAutorizacao();
-    return autorizacao.includes(role);
-  }
-
   // ========== VERIFICAÇÕES POR TIPO ==========
+  // A identidade vem do AuthService (fonte única); aqui ficam só as regras de menu/permissão.
 
   isSuperAdmin(): boolean {
-    return this.possuiRole('ROLE_SUPER_ADMIN');
+    return this.authService.isSuperAdmin();
   }
 
+  /** Admin de organização (ROLE_ADMIN sem ROLE_SUPER_ADMIN). */
   isAdmin(): boolean {
-    return this.possuiRole('ROLE_ADMIN') && !this.possuiRole('ROLE_SUPER_ADMIN');
+    return this.authService.isOrgAdmin();
   }
 
   isGerente(): boolean {
-    return this.possuiRole('ROLE_GERENTE');
+    return this.authService.getUserRole().includes('ROLE_GERENTE');
   }
 
   isProfissional(): boolean {
-    return this.possuiRole('ROLE_PROFISSIONAL');
+    return this.authService.isProfissional();
   }
 
   isRecepcionista(): boolean {
-    return this.possuiRole('ROLE_RECEPCIONISTA');
+    return this.authService.isRecepcionista();
+  }
+
+  /**
+   * Indica se o usuário logado pode editar/excluir um Administrador.
+   * O back exige ROLE_ADMIN (ROOT e GESTOR) nesses endpoints; ASSISTENTE/CLINICO recebem 403.
+   *
+   * @returns true para Super Admin ou ROLE_ADMIN
+   */
+  podeGerenciarAdministrador(): boolean {
+    return this.isSuperAdmin() || this.isAdmin();
   }
 
   // ========== VERIFICAÇÕES DE PERMISSÃO POR MENU ==========
@@ -92,11 +90,6 @@ export class ControleAcessoApiService {
     return this.isAdmin() || this.isRecepcionista() || (this.isProfissional() && !this.isDashboardAdministrativo());
   }
 
-  // Menu Pacientes: Profissional apenas (não Admin)
-  podeVerMenuPacientes(): boolean {
-    return this.isProfissional() && !this.isDashboardAdministrativo();
-  }
-
   // Menu Mensageria: Super Admin, Admin
   podeVerMenuMensageria(): boolean {
     return this.isSuperAdmin() || this.isAdmin();
@@ -112,40 +105,10 @@ export class ControleAcessoApiService {
     return this.isProfissional() && !this.isDashboardAdministrativo();
   }
 
-  // ========== RETROCOMPATIBILIDADE ==========
-
-  podeGerenciarOrganizacao(): boolean {
-    return this.isSuperAdmin() || this.isAdmin() || this.isGerente() || this.isRecepcionista();
-  }
-
-  podeGerenciarUsuarios(): boolean {
-    return this.podeVerMenuUsuarios();
-  }
-
-  podeAcessarMinhaAgenda(): boolean {
-    return this.podeVerMenuMinhaAgenda();
-  }
-
-  podeAcessarAgenda(): boolean {
-    return this.podeVerMenuAgenda();
-  }
-
-  podeAcessarProntuario(): boolean {
-    return this.podeVerMenuProntuario();
-  }
-
   // ========== RETROCOMPATIBILIDADE (métodos antigos) ==========
 
   AcessoMedico(): boolean {
     return this.isProfissional();
-  }
-
-  AcessoAdministrador(): boolean {
-    return this.isAdmin();
-  }
-
-  AcessoSecretaria(): boolean {
-    return this.isRecepcionista();
   }
 
   // ========== UTILITÁRIOS ==========

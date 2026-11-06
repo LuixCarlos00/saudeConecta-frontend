@@ -2,6 +2,7 @@ import { Prontuario } from 'src/app/util/variados/interfaces/Prontuario/Prontuar
 import { Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { jsPDF } from 'jspdf';
+import { formatarDataLocal } from '../../../../shared/utils/data-local';
 
 @Component({
   selector: 'app-prescricao-medico',
@@ -9,7 +10,7 @@ import { jsPDF } from 'jspdf';
   styleUrls: ['./prescricao-medico.component.css']
 })
 export class PrescricaoMedicoComponent implements OnInit {
-   dataAtual = new Date().toISOString().split('T')[0];
+   dataAtual = formatarDataLocal(new Date());
 
   // Dados do profissional
   nomeMedico: string = '';

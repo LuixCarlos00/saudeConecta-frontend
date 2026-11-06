@@ -2,12 +2,16 @@ import { ProfissionalApiService } from 'src/app/services/api/profissional-api.se
 import { Component, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { ConsultaApiService } from 'src/app/services/api/consulta-api.service';
+import { extrairMensagemErro } from 'src/app/shared/utils/mensagem-erro-http';
+import { ConsultaApiService, HorarioOcupado } from 'src/app/services/api/consulta-api.service';
 import { PacienteApiService } from 'src/app/services/api/paciente-api.service';
 import { Paciente } from 'src/app/util/variados/interfaces/paciente/paciente';
 import { HoradaConsulta } from 'src/app/util/variados/options/options';
-import Swal from 'sweetalert2';
+import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
+import { FORMAS_PAGAMENTO, rotuloFormaPagamento } from 'src/app/shared/constants/forma-pagamento.constant';
 import { Profissional } from 'src/app/util/variados/interfaces/medico/Profissional';
+import { escaparHtml } from 'src/app/shared/utils/escapar-html';
+import { formatarDataLocal, formatarHoraLocal } from 'src/app/shared/utils/data-local';
 
 interface ConsultaEdit {
   id: number;
@@ -30,12 +34,15 @@ interface ConsultaEdit {
 }
 
 
+const DURACAO_PADRAO_MINUTOS = 30;
+
 @Component({
   selector: 'app-Editar-Consultas',
   templateUrl: './Editar-Consultas.component.html',
   styleUrls: ['./Editar-Consultas.component.css'],
 })
 export class EditarConsultasComponent implements OnInit {
+  readonly formasPagamento = FORMAS_PAGAMENTO;
 
   FormGroupConsulta!: FormGroup;
   Hora: any[] = [];
@@ -50,6 +57,7 @@ export class EditarConsultasComponent implements OnInit {
   carregandoHorarios = false;
 
   constructor(
+    private notificacao: NotificacaoService,
     public dialogRef: MatDialogRef<EditarConsultasComponent>,
     @Inject(MAT_DIALOG_DATA) public data: { consulta: ConsultaEdit },
     private pacienteApi: PacienteApiService,
@@ -102,8 +110,8 @@ export class EditarConsultasComponent implements OnInit {
 
   private preencherFormulario(): void {
     const dataHora = new Date(this.consulta.dataHora);
-    const dataFormatada = this.formatarDataParaInput(dataHora);
-    const horarioFormatado = this.formatarHorario(dataHora);
+    const dataFormatada = formatarDataLocal(dataHora);
+    const horarioFormatado = formatarHoraLocal(dataHora);
 
     this.FormGroupConsulta.patchValue({
       data: dataFormatada,
@@ -112,19 +120,6 @@ export class EditarConsultasComponent implements OnInit {
       formaPagamento: this.consulta.formaPagamentoId,
       valor: this.consulta.valor || 0, // PREENCHER VALOR
     });
-  }
-
-  private formatarDataParaInput(data: Date): string {
-    const ano = data.getFullYear();
-    const mes = String(data.getMonth() + 1).padStart(2, '0');
-    const dia = String(data.getDate()).padStart(2, '0');
-    return `${ano}-${mes}-${dia}`;
-  }
-
-  private formatarHorario(data: Date): string {
-    const horas = String(data.getHours()).padStart(2, '0');
-    const minutos = String(data.getMinutes()).padStart(2, '0');
-    return `${horas}:${minutos}`;
   }
 
   private formatarDataExibicao(dataInput: string): string {
@@ -152,7 +147,7 @@ export class EditarConsultasComponent implements OnInit {
     const filtro = this.FormGroupConsulta.get('FiltroPesquisaPaciente')?.value;
 
     if (!pesquisa && filtro !== 5) {
-      Swal.fire('Atenção', 'Digite algo para pesquisar', 'warning');
+      this.notificacao.fire('Atenção', 'Digite algo para pesquisar', 'warning');
       return;
     }
 
@@ -162,11 +157,11 @@ export class EditarConsultasComponent implements OnInit {
       this.showResultadoPaciente = true;
 
       if (this.dadosPacientePassandoTabela.length === 0) {
-        Swal.fire('Aviso', 'Nenhum paciente encontrado', 'info');
+        this.notificacao.fire('Aviso', 'Nenhum paciente encontrado', 'info');
       }
     } catch (error) {
       console.error('Erro ao pesquisar pacientes:', error);
-      Swal.fire('Erro', 'Erro ao pesquisar pacientes', 'error');
+      this.notificacao.fire('Erro', 'Erro ao pesquisar pacientes', 'error');
     }
   }
 
@@ -182,7 +177,7 @@ export class EditarConsultasComponent implements OnInit {
     this.showResultadoPaciente = false;
     this.FormGroupConsulta.patchValue({ PesquisaPaciente: '' });
 
-    Swal.fire({
+    this.notificacao.fire({
       icon: 'success',
       title: 'Paciente selecionado',
       text: paciente.nome,
@@ -197,7 +192,7 @@ export class EditarConsultasComponent implements OnInit {
     const filtro = this.FormGroupConsulta.get('FiltroPesquisaMedico')?.value;
 
     if (!pesquisa && filtro !== 5) {
-      Swal.fire('Atenção', 'Digite algo para pesquisar', 'warning');
+      this.notificacao.fire('Atenção', 'Digite algo para pesquisar', 'warning');
       return;
     }
 
@@ -207,11 +202,11 @@ export class EditarConsultasComponent implements OnInit {
       this.showResultadoMedico = true;
 
       if (this.dadosMedicoPassandoTabela.length === 0) {
-        Swal.fire('Aviso', 'Nenhum médico encontrado', 'info');
+        this.notificacao.fire('Aviso', 'Nenhum médico encontrado', 'info');
       }
     } catch (error) {
       console.error('Erro ao pesquisar médicos:', error);
-      Swal.fire('Erro', 'Erro ao pesquisar médicos', 'error');
+      this.notificacao.fire('Erro', 'Erro ao pesquisar médicos', 'error');
     }
   }
 
@@ -245,7 +240,7 @@ export class EditarConsultasComponent implements OnInit {
         : [...HoradaConsulta];
     }
 
-    Swal.fire({
+    this.notificacao.fire({
       icon: 'success',
       title: 'Médico selecionado',
       text: medico.nome,
@@ -270,7 +265,7 @@ export class EditarConsultasComponent implements OnInit {
 
   private async buscarHorariosDisponiveis(data: string): Promise<void> {
     if (!this.consulta.profissionalId) {
-      Swal.fire({
+      this.notificacao.fire({
         icon: 'warning',
         title: 'Atenção',
         text: 'Selecione um médico primeiro',
@@ -283,22 +278,22 @@ export class EditarConsultasComponent implements OnInit {
     this.Hora = [];
 
     try {
+      const novoIntervalo = this.medicoSelecionado?.tempoConsultaMinutos;
       const horariosOcupados = await this.consultaApi
-        .buscarHorariosOcupadosByOrg(this.consulta.profissionalId, data)
+        .buscarHorariosOcupadosComDuracao(this.consulta.profissionalId, data, novoIntervalo || DURACAO_PADRAO_MINUTOS)
         .toPromise();
 
 
-      // Remove o horário da consulta sendo editada (para que ele apareça como disponível)
-      const horarioAtual = this.formatarHorario(new Date(this.consulta.dataHora));
+      // O horário da consulta editada só é liberado na data original; em outra data ele não pertence a ela
+      const mesmaDataOriginal = data === formatarDataLocal(new Date(this.consulta.dataHora));
+      const horarioAtual = formatarHoraLocal(new Date(this.consulta.dataHora));
       const ocupadosFiltrados = (horariosOcupados || []).filter(
-        horario => horario.substring(0, 5) !== horarioAtual
+        horario => !mesmaDataOriginal || horario.inicio.substring(0, 5) !== horarioAtual
       );
-
-      const novoIntervalo = this.medicoSelecionado?.tempoConsultaMinutos;
 
       if (!novoIntervalo) {
         // Sem tempo de consulta definido: usa horários padrão e filtra os ocupados
-        const ocupadosFormatados = ocupadosFiltrados.map(h => h.substring(0, 5));
+        const ocupadosFormatados = ocupadosFiltrados.map(h => h.inicio.substring(0, 5));
         this.Hora = [...HoradaConsulta].filter(
           h => !ocupadosFormatados.includes(h.value.substring(0, 5))
         );
@@ -307,7 +302,7 @@ export class EditarConsultasComponent implements OnInit {
       }
 
       if (this.Hora.length === 0) {
-        Swal.fire({
+        this.notificacao.fire({
           icon: 'info',
           title: 'Sem horários disponíveis',
           text: 'Não há horários disponíveis para esta data. Escolha outra data.',
@@ -317,7 +312,7 @@ export class EditarConsultasComponent implements OnInit {
 
     } catch (error) {
       console.error('Erro ao buscar horários ocupados:', error);
-      Swal.fire({
+      this.notificacao.fire({
         icon: 'error',
         title: 'Erro',
         text: 'Falha ao buscar horários disponíveis!',
@@ -337,9 +332,9 @@ export class EditarConsultasComponent implements OnInit {
    * (ex.: fim do último bloco ocupado) e avançam com o novo intervalo.
    *
    * @param novoIntervalo Novo tempo de consulta em minutos
-   * @param horariosOcupados Lista de horários ocupados no formato "HH:mm:ss" ou "HH:mm"
+   * @param horariosOcupados Blocos ocupados: início "HH:mm:ss" e duração real em minutos
    */
-  private gerarHorariosRespeitandoOcupados(novoIntervalo: number, horariosOcupados: string[]): void {
+  private gerarHorariosRespeitandoOcupados(novoIntervalo: number, horariosOcupados: HorarioOcupado[]): void {
     const inicioExpediente = 8 * 60;  // 08:00 em minutos
     const fimExpediente = 18 * 60;    // 18:00 em minutos
 
@@ -352,21 +347,18 @@ export class EditarConsultasComponent implements OnInit {
     // Converte horários ocupados para minutos e ordena
     const ocupadosMinutos = horariosOcupados
       .map(h => {
-        const partes = h.substring(0, 5).split(':');
-        return parseInt(partes[0]) * 60 + parseInt(partes[1]);
+        const partes = h.inicio.substring(0, 5).split(':');
+        return {
+          inicio: parseInt(partes[0]) * 60 + parseInt(partes[1]),
+          duracao: h.duracaoMinutos > 0 ? h.duracaoMinutos : DURACAO_PADRAO_MINUTOS,
+        };
       })
-      .sort((a, b) => a - b);
-
-    // Deduz o intervalo antigo pela diferença entre horários consecutivos
-    let intervaloAntigo = novoIntervalo;
-    if (ocupadosMinutos.length >= 2) {
-      intervaloAntigo = ocupadosMinutos[1] - ocupadosMinutos[0];
-    }
+      .sort((a, b) => a.inicio - b.inicio);
 
     // Monta grupos contíguos de horários ocupados
     const gruposOcupados: { inicio: number; fim: number }[] = [];
-    for (const inicio of ocupadosMinutos) {
-      const fim = inicio + intervaloAntigo;
+    for (const { inicio, duracao } of ocupadosMinutos) {
+      const fim = inicio + duracao;
       const ultimoGrupo = gruposOcupados[gruposOcupados.length - 1];
       if (ultimoGrupo && inicio <= ultimoGrupo.fim) {
         ultimoGrupo.fim = fim > ultimoGrupo.fim ? fim : ultimoGrupo.fim;
@@ -436,7 +428,7 @@ export class EditarConsultasComponent implements OnInit {
   // ==================== SALVAR ====================
   Salvar(): void {
     if (this.FormGroupConsulta.invalid) {
-      Swal.fire({
+      this.notificacao.fire({
         icon: 'warning',
         title: 'Atenção',
         text: 'Preencha todos os campos obrigatórios',
@@ -454,7 +446,7 @@ export class EditarConsultasComponent implements OnInit {
     const formaPagamentoTexto = this.obterTextoPagamento(formValues.formaPagamento);
     const htmlConfirmacao = this.construirHtmlConfirmacao(formValues, formaPagamentoTexto);
 
-    Swal.fire({
+    this.notificacao.fire({
       html: htmlConfirmacao,
       icon: 'question',
       showCancelButton: true,
@@ -470,14 +462,21 @@ export class EditarConsultasComponent implements OnInit {
   }
 
   private obterTextoPagamento(id: number): string {
-    const formasPagamento: Record<number, string> = {
-      1: 'Dinheiro',
-      2: 'Convênio',
-      3: 'PIX'
-    };
-    return formasPagamento[id] || 'Não informado';
+    return rotuloFormaPagamento(id);
   }
 
+  /** Classes do ícone Font Awesome de cada forma de pagamento (id da tabela forma_pagamento). */
+  iconeFormaPagamento(id: number): string {
+    const icones: Record<number, string> = {
+      1: 'fa-solid fa-user',
+      2: 'fa-solid fa-hospital',
+      3: 'fa-solid fa-credit-card',
+      4: 'fa-solid fa-credit-card',
+      5: 'fa-brands fa-pix',
+      6: 'fa-solid fa-money-bill-wave',
+    };
+    return icones[id] ?? 'fa-solid fa-credit-card';
+  }
 
   private construirHtmlConfirmacao(formValues: any, formaPagamento: string): string {
     return `
@@ -487,11 +486,11 @@ export class EditarConsultasComponent implements OnInit {
         <div style="display: grid; gap: 8px;">
           <div style="display: flex; gap: 8px;">
             <span style="color: #6b7280; min-width: 80px;">Médico:</span>
-            <strong style="color: #1f2937;">${this.consulta.profissionalNome}</strong>
+            <strong style="color: #1f2937;">${escaparHtml(this.consulta.profissionalNome)}</strong>
           </div>
           <div style="display: flex; gap: 8px;">
             <span style="color: #6b7280; min-width: 80px;">Paciente:</span>
-            <strong style="color: #1f2937;">${this.consulta.pacienteNome}</strong>
+            <strong style="color: #1f2937;">${escaparHtml(this.consulta.pacienteNome)}</strong>
           </div>
           <div style="display: flex; gap: 8px;">
             <span style="color: #6b7280; min-width: 80px;">Data:</span>
@@ -499,7 +498,7 @@ export class EditarConsultasComponent implements OnInit {
           </div>
           <div style="display: flex; gap: 8px;">
             <span style="color: #6b7280; min-width: 80px;">Horário:</span>
-            <strong style="color: #1f2937;">${formValues.horario}</strong>
+            <strong style="color: #1f2937;">${escaparHtml(formValues.horario)}</strong>
           </div>
           <div style="display: flex; gap: 8px;">
             <span style="color: #6b7280; min-width: 80px;">Valor:</span>
@@ -507,13 +506,13 @@ export class EditarConsultasComponent implements OnInit {
           </div>
           <div style="display: flex; gap: 8px;">
             <span style="color: #6b7280; min-width: 80px;">Pagamento:</span>
-            <strong style="color: #1f2937;">${formaPagamento}</strong>
+            <strong style="color: #1f2937;">${escaparHtml(formaPagamento)}</strong>
           </div>
         </div>
         ${formValues.observacao ? `
           <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid #e5e7eb;">
             <span style="color: #6b7280; font-size: 13px;">Observação:</span>
-            <p style="margin: 4px 0 0 0; color: #374151; font-size: 13px;">${formValues.observacao}</p>
+            <p style="margin: 4px 0 0 0; color: #374151; font-size: 13px;">${escaparHtml(formValues.observacao)}</p>
           </div>
         ` : ''}
       </div>
@@ -558,7 +557,7 @@ export class EditarConsultasComponent implements OnInit {
   }
 
   private exibirSucessoEdicao(): void {
-    Swal.fire({
+    this.notificacao.fire({
       icon: 'success',
       title: 'Sucesso!',
       text: 'Consulta editada com sucesso.',
@@ -571,9 +570,9 @@ export class EditarConsultasComponent implements OnInit {
 
   private exibirErroEdicao(erro: any): void {
     console.error('Erro ao editar consulta:', erro);
-    const mensagem = erro?.error?.message || 'Não foi possível editar a consulta. Tente novamente.';
+    const mensagem = extrairMensagemErro(erro) || 'Não foi possível editar a consulta. Tente novamente.';
 
-    Swal.fire({
+    this.notificacao.fire({
       icon: 'error',
       title: 'Erro',
       text: mensagem,

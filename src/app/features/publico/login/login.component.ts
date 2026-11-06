@@ -5,13 +5,11 @@ import { Subject, takeUntil } from 'rxjs';
 
 // Core services
 import { AuthService } from 'src/app/core/services/auth.service';
-import { ErrorHandlerService } from 'src/app/core/services/error-handler.service';
+import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
+import { AssinaturaApiService } from 'src/app/services/api/assinatura-api.service';
 
 // Constants
 import { ALLOWED_ROLES, Role } from 'src/app/shared/constants/roles.constant';
-
-// Token service
-import { tokenService } from 'src/app/util/Token/Token.service';
 
 @Component({
   selector: 'app-login',
@@ -36,8 +34,8 @@ export class LoginComponent implements OnInit, OnDestroy {
     private router: Router,
     private formBuilder: FormBuilder,
     private authService: AuthService,
-    private errorHandler: ErrorHandlerService,
-    private tokenService: tokenService
+    private notificacao: NotificacaoService,
+    private assinaturaApi: AssinaturaApiService
   ) { }
 
   ngOnInit(): void {
@@ -116,7 +114,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.isLoading = false;
 
     if (!response.body?.token) {
-      this.errorHandler.showError('Resposta inválida do servidor');
+      this.notificacao.showError('Resposta inválida do servidor');
       return;
     }
 
@@ -124,10 +122,27 @@ export class LoginComponent implements OnInit, OnDestroy {
     const success = this.authService.handleLoginSuccess(token);
 
     if (success) {
-      this.router.navigate(['/Dashboard']);
+      this.navegarAposLogin();
     } else {
-      this.errorHandler.showError('Você não tem permissão para acessar esta página');
+      this.notificacao.showError('Você não tem permissão para acessar esta página');
     }
+  }
+
+  /**
+   * Destino após o login. Clínica com assinatura SUSPENSA só consegue usar as rotas de pagamento
+   * (o resto devolve 403), então ADMIN e secretária vão direto para /minha-assinatura.
+   * Qualquer falha na consulta cai no Dashboard, o destino de sempre.
+   */
+  private navegarAposLogin(): void {
+    const podeVerAssinatura = this.authService.isOrgAdmin() || this.authService.isRecepcionista();
+    if (!podeVerAssinatura) {
+      this.router.navigate(['/Dashboard']);
+      return;
+    }
+    this.assinaturaApi.minhaAssinatura().subscribe({
+      next: (assinatura) => this.router.navigate([assinatura.status === 'SUSPENSA' ? '/minha-assinatura' : '/Dashboard']),
+      error: () => this.router.navigate(['/Dashboard'])
+    });
   }
 
   /**
@@ -138,9 +153,18 @@ export class LoginComponent implements OnInit, OnDestroy {
     console.error('[Login] Erro:', error);
 
     if (error.status === 403 && error.error?.message) {
-      this.errorHandler.showWarning(error.error.message, 'Acesso bloqueado');
+      this.notificacao.showWarning(error.error.message, 'Acesso bloqueado');
+    } else if (error.status === 401 && typeof error.error?.error === 'string' && error.error.error.trim()) {
+      // Back manda {"error": "..."} p.ex. para usuário bloqueado
+      this.notificacao.showError(error.error.error);
+    } else if (error.status === 401 || error.status === 403) {
+      this.notificacao.showError('Email ou senha inválidos');
+    } else if (error.status === 0) {
+      this.notificacao.showError('Sem conexão com o servidor');
+    } else if (error.status >= 500) {
+      this.notificacao.showError('Erro no servidor, tente novamente');
     } else {
-      this.errorHandler.showError('Email ou senha inválidos');
+      this.notificacao.showError(error.error?.message || 'Não foi possível realizar o login');
     }
   }
 

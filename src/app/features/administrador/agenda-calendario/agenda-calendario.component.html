@@ -496,9 +496,9 @@
           <button class="drw-acao-btn drw-acao-btn--success"
                   *ngIf="consultaSelecionada.status === 'CONFIRMADA' && UsuarioLogado.perfil === 'CLINICO' "
                   (click)="iniciarConsultaDrawer()"
-                  title="Iniciar Consulta">
-            <i class="fa-solid fa-stethoscope"></i>
-            <span>Iniciar</span>
+                  [attr.title]="temRascunho(consultaSelecionada) ? 'Retomar atendimento' : 'Iniciar Consulta'">
+            <i class="fa-solid" [ngClass]="temRascunho(consultaSelecionada) ? 'fa-rotate-right' : 'fa-stethoscope'"></i>
+            <span>{{ temRascunho(consultaSelecionada) ? 'Retomar atendimento' : 'Iniciar' }}</span>
           </button>
 
           <!-- Questionário — CONFIRMADA e não respondido -->

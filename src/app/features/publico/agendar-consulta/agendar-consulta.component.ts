@@ -1,7 +1,8 @@
+import { filter, take } from 'rxjs';
 import { Component, OnInit, Inject, Optional, ElementRef, ViewChild } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { MatDialog, MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import Swal from 'sweetalert2';
+import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
 import { HoradaConsulta } from 'src/app/util/variados/options/options';
 import { Paciente } from 'src/app/util/variados/interfaces/paciente/paciente';
 import { Profissional } from 'src/app/util/variados/interfaces/medico/Profissional';
@@ -10,12 +11,13 @@ import { ConsultaApiService } from 'src/app/services/api/consulta-api.service';
 import { ConsultaStateService } from 'src/app/services/state/consulta-state.service';
 import { PacienteApiService } from 'src/app/services/api/paciente-api.service';
 import { ProfissionalApiService } from 'src/app/services/api/profissional-api.service';
-import { tokenService } from 'src/app/util/Token/Token.service';
-import { DialogService } from 'src/app/util/variados/dialogo-confirmação/dialog.service';
+import { AuthService } from 'src/app/core/services/auth.service';
 import { TabelaDePacientesComponent } from '../../administrador/gerenciamento-agenda/nova-consuta/tabela-de-pacientes/tabela-de-pacientes.component';
 import { TabelasPesquisasMedicosComponent } from '../../administrador/gerenciamento-agenda/nova-consuta/tabelas-Pesquisas-Medicos/tabelas-Pesquisas-Medicos.component';
 import { CadastroPacienteComponent } from '../../administrador/cadastros/cadastro-paciente/cadastro-paciente.component';
 import { Consultav2 } from 'src/app/util/variados/interfaces/consulta/consultav2';
+import { idFormaPagamentoPorRotulo } from 'src/app/shared/constants/forma-pagamento.constant';
+import { formatarDataLocal, formatarHoraLocal } from 'src/app/shared/utils/data-local';
 
 export interface AgendarConsultaData {
   /** Quando passado, o componente opera em modo edição */
@@ -67,6 +69,7 @@ export class AgendarConsultaComponent implements OnInit {
   @ViewChild('scrollArea') scrollAreaRef!: ElementRef<HTMLElement>;
 
   constructor(
+    private notificacao: NotificacaoService,
     private fb: FormBuilder,
     private dialog: MatDialog,
     private dialogRef: MatDialogRef<AgendarConsultaComponent>,
@@ -74,11 +77,10 @@ export class AgendarConsultaComponent implements OnInit {
     private profissionalApi: ProfissionalApiService,
     private consultaApi: ConsultaApiService,
     private consultaState: ConsultaStateService,
-    private tokenService: tokenService,
-    private dialogService: DialogService,
+    private authService: AuthService,
     @Optional() @Inject(MAT_DIALOG_DATA) public data: AgendarConsultaData
   ) {
-    this.tokenService.UsuarioLogadoValue$.subscribe(u => {
+    this.authService.currentUser$.pipe(filter(Boolean), take(1)).subscribe(u => {
       if (u) this.UsuarioLogado = u;
     });
   }
@@ -120,13 +122,9 @@ export class AgendarConsultaComponent implements OnInit {
   private _preencherModoEdicao(c: Consultav2): void {
     const dataHora = c.dataHora ? new Date(c.dataHora) : null;
 
-    const data = dataHora
-      ? `${dataHora.getFullYear()}-${String(dataHora.getMonth() + 1).padStart(2, '0')}-${String(dataHora.getDate()).padStart(2, '0')}`
-      : '';
+    const data = dataHora ? formatarDataLocal(dataHora) : '';
 
-    const hora = dataHora
-      ? `${String(dataHora.getHours()).padStart(2, '0')}:${String(dataHora.getMinutes()).padStart(2, '0')}`
-      : '';
+    const hora = dataHora ? formatarHoraLocal(dataHora) : '';
 
     this.FormularioConsulta.patchValue({
       date: data,
@@ -221,7 +219,7 @@ export class AgendarConsultaComponent implements OnInit {
         const dados = await this.pacienteApi.pesquisarComFiltro(filtro, texto, 'ATIVO').toPromise();
         this._abrirTabela(dados, 'paciente');
       } catch {
-        Swal.fire('Erro', 'Erro ao pesquisar pacientes', 'error');
+        this.notificacao.fire('Erro', 'Erro ao pesquisar pacientes', 'error');
       }
     }
 
@@ -233,7 +231,7 @@ export class AgendarConsultaComponent implements OnInit {
         const dados = await this.profissionalApi.pesquisarComFiltro(filtro, texto, 'ATIVO').toPromise();
         this._abrirTabela(dados, 'medico');
       } catch {
-        Swal.fire('Erro', 'Erro ao pesquisar clínicos', 'error');
+        this.notificacao.fire('Erro', 'Erro ao pesquisar clínicos', 'error');
       }
     }
   }
@@ -281,7 +279,7 @@ export class AgendarConsultaComponent implements OnInit {
     if (!this.Medico || !selectedDate) return;
 
     if (!this.Medico.tempoConsultaMinutos) {
-      Swal.fire({ icon: 'warning', title: 'Atenção', text: 'O clínico não informou o tempo de consulta. Serão usados os horários padrão.' });
+      this.notificacao.fire({ icon: 'warning', title: 'Atenção', text: 'O clínico não informou o tempo de consulta. Serão usados os horários padrão.' });
       this.Hora = [...HoradaConsulta];
       return;
     }
@@ -326,7 +324,7 @@ export class AgendarConsultaComponent implements OnInit {
     for (const iv of intervalos) {
       let cur = new Date(iv.inicio.getTime());
       while (cur.getTime() + novoIntervalo * 60000 <= endTime.getTime() && cur.getTime() < iv.fim.getTime()) {
-        this.Hora.push({ value: this._fmtTime(cur), label: this._fmtTime(cur) });
+        this.Hora.push({ value: formatarHoraLocal(cur), label: formatarHoraLocal(cur) });
         cur = new Date(cur.getTime() + novoIntervalo * 60000);
       }
     }
@@ -337,7 +335,7 @@ export class AgendarConsultaComponent implements OnInit {
     const end = this._toDate('18:00');
     this.Hora = [];
     while (cur <= end) {
-      this.Hora.push({ value: this._fmtTime(cur), label: this._fmtTime(cur) });
+      this.Hora.push({ value: formatarHoraLocal(cur), label: formatarHoraLocal(cur) });
       cur = new Date(cur.getTime() + intervalo * 60000);
     }
   }
@@ -347,9 +345,6 @@ export class AgendarConsultaComponent implements OnInit {
     return new Date(2000, 0, 1, h, m, 0, 0);
   }
 
-  private _fmtTime(date: Date): string {
-    return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
-  }
 
   // ── Submissão ──────────────────────────────────────────
 
@@ -368,7 +363,7 @@ export class AgendarConsultaComponent implements OnInit {
     const val  = this.FormularioConsulta.get('valor')?.value;
 
     if (!this.Medico?.id || !this.Paciente?.codigo || !this.DataSelecionada || !fp || !hora || val === null) {
-      Swal.fire({ icon: 'warning', title: 'Atenção', text: 'Preencha todos os campos obrigatórios.' });
+      this.notificacao.fire({ icon: 'warning', title: 'Atenção', text: 'Preencha todos os campos obrigatórios.' });
       return;
     }
 
@@ -386,18 +381,18 @@ export class AgendarConsultaComponent implements OnInit {
 
     try {
       const existe = await this.consultaApi.verificarDisponibilidadeByOrg(this.DataSelecionada, hora, this.Medico.id).toPromise();
-      if (existe) { this.dialogService.JaexisteDadosCAdastradosComEssesParamentros(); this.FormularioConsulta.reset(); return; }
+      if (existe) { this.notificacao.mostrarSnackbar('Ja Existe uma consulta marcadas para esse dia com esse horário.\nTente outro horário. Ou altere o dia.', 10000); this.FormularioConsulta.reset(); return; }
 
       this.consultaApi.cadastrarConsultaByOrg(consult).subscribe(
         response => {
-          Swal.fire({ icon: 'success', title: 'Agendado!', text: `Consulta agendada com sucesso. Código: ${response.id}` })
+          this.notificacao.fire({ icon: 'success', title: 'Agendado!', text: `Consulta agendada com sucesso. Código: ${response.id}` })
             .then(r => { if (r.isConfirmed) { this._limpar(); this.consultaState.setCadastroRealizado(response); this.dialogRef.close(response); } });
         },
-        () => Swal.fire({ icon: 'error', title: 'Erro', text: 'Não foi possível agendar a consulta.' })
+        () => this.notificacao.fire({ icon: 'error', title: 'Erro', text: 'Não foi possível agendar a consulta.' })
       );
-    } catch {
-      this.dialogService.JaexisteDadosCAdastradosComEssesParamentros();
-      this.FormularioConsulta.reset();
+    } catch (error) {
+      console.error('Erro ao verificar disponibilidade:', error);
+      this.notificacao.fire({ icon: 'error', title: 'Erro', text: 'Não foi possível verificar a disponibilidade do horário. Tente novamente.' });
     }
   }
 
@@ -409,6 +404,8 @@ export class AgendarConsultaComponent implements OnInit {
     const obs  = this.FormularioConsulta.get('observacao')?.value;
     const val  = this.FormularioConsulta.get('valor')?.value;
     const data = this.FormularioConsulta.get('date')?.value;
+    // NaN (campo vazio) mantém o valor original; 0 é um valor válido
+    const valorInformado = parseFloat(val);
 
     const payload: any = {
       id:               this.consultaOriginal.id,
@@ -419,15 +416,15 @@ export class AgendarConsultaComponent implements OnInit {
       duracaoMinutos:   this.Medico?.tempoConsultaMinutos || this.consultaOriginal.duracaoMinutos || null,
       observacoes:      obs,
       formaPagamentoId: fp || this.consultaOriginal.formaPagamentoId,
-      valor:            parseFloat(val) || this.consultaOriginal.valor
+      valor:            Number.isNaN(valorInformado) ? this.consultaOriginal.valor : valorInformado
     };
 
     this.consultaApi.atualizarConsultabyOrg(this.consultaOriginal.id, payload).subscribe(
       response => {
-        Swal.fire({ icon: 'success', title: 'Atualizado!', text: 'Consulta atualizada com sucesso.' })
+        this.notificacao.fire({ icon: 'success', title: 'Atualizado!', text: 'Consulta atualizada com sucesso.' })
           .then(() => { this.consultaState.setCadastroRealizado(response); this.dialogRef.close(response); });
       },
-      () => Swal.fire({ icon: 'error', title: 'Erro', text: 'Não foi possível salvar as alterações.' })
+      () => this.notificacao.fire({ icon: 'error', title: 'Erro', text: 'Não foi possível salvar as alterações.' })
     );
   }
 
@@ -446,12 +443,7 @@ export class AgendarConsultaComponent implements OnInit {
   }
 
   private _transformaFormaPagamento(): number {
-    const v = this.FormularioConsulta.get('Pagamento')?.value;
-    const map: Record<string, number> = {
-      'Particular': 1, 'Convênio': 2, 'Cartão de Crédito': 3,
-      'Cartão de Débito': 4, 'PIX': 5, 'Dinheiro': 6
-    };
-    return map[v] ?? 0;
+    return idFormaPagamentoPorRotulo(this.FormularioConsulta.get('Pagamento')?.value);
   }
 
   private _limpar(): void {

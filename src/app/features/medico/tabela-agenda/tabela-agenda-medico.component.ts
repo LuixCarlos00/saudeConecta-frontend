@@ -1,15 +1,17 @@
+import { filter, take } from 'rxjs';
 import { Consultav2 } from 'src/app/util/variados/interfaces/consulta/consultav2';
 import { ConsultaApiService } from 'src/app/services/api/consulta-api.service';
+import { RascunhoAtendimentoApiService } from 'src/app/services/api/rascunho-atendimento-api.service';
 import { ProntuarioStateService } from 'src/app/services/state/prontuario-state.service';
 import { Usuario } from 'src/app/util/variados/interfaces/usuario/usuario';
-import { tokenService } from 'src/app/util/Token/Token.service';
+import { AuthService } from 'src/app/core/services/auth.service';
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { PageEvent } from '@angular/material/paginator';
 import { MatDialog } from '@angular/material/dialog';
-import Swal from 'sweetalert2';
+import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
 import { ObservacoesComponent } from 'src/app/features/administrador/gerenciamento-agenda/agenda/Observacoes/Observacoes.component';
-import { DialogService } from 'src/app/util/variados/dialogo-confirmação/dialog.service';
 import { Router } from '@angular/router';
+import { formatarDataLocal } from '../../../shared/utils/data-local';
 
 @Component({
   selector: 'app-tabela-agenda-medico',
@@ -26,6 +28,8 @@ export class TabelaAgendaMedicoComponent implements OnInit {
   filteredDataSource: Consultav2[] = [];
   clickedRows = new Set<any>();
   pesquisa: string = '';
+  /** IDs das consultas que já têm rascunho de atendimento (uma chamada por carregamento da tela). */
+  consultasComRascunho = new Set<number>();
 
   UsuarioLogado: Usuario = {
     id: 0,
@@ -36,15 +40,15 @@ export class TabelaAgendaMedicoComponent implements OnInit {
   };
 
   constructor(
-    private tokenService: tokenService,
+    private notificacao: NotificacaoService,
+    private authService: AuthService,
     private consultaApiService: ConsultaApiService,
     public dialog: MatDialog,
     private prontuarioStateService: ProntuarioStateService,
-    private DialogService: DialogService,
-    private route: Router
+    private route: Router,
+    private rascunhoApi: RascunhoAtendimentoApiService
   ) {
-    this.tokenService.decodificaToken();
-    this.tokenService.UsuarioLogadoValue$.subscribe((Usuario) => {
+    this.authService.currentUser$.pipe(filter(Boolean), take(1)).subscribe((Usuario) => {
       if (Usuario) {
         this.UsuarioLogado = Usuario;
       }
@@ -55,11 +59,27 @@ export class TabelaAgendaMedicoComponent implements OnInit {
 
   }
 
-  ngOnInit() { }
+  ngOnInit() {
+    this.carregarRascunhos();
+  }
+
+  /** Busca de uma vez os rascunhos do profissional logado para trocar "Iniciar" por "Retomar atendimento". */
+  private carregarRascunhos(): void {
+    this.rascunhoApi.listarMeus().subscribe({
+      next: lista => { this.consultasComRascunho = new Set((lista || []).map(r => r.consultaId)); },
+      // Sem a lista a agenda continua funcionando: só mostra "Iniciar" em todas.
+      error: () => { this.consultasComRascunho = new Set<number>(); },
+    });
+  }
+
+  /** A consulta já tem um atendimento em andamento (rascunho salvo)? */
+  temRascunho(consulta: Consultav2): boolean {
+    return !!consulta && this.consultasComRascunho.has(consulta.id);
+  }
 
 
   DesejaAbrirConsulta(element: any) {
-    Swal.fire({
+    this.notificacao.fire({
       title: 'Tem certeza que deseja abrir essa consulta?',
       icon: 'warning',
       showCancelButton: true,
@@ -69,7 +89,7 @@ export class TabelaAgendaMedicoComponent implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
         this.prontuarioStateService.setConsulta(element);
-        this.navegarParaProntuario();
+        this.navegarParaProntuario(element.id);
       } else {
         this.BuscarDadosDeAgendaDoMedicoDoDia();
       }
@@ -80,14 +100,14 @@ export class TabelaAgendaMedicoComponent implements OnInit {
 
   AbrirConsulta(element: any) {
     this.prontuarioStateService.setConsulta(element);
-    this.navegarParaProntuario();
+    this.navegarParaProntuario(element.id);
   }
 
-  private navegarParaProntuario(): void {
+  private navegarParaProntuario(consultaId: number): void {
     if (this.UsuarioLogado.tipoProfissional === 'DENTISTA') {
-      this.route.navigate(['startconsulta-dentista']);
+      this.route.navigate(['startconsulta-dentista', consultaId]);
     } else {
-      this.route.navigate(['startconsulta']);
+      this.route.navigate(['startconsulta', consultaId]);
     }
   }
 
@@ -105,7 +125,7 @@ export class TabelaAgendaMedicoComponent implements OnInit {
     const isDateMatch = (d1: string, d2: string) => {
       const parse = (s: string) => { const d = new Date(s); return isNaN(d.getTime()) ? null : d; };
       const p1 = parse(d1); const p2 = parse(d2);
-      return p1 && p2 ? p1.toISOString().split('T')[0] === p2.toISOString().split('T')[0] : false;
+      return p1 && p2 ? formatarDataLocal(p1) === formatarDataLocal(p2) : false;
     };
 
     const isTimeMatch = (t1: string, t2: string) => {
@@ -133,7 +153,7 @@ export class TabelaAgendaMedicoComponent implements OnInit {
       this.LimparTabela();
       this.dataSource = resultadoFiltrado;
     } else {
-      this.DialogService.NaoFoiEncontradoConsultasComEssesParametros();
+      this.notificacao.mostrarSnackbar('Não foi encontrado consultas com esses parametros .Tente Novamente.', 50000);
       this.LimparTabela();
       this.BuscarDadosDeAgendaDoMedicoDoDia();
     }
@@ -170,7 +190,7 @@ export class TabelaAgendaMedicoComponent implements OnInit {
     this.consultaApiService.buscarAgendaMedico(this.UsuarioLogado.id).subscribe((dados) => {
 
       if (!dados || dados.length === 0) {
-        Swal.fire('Nenhuma consulta encontrada', 'Tente novamente', 'warning');
+        this.notificacao.fire('Nenhuma consulta encontrada', 'Tente novamente', 'warning');
         this.dataSource = [];
         this.filteredDataSource = [];
         return;

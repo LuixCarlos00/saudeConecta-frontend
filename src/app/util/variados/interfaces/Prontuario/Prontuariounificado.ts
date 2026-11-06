@@ -1,14 +1,8 @@
 import { ConsultaResponse, ProfissionalResponse } from './Prontuario';
 import { DentePayload } from './ProntuarioDentista';
+import { DenteResponse } from '../historico/historico-completo-paciente-response.interface';
 
 // ─── Estrutura real que vem do backend do dentista ───────────────────────────
-
-export interface DenteResponse {
-  codigo?: number;
-  numeroFdi?: number;
-  status?: string;
-  observacao?: string;
-}
 
 export interface ConsultaDentistaResponse {
   id?: number;

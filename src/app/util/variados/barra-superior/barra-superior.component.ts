@@ -1,17 +1,17 @@
 import { Component, ElementRef, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { Subscription, forkJoin } from 'rxjs';
-import { tokenService } from 'src/app/util/Token/Token.service';
+import { Subscription } from 'rxjs';
+import { AuthService } from 'src/app/core/services/auth.service';
 import { ControleAcessoApiService } from 'src/app/services/api/controle-acesso-api.service';
 import { AssinaturaApiService } from 'src/app/services/api/assinatura-api.service';
-import { CobrancaApiService } from 'src/app/services/api/cobranca-api.service';
-import { CobrancaTenant } from 'src/app/util/variados/interfaces/planos/PlanoAssinatura';
+import { AssinaturaTenant } from 'src/app/util/variados/interfaces/planos/PlanoAssinatura';
+import { diasCalendarioAte } from 'src/app/shared/utils/data-local';
 import { Usuario } from '../interfaces/usuario/usuario';
 
 /**
  * Barra superior fixa, exibida em todas as rotas da área logada.
  * Mostra: dados do usuário logado, data atual e notificações
- * (cobrança pendente da assinatura, quando aplicável ao AdminOrg).
+ * (fim do período gratuito e inadimplência, quando aplicável ao AdminOrg).
  */
 @Component({
   selector: 'app-barra-superior',
@@ -32,19 +32,19 @@ export class BarraSuperiorComponent implements OnInit, OnDestroy {
     nome: ''
   };
 
-  // Notificação de cobrança pendente (apenas AdminOrg)
-  cobrancaPendente: CobrancaTenant | null = null;
+  // Notificação de assinatura (apenas AdminOrg)
+  assinatura: AssinaturaTenant | null = null;
   assinaturaInadimplente = false;
-  diasRestantesPagamento = 0;
+  trialPendenteAtivacao = false;
+  diasRestantesTrial = 0;
   mostrarNotificacaoCobranca = false;
 
   private subscriptions: Subscription[] = [];
 
   constructor(
-    private tokenService: tokenService,
+    private authService: AuthService,
     public ControleAcessoService: ControleAcessoApiService,
     private assinaturaApiService: AssinaturaApiService,
-    private cobrancaApiService: CobrancaApiService,
     private router: Router,
     private elementRef: ElementRef
   ) { }
@@ -62,7 +62,7 @@ export class BarraSuperiorComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    const userSub = this.tokenService.UsuarioLogadoValue$.subscribe((usuario) => {
+    const userSub = this.authService.currentUser$.subscribe((usuario) => {
       if (usuario) this.UsuarioLogado = usuario;
     });
     this.subscriptions.push(userSub);
@@ -83,39 +83,40 @@ export class BarraSuperiorComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Verifica cobrança pendente da assinatura da organização.
-   * Restrito ao AdminOrg (SUPER_ADMIN não possui assinatura própria).
+   * Verifica o status da assinatura da organização para alertar sobre o fim do
+   * período gratuito. Restrito ao AdminOrg (SUPER_ADMIN não possui assinatura própria).
    */
   private verificarStatusAssinatura(): void {
     if (!this.ControleAcessoService.isAdmin() || this.ControleAcessoService.isSuperAdmin()) {
       return;
     }
 
-    forkJoin({
-      assinatura: this.assinaturaApiService.minhaAssinatura(),
-      cobranca: this.cobrancaApiService.buscarCobrancaPendenteAtual()
-    }).subscribe({
-      next: ({ assinatura, cobranca }) => {
+    this.assinaturaApiService.minhaAssinatura().subscribe({
+      next: (assinatura) => {
+        this.assinatura = assinatura;
         this.assinaturaInadimplente = assinatura.status === 'INADIMPLENTE';
 
-        if (cobranca && cobranca.status === 'PENDENTE') {
-          this.cobrancaPendente = cobranca;
-          const dataVencimento = new Date(cobranca.dataVencimentoPix);
-          const hoje = new Date();
-          const diffMs = dataVencimento.getTime() - hoje.getTime();
-          this.diasRestantesPagamento = Math.max(0, Math.ceil(diffMs / (1000 * 60 * 60 * 24)));
+        if (assinatura.status === 'TRIAL' && !assinatura.cortesia) {
+          this.trialPendenteAtivacao = true;
+          this.diasRestantesTrial = this.calcularDiasRestantes(assinatura.dataVencimento);
         }
       },
       error: (err) => console.warn('Não foi possível verificar status da assinatura:', err)
     });
   }
 
-  toggleNotificacaoCobranca(): void {
-    this.mostrarNotificacaoCobranca = !this.mostrarNotificacaoCobranca;
+  /**
+   * Calcula quantos dias de calendário faltam até a data informada.
+   *
+   * @param data data alvo 'yyyy-MM-dd'
+   * @returns dias restantes (nunca negativo)
+   */
+  private calcularDiasRestantes(data: string): number {
+    return Math.max(0, diasCalendarioAte(data));
   }
 
-  fecharNotificacaoCobranca(): void {
-    this.mostrarNotificacaoCobranca = false;
+  toggleNotificacaoCobranca(): void {
+    this.mostrarNotificacaoCobranca = !this.mostrarNotificacaoCobranca;
   }
 
   navegarPara(rota: string): void {

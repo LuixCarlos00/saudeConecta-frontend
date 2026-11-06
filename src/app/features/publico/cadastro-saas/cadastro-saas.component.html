@@ -1,0 +1,257 @@
+<div class="cadastro-saas">
+
+  <header class="cadastro-header">
+    <div class="cadastro-logo" (click)="voltar()">
+      <i class="fa-solid fa-heart-pulse"></i>
+      <span>Saúde Conecta</span>
+    </div>
+    <p class="cadastro-chamada">30 dias grátis. Sem cartão de crédito.</p>
+  </header>
+
+  <ol class="cadastro-steps">
+    <li *ngFor="let etapa of etapas; let i = index"
+        class="cadastro-step"
+        [class.cadastro-step--ativo]="i === etapaAtual"
+        [class.cadastro-step--concluido]="i < etapaAtual">
+      <span class="cadastro-step__num">{{ i + 1 }}</span>
+      <span class="cadastro-step__label">{{ etapa }}</span>
+    </li>
+  </ol>
+
+  <form [formGroup]="formulario" class="cadastro-form">
+
+    <!-- Etapa: Tipo de pessoa -->
+    <section *ngIf="etapaNome === 'Tipo'" class="secao">
+      <h2>Como você vai usar o Saúde Conecta?</h2>
+      <div class="radio-group">
+        <label class="radio-option">
+          <input type="radio" value="JURIDICA" formControlName="tipoPessoa" (change)="onTipoPessoaChange()">
+          <span>Pessoa Jurídica — clínica com CNPJ</span>
+        </label>
+        <label class="radio-option">
+          <input type="radio" value="FISICA" formControlName="tipoPessoa" (change)="onTipoPessoaChange()">
+          <span>Pessoa Física — profissional autônomo</span>
+        </label>
+      </div>
+      <p class="field-hint">O login será o CNPJ (pessoa jurídica) ou o CPF (pessoa física).</p>
+    </section>
+
+    <!-- Etapa: Administrador -->
+    <section *ngIf="etapaNome === 'Administrador'" class="secao">
+      <h2>Dados do responsável</h2>
+      <div class="form-grid">
+        <div class="field-group">
+          <label class="field-label"><span class="req">*</span> Nome completo</label>
+          <input type="text" class="field-input" formControlName="nome" placeholder="Ex: João da Silva">
+          <div class="field-error" *ngIf="formulario.get('nome')?.invalid && formulario.get('nome')?.touched">
+            {{ getFieldError(formulario.get('nome')?.errors) }}
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label"><span class="req">*</span> CPF</label>
+          <input type="text" class="field-input" formControlName="cpf" placeholder="000.000.000-00" maxlength="14">
+          <div class="field-error" *ngIf="formulario.get('cpf')?.invalid && formulario.get('cpf')?.touched">
+            {{ getFieldError(formulario.get('cpf')?.errors) }}
+          </div>
+        </div>
+
+        <div class="field-group field-group--full">
+          <label class="field-label"><span class="req">*</span> E-mail</label>
+          <input type="email" class="field-input" formControlName="email" placeholder="voce@clinica.com.br">
+          <div class="field-error" *ngIf="formulario.get('email')?.invalid && formulario.get('email')?.touched">
+            {{ getFieldError(formulario.get('email')?.errors) }}
+          </div>
+          <div class="field-hint">
+            As credenciais de acesso serão enviadas para este e-mail. Ele também será usado
+            como e-mail do pagamento no Mercado Pago quando você ativar a assinatura.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Etapa: Organização (apenas PJ) -->
+    <section *ngIf="etapaNome === 'Organização'" class="secao">
+      <h2>Dados da organização</h2>
+      <div class="form-grid">
+        <div class="field-group">
+          <label class="field-label"><span class="req">*</span> Nome da clínica</label>
+          <input type="text" class="field-input" formControlName="nomeClinica">
+          <div class="field-error" *ngIf="formulario.get('nomeClinica')?.invalid && formulario.get('nomeClinica')?.touched">
+            {{ getFieldError(formulario.get('nomeClinica')?.errors) }}
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label"><span class="req">*</span> Razão social</label>
+          <input type="text" class="field-input" formControlName="razaoSocial">
+          <div class="field-error" *ngIf="formulario.get('razaoSocial')?.invalid && formulario.get('razaoSocial')?.touched">
+            {{ getFieldError(formulario.get('razaoSocial')?.errors) }}
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label"><span class="req">*</span> CNPJ</label>
+          <input type="text" class="field-input" formControlName="cnpj" placeholder="00.000.000/0000-00" maxlength="18">
+          <div class="field-error" *ngIf="formulario.get('cnpj')?.invalid && formulario.get('cnpj')?.touched">
+            {{ getFieldError(formulario.get('cnpj')?.errors) }}
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label"><span class="req">*</span> Tipo de organização</label>
+          <select class="field-input" formControlName="tipoClinica">
+            <option value="" disabled>Selecione</option>
+            <option *ngFor="let t of tiposClinica" [value]="t.value">{{ t.label }}</option>
+          </select>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label"><span class="req">*</span> E-mail da clínica</label>
+          <input type="email" class="field-input" formControlName="emailClinica">
+          <div class="field-error" *ngIf="formulario.get('emailClinica')?.invalid && formulario.get('emailClinica')?.touched">
+            {{ getFieldError(formulario.get('emailClinica')?.errors) }}
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label"><span class="req">*</span> Telefone</label>
+          <input type="text" class="field-input" formControlName="telefone" placeholder="(00) 00000-0000">
+          <div class="field-error" *ngIf="formulario.get('telefone')?.invalid && formulario.get('telefone')?.touched">
+            {{ getFieldError(formulario.get('telefone')?.errors) }}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Etapa: Endereço -->
+    <section *ngIf="etapaNome === 'Endereço'" class="secao">
+      <h2>Endereço</h2>
+      <div class="form-grid">
+        <div class="field-group">
+          <label class="field-label"><span class="req">*</span> CEP</label>
+          <div class="field-inline">
+            <input type="text" class="field-input" formControlName="cep" placeholder="00000-000" maxlength="9"
+                   (blur)="buscarCep()">
+            <button type="button" class="btn-secundario" (click)="buscarCep()" [disabled]="isBuscandoCep">
+              {{ isBuscandoCep ? 'Buscando...' : 'Buscar' }}
+            </button>
+          </div>
+          <div class="field-error" *ngIf="formulario.get('cep')?.invalid && formulario.get('cep')?.touched">
+            {{ getFieldError(formulario.get('cep')?.errors) }}
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label"><span class="req">*</span> UF</label>
+          <select class="field-input" formControlName="uf">
+            <option value="" disabled>Selecione</option>
+            <option *ngFor="let uf of ufs" [value]="uf">{{ uf }}</option>
+          </select>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label"><span class="req">*</span> Município</label>
+          <input type="text" class="field-input" formControlName="municipio">
+        </div>
+
+        <div class="field-group">
+          <label class="field-label"><span class="req">*</span> Bairro</label>
+          <input type="text" class="field-input" formControlName="bairro">
+        </div>
+
+        <div class="field-group">
+          <label class="field-label"><span class="req">*</span> Rua</label>
+          <input type="text" class="field-input" formControlName="rua">
+        </div>
+
+        <div class="field-group">
+          <label class="field-label"><span class="req">*</span> Número</label>
+          <input type="text" class="field-input" formControlName="numero">
+        </div>
+
+        <div class="field-group field-group--full">
+          <label class="field-label">Complemento</label>
+          <input type="text" class="field-input" formControlName="complemento">
+        </div>
+      </div>
+    </section>
+
+    <!-- Etapa: Plano -->
+    <section *ngIf="etapaNome === 'Plano'" class="secao">
+      <h2>Escolha seu plano</h2>
+      <p *ngIf="isLoadingPlanos">Carregando planos...</p>
+
+      <div class="planos-grid">
+        <label class="plano-opcao" *ngFor="let plano of planos"
+               [class.plano-opcao--selecionado]="formulario.get('planoId')?.value == plano.id">
+          <input type="radio" [value]="plano.id" formControlName="planoId">
+          <div class="plano-opcao__conteudo">
+            <strong>{{ plano.nome }}</strong>
+            <span class="plano-opcao__preco">{{ formatarValor(plano.valorMensal) }}/mês</span>
+            <small>{{ plano.titulo || plano.descricao }}</small>
+          </div>
+        </label>
+      </div>
+
+      <div class="field-error" *ngIf="formulario.get('planoId')?.invalid && formulario.get('planoId')?.touched">
+        Selecione um plano para continuar.
+      </div>
+    </section>
+
+    <!-- Etapa: Confirmação -->
+    <section *ngIf="etapaNome === 'Confirmação'" class="secao">
+      <h2>Confirme seus dados</h2>
+
+      <div class="resumo">
+        <div class="resumo__item">
+          <span>Responsável</span>
+          <strong>{{ formulario.get('nome')?.value }}</strong>
+        </div>
+        <div class="resumo__item">
+          <span>Login</span>
+          <strong>{{ isJuridica ? formulario.get('cnpj')?.value : formulario.get('cpf')?.value }}</strong>
+        </div>
+        <div class="resumo__item">
+          <span>E-mail</span>
+          <strong>{{ formulario.get('email')?.value }}</strong>
+        </div>
+        <div class="resumo__item" *ngIf="isJuridica">
+          <span>Organização</span>
+          <strong>{{ formulario.get('nomeClinica')?.value }}</strong>
+        </div>
+        <div class="resumo__item">
+          <span>Plano</span>
+          <strong>{{ planoSelecionado?.nome }} — {{ formatarValor(planoSelecionado?.valorMensal) }}/mês</strong>
+        </div>
+      </div>
+
+      <div class="destaque-trial">
+        <i class="fa-solid fa-gift"></i>
+        <div>
+          <strong>30 dias grátis, sem cartão</strong>
+          <p>
+            A cobrança só começa depois do período de teste. Enviaremos por e-mail
+            o link para cadastrar o cartão antes do fim do trial, e você pode
+            cancelar quando quiser.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <div class="cadastro-acoes">
+      <button type="button" class="btn-secundario" (click)="voltar()" [disabled]="isLoading">
+        {{ etapaAtual === 0 ? 'Voltar ao site' : 'Voltar' }}
+      </button>
+
+      <button type="button" class="btn-primario" *ngIf="!isUltimaEtapa" (click)="avancar()">
+        Continuar
+      </button>
+
+      <button type="button" class="btn-primario" *ngIf="isUltimaEtapa"
+              (click)="cadastrar()" [disabled]="isLoading">
+        {{ isLoading ? 'Criando sua conta...' : 'Criar conta grátis' }}
+      </button>
+    </div>
+  </form>
+</div>

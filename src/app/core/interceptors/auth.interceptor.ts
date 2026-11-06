@@ -8,9 +8,7 @@ import { API_ENDPOINTS } from '../../shared/constants/api-endpoints.constant';
  * Endpoints que não requerem autenticação
  */
 const PUBLIC_ENDPOINTS: string[] = [
-  API_ENDPOINTS.AUTH.LOGIN,
-  API_ENDPOINTS.AUTH.CHECK_USER,
-  API_ENDPOINTS.AUTH.REGISTER
+  API_ENDPOINTS.AUTH.LOGIN
 ];
 
 /**
@@ -49,6 +47,6 @@ export class AuthInterceptor implements HttpInterceptor {
    * Verifica se o endpoint é público (não requer autenticação)
    */
   private isPublicEndpoint(url: string): boolean {
-    return PUBLIC_ENDPOINTS.some(endpoint => url.includes(endpoint));
+    return url.includes('/publico/') || PUBLIC_ENDPOINTS.some(endpoint => url.includes(endpoint));
   }
 }

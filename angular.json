@@ -37,9 +37,7 @@
             "stylePreprocessorOptions": {
               "includePaths": ["src/styles"]
             },
-            "scripts": [
-               "node_modules/chart.js/dist/chart.js"
-            ]
+            "scripts": []
           },
           "configurations": {
             "production": {
@@ -81,7 +79,6 @@
               "buildTarget": "saudeConecta:build:production"
             },
             "development": {
-              "proxyConfig": "src/proxy.conf.json",
               "buildTarget": "saudeConecta:build:development"
             }
           },
@@ -101,6 +98,9 @@
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.spec.json",
             "karmaConfig": "karma.conf.js",
+            "stylePreprocessorOptions": {
+              "includePaths": ["src/styles"]
+            },
             "assets": [
               "src/favicon.ico",
               "src/favicon.svg",

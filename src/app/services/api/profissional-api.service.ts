@@ -23,14 +23,6 @@ export class ProfissionalApiService {
     this.profissionalSubject.next(profissionais);
   }
 
-  LimparDadosPesquisa(): void {
-    this.emitProfissionaisChange([]);
-  }
-
-  changeProfissionalData(profissionais: Profissional[]): void {
-    this.emitProfissionaisChange(profissionais);
-  }
-
 
 
 

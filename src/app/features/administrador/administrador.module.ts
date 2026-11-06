@@ -39,6 +39,7 @@ import { ConfiguracoesSistemaComponent } from './configuracoes/configuracoes-sis
 
 // Componentes de Dashboard
 import { DashboardComponent } from './dashboard/dashboard.component';
+import { DashboardPlataformaComponent } from './dashboard/plataforma/dashboard-plataforma.component';
 import { GraficosPrincipaisDashboardComponent } from './dashboard/graficos-principais-dashboard/graficos-principais-dashboard.component';
 
 // Componentes de Agenda Calendário
@@ -48,12 +49,10 @@ import { AgendarConsultaComponent } from 'src/app/features/publico/agendar-consu
 
 // Componentes de Gerenciamento de Agenda
 import { AgendaComponent } from './gerenciamento-agenda/agenda/agenda.component';
-import { AvisosLembretesComponent } from './gerenciamento-agenda/agenda/Avisos-Lembretes/Avisos-Lembretes.component';
 import { EditarConsultasComponent } from './gerenciamento-agenda/agenda/Editar-Consultas/Editar-Consultas.component';
 import { TabelaEditarMedicosConsultasComponent } from './gerenciamento-agenda/agenda/Editar-Consultas/tabela-editar-Medicos-Consultas/tabela-editar-Medicos-Consultas.component';
 import { TabelaEditarPacienteConsultasComponent } from './gerenciamento-agenda/agenda/Editar-Consultas/tabela-editar-Paciente-Consultas/tabela-editar-Paciente-Consultas.component';
 import { ObservacoesComponent } from './gerenciamento-agenda/agenda/Observacoes/Observacoes.component';
-import { GerenciamentoComponent } from './gerenciamento-agenda/gerenciamento.component';
 import { NovaConsultaComponent } from './gerenciamento-agenda/nova-consuta/nova-consuta.component';
 import { TabelaDePacientesComponent } from './gerenciamento-agenda/nova-consuta/tabela-de-pacientes/tabela-de-pacientes.component';
 import { TabelasPesquisasMedicosComponent } from './gerenciamento-agenda/nova-consuta/tabelas-Pesquisas-Medicos/tabelas-Pesquisas-Medicos.component';
@@ -71,13 +70,15 @@ import { MensageriaComponent } from './mensageria/mensageria.component';
 // Componentes de Planos
 import { ListaPlanosComponent } from './planos/lista-planos/lista-planos.component';
 import { DetalheAssinaturaComponent } from './planos/detalhe-assinatura/detalhe-assinatura.component';
-import { ModalPixComponent } from './planos/modal-pix/modal-pix.component';
 import { GerenciarPlanosComponent } from './planos/gerenciar-planos/gerenciar-planos.component';
  import { ModalValoresAdicionaisComponent } from './planos/gerenciar-planos/modal-valores-adicionais/modal-valores-adicionais.component';
  
 
+// Componentes de Assinaturas (SUPER_ADMIN)
+import { GestaoAssinaturasComponent } from './assinaturas/gestao-assinaturas/gestao-assinaturas.component';
+import { PendenciasManuaisComponent } from './assinaturas/pendencias-manuais/pendencias-manuais.component';
+
 // Componentes de Suporte
-import { SobreComponent } from './sobre/sobre.component';
 import { SuporteComponent } from './suporte/suporte.component';
 import { GestaoChamadosComponent } from './suporte/gestao-chamados/gestao-chamados.component';
 import { TrocaSenhaComponent } from './troca-senha/troca-senha.component';
@@ -118,6 +119,7 @@ const routes: Routes = [
     // Componentes de Dashboard
     DashboardComponent,
     GraficosPrincipaisDashboardComponent,
+    DashboardPlataformaComponent,
     
     // Componentes de Agenda Calendário
     AgendaCalendarioComponent,
@@ -126,12 +128,10 @@ const routes: Routes = [
 
     // Componentes de Gerenciamento de Agenda
     AgendaComponent,
-    AvisosLembretesComponent,
     EditarConsultasComponent,
     TabelaEditarMedicosConsultasComponent,
     TabelaEditarPacienteConsultasComponent,
     ObservacoesComponent,
-    GerenciamentoComponent,
     NovaConsultaComponent,
     TabelaDePacientesComponent,
     TabelasPesquisasMedicosComponent,
@@ -149,13 +149,15 @@ const routes: Routes = [
     // Componentes de Planos
     ListaPlanosComponent,
     DetalheAssinaturaComponent,
-    ModalPixComponent,
     GerenciarPlanosComponent,
      ModalValoresAdicionaisComponent,
  
     
+    // Componentes de Assinaturas (SUPER_ADMIN)
+    GestaoAssinaturasComponent,
+    PendenciasManuaisComponent,
+
     // Componentes de Suporte
-    SobreComponent,
     SuporteComponent,
     GestaoChamadosComponent,
     TrocaSenhaComponent,

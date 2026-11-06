@@ -1,6 +1,7 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { jsPDF } from 'jspdf';
+import { formatarDataLocal } from '../../../../shared/utils/data-local';
 
 @Component({
   selector: 'app-planejamento-dentista',
@@ -161,7 +162,7 @@ export class PlanejamentoDentistaComponent implements OnInit {
 
     this.pdfRodape(doc, pw, ph);
 
-    doc.save(`Planejamento_Odontologico_${this.codigoProntuario}_${new Date().toISOString().split('T')[0]}.pdf`);
+    doc.save(`Planejamento_Odontologico_${this.codigoProntuario}_${formatarDataLocal(new Date())}.pdf`);
   }
 
   /**

@@ -32,7 +32,4 @@ export class ProcedimentoPadraoApiService {
     return this.http.patch<any>(`${this.apiUrl}/${id}/toggle`, {});
   }
 
-  desativar(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`);
-  }
 }

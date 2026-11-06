@@ -12,14 +12,6 @@ export class PlanejamentoTerapeuticoApiService {
 
   constructor(private http: HttpClient) { }
 
-  listarPorProntuario(prontuarioId: number): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/prontuario/${prontuarioId}`);
-  }
-
-  adicionar(profissionalId: number, payload: any): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/profissional/${profissionalId}`, payload);
-  }
-
   remover(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }

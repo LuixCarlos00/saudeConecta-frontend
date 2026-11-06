@@ -1,0 +1,27 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      - name: Regras de arquitetura (dependency-cruiser)
+        run: npm run arquitetura
+
+      - name: Testes
+        run: npx ng test --watch=false --browsers=ChromeHeadless
+
+      - name: Build de produção
+        run: npx ng build --configuration production

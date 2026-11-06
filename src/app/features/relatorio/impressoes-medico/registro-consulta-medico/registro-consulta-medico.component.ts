@@ -1,6 +1,8 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { jsPDF } from 'jspdf';
+import { formatarDataBr, formatarDataLocal } from '../../../../shared/utils/data-local';
+import { nomeComTitulo } from '../../../../shared/utils/titulo-profissional';
 
 @Component({
   selector: 'app-registro-consulta-medico',
@@ -9,10 +11,12 @@ import { jsPDF } from 'jspdf';
 })
 export class RegistroConsulataMedicoComponent implements OnInit {
 
-  dataAtual = new Date().toISOString().split('T')[0];
+  dataAtual = formatarDataLocal(new Date());
 
   // Dados do profissional
   nomeMedico = '';
+  /** Nome já com título uma única vez (evita "Dr. Dra. Fulana"). */
+  nomeMedicoComTitulo = '';
   crm = '';
   emailMedico = '';
   telefoneMedico = '';
@@ -50,6 +54,8 @@ export class RegistroConsulataMedicoComponent implements OnInit {
   // Diagnóstico e Tratamento
   diagnostico = '';
   prescricao = '';
+  /** "Prescrição — <título>:" quando o médico deu título à prescrição, igual ao histórico completo. */
+  rotuloPrescricao = 'Prescrição:';
   orientacoes = '';
 
   // Códigos TUSS e CID
@@ -76,6 +82,7 @@ export class RegistroConsulataMedicoComponent implements OnInit {
     // ── Profissional ──
     const prof = p.profissional as any;
     this.nomeMedico = prof?.nome?.trim() || '';
+    this.nomeMedicoComTitulo = nomeComTitulo(this.nomeMedico, '');
     this.crm = prof?.registroConselho?.trim() || prof?.conselho?.trim() || '';
     this.emailMedico = prof?.email?.trim() || '';
     this.telefoneMedico = prof?.telefone?.trim() || '';
@@ -91,10 +98,12 @@ export class RegistroConsulataMedicoComponent implements OnInit {
       ?? paciente?.cpf?.trim()
       ?? consulta?.pacienteCpf?.trim()
       ?? '';
-    this.dataNascimento = paciente?.paciDataNacimento
+    const nascimento = paciente?.paciDataNacimento
       ?? paciente?.dataNascimento
       ?? p.dataNascimento
       ?? '';
+    // A API manda 'yyyy-MM-dd'; se vier em outro formato, mostra como veio
+    this.dataNascimento = formatarDataBr(nascimento, nascimento);
     this.emailPaciente = paciente?.paciEmail?.trim()
       ?? paciente?.email?.trim()
       ?? '';
@@ -132,6 +141,8 @@ export class RegistroConsulataMedicoComponent implements OnInit {
     // ── Diagnóstico e Tratamento ──
     this.diagnostico = p.diagnostico || '';
     this.prescricao = p.prescricao || '';
+    const tituloPrescricao = p.tituloPrescricao?.trim();
+    this.rotuloPrescricao = tituloPrescricao ? `Prescrição — ${tituloPrescricao}:` : 'Prescrição:';
     this.orientacoes = p.orientacoes || '';
 
     // ── Códigos TUSS e CID ──
@@ -156,7 +167,17 @@ export class RegistroConsulataMedicoComponent implements OnInit {
     return new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
   }
 
+  /** Gera e baixa o PDF do registro da consulta. */
   GerarPDF(): void {
+    this.montarPDF().save(`Registro_Medico_${this.codigoProntuario}_${this.dataAtual}.pdf`);
+  }
+
+  /**
+   * Monta o PDF do registro sem baixar (separado do download para poder ser testado).
+   *
+   * @returns documento jsPDF pronto
+   */
+  montarPDF(): jsPDF {
     const doc = new jsPDF('p', 'mm', 'a4');
     const pw = doc.internal.pageSize.getWidth();
     const ph = doc.internal.pageSize.getHeight();
@@ -195,7 +216,7 @@ export class RegistroConsulataMedicoComponent implements OnInit {
     // ── Médico Atendente ──
     y = this.pdfSecao(doc, 'MÉDICO ATENDENTE', m, y, w);
     y = this.pdfTabela(doc, [[
-      { b: 'Nome:', t: `Dr. ${this.nomeMedico}` },
+      { b: 'Nome:', t: this.nomeMedicoComTitulo },
       { b: 'CRM:', t: this.crm },
       { b: 'Email:', t: this.emailMedico },
       { b: 'Tel.:', t: this.telefoneMedico },
@@ -215,7 +236,7 @@ export class RegistroConsulataMedicoComponent implements OnInit {
       if (this.peso) sv.push({ b: 'Peso:', t: this.peso });
       if (this.altura) sv.push({ b: 'Altura:', t: this.altura });
       if (this.temperatura) sv.push({ b: 'Temp.:', t: this.temperatura });
-      if (this.saturacao) sv.push({ b: 'SpO₂:', t: this.saturacao });
+      if (this.saturacao) sv.push({ b: 'SpO2:', t: this.saturacao }); // a fonte do jsPDF não tem o ₂ subscrito
       if (this.hemoglobina) sv.push({ b: 'Hb:', t: this.hemoglobina });
       if (this.frequenciaRespiratoria) sv.push({ b: 'Fr. Resp.:', t: this.frequenciaRespiratoria });
       if (this.frequenciaArterialSistolica) sv.push({ b: 'PA Sist.:', t: this.frequenciaArterialSistolica });
@@ -234,7 +255,7 @@ export class RegistroConsulataMedicoComponent implements OnInit {
 
     // ── Diagnóstico / Prescrição / Orientações ──
     if (this.diagnostico) { y = this.pdfQuebraPagina(doc, y, 6, pw, ph, m); y = this.pdfLinhaInline(doc, 'Diagnóstico:', this.diagnostico, m, y, w); }
-    if (this.prescricao) { y = this.pdfQuebraPagina(doc, y, 6, pw, ph, m); y = this.pdfLinhaInline(doc, 'Prescrição:', this.prescricao, m, y, w); }
+    if (this.prescricao) { y = this.pdfQuebraPagina(doc, y, 6, pw, ph, m); y = this.pdfLinhaInline(doc, this.rotuloPrescricao, this.prescricao, m, y, w); }
     if (this.orientacoes) { y = this.pdfQuebraPagina(doc, y, 6, pw, ph, m); y = this.pdfLinhaInline(doc, 'Orientações:', this.orientacoes, m, y, w); }
 
     // ── Códigos CID / TUSS ──
@@ -251,7 +272,7 @@ export class RegistroConsulataMedicoComponent implements OnInit {
       y = this.pdfQuebraPagina(doc, y, 10, pw, ph, m);
       y = this.pdfSecao(doc, 'PLANEJAMENTO TERAPÊUTICO', m, y, w);
       const planRows = this.planejamentos.map((p: any) => [
-        { b: '', t: p.dataProcedimento || '-' },
+        { b: '', t: this.dataBr(p.dataProcedimento) },
         { b: '', t: p.procedimentoRealizado || '-' },
         { b: '', t: p.valor != null ? `R$ ${Number(p.valor).toFixed(2)}` : '-' },
         { b: '', t: p.statusAssinatura || 'PENDENTE' },
@@ -274,7 +295,17 @@ export class RegistroConsulataMedicoComponent implements OnInit {
     // ── Rodapé ──
     this.pdfRodape(doc, pw, ph);
 
-    doc.save(`Registro_Medico_${this.codigoProntuario}_${this.dataAtual}.pdf`);
+    return doc;
+  }
+
+  /**
+   * Data-sem-hora da API ('yyyy-MM-dd') em dd/MM/yyyy, igual ao histórico completo.
+   *
+   * @param data data como vem da API
+   * @returns data formatada, ou '-' quando ausente/inválida
+   */
+  dataBr(data: string | null | undefined): string {
+    return formatarDataBr(data, '-');
   }
 
   // ── Helpers PDF (idênticos ao dentista) ──────────────────────────────────

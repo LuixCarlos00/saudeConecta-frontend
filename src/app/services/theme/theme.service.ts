@@ -74,18 +74,6 @@ export class ThemeService {
     this.toggleDarkMode();
   }
 
-  loadSavedTheme(): void {
-    const saved = localStorage.getItem('theme');
-    if (saved) {
-      try {
-        const theme = JSON.parse(saved) as Theme;
-        this.currentThemeSubject.next(theme);
-      } catch {
-        // Usar tema padrão se não conseguir fazer parse
-      }
-    }
-  }
-
   get currentTheme(): Theme {
     return this.currentThemeSubject.value;
   }

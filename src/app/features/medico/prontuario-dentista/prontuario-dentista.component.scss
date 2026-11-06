@@ -108,7 +108,9 @@ $t: 0.15s ease;
 
 .pep-header__right {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
 }
 
 // =============================================================================
@@ -1642,4 +1644,38 @@ $t: 0.15s ease;
   margin-bottom: 6px;
   strong { color: var(--color-text-primary); font-weight: 500; }
   &--muted { color: var(--color-text-secondary); }
+}
+
+// -----------------------------------------------------------------------------
+// Rascunho do atendimento: indicador de salvamento (cabeçalho) e botão de descartar (rodapé)
+// -----------------------------------------------------------------------------
+.pep-rascunho {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.9);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  &--erro {
+    color: #fde68a;
+  }
+}
+
+.pep-descartar {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 0.75rem;
+  color: $txm;
+  cursor: pointer;
+  text-decoration: underline;
+
+  &:hover:not(:disabled) {
+    color: #dc2626;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
 }

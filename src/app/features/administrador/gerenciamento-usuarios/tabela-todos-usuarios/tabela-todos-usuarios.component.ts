@@ -1,14 +1,14 @@
 import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { Subject, takeUntil } from 'rxjs';
-import Swal from 'sweetalert2';
+import { ActivatedRoute } from '@angular/router';
+import { Subject, finalize, takeUntil } from 'rxjs';
+import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
 
 import { UsuarioApiService } from 'src/app/services/api/usuario-api.service';
 import { PacienteApiService } from 'src/app/services/api/paciente-api.service';
 import { AdministradorApiService } from 'src/app/services/api/administrador-api.service';
 import { SecretariaApiService } from 'src/app/services/api/secretaria-api.service';
 import { FiltroStateService } from 'src/app/services/state/filtro-state.service';
-import { DialogService } from 'src/app/util/variados/dialogo-confirmação/dialog.service';
 import { TrocaSenhaUsuariosComponent } from './TrocaSenhaUsuarios/TrocaSenhaUsuarios.component';
 import { VisualizarEditarUsuarioComponent } from './VisualizarEditarUsuario/visualizar-editar-usuario.component';
 
@@ -17,6 +17,7 @@ import { Secretaria } from 'src/app/util/variados/interfaces/secretaria/secretar
 import { Paciente } from 'src/app/util/variados/interfaces/paciente/paciente';
 import { ProfissionalApiService } from 'src/app/services/api/profissional-api.service';
 import { is } from 'date-fns/locale';
+import { extrairMensagemErro } from 'src/app/shared/utils/mensagem-erro-http';
 import { Profissional } from 'src/app/util/variados/interfaces/medico/Profissional';
 import { ControleAcessoApiService } from 'src/app/services/api/controle-acesso-api.service';
 import { ModalAssociarPlanoComponent } from './modal-associar-plano/modal-associar-plano.component';
@@ -66,15 +67,16 @@ export class TabelaTodosUsuariosComponent implements OnInit, OnDestroy {
   displayedColumns = ['index', 'nome', 'categoria', 'email', 'status', 'acoes'];
 
   constructor(
+    private notificacao: NotificacaoService,
     private usuarioApiService: UsuarioApiService,
     private pacienteApiService: PacienteApiService,
     private administradorApiService: AdministradorApiService,
     private secretariaApiService: SecretariaApiService,
     private filtroStateService: FiltroStateService,
-    private dialogService: DialogService,
     private dialog: MatDialog,
     private clinicoApiService: ProfissionalApiService,
-    public controleAcessoService: ControleAcessoApiService
+    public controleAcessoService: ControleAcessoApiService,
+    private route: ActivatedRoute
   ) { }
 
   ngOnInit(): void {
@@ -85,6 +87,25 @@ export class TabelaTodosUsuariosComponent implements OnInit, OnDestroy {
     
     this.inicializarSubscriptions();
     this.carregarUsuarios();
+    this.abrirPlanoDaOrganizacaoDaUrl();
+  }
+
+  /**
+   * Atalho do dashboard da plataforma: `?organizacaoId=X&nome=Y` abre direto o modal de plano da clínica.
+   * Só vale para SUPER_ADMIN; o modal precisa apenas do id e do nome da organização.
+   */
+  private abrirPlanoDaOrganizacaoDaUrl(): void {
+    if (!this.controleAcessoService.isSuperAdmin()) { return; }
+    const params = this.route.snapshot.queryParamMap;
+    const organizacaoId = Number(params.get('organizacaoId'));
+    if (!Number.isInteger(organizacaoId) || organizacaoId <= 0) { return; }
+    this.dialog.open(ModalAssociarPlanoComponent, {
+      width: '700px',
+      data: { organizacaoId, nomeOrganizacao: params.get('nome') || 'Organização' },
+      disableClose: true
+    }).afterClosed().subscribe((associado: boolean) => {
+      if (associado) { this.carregarUsuarios(); }
+    });
   }
 
   ngOnDestroy(): void {
@@ -120,8 +141,12 @@ export class TabelaTodosUsuariosComponent implements OnInit, OnDestroy {
 
   carregarUsuarios(): void {
     this.isLoading = true;
+    this.filtroStateService.setCarregando(true);
     this.usuarioApiService.buscarTodosAgrupados()
-      .pipe(takeUntil(this.destroy$))
+      .pipe(
+        takeUntil(this.destroy$),
+        finalize(() => this.filtroStateService.setCarregando(false))
+      )
       .subscribe({
         next: (data: any) => {
           if (this.controleAcessoService.isSuperAdmin()) {
@@ -207,7 +232,7 @@ export class TabelaTodosUsuariosComponent implements OnInit, OnDestroy {
     this.dataSource = resultado;
 
     if (this.searchText && resultado.length === 0) {
-      this.dialogService.NaoFoiEncontradoConsultasComEssesParametros();
+      this.notificacao.mostrarSnackbar('Não foi encontrado consultas com esses parametros .Tente Novamente.', 50000);
     }
   }
 
@@ -256,7 +281,7 @@ export class TabelaTodosUsuariosComponent implements OnInit, OnDestroy {
   }
 
   confirmarDelecao(usuario: UsuarioUnificado): void {
-    Swal.fire({
+    this.notificacao.fire({
       title: 'Confirmar exclusão',
       text: `Deseja realmente excluir ${usuario.nome}?`,
       icon: 'warning',
@@ -334,7 +359,7 @@ export class TabelaTodosUsuariosComponent implements OnInit, OnDestroy {
   }
 
   private mostrarSucesso(mensagem: string): void {
-    Swal.fire({
+    this.notificacao.fire({
       icon: 'success',
       title: 'Sucesso!',
       text: mensagem,
@@ -344,7 +369,7 @@ export class TabelaTodosUsuariosComponent implements OnInit, OnDestroy {
   }
 
   private mostrarErro(mensagem: string): void {
-    Swal.fire({
+    this.notificacao.fire({
       icon: 'error',
       title: 'Erro',
       text: mensagem,
@@ -362,7 +387,7 @@ export class TabelaTodosUsuariosComponent implements OnInit, OnDestroy {
       ? `Deseja ${acao} o tenant ${usuario.nome}? Todos os usuários desta organização também serão ${novoStatus === 0 ? 'bloqueados' : 'desbloqueados'}.`
       : `Deseja ${acao} o usuário ${usuario.nome}?`;
 
-    Swal.fire({
+    this.notificacao.fire({
       title: `Confirmar ${acao}`,
       text: textoConfirmacao,
       icon: isCascata ? 'warning' : 'question',
@@ -409,7 +434,7 @@ export class TabelaTodosUsuariosComponent implements OnInit, OnDestroy {
       },
       error: (error) => {
         console.error('Erro ao alterar status:', error);
-        this.mostrarErro('Erro ao alterar status do usuário.');
+        this.mostrarErro(extrairMensagemErro(error) || 'Erro ao alterar status do usuário.');
       }
     });
   }
@@ -465,6 +490,17 @@ export class TabelaTodosUsuariosComponent implements OnInit, OnDestroy {
         this.carregarUsuarios();
       }
     });
+  }
+
+  /**
+   * Indica se o usuário logado pode excluir o item da tabela.
+   * Administradores só podem ser excluídos por quem tem ROLE_ADMIN (o back responde 403 aos demais).
+   *
+   * @param usuario Usuário unificado da tabela
+   * @returns true se a exclusão for permitida ao logado
+   */
+  podeExcluir(usuario: UsuarioUnificado): boolean {
+    return usuario.categoria !== 'Administrador' || this.controleAcessoService.podeGerenciarAdministrador();
   }
 
   isAdministrador(usuario: UsuarioUnificado): boolean {

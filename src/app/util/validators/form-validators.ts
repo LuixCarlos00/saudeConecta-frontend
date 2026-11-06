@@ -1,4 +1,5 @@
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
+import { parseDataLocal } from '../../shared/utils/data-local';
 
 // ─── Regex Padrões ────────────────────────────────────────────────────────────
 
@@ -63,20 +64,6 @@ function pareceSpamDeCaracteres(valor: string): boolean {
  */
 function contemInjection(valor: string): boolean {
   return REGEX_SQL_INJECTION.test(valor) || REGEX_XSS.test(valor) || REGEX_HTML_TAGS.test(valor);
-}
-
-/**
- * Sanitiza um texto removendo caracteres perigosos
- * Uso: chamar antes de enviar dados ao backend
- * @param valor Texto a ser sanitizado
- * @returns Texto limpo
- */
-export function sanitizar(valor: string): string {
-  if (!valor) return '';
-  return valor
-    .replace(REGEX_HTML_TAGS, '')
-    .replace(/[<>"'`;]/g, '')
-    .trim();
 }
 
 // ─── Validators ───────────────────────────────────────────────────────────────
@@ -155,8 +142,8 @@ export function dataNascimentoValidator(idadeMin = 18, idadeMax = 100): Validato
     const valor = control.value;
     if (!valor) return null;
 
-    const data = new Date(valor);
-    if (isNaN(data.getTime())) return { dataInvalida: true };
+    const data = converterParaDataLocal(valor);
+    if (!data || isNaN(data.getTime())) return { dataInvalida: true };
 
     const hoje = new Date();
     hoje.setHours(0, 0, 0, 0);
@@ -184,34 +171,6 @@ export function rgValidator(): ValidatorFn {
     const semFormatacao = valor.replace(/[\.\-]/g, '');
     if (!REGEX_NUMEROS.test(semFormatacao)) return { rgInvalido: true };
     if (semFormatacao.length < 7 || semFormatacao.length > 9) return { rgTamanhoInvalido: true };
-
-    return null;
-  };
-}
-
-/**
- * Valida CRM (apenas números, 4-6 dígitos)
- */
-export function crmValidator(): ValidatorFn {
-  return (control: AbstractControl): ValidationErrors | null => {
-    const valor: string = control.value?.trim() ?? '';
-    if (!valor) return null;
-
-    if (!REGEX_CRM.test(valor)) return { crmInvalido: true };
-
-    return null;
-  };
-}
-
-/**
- * Valida CRO (mesmo formato que CRM)
- */
-export function croValidator(): ValidatorFn {
-  return (control: AbstractControl): ValidationErrors | null => {
-    const valor: string = control.value?.trim() ?? '';
-    if (!valor) return null;
-
-    if (!REGEX_CRO.test(valor)) return { croInvalido: true };
 
     return null;
   };
@@ -370,6 +329,16 @@ export function cnpjValidator(): ValidatorFn {
 }
 
 /**
+ * Converte o valor do controle em Date local. Strings 'yyyy-MM-dd' são lidas no
+ * fuso local (new Date('yyyy-MM-dd') seria UTC e recuaria um dia no Brasil).
+ */
+function converterParaDataLocal(valor: unknown): Date | null {
+  if (valor instanceof Date) return valor;
+  if (typeof valor === 'string') return parseDataLocal(valor) ?? new Date(valor);
+  return new Date(valor as any);
+}
+
+/**
  * Valida data de nascimento para paciente:
  * - Não pode ser no futuro
  * - Idade entre 0 e 120 anos
@@ -379,8 +348,8 @@ export function dataNascimentoPacienteValidator(): ValidatorFn {
     const valor = control.value;
     if (!valor) return null;
 
-    const data = new Date(valor);
-    if (isNaN(data.getTime())) return { dataInvalida: true };
+    const data = converterParaDataLocal(valor);
+    if (!data || isNaN(data.getTime())) return { dataInvalida: true };
 
     const hoje = new Date();
     hoje.setHours(0, 0, 0, 0);

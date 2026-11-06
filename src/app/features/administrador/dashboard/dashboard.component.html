@@ -1,3 +1,6 @@
+<app-dashboard-plataforma *ngIf="superAdmin; else painelClinica"></app-dashboard-plataforma>
+
+<ng-template #painelClinica>
 <div class="healthcare-content">
   <!-- Header do Dashboard -->
   <header class="dashboard-header">
@@ -25,7 +28,7 @@
       </p>
       <p class="banner-inadimplencia__prazo" *ngIf="dataLimiteAcesso">
         <i class="fa-solid fa-clock"></i>
-        Você tem acesso até <strong>{{ dataLimiteAcesso | date:'dd/MM/yyyy' }}</strong>
+        O acesso será suspenso em <strong>{{ dataLimiteAcesso | date:'dd/MM/yyyy' }}</strong>
         <span *ngIf="diasRestantes > 0">({{ diasRestantes }} {{ diasRestantes === 1 ? 'dia restante' : 'dias restantes' }})</span>
         <span *ngIf="diasRestantes === 0" class="banner-inadimplencia__urgente">— acesso pode ser suspenso a qualquer momento</span>
       </p>
@@ -202,3 +205,4 @@
     <br>
     <br>
 </div>
+</ng-template>

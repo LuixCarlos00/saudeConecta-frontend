@@ -87,13 +87,4 @@ export class PlanoDescricaoParserService {
     }
   }
 
-  /**
-   * Formata a descrição para compatibilidade com versões antigas (sem recursos).
-   *
-   * @param descricao descrição simples (apenas texto)
-   * @returns String formatada "titulo: xxx\nRecursos: []"
-   */
-  formatFromSimpleDescription(descricao: string): string {
-    return this.format(descricao || '', []);
-  }
 }

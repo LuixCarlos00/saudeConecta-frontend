@@ -4,6 +4,7 @@ import { Subject, takeUntil } from 'rxjs';
 import { ProntuarioApiService } from 'src/app/services/api/prontuario-api.service';
 import { jsPDF } from 'jspdf';
 import { ProntuarioDentistaApiService } from 'src/app/services/api/prontuario-dentista-api.service';
+import { formatarDataLocal } from '../../../../shared/utils/data-local';
 
 @Component({
   selector: 'app-questionario-saude-medico',
@@ -220,7 +221,7 @@ this.prontuarioDentistaApi.buscarQuestionarioSaude(consultaId)
     // ── Rodapé ──
     this.pdfRodape(doc, pw, ph);
 
-    doc.save(`Questionario_Saude_${this.codigoProntuario || this.consultaId}_${new Date().toISOString().split('T')[0]}.pdf`);
+    doc.save(`Questionario_Saude_${this.codigoProntuario || this.consultaId}_${formatarDataLocal(new Date())}.pdf`);
   }
 
   // ── Helpers PDF (padronizados com o registro de consulta) ────────────────

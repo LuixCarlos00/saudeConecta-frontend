@@ -107,7 +107,7 @@ export class LandingPageComponent implements OnInit {
   faq = [
     {
       pergunta: 'Como funciona o período de teste?',
-      resposta: 'Oferecemos 14 dias gratuitos com acesso completo a todas as funcionalidades. Não é necessário cartão de crédito para começar.'
+      resposta: 'Oferecemos 30 dias gratuitos com acesso completo a todas as funcionalidades. Não é necessário cartão de crédito para começar.'
     },
     {
       pergunta: 'O sistema funciona em dispositivos móveis?',
@@ -205,6 +205,16 @@ export class LandingPageComponent implements OnInit {
 
   navegarParaLogin() {
     this.router.navigate(['/login']);
+  }
+
+  /**
+   * Abre o auto-cadastro, já com o plano escolhido pré-selecionado.
+   *
+   * @param planoId ID do plano escolhido no card (opcional)
+   */
+  navegarParaCadastro(planoId?: number) {
+    this.mobileMenuOpen = false;
+    this.router.navigate(['/cadastro'], planoId ? { queryParams: { plano: planoId } } : {});
   }
 
   scrollToSection(sectionId: string) {

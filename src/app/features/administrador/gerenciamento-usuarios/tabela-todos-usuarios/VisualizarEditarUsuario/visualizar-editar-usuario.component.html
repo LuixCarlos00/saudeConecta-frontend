@@ -746,7 +746,7 @@
       Fechar
     </button>
 
-    <button *ngIf="!isEditMode" class="btn btn-edit" (click)="toggleEditMode()">
+    <button *ngIf="!isEditMode && podeEditar" class="btn btn-edit" (click)="toggleEditMode()">
       <i class="fa-solid fa-pen-to-square"></i>
       Editar
     </button>

@@ -4,7 +4,7 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 
 // Services
 import { AuthService } from './services/auth.service';
-import { ErrorHandlerService } from './services/error-handler.service';
+import { NotificacaoService } from './notificacao/notificacao.service';
 
 // Guards
 import { AuthGuard } from './guards/auth.guard';
@@ -15,6 +15,7 @@ import { RoleGuard } from './guards/role.guard';
 import { AuthInterceptor } from './interceptors/auth.interceptor';
 import { ErrorInterceptor } from './interceptors/error.interceptor';
 import { NgrokInterceptor } from './interceptors/ngrok.interceptor';
+import { environment } from '../../environments/environment';
 
 /**
  * Módulo Core - Singleton services, guards e interceptors
@@ -31,7 +32,7 @@ import { NgrokInterceptor } from './interceptors/ngrok.interceptor';
   providers: [
     // Services
     AuthService,
-    ErrorHandlerService,
+    NotificacaoService,
 
     // Guards
     AuthGuard,
@@ -39,11 +40,12 @@ import { NgrokInterceptor } from './interceptors/ngrok.interceptor';
     RoleGuard,
 
     // Interceptors (ordem importa!)
-    {
+    // Header do ngrok só faz sentido em desenvolvimento
+    ...(environment.production ? [] : [{
       provide: HTTP_INTERCEPTORS,
       useClass: NgrokInterceptor,
       multi: true
-    },
+    }]),
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,

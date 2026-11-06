@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
 import { MatDialogRef } from '@angular/material/dialog';
-import Swal from 'sweetalert2';
+import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
 
 import { ProfissionalApiService } from 'src/app/services/api/profissional-api.service';
 import { ufOptions } from 'src/app/util/variados/options/options';
@@ -29,6 +29,7 @@ import {
   formacaoValidator,
   antiInjectionValidator,
 } from 'src/app/util/validators/form-validators';
+import { extrairMensagemErro } from '../../../../shared/utils/mensagem-erro-http';
 
 
 @Component({
@@ -64,6 +65,7 @@ export class CadastroMedicoComponent implements OnInit, OnDestroy {
   };
 
   constructor(
+    private notificacao: NotificacaoService,
     private form: FormBuilder,
     private profissionalApiService: ProfissionalApiService,
     private route: Router,
@@ -210,22 +212,7 @@ export class CadastroMedicoComponent implements OnInit, OnDestroy {
    * @param mensagem Mensagem a ser exibida
    */
   private mostrarFeedbackCep(tipo: 'success' | 'error', mensagem: string) {
-    const Toast = Swal.mixin({
-      toast: true,
-      position: 'top-end',
-      showConfirmButton: false,
-      timer: 3000,
-      timerProgressBar: true,
-      didOpen: (toast) => {
-        toast.addEventListener('mouseenter', Swal.stopTimer);
-        toast.addEventListener('mouseleave', Swal.resumeTimer);
-      }
-    });
-
-    Toast.fire({
-      icon: tipo,
-      title: mensagem
-    });
+    this.notificacao.mostrarToast(tipo, mensagem);
   }
 
   private getTipoProfissionalSelecionado(): string {
@@ -242,7 +229,7 @@ export class CadastroMedicoComponent implements OnInit, OnDestroy {
       error: (error) => {
         console.error('Erro ao carregar especialidades:', error);
         this.isLoadingEspecialidades = false;
-        Swal.fire({
+        this.notificacao.fire({
           icon: 'error',
           title: 'Erro',
           text: 'Não foi possível carregar as especialidades. Tente novamente.',
@@ -256,7 +243,7 @@ export class CadastroMedicoComponent implements OnInit, OnDestroy {
     this.FormularioEndereco.markAllAsTouched();
 
     if (!this.FormularioEndereco.valid || !this.FormularioMedico.valid) {
-      Swal.fire({
+      this.notificacao.fire({
         icon: 'warning',
         title: 'Formulário incompleto',
         text: 'Por favor, preencha todos os campos obrigatórios corretamente.',
@@ -271,7 +258,7 @@ export class CadastroMedicoComponent implements OnInit, OnDestroy {
     };
 
     if (!dadosCompletos.cpf || dadosCompletos.cpf.length < 11) {
-      Swal.fire({
+      this.notificacao.fire({
         icon: 'warning',
         title: 'CPF inválido',
         text: 'O CPF é obrigatório e será usado como login do usuário.',
@@ -283,7 +270,7 @@ export class CadastroMedicoComponent implements OnInit, OnDestroy {
     this.profissionalApiService.cadastraClinicoByOrg(dadosCompletos).subscribe({
       next: () => {
         this.isLoading = false;
-        Swal.fire({
+        this.notificacao.fire({
           icon: 'success',
           title: 'Sucesso!',
           text: 'Médico cadastrado com sucesso. As credenciais serão enviadas por email.',
@@ -309,25 +296,25 @@ export class CadastroMedicoComponent implements OnInit, OnDestroy {
     let titulo = 'Erro';
     let icone: 'error' | 'warning' = 'error';
 
+    const mensagemBack = extrairMensagemErro(error);
+
     if (error.status === 422 && error.error?.message) {
       icone = 'warning';
       titulo = 'Limite do plano atingido';
       errorMessage = error.error.message;
-    } else if (error.status === 409 && error.error?.includes && error.error.includes('CPF já cadastrado no sistema')) {
-      errorMessage = 'CPF já cadastrado no sistema. Por favor, verifique os dados.';
-    } else if (error.status === 409 && error.error?.includes && error.error.includes('Email já cadastrado no sistema como')) {
-      if (error.error.includes('Email já cadastrado no sistema')) {
-        errorMessage = 'Email já cadastrado no sistema. Por favor, utilize outro email.';
-      } else if (error.error.includes('Duplicate entry') && error.error.includes('medico.MedEmail_UNIQUE')) {
-        errorMessage = 'Já existe um Médico registrado com esse email.';
-      } else if (error.error.includes('Duplicate entry') && error.error.includes('medico.MedCrm_UNIQUE')) {
-        errorMessage = 'Já existe um Médico registrado com esse CRM.';
-      } else {
-        errorMessage = typeof error.error === 'string' ? error.error : 'Erro ao processar cadastro.';
-      }
+    } else if (mensagemBack?.includes('Duplicate entry') && mensagemBack.includes('medico.MedEmail_UNIQUE')) {
+      errorMessage = 'Já existe um Médico registrado com esse email.';
+    } else if (mensagemBack?.includes('Duplicate entry') && mensagemBack.includes('medico.MedCrm_UNIQUE')) {
+      errorMessage = 'Já existe um Médico registrado com esse CRM.';
+    } else if (mensagemBack) {
+      errorMessage = mensagemBack;
+    } else if (error.status === 0) {
+      errorMessage = 'Sem conexão com o servidor.';
+    } else if (error.status >= 500) {
+      errorMessage = 'Erro no servidor, tente novamente.';
     }
 
-    Swal.fire({
+    this.notificacao.fire({
       icon: icone,
       title: titulo,
       text: errorMessage,

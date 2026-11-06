@@ -4,9 +4,10 @@ import { FormsModule } from '@angular/forms';
 import { Subject, takeUntil } from 'rxjs';
 import { ProcedimentoPadraoApiService } from 'src/app/services/api/procedimento-padrao-api.service';
 import { PlanejamentoTerapeuticoApiService } from 'src/app/services/api/planejamento-terapeutico-api.service';
-import { ErrorHandlerService } from 'src/app/core/services/error-handler.service';
+import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
 import { ProntuarioApiService } from 'src/app/services/api/prontuario-api.service';
 import { Prontuario, PlanejamentoTerapeutico } from 'src/app/util/variados/interfaces/Prontuario/Prontuario';
+import { formatarDataLocal } from '../../../../shared/utils/data-local';
 
 @Component({
   selector: 'app-aba-planejamento-medico',
@@ -35,7 +36,7 @@ export class AbaPlanejamentoMedicoComponent implements OnChanges, OnDestroy {
     private procedimentoPadraoApi: ProcedimentoPadraoApiService,
     private planejamentoApi: PlanejamentoTerapeuticoApiService,
     private prontuarioApi: ProntuarioApiService,
-    private errorHandler: ErrorHandlerService
+    private notificacao: NotificacaoService
   ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -72,7 +73,8 @@ export class AbaPlanejamentoMedicoComponent implements OnChanges, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (prontuario: Prontuario) => {
-          if (prontuario?.planejamentos) {
+          // Não sobrescreve itens já presentes (ex.: restaurados de um rascunho).
+          if (prontuario?.planejamentos && this.planejamentos.length === 0) {
             this.planejamentos = prontuario.planejamentos.map((p: PlanejamentoTerapeutico) => ({
               id: p.id,
               dataProcedimento: p.dataProcedimento || '',
@@ -84,9 +86,8 @@ export class AbaPlanejamentoMedicoComponent implements OnChanges, OnDestroy {
           }
         },
         error: (error) => {
-          // Se não encontrar prontuário (404) ou outros erros, mantém o array vazio para novos planejamentos
-          // Isso é normal ao iniciar uma nova consulta antes de criar o prontuário
-          this.planejamentos = [];
+          // Se não encontrar prontuário (404) ou outros erros, mantém a lista como está: vazia numa consulta
+          // nova ou com os itens restaurados do rascunho. Isso é normal antes de criar o prontuário.
         }
       });
   }
@@ -100,7 +101,7 @@ export class AbaPlanejamentoMedicoComponent implements OnChanges, OnDestroy {
       );
 
       if (procedimentoExistente) {
-        this.errorHandler.showError('Este procedimento já está cadastrado no planejamento e não pode ser duplicado.');
+        this.notificacao.showError('Este procedimento já está cadastrado no planejamento e não pode ser duplicado.');
         event.target.value = '';
         return;
       }
@@ -128,14 +129,14 @@ export class AbaPlanejamentoMedicoComponent implements OnChanges, OnDestroy {
 
   adicionarPlanejamento(): void {
     if (!this.novoPlanejamento.procedimentoRealizado.trim()) {
-      this.errorHandler.showError('Informe o procedimento realizado');
+      this.notificacao.showError('Informe o procedimento realizado');
       return;
     }
     const payload = {
       prontuarioId: null as any,
       consultaId: this.consultaId,
       pacienteId: this.pacienteId,
-      dataProcedimento: this.novoPlanejamento.dataProcedimento || new Date().toISOString().split('T')[0],
+      dataProcedimento: this.novoPlanejamento.dataProcedimento || formatarDataLocal(new Date()),
       procedimentoRealizado: this.novoPlanejamento.procedimentoRealizado,
       valor: this.novoPlanejamento.valor
     };
@@ -157,9 +158,9 @@ export class AbaPlanejamentoMedicoComponent implements OnChanges, OnDestroy {
         .subscribe({
           next: () => {
             this.planejamentos.splice(index, 1);
-            this.errorHandler.showSuccessToast('Item removido');
+            this.notificacao.showSuccessToast('Item removido');
           },
-          error: () => this.errorHandler.showError('Erro ao remover item')
+          error: () => this.notificacao.showError('Erro ao remover item')
         });
     } else {
       this.planejamentos.splice(index, 1);
@@ -175,17 +176,18 @@ export class AbaPlanejamentoMedicoComponent implements OnChanges, OnDestroy {
           this.procedimentosPadrao.push(criado);
           this.novoProcedimentoPadrao = { nomeProcedimento: '', valorPadrao: 0 };
           this.mostrarFormProcedimento = false;
-          this.errorHandler.showSuccessToast('Procedimento cadastrado');
+          this.notificacao.showSuccessToast('Procedimento cadastrado');
         },
-        error: () => this.errorHandler.showError('Erro ao cadastrar procedimento')
+        error: () => this.notificacao.showError('Erro ao cadastrar procedimento')
       });
   }
 
   /**
-   * Preenche os planejamentos com dados existentes (modo edição).
-   * @param dados Objeto com o array de planejamentos do prontuário
+   * Preenche os planejamentos com dados existentes (modo edição) ou com um rascunho.
+   * Aceita o formato de getDadosRascunho() (com `_local`) e o do prontuário salvo (sem `_local`).
+   * @param dados Objeto com o array de planejamentos
    */
-  setDados(dados: { planejamentos?: PlanejamentoTerapeutico[] }): void {
+  setDados(dados: { planejamentos?: (PlanejamentoTerapeutico & { _local?: boolean })[] }): void {
     if (!dados?.planejamentos) return;
     this.planejamentos = dados.planejamentos.map(p => ({
       id: p.id,
@@ -193,7 +195,7 @@ export class AbaPlanejamentoMedicoComponent implements OnChanges, OnDestroy {
       procedimentoRealizado: p.procedimentoRealizado || '',
       valor: p.valor || 0,
       statusAssinatura: p.statusAssinatura || 'PENDENTE',
-      _local: false,
+      _local: p._local ?? false,
     }));
   }
 
@@ -201,7 +203,7 @@ export class AbaPlanejamentoMedicoComponent implements OnChanges, OnDestroy {
    * Retorna os dados da aba para composição do payload de finalização.
    */
   getDados(): any {
-    const today = new Date().toISOString().split('T')[0];
+    const today = formatarDataLocal(new Date());
     return {
       planejamentos: this.planejamentos
         .map(p => ({
@@ -210,6 +212,23 @@ export class AbaPlanejamentoMedicoComponent implements OnChanges, OnDestroy {
           valor: p.valor,
           pacienteId: this.pacienteId,
         })),
+    };
+  }
+
+  /**
+   * Retorna todos os itens do planejamento (id, valor, status de assinatura e se ainda é local)
+   * para o rascunho do atendimento. Diferente de getDados(), preserva id e status.
+   */
+  getDadosRascunho(): any {
+    return {
+      planejamentos: this.planejamentos.map(p => ({
+        id: p.id,
+        dataProcedimento: p.dataProcedimento || '',
+        procedimentoRealizado: p.procedimentoRealizado,
+        valor: p.valor,
+        statusAssinatura: p.statusAssinatura || 'PENDENTE',
+        _local: !!p._local,
+      })),
     };
   }
 }

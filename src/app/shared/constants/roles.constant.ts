@@ -36,38 +36,3 @@ export const ALLOWED_ROLES: Role[] = [
 export function isValidRole(role: string): role is Role {
   return Object.values(Role).includes(role as Role);
 }
-
-/**
- * Verifica se a role tem permissão de administrador
- */
-export function isAdmin(role: string): boolean {
-  return role === Role.ADMIN || role === Role.SUPER_ADMIN || role === Role.ADMIN_ORG;
-}
-
-/**
- * Verifica se a role tem permissão de médico
- */
-export function isDoctor(role: string): boolean {
-  return role === Role.DOCTOR || role === Role.PROFISSIONAL;
-}
-
-/**
- * Verifica se a role tem permissão de secretária
- */
-export function isSecretary(role: string): boolean {
-  return role === Role.SECRETARY || role === Role.RECEPCIONISTA;
-}
-
-/**
- * Verifica se é super admin
- */
-export function isSuperAdmin(role: string): boolean {
-  return role.includes('ROLE_SUPER_ADMIN');
-}
-
-/**
- * Verifica se é admin de organização
- */
-export function isOrgAdmin(role: string): boolean {
-  return role.includes('ROLE_ADMIN') && !role.includes('ROLE_SUPER_ADMIN');
-}

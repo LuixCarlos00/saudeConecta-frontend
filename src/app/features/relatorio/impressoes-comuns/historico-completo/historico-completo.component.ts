@@ -5,6 +5,8 @@ import { jsPDF } from 'jspdf';
 import { ConsultaApiService } from 'src/app/services/api/consulta-api.service';
 import { Consultav2 } from 'src/app/util/variados/interfaces/consulta/consultav2';
 import { HistoricoCompletoPacienteResponse } from 'src/app/util/variados/interfaces/historico/historico-completo-paciente-response.interface';
+import { formatarDataBr, formatarDataLocal } from '../../../../shared/utils/data-local';
+import { prefixoTitulo } from '../../../../shared/utils/titulo-profissional';
 
 /**
  * Componente único responsável por exibir e imprimir o histórico completo
@@ -55,6 +57,21 @@ export class HistoricoCompletoComponent implements OnInit {
 
   get totalRegistros(): number {
     return this.historicoMedico.length + this.historicoDentista.length;
+  }
+
+  /** Prefixo "Dr(a). " omitido quando o nome já traz o título (ver shared/utils/titulo-profissional). */
+  prefixoTitulo(nome: string | null | undefined): string {
+    return prefixoTitulo(nome);
+  }
+
+  /**
+   * Data-sem-hora da API ('yyyy-MM-dd') em dd/MM/yyyy, no calendário local.
+   *
+   * @param data data como vem da API
+   * @returns data formatada, ou '-' quando ausente/inválida
+   */
+  dataBr(data: string | null | undefined): string {
+    return formatarDataBr(data, '-');
   }
 
   getLabelStatus(status: string): string {
@@ -109,8 +126,8 @@ export class HistoricoCompletoComponent implements OnInit {
     this.pdfRodape(doc, pw, ph);
 
     const nome = this.pacienteInfo
-      ? `Historico_Completo_${this.pacienteInfo.nome.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`
-      : `Historico_Completo_${new Date().toISOString().split('T')[0]}.pdf`;
+      ? `Historico_Completo_${this.pacienteInfo.nome.replace(/\s+/g, '_')}_${formatarDataLocal(new Date())}.pdf`
+      : `Historico_Completo_${formatarDataLocal(new Date())}.pdf`;
     doc.save(nome);
   }
 

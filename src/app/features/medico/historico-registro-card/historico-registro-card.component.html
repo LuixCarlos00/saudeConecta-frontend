@@ -1,0 +1,79 @@
+<div class="historico-registro">
+
+  <div class="historico-registro__header">
+    <h3>
+      <i class="fa-solid" [ngClass]="isDentista ? 'fa-tooth' : 'fa-file-medical'"></i>
+      Consulta #{{ registro.consultaId || '-' }} — {{ dataConsulta }}
+    </h3>
+    <div class="historico-registro__badges">
+      <span class="hr-badge" *ngIf="registro.status">{{ registro.status }}</span>
+      <span class="hr-badge hr-badge--info" title="Tempo de atendimento">
+        <i class="fa-regular fa-clock"></i> {{ duracao }}
+      </span>
+      <button type="button" class="hr-badge hr-badge--acao" *ngIf="podeEditar"
+              (click)="editar.emit(registro)" title="Corrigir os dados deste prontuário">
+        <i class="fa-solid fa-pen-to-square"></i> Editar prontuário
+      </button>
+    </div>
+  </div>
+
+  <div class="historico-campo historico-campo--muted historico-registro__meta">
+    <span *ngIf="profissional">
+      <i class="fa-solid fa-user-doctor"></i> {{ profissional }}
+      <ng-container *ngIf="registro.profissionalCrm"> — {{ rotuloConselho }} {{ registro.profissionalCrm }}</ng-container>
+      <ng-container *ngIf="registro.profissionalEspecialidade"> · {{ registro.profissionalEspecialidade }}</ng-container>
+    </span>
+    <span *ngIf="registro.codigoProntuario">Prontuário nº {{ registro.codigoProntuario }}</span>
+    <span *ngIf="registro.valor">Valor: R$ {{ registro.valor | number: '1.2-2' }}</span>
+  </div>
+
+  <div class="historico-registro__corpo">
+
+    <div *ngIf="sinaisVitais.length" class="hr-grupo">
+      <div class="hr-grupo__titulo"><i class="fa-solid fa-heart-pulse"></i> Sinais vitais</div>
+      <div class="hr-vitais">
+        <span *ngFor="let v of sinaisVitais" class="hr-vitais__item"><strong>{{ v.rotulo }}:</strong> {{ v.valor }}</span>
+      </div>
+    </div>
+
+    <div *ngFor="let g of grupos" class="hr-grupo">
+      <div class="hr-grupo__titulo"><i class="fa-solid" [ngClass]="g.icone"></i> {{ g.titulo }}</div>
+      <div *ngFor="let c of g.campos" class="historico-campo">
+        <strong>{{ c.rotulo }}:</strong> {{ c.valor }}
+      </div>
+    </div>
+
+    <div *ngIf="dentes.length" class="hr-grupo">
+      <div class="hr-grupo__titulo"><i class="fa-solid fa-teeth"></i> Odontograma</div>
+      <div class="hr-dentes">
+        <span *ngFor="let d of dentes" class="hr-dente" [title]="d.observacao || ''">
+          <strong>{{ d.numeroFdi }}</strong> {{ labelDente(d.status) }}<ng-container *ngIf="d.observacao"> — {{ d.observacao }}</ng-container>
+        </span>
+      </div>
+    </div>
+
+    <div *ngIf="planejamentos.length" class="hr-grupo">
+      <div class="hr-grupo__titulo"><i class="fa-solid fa-clipboard-list"></i> Planejamento terapêutico</div>
+      <table class="hr-tabela">
+        <thead>
+          <tr><th>Data</th><th>Procedimento</th><th>Valor</th><th>Assinatura</th></tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let p of planejamentos">
+            <td>{{ dataBr(p.dataProcedimento) }}</td>
+            <td>{{ p.procedimentoRealizado || p.procedimento || '-' }}</td>
+            <td>{{ p.valor != null ? ('R$ ' + (p.valor | number: '1.2-2')) : '-' }}</td>
+            <td>{{ p.statusAssinatura || 'PENDENTE' }}</td>
+          </tr>
+        </tbody>
+        <tfoot *ngIf="planejamentos.length > 1">
+          <tr><td colspan="2"><strong>Total</strong></td><td colspan="2"><strong>R$ {{ totalPlanejamentos | number: '1.2-2' }}</strong></td></tr>
+        </tfoot>
+      </table>
+    </div>
+
+    <div *ngIf="dataFinalizacao" class="historico-campo historico-campo--muted">
+      Finalizado em {{ dataFinalizacao }}
+    </div>
+  </div>
+</div>

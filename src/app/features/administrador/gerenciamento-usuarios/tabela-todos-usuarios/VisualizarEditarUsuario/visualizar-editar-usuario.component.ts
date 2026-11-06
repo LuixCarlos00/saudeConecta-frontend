@@ -2,7 +2,8 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Observable, Subject, takeUntil } from 'rxjs';
-import Swal from 'sweetalert2';
+import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
+import { extrairMensagemErro } from 'src/app/shared/utils/mensagem-erro-http';
 
 import { PacienteApiService } from 'src/app/services/api/paciente-api.service';
 import { ProfissionalApiService } from 'src/app/services/api/profissional-api.service';
@@ -38,8 +39,11 @@ export class VisualizarEditarUsuarioComponent implements OnInit {
   dadosOriginais: any = {};
   tipoProfissionalSelecionado: string = 'MEDICO';
   isSuperAdmin = false;
+  /** false quando o logado não pode editar este registro (ex.: Administrador sem ROLE_ADMIN). */
+  podeEditar = true;
 
   constructor(
+    private notificacao: NotificacaoService,
     public dialogRef: MatDialogRef<VisualizarEditarUsuarioComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
     private fb: FormBuilder,
@@ -52,6 +56,7 @@ export class VisualizarEditarUsuarioComponent implements OnInit {
   ) {
     this.categoria = data.usuario.categoria;
     this.isSuperAdmin = this.controleAcessoService.isSuperAdmin();
+    this.podeEditar = this.categoria !== 'Administrador' || this.controleAcessoService.podeGerenciarAdministrador();
   }
 
   ngOnInit(): void {
@@ -307,7 +312,7 @@ export class VisualizarEditarUsuarioComponent implements OnInit {
   salvar(): void {
     if (this.formulario.invalid) {
       this.marcarCamposComoTocados();
-      Swal.fire({
+      this.notificacao.fire({
         icon: 'warning',
         title: 'Atenção',
         text: 'Preencha todos os campos obrigatórios corretamente.',
@@ -375,7 +380,7 @@ export class VisualizarEditarUsuarioComponent implements OnInit {
       error: (error) => {
         console.error('Erro ao carregar especialidades:', error);
         this.isLoadingEspecialidades = false;
-        Swal.fire({
+        this.notificacao.fire({
           icon: 'error',
           title: 'Erro',
           text: 'Não foi possível carregar as especialidades. Tente novamente.',
@@ -518,7 +523,7 @@ export class VisualizarEditarUsuarioComponent implements OnInit {
 
   private handleSucessoAtualizacao(): void {
     this.isLoading = false;
-    Swal.fire({
+    this.notificacao.fire({
       icon: 'success',
       title: 'Sucesso!',
       text: 'Dados atualizados com sucesso.',
@@ -532,10 +537,10 @@ export class VisualizarEditarUsuarioComponent implements OnInit {
   private handleErroAtualizacao(error: any): void {
     console.error('Erro ao atualizar dados:', error);
     this.isLoading = false;
-    Swal.fire({
+    this.notificacao.fire({
       icon: 'error',
       title: 'Erro',
-      text: 'Não foi possível atualizar os dados. Tente novamente.',
+      text: extrairMensagemErro(error) || 'Não foi possível atualizar os dados. Tente novamente.',
       showCloseButton: true
     });
   }
@@ -615,7 +620,7 @@ export class VisualizarEditarUsuarioComponent implements OnInit {
   private handleErroCarregamento(error: any): void {
     console.error('Erro ao carregar dados:', error);
     this.isLoading = false;
-    Swal.fire({
+    this.notificacao.fire({
       icon: 'error',
       title: 'Erro',
       text: 'Não foi possível carregar os dados do usuário.',

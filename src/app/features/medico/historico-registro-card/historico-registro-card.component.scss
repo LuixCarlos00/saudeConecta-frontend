@@ -1,0 +1,116 @@
+// Mesmo visual que .historico-registro / .historico-campo tinham em prontuario-shared.scss
+// e prontuario-dentista.component.scss, agora num lugar só.
+.historico-registro {
+  background: var(--color-background-primary);
+  border: 0.5px solid var(--color-border-tertiary);
+  border-radius: var(--border-radius-lg);
+  padding: 14px 16px;
+  margin-bottom: 12px;
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+    border-bottom: 0.5px solid var(--color-border-tertiary);
+
+    h3 {
+      font-size: 13px;
+      font-weight: 500;
+      margin: 0;
+      i { color: #3b82f6; margin-right: 6px; }
+    }
+  }
+
+  &__badges { display: flex; gap: 6px; flex-wrap: wrap; }
+
+  &__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 16px;
+    margin-bottom: 10px;
+    i { margin-right: 4px; }
+  }
+}
+
+.historico-campo {
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--color-text-primary);
+  margin-bottom: 4px;
+  strong { color: var(--color-text-primary); font-weight: 500; }
+  &--muted { color: var(--color-text-secondary); }
+}
+
+.hr-badge {
+  font-size: 0.72rem;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--color-background-secondary, #f1f5f9);
+  color: var(--color-text-secondary, #475569);
+  &--info { background: #e0f2fe; color: #0369a1; }
+  &--acao {
+    border: 1px solid #0369a1;
+    background: #fff;
+    color: #0369a1;
+    cursor: pointer;
+    &:hover { background: #e0f2fe; }
+  }
+  i { margin-right: 3px; }
+}
+
+.hr-grupo {
+  margin-bottom: 10px;
+
+  &__titulo {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--color-text-secondary);
+    margin-bottom: 4px;
+    i { margin-right: 4px; color: #3b82f6; }
+  }
+}
+
+.hr-vitais {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 14px;
+  font-size: 12px;
+  &__item strong { font-weight: 500; }
+}
+
+.hr-dentes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.hr-dente {
+  font-size: 11px;
+  padding: 2px 6px;
+  border: 0.5px solid var(--color-border-tertiary);
+  border-radius: 6px;
+}
+
+.hr-tabela {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+
+  th, td {
+    text-align: left;
+    padding: 4px 6px;
+    border-bottom: 0.5px solid var(--color-border-tertiary);
+  }
+
+  th { font-weight: 500; color: var(--color-text-secondary); }
+}
+
+@media (max-width: 600px) {
+  .hr-tabela { display: block; overflow-x: auto; }
+}

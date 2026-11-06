@@ -49,22 +49,4 @@ export class RelatorioApiService {
     return this.http.get<PacienteAtendido[]>(`${this.apiUrl}/pacientes`, { params });
   }
 
-  /**
-   * Busca os relatorios de um paciente especifico.
-   *
-   * @param pacienteId identificador do paciente
-   * @returns paciente com consultas e documentos
-   */
-  buscarRelatoriosDoPaciente(pacienteId: number): Observable<PacienteAtendido> {
-    return this.http.get<PacienteAtendido>(`${this.apiUrl}/pacientes/${pacienteId}`);
-  }
-
-  /**
-   * Busca os tipos de documento suportados pelo backend.
-   *
-   * @returns tipos com codigo, rotulo e descricao
-   */
-  buscarTiposDocumento(): Observable<TipoDocumentoOpcao[]> {
-    return this.http.get<TipoDocumentoOpcao[]>(`${this.apiUrl}/tipos-documento`);
-  }
 }

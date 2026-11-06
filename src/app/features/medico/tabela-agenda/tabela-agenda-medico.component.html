@@ -132,9 +132,9 @@
             <button 
               class="start-btn" 
               (click)="DesejaAbrirConsulta(element)"
-              title="Iniciar consulta">
-              <i class="fa-solid fa-stethoscope"></i>
-              <span>Iniciar</span>
+              [attr.title]="temRascunho(element) ? 'Retomar atendimento' : 'Iniciar consulta'">
+              <i class="fa-solid" [ngClass]="temRascunho(element) ? 'fa-rotate-right' : 'fa-stethoscope'"></i>
+              <span>{{ temRascunho(element) ? 'Retomar atendimento' : 'Iniciar' }}</span>
             </button>
           </td>
         </ng-container>

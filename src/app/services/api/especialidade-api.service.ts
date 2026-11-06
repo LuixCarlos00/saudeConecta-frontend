@@ -18,27 +18,8 @@ export class EspecialidadeApiService {
 
   constructor(private http: HttpClient) { }
 
-  listarTodas(): Observable<EspecialidadeResponse[]> {
-    return this.http.get<EspecialidadeResponse[]>(this.apiUrl);
-  }
-
-  buscarPorId(id: number): Observable<EspecialidadeResponse> {
-    return this.http.get<EspecialidadeResponse>(`${this.apiUrl}/${id}`);
-  }
-
   carregarEspecialidades(): Observable<EspecialidadeResponse[]> {
     return this.http.get<EspecialidadeResponse[]>(`${this.apiUrl}/carregarEspecialidades`);
   }
 
-  listarOdontologicas(): Observable<EspecialidadeResponse[]> {
-    return this.http.get<EspecialidadeResponse[]>(`${this.apiUrl}/odontologicas`);
-  }
-
-  listarPorTipo(codigo: string): Observable<EspecialidadeResponse[]> {
-    return this.http.get<EspecialidadeResponse[]>(`${this.apiUrl}/tipo/${codigo}`);
-  }
-
-  listarPorTipoId(tipoId: number): Observable<EspecialidadeResponse[]> {
-    return this.http.get<EspecialidadeResponse[]>(`${this.apiUrl}/tipo-id/${tipoId}`);
-  }
 }

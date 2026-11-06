@@ -2,13 +2,6 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
-// Healthcare Design System Components (Standalone)
-import { PatientHeaderComponent } from './components/patient-header/patient-header.component';
-import { VitalSignsComponent } from './components/vital-signs/vital-signs.component';
-import { PatientQueueComponent } from './components/patient-queue/patient-queue.component';
-import { MedicalAlertComponent, AlertContainerComponent } from './components/medical-alert/medical-alert.component';
-import { AlertToastContainerComponent } from './components/alert-toast-container/alert-toast-container.component';
-
 // Pipes
 import { DiaSemanaPipe } from './pipes/dia-semana.pipe';
 import { HorarioPipe } from './pipes/horario.pipe';
@@ -37,18 +30,6 @@ import { MatBadgeModule } from '@angular/material/badge';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatMenuModule } from '@angular/material/menu';
-
-/**
- * Componentes Healthcare Standalone para reutilização
- */
-const HEALTHCARE_COMPONENTS = [
-  PatientHeaderComponent,
-  VitalSignsComponent,
-  PatientQueueComponent,
-  MedicalAlertComponent,
-  AlertContainerComponent,
-  AlertToastContainerComponent
-];
 
 /**
  * Módulos Angular Material para reutilização
@@ -93,9 +74,7 @@ const MATERIAL_MODULES = [
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    ...MATERIAL_MODULES,
-    // Standalone components
-    ...HEALTHCARE_COMPONENTS
+    ...MATERIAL_MODULES
   ],
   exports: [
     // Módulos básicos
@@ -104,8 +83,6 @@ const MATERIAL_MODULES = [
     ReactiveFormsModule,
     // Material modules
     ...MATERIAL_MODULES,
-    // Healthcare Design System Components
-    ...HEALTHCARE_COMPONENTS,
     // Pipes
     DiaSemanaPipe,
     HorarioPipe

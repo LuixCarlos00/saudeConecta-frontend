@@ -4,8 +4,9 @@ import { Chart, registerables, ChartConfiguration } from 'chart.js';
 import { ConsultaApiService, SaldoFinanceiroResponse } from 'src/app/services/api/consulta-api.service';
 import { Subject, takeUntil, finalize } from 'rxjs';
 import { ControleAcessoApiService } from 'src/app/services/api/controle-acesso-api.service';
-import { tokenService } from 'src/app/util/Token/Token.service';
+import { AuthService } from 'src/app/core/services/auth.service';
 import { ProfissionalApiService } from 'src/app/services/api/profissional-api.service';
+import { formatarDataLocal } from '../../../../shared/utils/data-local';
 
 // Registrar todos os componentes do Chart.js
 Chart.register(...registerables);
@@ -223,7 +224,7 @@ export class GraficosPrincipaisDashboardComponent implements OnInit, OnChanges, 
     private consultaApiService: ConsultaApiService,
     private formBuilder: FormBuilder,
     private controleAcessoService: ControleAcessoApiService,
-    private tokenService: tokenService,
+    private authService: AuthService,
     private profissionalApiService: ProfissionalApiService
   ) { }
 
@@ -239,8 +240,7 @@ export class GraficosPrincipaisDashboardComponent implements OnInit, OnChanges, 
     });
 
     // Obtém dados do usuário logado
-    this.tokenService.decodificaToken();
-    const usuario = this.tokenService.getUsuarioLogado();
+    const usuario = this.authService.getCurrentUser();
     if (usuario) {
       this.usuarioLogadoId = usuario.id;
       this.organizacaoId = usuario.organizacaoId || null;
@@ -332,20 +332,20 @@ export class GraficosPrincipaisDashboardComponent implements OnInit, OnChanges, 
 
     if (data === 1) {
       date.setDate(date.getDate() - 7);
-      paramentrosBusca = date.toISOString().split('T')[0];
+      paramentrosBusca = formatarDataLocal(date);
     }
     if (data === 2) {
       date.setDate(date.getDate() - 30);
-      paramentrosBusca = date.toISOString().split('T')[0];
+      paramentrosBusca = formatarDataLocal(date);
     }
     if (data === 3) {
       date.setDate(date.getDate() - 60);
-      paramentrosBusca = date.toISOString().split('T')[0];
+      paramentrosBusca = formatarDataLocal(date);
     }
 
     // Determina o ID do médico para filtrar (input ou usuário logado)
     const idMedicoFiltro = this.medicoId || (this.isMedico ? this.usuarioLogadoId : null);
-    const dataFim = dateHoje.toISOString().split('T')[0];
+    const dataFim = formatarDataLocal(dateHoje);
 
     // Define a requisição baseada no tipo de usuário
     let request$;
@@ -391,12 +391,18 @@ export class GraficosPrincipaisDashboardComponent implements OnInit, OnChanges, 
 
     if (!dataInicio || !dataFim) return;
 
+    if (dataInicio > dataFim) {
+      this.hasErrorConsultas = true;
+      this.errorMessageConsultas = 'A data inicial não pode ser maior que a data final.';
+      return;
+    }
+
     this.isLoadingConsultas = true;
     this.hasErrorConsultas = false;
     this.diaSelecionadoConsultas = 0;
 
-    const DataFimFormatada = dataFim.toISOString().split('T')[0];
-    const DataInicioFormatada = dataInicio.toISOString().split('T')[0];
+    const DataFimFormatada = formatarDataLocal(dataFim);
+    const DataInicioFormatada = formatarDataLocal(dataInicio);
 
     // Determina o ID do médico para filtrar (input ou usuário logado)
     const idMedicoFiltro = this.medicoId || (this.isMedico ? this.usuarioLogadoId : null);
@@ -414,19 +420,20 @@ export class GraficosPrincipaisDashboardComponent implements OnInit, OnChanges, 
       );
 
     request$
-      .pipe(takeUntil(this.destroy$))
+      .pipe(
+        takeUntil(this.destroy$),
+        finalize(() => this.isLoadingConsultas = false)
+      )
       .subscribe({
         next: (dados) => {
           this.TodasConsultas = dados || [];
           this.apurandoDadosConsultas();
           this.criarGraficoConsultas();
-          this.isLoadingConsultas = false;
         },
         error: (error) => {
           console.error('Erro ao buscar consultas:', error);
           this.hasErrorConsultas = true;
           this.errorMessageConsultas = 'Erro ao carregar dados personalizados.';
-          this.isLoadingConsultas = false;
         }
       });
   }
@@ -591,20 +598,20 @@ export class GraficosPrincipaisDashboardComponent implements OnInit, OnChanges, 
 
     if (data === 1) {
       date.setDate(date.getDate() - 7);
-      paramentrosBusca = date.toISOString().split('T')[0];
+      paramentrosBusca = formatarDataLocal(date);
     }
     if (data === 2) {
       date.setDate(date.getDate() - 30);
-      paramentrosBusca = date.toISOString().split('T')[0];
+      paramentrosBusca = formatarDataLocal(date);
     }
     if (data === 3) {
       date.setDate(date.getDate() - 60);
-      paramentrosBusca = date.toISOString().split('T')[0];
+      paramentrosBusca = formatarDataLocal(date);
     }
 
     // Determina o ID do médico para filtrar (input ou usuário logado)
     const idMedicoFiltro = this.medicoId || (this.isMedico ? this.usuarioLogadoId : null);
-    const dataFim = dateHoje.toISOString().split('T')[0];
+    const dataFim = formatarDataLocal(dateHoje);
 
     // Define a requisição baseada no tipo de usuário
     let request$;
@@ -650,12 +657,18 @@ export class GraficosPrincipaisDashboardComponent implements OnInit, OnChanges, 
 
     if (!dataInicio || !dataFim) return;
 
+    if (dataInicio > dataFim) {
+      this.hasErrorAgendamentos = true;
+      this.errorMessageAgendamentos = 'A data inicial não pode ser maior que a data final.';
+      return;
+    }
+
     this.isLoadingAgendamentos = true;
     this.hasErrorAgendamentos = false;
     this.diaSelecionadoAgendamentos = 0;
 
-    const DataFimFormatada = dataFim.toISOString().split('T')[0];
-    const DataInicioFormatada = dataInicio.toISOString().split('T')[0];
+    const DataFimFormatada = formatarDataLocal(dataFim);
+    const DataInicioFormatada = formatarDataLocal(dataInicio);
 
     // Determina o ID do médico para filtrar (input ou usuário logado)
     const idMedicoFiltro = this.medicoId || (this.isMedico ? this.usuarioLogadoId : null);
@@ -673,19 +686,20 @@ export class GraficosPrincipaisDashboardComponent implements OnInit, OnChanges, 
       );
 
     request$
-      .pipe(takeUntil(this.destroy$))
+      .pipe(
+        takeUntil(this.destroy$),
+        finalize(() => this.isLoadingAgendamentos = false)
+      )
       .subscribe({
         next: (dados) => {
           this.TodasAgendamentos = dados || [];
           this.apurandoDadosAgendamentos();
           this.criarGraficoAgendamentos();
-          this.isLoadingAgendamentos = false;
         },
         error: (error) => {
           console.error('Erro ao buscar agendamentos:', error);
           this.hasErrorAgendamentos = true;
           this.errorMessageAgendamentos = 'Erro ao carregar dados personalizados.';
-          this.isLoadingAgendamentos = false;
         }
       });
   }
@@ -883,16 +897,9 @@ export class GraficosPrincipaisDashboardComponent implements OnInit, OnChanges, 
     }
 
     return {
-      inicio: this.formatarDataSaldo(inicio),
-      fim: this.formatarDataSaldo(hoje)
+      inicio: formatarDataLocal(inicio),
+      fim: formatarDataLocal(hoje)
     };
-  }
-
-  private formatarDataSaldo(date: Date): string {
-    const y = date.getFullYear();
-    const m = String(date.getMonth() + 1).padStart(2, '0');
-    const d = String(date.getDate()).padStart(2, '0');
-    return `${y}-${m}-${d}`;
   }
 
   private renderizarGraficoSaldo(): void {
@@ -1143,8 +1150,7 @@ export class GraficosPrincipaisDashboardComponent implements OnInit, OnChanges, 
       return;
     }
 
-    this.tokenService.decodificaToken();
-    const usuario = this.tokenService.getUsuarioLogado();
+    const usuario = this.authService.getCurrentUser();
 
     if (!usuario?.id) {
       this.hasErrorMediaTempo = true;
@@ -1183,7 +1189,7 @@ export class GraficosPrincipaisDashboardComponent implements OnInit, OnChanges, 
   }
 
   private formatarDataMediaTempo(data: Date): string {
-    return data.toISOString().split('T')[0];
+    return formatarDataLocal(data);
   }
 
   private buscarMediaTempo(dataInicio: string, dataFim: string): void {

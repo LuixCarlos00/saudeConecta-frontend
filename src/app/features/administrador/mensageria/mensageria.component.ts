@@ -1,5 +1,5 @@
-import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
-import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { Component, OnInit, OnDestroy, HostListener, SecurityContext } from '@angular/core';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { Subject } from 'rxjs';
 import { takeUntil, finalize } from 'rxjs/operators';
 import {
@@ -22,6 +22,9 @@ export class MensageriaComponent implements OnInit, OnDestroy {
   mensagens: MensageriaResponse[] = [];
   mensagemSelecionada: MensageriaResponse | null = null;
   mostrarDetalhe = false;
+  /** URL do preview HTML, calculada uma vez por mensagem selecionada (evita recarregar o iframe a cada change detection). */
+  urlPreviewSegura: SafeResourceUrl | null = null;
+  private urlPreviewBlob: string | null = null;
 
   isLoading = false;
   isNotificando = false;
@@ -66,6 +69,7 @@ export class MensageriaComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.revogarUrlPreview();
     this.destroy$.next();
     this.destroy$.complete();
   }
@@ -135,6 +139,7 @@ export class MensageriaComponent implements OnInit, OnDestroy {
       }
       
       this.mensagemSelecionada = mensagem;
+      this.prepararPreview(mensagem.corpoMensagem);
       this.mostrarDetalhe = true;
       
     } catch (error) {
@@ -145,6 +150,7 @@ export class MensageriaComponent implements OnInit, OnDestroy {
   }
 
   fecharDetalhe(): void {
+    this.revogarUrlPreview();
     this.mensagemSelecionada = null;
     this.mostrarDetalhe = false;
   }
@@ -242,9 +248,14 @@ export class MensageriaComponent implements OnInit, OnDestroy {
     return trimmed.startsWith('<!DOCTYPE') || trimmed.startsWith('<html');
   }
 
-  sanitizarHtml(conteudo: string): SafeHtml {
-    if (!conteudo) return this.sanitizer.bypassSecurityTrustHtml('');
-    return this.sanitizer.bypassSecurityTrustHtml(conteudo);
+  /**
+   * Remove scripts, handlers inline (onerror etc.) e demais conteúdo perigoso do HTML vindo da API.
+   * @param conteudo HTML bruto da mensagem
+   * @returns HTML sanitizado (string vazia se não houver conteúdo)
+   */
+  sanitizarHtml(conteudo: string): string {
+    if (!conteudo) return '';
+    return this.sanitizer.sanitize(SecurityContext.HTML, conteudo) ?? '';
   }
 
   truncateHtml(conteudo: string): string {
@@ -265,14 +276,33 @@ export class MensageriaComponent implements OnInit, OnDestroy {
     return conteudo;
   }
 
-  getSafeHtmlUrl(htmlContent: string): string {
-    if (!htmlContent) return '';
-    
-    // Cria um blob com o conteúdo HTML
-    const blob = new Blob([htmlContent], { type: 'text/html' });
-    const url = URL.createObjectURL(blob);
-    
-    // Retorna a URL segura
-    return this.sanitizer.bypassSecurityTrustResourceUrl(url) as string;
+  /** Gera (uma vez) a URL do iframe se o corpo for HTML, revogando a anterior. */
+  private prepararPreview(corpo: string): void {
+    this.revogarUrlPreview();
+    if (corpo && this.isHtml(corpo)) {
+      this.urlPreviewSegura = this.getSafeHtmlUrl(corpo);
+    }
+  }
+
+  private revogarUrlPreview(): void {
+    if (this.urlPreviewBlob) {
+      URL.revokeObjectURL(this.urlPreviewBlob);
+      this.urlPreviewBlob = null;
+    }
+    this.urlPreviewSegura = null;
+  }
+
+  /**
+   * Cria o Blob com o HTML sanitizado (conteúdo da API não é confiável) e devolve a URL segura.
+   * A URL crua fica guardada para ser revogada depois; uma URL anterior é revogada aqui
+   * para que nenhum chamador consiga vazar Blob.
+   */
+  getSafeHtmlUrl(htmlContent: string): SafeResourceUrl {
+    if (this.urlPreviewBlob) {
+      URL.revokeObjectURL(this.urlPreviewBlob);
+    }
+    const blob = new Blob([this.sanitizarHtml(htmlContent)], { type: 'text/html' });
+    this.urlPreviewBlob = URL.createObjectURL(blob);
+    return this.sanitizer.bypassSecurityTrustResourceUrl(this.urlPreviewBlob);
   }
 }

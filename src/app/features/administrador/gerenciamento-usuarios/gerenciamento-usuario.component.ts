@@ -1,24 +1,24 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Subject, asapScheduler, observeOn, takeUntil } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { FiltroStateService } from 'src/app/services/state/filtro-state.service';
-import { DialogService } from 'src/app/util/variados/dialogo-confirmação/dialog.service';
 import { CadastroMedicoComponent } from '../cadastros/cadastro-medico/cadastro-medico.component';
 import { CadastroPacienteComponent } from '../cadastros/cadastro-paciente/cadastro-paciente.component';
 import { CadastroSecretariaComponent } from '../cadastros/cadastro-secretaria/cadastro-secretaria.component';
 import { CadastroAdmComponent } from '../cadastros/cadastro-adm/cadastro-adm.component';
 import { CadastroAdminOrgComponent } from '../cadastros/cadastro-admin-org/cadastro-admin-org.component';
-import { tokenService } from 'src/app/util/Token/Token.service';
-import { isSuperAdmin } from 'src/app/shared/constants/roles.constant';
+import { AuthService } from 'src/app/core/services/auth.service';
 import { AssinaturaApiService } from 'src/app/services/api/assinatura-api.service';
 import { LimitesPlano } from 'src/app/util/variados/interfaces/planos/PlanoAssinatura';
-import Swal from 'sweetalert2';
+import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
 
 @Component({
   selector: 'app-gerenciamento-usuario',
   templateUrl: './gerenciamento-usuario.component.html',
   styleUrls: ['./gerenciamento-usuario.component.css'],
 })
-export class GerenciamentoUsuarioComponent implements OnInit {
+export class GerenciamentoUsuarioComponent implements OnInit, OnDestroy {
+  private destroy$ = new Subject<void>();
   radioValue: number = 0;
   searchText: string = '';
   isLoading: boolean = false;
@@ -26,16 +26,25 @@ export class GerenciamentoUsuarioComponent implements OnInit {
   limites: LimitesPlano | null = null;
 
   constructor(
+    private notificacao: NotificacaoService,
     private filtroStateService: FiltroStateService,
     private dialog: MatDialog,
-    private tokenSvc: tokenService,
+    private authService: AuthService,
     private assinaturaApiService: AssinaturaApiService
   ) {}
 
   ngOnInit() {
-    const role = this.tokenSvc.obterAutorizacao();
-    this.isSuperAdmin = isSuperAdmin(role);
+    this.isSuperAdmin = this.authService.isSuperAdmin();
     this.carregarLimites();
+    // asapScheduler: a tabela filha liga o loading durante o ciclo de detecção do pai (evita NG0100).
+    this.filtroStateService.carregando$
+      .pipe(observeOn(asapScheduler), takeUntil(this.destroy$))
+      .subscribe((carregando) => this.isLoading = carregando);
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   carregarLimites(): void {
@@ -54,15 +63,9 @@ export class GerenciamentoUsuarioComponent implements OnInit {
     return limite === null ? 'Ilimitado' : `${limite}`;
   }
 
+  /** Pede a recarga da tabela; o loading vem de `carregando$`, ligado à requisição real. */
   recarregarDados() {
-    this.isLoading = true;
     this.filtroStateService.setRecarregar(true);
-
-    // Reset do loading após um pequeno delay
-    setTimeout(() => {
-      this.isLoading = false;
-      this.filtroStateService.setRecarregar(false);
-    }, 1000);
   }
 
   PesquisaDados() {
@@ -144,7 +147,7 @@ export class GerenciamentoUsuarioComponent implements OnInit {
   }
 
   private exibirAlertaLimite(tipo: string, usado: number, limite: number | null): void {
-    Swal.fire({
+    this.notificacao.fire({
       icon: 'warning',
       title: 'Limite do plano atingido',
       html: `Você atingiu o limite de <b>${tipo}</b> do seu plano.<br>` +

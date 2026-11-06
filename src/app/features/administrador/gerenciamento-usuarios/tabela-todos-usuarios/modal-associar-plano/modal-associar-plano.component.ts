@@ -6,7 +6,8 @@ import { AssinaturaApiService } from 'src/app/services/api/assinatura-api.servic
 import { CobrancaApiService } from 'src/app/services/api/cobranca-api.service';
 import { PlanoAssinatura, AssinaturaTenant, CobrancaTenant, CustomizarPlanoTenantRequest } from 'src/app/util/variados/interfaces/planos/PlanoAssinatura';
 import { forkJoin } from 'rxjs';
-import Swal from 'sweetalert2';
+import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
+import { mensagemErroAssinaturaAdmin } from 'src/app/shared/utils/mensagem-erro-http';
 
 @Component({
   selector: 'app-modal-associar-plano',
@@ -47,6 +48,7 @@ export class ModalAssociarPlanoComponent implements OnInit {
   tabAtiva = 0;
 
   constructor(
+    private notificacao: NotificacaoService,
     public dialogRef: MatDialogRef<ModalAssociarPlanoComponent>,
     @Inject(MAT_DIALOG_DATA) public data: { organizacaoId: number; nomeOrganizacao: string },
     private planoApiService: PlanoApiService,
@@ -155,14 +157,14 @@ export class ModalAssociarPlanoComponent implements OnInit {
 
     this.isSaving = true;
 
-    this.assinaturaApiService.assinarPlano(this.data.organizacaoId, this.planoSelecionado).subscribe({
+    this.assinaturaApiService.assinar({ organizacaoId: this.data.organizacaoId, planoId: this.planoSelecionado }).subscribe({
       next: () => {
         const msg = this.modoEdicao ? 'Plano alterado com sucesso!' : 'Plano associado com sucesso!';
         this.snackBar.open(msg, 'Fechar', { duration: 3000 });
         this.dialogRef.close(true);
       },
       error: (err) => {
-        const msg = err.error?.message || (this.modoEdicao ? 'Erro ao alterar plano' : 'Erro ao associar plano');
+        const msg = mensagemErroAssinaturaAdmin(err, this.modoEdicao ? 'Erro ao alterar plano' : 'Erro ao associar plano');
         this.snackBar.open(msg, 'Fechar', { duration: 5000 });
         this.isSaving = false;
       }
@@ -250,7 +252,7 @@ export class ModalAssociarPlanoComponent implements OnInit {
     this.assinaturaApiService.customizarPlano(this.data.organizacaoId, request).subscribe({
       next: (res) => {
         this.isSavingCustom = false;
-        Swal.fire({
+        this.notificacao.fire({
           icon: 'success',
           title: 'Plano personalizado!',
           text: `Limites atualizados com sucesso. Novo valor mensal: R$ ${res.valorMensal?.toFixed(2) || '—'}`,
@@ -262,8 +264,8 @@ export class ModalAssociarPlanoComponent implements OnInit {
       error: (err) => {
         console.error('Erro ao customizar plano:', err);
         this.isSavingCustom = false;
-        const msg = err.error?.message || err.message || 'Erro ao personalizar plano';
-        Swal.fire({
+        const msg = mensagemErroAssinaturaAdmin(err, err.message || 'Erro ao personalizar plano');
+        this.notificacao.fire({
           icon: 'error',
           title: 'Erro',
           text: msg
