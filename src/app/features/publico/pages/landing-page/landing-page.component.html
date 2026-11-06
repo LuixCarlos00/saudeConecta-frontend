@@ -18,10 +18,16 @@
         <a (click)="scrollToSection('faq')">FAQ</a>
       </nav>
 
-      <button class="btn-login-header" (click)="navegarParaLogin()">
-        <i class="fa-solid fa-right-to-bracket"></i>
-        Entrar
-      </button>
+      <div class="header-acoes">
+        <button class="btn-cadastro-header" (click)="navegarParaCadastro()">
+          <i class="fa-solid fa-user-plus"></i>
+          Criar conta
+        </button>
+        <button class="btn-login-header" (click)="navegarParaLogin()">
+          <i class="fa-solid fa-right-to-bracket"></i>
+          Entrar
+        </button>
+      </div>
 
       <!-- Menu Mobile Toggle -->
       <button class="mobile-menu-toggle" (click)="toggleMobileMenu()">
@@ -36,6 +42,7 @@
       <a (click)="scrollToSection('depoimentos')">Depoimentos</a>
       <a (click)="scrollToSection('planos')">Planos</a>
       <a (click)="scrollToSection('faq')">FAQ</a>
+      <button class="btn-cadastro-mobile" (click)="navegarParaCadastro()">Criar conta</button>
       <button class="btn-login-mobile" (click)="navegarParaLogin()">Entrar</button>
     </nav>
   </header>

@@ -130,6 +130,45 @@
   box-shadow: 0 15px 45px rgba(0, 217, 255, 0.4);
 }
 
+/* "Criar conta" fica ao lado do "Entrar" com contorno, para o "Entrar" continuar como ação principal do cabeçalho */
+.header-acoes {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.btn-cadastro-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 22px;
+  background: transparent;
+  color: var(--white);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: var(--radius-lg);
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-cadastro-header:hover {
+  transform: translateY(-2px);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+/* Com o cabeçalho claro (após rolar), o contorno branco some: usa a cor primária */
+.header.scrolled .btn-cadastro-header {
+  color: var(--primary-dark);
+  border-color: var(--primary-dark);
+}
+
+.header.scrolled .btn-cadastro-header:hover {
+  color: var(--primary);
+  border-color: var(--primary);
+}
+
 .mobile-menu-toggle {
   display: none;
   background: none;
@@ -174,6 +213,16 @@
   background: var(--gradient-primary);
   color: var(--white);
   border: none;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-cadastro-mobile {
+  padding: 13px;
+  background: transparent;
+  color: var(--primary-dark);
+  border: 1px solid var(--primary-dark);
   border-radius: var(--radius-md);
   font-weight: 600;
   cursor: pointer;
@@ -1547,7 +1596,7 @@
     display: none;
   }
 
-  .btn-login-header {
+  .header-acoes {
     display: none;
   }
 
