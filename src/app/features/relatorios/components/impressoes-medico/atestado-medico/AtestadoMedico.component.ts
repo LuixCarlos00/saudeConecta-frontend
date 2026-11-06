@@ -36,9 +36,6 @@ export class AtestadoMedicoComponent implements OnInit {
 
   ngOnInit() {
 
-    // Extrair dados do prontuário
-    this.data = this.data;
-
     // Dados do profissional
     this.nomeMedico = this.data.profissional?.nome?.trim() || '';
     this.crm = this.data.profissional?.conselho?.trim() || '';
