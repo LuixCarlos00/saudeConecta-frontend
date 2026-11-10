@@ -206,9 +206,16 @@
 .resumo__item {
   display: flex;
   flex-direction: column;
+  /* Sem min-width: 0 o item do grid não encolhe abaixo do conteúdo e um e-mail longo vaza */
+  min-width: 0;
   padding: 12px;
   border: 1px solid #e9ecef;
   border-radius: 8px;
+}
+
+.resumo__item strong {
+  /* E-mail não tem espaço: quebra em qualquer ponto para caber no cartão */
+  overflow-wrap: anywhere;
 }
 
 .resumo__item span {
