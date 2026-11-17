@@ -4,6 +4,7 @@ import { AuthGuard, RoleGuard } from 'src/app/core/auth/guards';
 import { GuardaRotasLogin } from 'src/app/features/auth/guards/GuardaRotasLogin';
 import { LoginComponent } from 'src/app/features/auth/pages/login/login.component';
 import { RecuperaCadastroComponent } from 'src/app/features/auth/pages/recupera-cadastro/recupera-cadastro.component';
+import { RedefinirSenhaComponent } from 'src/app/features/auth/pages/redefinir-senha/redefinir-senha.component';
 import { TrocaSenhaComponent } from 'src/app/features/auth/pages/troca-senha/troca-senha.component';
 import { Role } from 'src/app/shared/constants/roles.constant';
 
@@ -15,6 +16,7 @@ import { Role } from 'src/app/shared/constants/roles.constant';
 const routes: Routes = [
   { path: 'login', component: LoginComponent, canActivate: [GuardaRotasLogin] },
   { path: 'recuperaCadastro', component: RecuperaCadastroComponent },
+  { path: 'redefinir-senha', component: RedefinirSenhaComponent },
   { path: 'trocaSenha', component: TrocaSenhaComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: [Role.ADMIN, Role.DOCTOR, Role.SECRETARY] } },
 ];
 

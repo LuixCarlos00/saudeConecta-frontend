@@ -21,6 +21,7 @@ import { NgChartsModule } from 'ng2-charts';
 import { AuthRoutingModule } from './auth-routing.module';
 import { LoginComponent } from 'src/app/features/auth/pages/login/login.component';
 import { RecuperaCadastroComponent } from 'src/app/features/auth/pages/recupera-cadastro/recupera-cadastro.component';
+import { RedefinirSenhaComponent } from 'src/app/features/auth/pages/redefinir-senha/redefinir-senha.component';
 import { TrocaSenhaComponent } from 'src/app/features/auth/pages/troca-senha/troca-senha.component';
 
 /**
@@ -31,6 +32,7 @@ import { TrocaSenhaComponent } from 'src/app/features/auth/pages/troca-senha/tro
   declarations: [
     LoginComponent,
     RecuperaCadastroComponent,
+    RedefinirSenhaComponent,
     TrocaSenhaComponent,
   ],
   imports: [
