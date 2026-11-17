@@ -1,0 +1,104 @@
+<div class="redefinir-page">
+  <!-- Elementos decorativos de fundo -->
+  <div class="bg-shapes">
+    <div class="shape shape-1"></div>
+    <div class="shape shape-2"></div>
+    <div class="shape shape-3"></div>
+  </div>
+
+  <div class="redefinir-container">
+    <div class="redefinir-card">
+      <!-- Carregando -->
+      <div class="loading-state" *ngIf="estado === 'carregando'">
+        <i class="fa-solid fa-spinner fa-spin"></i>
+        <p>Validando seu link...</p>
+      </div>
+
+      <!-- Link inválido ou expirado -->
+      <div class="invalid-state" *ngIf="estado === 'invalido'">
+        <div class="invalid-icon">
+          <i class="fa-solid fa-link-slash"></i>
+        </div>
+        <h2>Link inválido ou expirado</h2>
+        <p>{{ mensagemInvalido }}</p>
+
+        <button type="button" class="btn-enviar" (click)="solicitarNovoLink()">
+          <i class="fa-solid fa-paper-plane"></i>
+          Solicitar novo link
+        </button>
+      </div>
+
+      <!-- Formulário de nova senha -->
+      <ng-container *ngIf="estado === 'valido'">
+        <div class="card-header">
+          <div class="header-icon">
+            <i class="fa-solid fa-lock"></i>
+          </div>
+          <h1>Redefinir Senha</h1>
+          <p>Crie uma nova senha para acessar o DocClin</p>
+        </div>
+
+        <form [formGroup]="FormularioSenha" class="redefinir-form" (ngSubmit)="redefinirSenha()">
+          <div class="input-group">
+            <div class="input-icon">
+              <i class="fa-solid fa-lock"></i>
+            </div>
+            <input
+              [type]="mostrarSenha ? 'text' : 'password'"
+              id="novaSenha"
+              class="com-toggle"
+              formControlName="novaSenha"
+              placeholder="Mínimo de 8 caracteres"
+              autocomplete="new-password">
+            <label for="novaSenha">Nova senha</label>
+            <button type="button" class="toggle-senha" (click)="alternarMostrarSenha()"
+              [attr.aria-label]="mostrarSenha ? 'Ocultar senha' : 'Mostrar senha'">
+              <i class="fa-solid" [ngClass]="mostrarSenha ? 'fa-eye-slash' : 'fa-eye'"></i>
+            </button>
+          </div>
+          <small class="campo-erro" *ngIf="FormularioSenha.get('novaSenha')?.touched && FormularioSenha.get('novaSenha')?.errors?.['minlength']">
+            A senha deve ter no mínimo 8 caracteres.
+          </small>
+          <small class="campo-erro" *ngIf="FormularioSenha.get('novaSenha')?.errors?.['maxlength']">
+            A senha deve ter no máximo 100 caracteres.
+          </small>
+
+          <div class="input-group">
+            <div class="input-icon">
+              <i class="fa-solid fa-lock"></i>
+            </div>
+            <input
+              [type]="mostrarSenha ? 'text' : 'password'"
+              id="confirmacaoSenha"
+              formControlName="confirmacaoSenha"
+              placeholder="Repita a nova senha"
+              autocomplete="new-password">
+            <label for="confirmacaoSenha">Confirmar senha</label>
+          </div>
+          <small class="campo-erro" *ngIf="FormularioSenha.get('confirmacaoSenha')?.touched && FormularioSenha.errors?.['senhasDiferentes']">
+            As senhas não conferem.
+          </small>
+
+          <button type="submit" class="btn-enviar" [disabled]="FormularioSenha.invalid || isLoading">
+            <span *ngIf="!isLoading">
+              <i class="fa-solid fa-check"></i>
+              Redefinir senha
+            </span>
+            <span *ngIf="isLoading" class="loading">
+              <i class="fa-solid fa-spinner fa-spin"></i>
+              Salvando...
+            </span>
+          </button>
+        </form>
+      </ng-container>
+
+      <!-- Footer -->
+      <div class="card-footer">
+        <a (click)="voltarParaLogin()" class="back-link">
+          <i class="fa-solid fa-arrow-left"></i>
+          <span>Voltar para o login</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>

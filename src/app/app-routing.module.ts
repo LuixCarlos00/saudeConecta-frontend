@@ -14,9 +14,9 @@ const routes: Routes = [
     matcher: caminhosDaArea('', 'cadastro', 'assinatura', 'questionario-saude', 'assinatura-planejamento'),
     loadChildren: () => import('./features/publico/publico.module').then((m) => m.PublicoModule),
   },
-  // ========== LOGIN, RECUPERACAO E TROCA DE SENHA ==========
+  // ========== LOGIN, RECUPERACAO, REDEFINICAO E TROCA DE SENHA ==========
   {
-    matcher: caminhosDaArea('login', 'recuperaCadastro', 'trocaSenha'),
+    matcher: caminhosDaArea('login', 'recuperaCadastro', 'trocaSenha', 'redefinir-senha'),
     loadChildren: () => import('./features/auth/auth.module').then((m) => m.AuthModule),
   },
   // ========== DASHBOARD ==========

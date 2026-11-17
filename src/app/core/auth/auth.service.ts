@@ -121,6 +121,25 @@ export class AuthService implements OnDestroy {
   }
 
   /**
+   * Valida o token do link de redefinição de senha (público, sem JWT).
+   * @param token token recebido no link enviado por e-mail
+   * @returns `{ message }` quando o token é válido; erro 400 quando inválido, expirado ou já usado
+   */
+  validarTokenRedefinicao(token: string): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(`${this.apiUrl}/Home/redefinirSenha/validar`, { token });
+  }
+
+  /**
+   * Define a nova senha a partir do token do link de redefinição (público, sem JWT).
+   * @param token token recebido no link enviado por e-mail
+   * @param novaSenha nova senha (mínimo 8 e máximo 100 caracteres)
+   * @returns `{ message }` em caso de sucesso; erro 400 para token inválido/expirado/usado ou senha fraca
+   */
+  redefinirSenha(token: string, novaSenha: string): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(`${this.apiUrl}/Home/redefinirSenha`, { token, novaSenha });
+  }
+
+  /**
    * Processa resposta de login bem-sucedido
    */
   handleLoginSuccess(token: string): boolean {
