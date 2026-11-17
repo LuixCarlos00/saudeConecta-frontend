@@ -86,7 +86,7 @@ export class LandingPageComponent implements OnInit {
       cargo: 'Cardiologista',
       clinica: 'Clínica Coração Saudável',
       foto: 'https://randomuser.me/api/portraits/women/44.jpg',
-      texto: 'O Saúde Conecta transformou a gestão da minha clínica. A agenda ficou muito mais organizada e os pacientes adoram a facilidade de agendamento online.'
+      texto: 'O DocClin transformou a gestão da minha clínica. A agenda ficou muito mais organizada e os pacientes adoram a facilidade de agendamento online.'
     },
     {
       nome: 'Dr. Carlos Santos',
@@ -111,7 +111,7 @@ export class LandingPageComponent implements OnInit {
     },
     {
       pergunta: 'O sistema funciona em dispositivos móveis?',
-      resposta: 'Sim! O Saúde Conecta é totalmente responsivo e funciona perfeitamente em smartphones, tablets e computadores.'
+      resposta: 'Sim! O DocClin é totalmente responsivo e funciona perfeitamente em smartphones, tablets e computadores.'
     },
     {
       pergunta: 'Como é feita a migração dos dados?',
