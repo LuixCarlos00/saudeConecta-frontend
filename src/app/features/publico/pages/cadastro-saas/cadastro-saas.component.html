@@ -3,7 +3,7 @@
   <header class="cadastro-header">
     <div class="cadastro-logo" (click)="voltar()">
       <i class="fa-solid fa-heart-pulse"></i>
-      <span>Saúde Conecta</span>
+      <span>DocClin</span>
     </div>
     <p class="cadastro-chamada">30 dias grátis. Sem cartão de crédito.</p>
   </header>
@@ -22,7 +22,7 @@
 
     <!-- Etapa: Tipo de pessoa -->
     <section *ngIf="etapaNome === 'Tipo'" class="secao">
-      <h2>Como você vai usar o Saúde Conecta?</h2>
+      <h2>Como você vai usar o DocClin?</h2>
       <div class="radio-group">
         <label class="radio-option">
           <input type="radio" value="JURIDICA" formControlName="tipoPessoa" (change)="onTipoPessoaChange()">
