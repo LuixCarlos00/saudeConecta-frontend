@@ -1,80 +1,69 @@
-<div class="password-page">
-  <!-- Header -->
-  <header class="page-header">
-    <div class="header-content">
-      <div class="header-icon">
-        <i class="fa-solid fa-shield-halved"></i>
-      </div>
-      <div class="header-text">
-        <h1>Segurança da Conta</h1>
-        <p>Gerencie suas credenciais de acesso</p>
-      </div>
-    </div>
+<div class="pagina">
+  <header class="cabecalho">
+    <h1>Segurança da conta</h1>
+    <p>Troque a senha que você usa para entrar no DocClin.</p>
   </header>
 
-  <!-- Main Content -->
-  <main class="page-content">
-    <div class="content-card">
-      <!-- Tabs de Navegação -->
-      <div class="tabs-container">
-        <button class="tab-btn" [class.active]="trocaMinhaSenha" (click)="TrocarSenha()">
-          <i class="fa-solid fa-key"></i>
-          <span>Trocar Senha</span>
+  <section class="cartao" aria-labelledby="titulo-senha">
+    <div class="cartao__topo">
+      <span class="cartao__icone"><i class="fa-solid fa-key" aria-hidden="true"></i></span>
+      <div>
+        <h2 id="titulo-senha">Alterar senha</h2>
+        <p>Depois de salvar, use a nova senha no próximo acesso.</p>
+      </div>
+    </div>
+
+    <form class="cartao__corpo" [formGroup]="FormularioTrocaSenha" (ngSubmit)="enviar()" novalidate>
+      <div class="campos">
+        <div class="campo">
+          <label for="nova-senha">Nova senha</label>
+          <div class="entrada">
+            <input id="nova-senha" [type]="mostrarSenha ? 'text' : 'password'" formControlName="SenhaAntiga"
+                   autocomplete="new-password" maxlength="100" placeholder="Digite a nova senha"
+                   aria-describedby="requisitos-senha">
+            <button type="button" class="entrada__olho" (click)="mostrarSenha = !mostrarSenha"
+                    [attr.aria-label]="mostrarSenha ? 'Ocultar senha' : 'Mostrar senha'" [attr.aria-pressed]="mostrarSenha">
+              <i class="fa-solid" [ngClass]="mostrarSenha ? 'fa-eye-slash' : 'fa-eye'" aria-hidden="true"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="campo">
+          <label for="confirmar-senha">Confirmar nova senha</label>
+          <div class="entrada" [class.entrada--erro]="senhasDiferentes">
+            <input id="confirmar-senha" [type]="mostrarConfirmacao ? 'text' : 'password'" formControlName="SenhaNova"
+                   autocomplete="new-password" maxlength="100" placeholder="Repita a nova senha"
+                   [attr.aria-invalid]="senhasDiferentes ? 'true' : null">
+            <button type="button" class="entrada__olho" (click)="mostrarConfirmacao = !mostrarConfirmacao"
+                    [attr.aria-label]="mostrarConfirmacao ? 'Ocultar senha' : 'Mostrar senha'" [attr.aria-pressed]="mostrarConfirmacao">
+              <i class="fa-solid" [ngClass]="mostrarConfirmacao ? 'fa-eye-slash' : 'fa-eye'" aria-hidden="true"></i>
+            </button>
+          </div>
+          <span class="campo__erro" *ngIf="senhasDiferentes" role="alert">As senhas não são iguais.</span>
+        </div>
+      </div>
+
+      <ul class="requisitos" id="requisitos-senha" aria-live="polite">
+        <li *ngFor="let r of requisitos" [class.requisitos__ok]="r.ok">
+          <i class="fa-solid" [ngClass]="r.ok ? 'fa-circle-check' : 'fa-circle'" aria-hidden="true"></i>
+          {{ r.texto }}<span *ngIf="!r.obrigatorio" class="requisitos__dica"> (recomendado)</span>
+        </li>
+      </ul>
+
+      <div class="acoes">
+        <button type="submit" class="btn-primario" [disabled]="!podeEnviar">
+          {{ enviando ? 'Salvando...' : 'Salvar nova senha' }}
         </button>
-
       </div>
+    </form>
+  </section>
 
-      <!-- Formulário Trocar Senha -->
-      <div class="form-container" *ngIf="trocaMinhaSenha" [formGroup]="FormularioTrocaSenha">
-        <div class="form-header">
-          <i class="fa-solid fa-pen-to-square"></i>
-          <h2>Alterar Senha Atual</h2>
-          <p>Preencha os campos abaixo para alterar sua senha</p>
-        </div>
-
-        <div class="form-body">
-
-          <div class="form-group">
-            <label class="form-label">
-              <i class="fa-solid fa-lock"></i>
-              Nova Senha
-            </label>
-            <input type="password" class="form-input" placeholder="Digite a nova senha"
-              formControlName="SenhaAntiga">
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">
-              <i class="fa-solid fa-lock-open"></i>
-              Repita a Senha
-            </label>
-            <input type="password" class="form-input" placeholder="Repita a nova senha" formControlName="SenhaNova">
-          </div>
-
-          <button class="btn-submit" type="button" (click)="enviar()">
-            <i class="fa-solid fa-check"></i>
-            Alterar Senha
-          </button>
-        </div>
-      </div>
-
-
-    </div>
-
-    <!-- Info Card -->
-    <div class="info-card">
-      <div class="info-icon">
-        <i class="fa-solid fa-lightbulb"></i>
-      </div>
-      <div class="info-content">
-        <h3>Dicas de Segurança</h3>
-        <ul>
-          <li>Use pelo menos 8 caracteres</li>
-          <li>Combine letras maiúsculas, minúsculas e números</li>
-          <li>Evite usar informações pessoais</li>
-          <li>Não reutilize senhas de outros serviços</li>
-        </ul>
-      </div>
-    </div>
-  </main>
+  <aside class="dicas" aria-label="Dicas de segurança">
+    <h3><i class="fa-solid fa-shield-halved" aria-hidden="true"></i> Boas práticas</h3>
+    <ul>
+      <li>Evite datas, nomes e documentos pessoais.</li>
+      <li>Não use a mesma senha de outros serviços.</li>
+      <li>Nunca compartilhe sua senha, nem com o suporte.</li>
+    </ul>
+  </aside>
 </div>

@@ -5,7 +5,6 @@ import {
   transition,
   trigger,
 } from '@angular/animations';
-import { AdministradorApiService } from 'src/app/core/data-access/administrador-api.service';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { el } from 'date-fns/locale';
@@ -22,19 +21,22 @@ import { UsuarioApiService } from 'src/app/core/data-access/usuario-api.service'
   styleUrls: ['./troca-senha.component.css'],
 })
 export class TrocaSenhaComponent implements OnInit {
-  trocaMinhaSenha: boolean = false;
+  /** O formulário já abre visível (antes ficava escondido atrás de um botão "Trocar Senha"). */
+  trocaMinhaSenha: boolean = true;
+
+  /** Mesmo mínimo do back (8 a 100 caracteres). */
+  readonly TAMANHO_MINIMO = 8;
+  mostrarSenha = false;
+  mostrarConfirmacao = false;
+  enviando = false;
 
   UsuarioLogado!: Usuario;
 
   FormularioTrocaSenha!: FormGroup;
 
-  emailValido: Boolean = false;
-  codigoDeSegurancaValidao: Boolean = false;
-  PesquisandoEmail: Boolean = false;
   constructor(
     private notificacao: NotificacaoService,
     private form: FormBuilder,
-    private administradorApiService: AdministradorApiService,
     private usuarioApiService: UsuarioApiService,
     private authService: AuthService
   ) {
@@ -45,83 +47,78 @@ export class TrocaSenhaComponent implements OnInit {
       }
     });
   }
-  //Arrumar a troca de senha   trocarSenharUsuariobyOrg
 
   ngOnInit(): void {
 
 
     this.FormularioTrocaSenha = this.form.group({
-       SenhaAntiga: ['', Validators.required],
+      // Nomes herdados: SenhaAntiga é a nova senha e SenhaNova é a confirmação
+      SenhaAntiga: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(100)]],
       SenhaNova: ['', Validators.required],
     });
-  }
-
-  EsqueciASenha() {
-    this.trocaMinhaSenha = false;
   }
 
   TrocarSenha() {
     this.trocaMinhaSenha = true;
   }
 
-  enviar() {
-    if (this.trocaMinhaSenha) {
-      const senhaop1 = this.FormularioTrocaSenha.value.SenhaAntiga;
-      const senhaop2 = this.FormularioTrocaSenha.value.SenhaNova;
-      const idUsuario = this.UsuarioLogado.id;
-
-
-
-      if ((senhaop1 == senhaop2)) {
-        this.usuarioApiService.trocarSenharUsuariobyOrg(idUsuario, senhaop1).subscribe(
-          (response: any) => {
-
-            this.FormularioTrocaSenha.reset();
-            this.notificacao.fire({
-              icon: 'success',
-              title: ' OK...',
-              text: 'Senha alterada com sucesso',
-            });
-
-          },
-          (error: any) => {
-            this.notificacao.fire({
-              icon: 'error',
-              title: 'Oops...',
-              text: 'Senha inválida',
-            });
-          }
-        );
-      } else {
-        this.notificacao.fire({
-          icon: 'error',
-          title: 'Oops...',
-          text: 'Senhas diferentes',
-        });
-      }
-
-    }
-
+  /** Nova senha digitada. */
+  get senha(): string {
+    return this.FormularioTrocaSenha?.value?.SenhaAntiga || '';
   }
 
+  /** Confirmação digitada. */
+  get confirmacao(): string {
+    return this.FormularioTrocaSenha?.value?.SenhaNova || '';
+  }
 
+  /** Requisitos mostrados enquanto a pessoa digita. Só o tamanho é obrigatório (é o que o back exige). */
+  get requisitos(): { texto: string; ok: boolean; obrigatorio: boolean }[] {
+    const s = this.senha;
+    return [
+      { texto: `Pelo menos ${this.TAMANHO_MINIMO} caracteres`, ok: s.length >= this.TAMANHO_MINIMO, obrigatorio: true },
+      { texto: 'Letras maiúsculas e minúsculas', ok: /[a-z]/.test(s) && /[A-Z]/.test(s), obrigatorio: false },
+      { texto: 'Pelo menos um número', ok: /\d/.test(s), obrigatorio: false }
+    ];
+  }
 
+  /** A confirmação foi digitada e é diferente da senha. */
+  get senhasDiferentes(): boolean {
+    return this.confirmacao.length > 0 && this.confirmacao !== this.senha;
+  }
 
+  /** Libera o botão: tamanho mínimo e confirmação igual. */
+  get podeEnviar(): boolean {
+    return !this.enviando && this.senha.length >= this.TAMANHO_MINIMO && this.senha.length <= 100
+      && this.confirmacao === this.senha;
+  }
 
+  enviar() {
+    if (!this.trocaMinhaSenha) { return; }
+    const senhaop1 = this.FormularioTrocaSenha.value.SenhaAntiga;
+    const senhaop2 = this.FormularioTrocaSenha.value.SenhaNova;
+    const idUsuario = this.UsuarioLogado.id;
 
+    if (senhaop1 != senhaop2) {
+      this.notificacao.fire({ icon: 'error', title: 'Oops...', text: 'Senhas diferentes' });
+      return;
+    }
+    if (!senhaop1 || senhaop1.length < this.TAMANHO_MINIMO) {
+      this.notificacao.fire({ icon: 'error', title: 'Senha curta', text: `A senha precisa ter pelo menos ${this.TAMANHO_MINIMO} caracteres.` });
+      return;
+    }
 
-
-
-
-  // ============================= ESQUECI A SENHA ==================================
-
-
-
-
-
-
-
-
-
-
+    this.enviando = true;
+    this.usuarioApiService.trocarSenharUsuariobyOrg(idUsuario, senhaop1).subscribe(
+      () => {
+        this.enviando = false;
+        this.FormularioTrocaSenha.reset();
+        this.notificacao.fire({ icon: 'success', title: 'Senha alterada', text: 'Senha alterada com sucesso' });
+      },
+      () => {
+        this.enviando = false;
+        this.notificacao.fire({ icon: 'error', title: 'Oops...', text: 'Senha inválida' });
+      }
+    );
+  }
 }

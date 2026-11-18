@@ -5,7 +5,6 @@ import { of, throwError } from 'rxjs';
 import Swal from 'sweetalert2';
 
 import { TrocaSenhaComponent } from './troca-senha.component';
-import { AdministradorApiService } from 'src/app/core/data-access/administrador-api.service';
 import { UsuarioApiService } from 'src/app/core/data-access/usuario-api.service';
 import { AuthService } from 'src/app/core/auth/auth.service';
 
@@ -27,7 +26,6 @@ describe('TrocaSenhaComponent', () => {
       declarations: [TrocaSenhaComponent],
       imports: [ReactiveFormsModule],
       providers: [
-        { provide: AdministradorApiService, useValue: {} },
         { provide: UsuarioApiService, useValue: usuarioApiService },
         { provide: AuthService, useValue: authServiceMock },
       ],
