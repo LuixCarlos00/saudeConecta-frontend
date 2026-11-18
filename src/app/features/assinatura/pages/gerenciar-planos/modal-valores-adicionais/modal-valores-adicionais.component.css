@@ -1,102 +1,67 @@
-.modal-description {
-  font-size: 16px;
-  color: var(--text-secondary, #6b7280);
-  margin: 0 0 24px 0;
-  text-align: center;
-}
-
-.planos-valores-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: 24px;
-  max-height: 60vh;
-  overflow-y: auto;
-}
-
-.plano-valores-card {
-  background: #f8f9fa;
-  border-radius: 12px;
-  overflow: hidden;
-  border: 1px solid #e9ecef;
-}
-
-.plano-card-header {
-  background: linear-gradient(135deg, #0066CC 0%, #0052a3 100%);
-  padding: 16px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-}
-
-.plano-card-header h3 {
-  font-size: 18px;
-  font-weight: 700;
-  color: white;
-  margin: 0;
-}
-
-.plano-card-header .tipo-badge {
-  background: rgba(255, 255, 255, 0.2);
-  color: white;
-  font-size: 11px;
-  padding: 4px 8px;
-  border-radius: 12px;
-  font-weight: 600;
-  text-transform: uppercase;
-}
-
-.valores-list {
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.valor-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 16px;
-  padding: 12px;
-  background: white;
-  border-radius: 8px;
-  border: 1px solid #e9ecef;
-}
-
-.valor-label {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text-primary, #111827);
-}
-
-.valor-label i {
-  color: #0066CC;
-  font-size: 16px;
-}
-
-.valor-input {
-  width: 120px;
-}
-
-.valor-input mat-form-field {
+.matriz {
   width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  font-size: 14px;
 }
 
-@media (max-width: 768px) {
-  .planos-valores-grid {
-    grid-template-columns: 1fr;
-  }
+.matriz thead th {
+  padding: 0 8px 10px;
+  border-bottom: 1px solid var(--c-borda);
+  text-align: left;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--c-texto);
+  background: transparent;
+}
 
-  .valor-item {
-    flex-direction: column;
-    align-items: stretch;
-  }
+.matriz thead th:first-child {
+  padding-left: 0;
+  font-size: 12px;
+  color: var(--c-texto-2);
+}
 
-  .valor-input {
-    width: 100%;
-  }
+.matriz tbody th {
+  padding: 12px 12px 12px 0;
+  text-align: left;
+  font-weight: 600;
+  color: var(--c-texto);
+  white-space: nowrap;
+}
+
+.matriz td { padding: 8px; }
+
+.matriz tbody tr + tr th,
+.matriz tbody tr + tr td { border-top: 1px solid var(--c-borda-leve); }
+
+.matriz thead th:first-child { width: 130px; }
+.matriz .entrada { min-width: 0; }
+
+/* Célula alterada e ainda não salva */
+.entrada--alterada {
+  border-color: var(--c-primario);
+  background: rgba(var(--c-primario-rgb), .06);
+}
+
+.nota {
+  margin: 12px 0 0;
+  font-size: 13px;
+  color: var(--c-erro);
+}
+
+/* Nunca rola para o lado: a tabela tem largura fixa e as células encolhem */
+.dlg-corpo { overflow-x: hidden; }
+
+/* Valor da célula: só o número, o "R$" fica no cabeçalho do campo */
+.matriz .entrada input { padding-left: 8px; padding-right: 8px; }
+
+@media (max-width: 720px) {
+  .matriz { font-size: 13px; }
+  .matriz thead th:first-child { width: 96px; }
+  .matriz thead th { padding: 0 4px 8px; font-size: 12px; }
+  .matriz tbody th { padding-right: 6px; font-size: 13px; white-space: normal; }
+  .matriz td { padding: 6px 4px; }
+  .matriz .entrada { min-height: 36px; }
+  .matriz .entrada-prefixo { padding-left: 8px; font-size: 12px; }
+  .matriz .entrada input { font-size: 13px; padding: 6px; }
 }

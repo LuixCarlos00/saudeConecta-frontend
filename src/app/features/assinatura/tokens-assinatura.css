@@ -1,0 +1,38 @@
+/*
+ * Tokens locais. O app carrega src/styles/global.scss, que no tema claro não define
+ * variáveis CSS (só SCSS) e no escuro usa body.dark-theme + --dark-*. Por isso cada cor
+ * tem um valor-padrão do design system e é trocada no tema escuro.
+ */
+:host {
+  --c-primario: var(--primary-color, #0066CC);
+  --c-primario-forte: var(--primary-dark, #004C99);
+  --c-primario-rgb: 0, 102, 204;
+  --c-texto: var(--text-primary, #111827);
+  --c-texto-2: var(--text-secondary, #4b5563);
+  --c-texto-3: #6b7280;
+  --c-borda: var(--border-color, #e5e7eb);
+  --c-borda-leve: var(--border-light, #f1f2f4);
+  --c-fundo: var(--bg-card, #ffffff);
+  --c-fundo-2: #f9fafb;
+  --c-hover: var(--bg-hover, #f3f4f6);
+  --c-erro: #dc2626;
+  --c-sucesso: #059669;
+  --c-sombra: 0 1px 2px rgba(17, 24, 39, .05), 0 1px 3px rgba(17, 24, 39, .06);
+}
+
+:host-context(body.dark-theme) {
+  --c-primario: #60a5fa;
+  --c-primario-forte: #3b82f6;
+  --c-primario-rgb: 96, 165, 250;
+  --c-texto: var(--dark-text-primary, #f1f5f9);
+  --c-texto-2: var(--dark-text-secondary, #d8d9db);
+  --c-texto-3: #94a3b8;
+  --c-borda: var(--dark-border, #334155);
+  --c-borda-leve: var(--dark-border, #334155);
+  --c-fundo: var(--dark-bg-card, #1e293b);
+  --c-fundo-2: var(--dark-bg-primary, #0f172a);
+  --c-hover: var(--dark-bg-hover, #334155);
+  --c-erro: #f87171;
+  --c-sucesso: #34d399;
+  --c-sombra: none;
+}

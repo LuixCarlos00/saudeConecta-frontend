@@ -86,6 +86,7 @@ export class BarraLateraComponent implements OnInit, OnDestroy {
       '/gerenciar-planos': 'GerenciarPlanos',
       '/gestao-assinaturas': 'GestaoAssinaturas',
       '/pendencias-manuais': 'PendenciasManuais',
+      '/historico-dados-pessoais': 'Auditoria',
       '/minha-assinatura': 'MinhaAssinatura',
       '/gestao-chamados': 'GestaoChamados',
       '/relatorios': 'Relatorios',
@@ -157,6 +158,7 @@ export class BarraLateraComponent implements OnInit, OnDestroy {
       'GerenciarPlanos': 'gerenciar-planos',
       'GestaoAssinaturas': 'gestao-assinaturas',
       'PendenciasManuais': 'pendencias-manuais',
+      'Auditoria': 'historico-dados-pessoais',
       'MinhaAssinatura': 'minha-assinatura',
       'GestaoChamados': 'gestao-chamados',
       'Relatorios': 'relatorios'

@@ -534,8 +534,11 @@
             <label class="form-label">
               <i class="fa-solid fa-briefcase"></i> Cargo
             </label>
-            <input type="text" class="form-input" formControlName="cargo" [readonly]="!isEditMode"
+            <select class="form-input" formControlName="cargo" [attr.disabled]="!isEditMode ? true : null"
               [class.input-edit]="isEditMode">
+              <option value="">Selecione o cargo</option>
+              <option *ngFor="let c of cargos" [value]="c.value">{{ c.label }}</option>
+            </select>
           </div>
           <div class="form-group">
             <label class="form-label">

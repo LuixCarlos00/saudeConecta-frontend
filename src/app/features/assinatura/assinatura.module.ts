@@ -22,6 +22,7 @@ import { AssinaturaRoutingModule } from './assinatura-routing.module';
 import { ModalAssociarPlanoComponent } from 'src/app/features/assinatura/components/modal-associar-plano/modal-associar-plano.component';
 import { DetalheAssinaturaComponent } from 'src/app/features/assinatura/pages/detalhe-assinatura/detalhe-assinatura.component';
 import { GerenciarPlanosComponent } from 'src/app/features/assinatura/pages/gerenciar-planos/gerenciar-planos.component';
+import { ModalEditarPlanoComponent } from 'src/app/features/assinatura/pages/gerenciar-planos/modal-editar-plano/modal-editar-plano.component';
 import { ModalValoresAdicionaisComponent } from 'src/app/features/assinatura/pages/gerenciar-planos/modal-valores-adicionais/modal-valores-adicionais.component';
 import { GestaoAssinaturasComponent } from 'src/app/features/assinatura/pages/gestao-assinaturas/gestao-assinaturas.component';
 import { ListaPlanosComponent } from 'src/app/features/assinatura/pages/lista-planos/lista-planos.component';
@@ -37,6 +38,7 @@ import { PendenciasManuaisComponent } from 'src/app/features/assinatura/pages/pe
     DetalheAssinaturaComponent,
     GerenciarPlanosComponent,
     ModalValoresAdicionaisComponent,
+    ModalEditarPlanoComponent,
     GestaoAssinaturasComponent,
     PendenciasManuaisComponent,
     ModalAssociarPlanoComponent,

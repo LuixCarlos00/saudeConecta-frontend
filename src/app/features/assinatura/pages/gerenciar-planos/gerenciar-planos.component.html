@@ -1,267 +1,80 @@
-<div class="gerenciar-planos-container">
-  <header class="page-header">
-    <div class="header-content">
-      <div class="header-title">
-        <h1>
-          <i class="fa-solid fa-layer-group"></i>
-          Gerenciar Planos de Assinatura
-        </h1>
-        <p class="header-subtitle">Edite os valores, limites e recursos dos planos existentes</p>
-      </div>
-      <div class="header-actions" *ngIf="!mostrarFormulario">
-        <button mat-stroked-button color="primary" (click)="abrirModalValores()">
-          <i class="fa-solid fa-dollar-sign"></i>
-          Valores Adicionais
-        </button>
-        <button mat-raised-button color="primary" (click)="mostrarFormulario = true; modoEdicao = false; planoForm.reset();">
-          <i class="fa-solid fa-plus"></i>
-          Novo Plano
-        </button>
-      </div>
+<div class="pagina">
+  <header class="pagina-cabecalho">
+    <div>
+      <h1>Planos de assinatura</h1>
+      <p class="pagina-subtitulo">Preço, limites de usuários e recursos dos planos oferecidos às clínicas.</p>
     </div>
+    <button type="button" class="btn" (click)="abrirModalValores()" [disabled]="isLoading || planos.length === 0">
+      <mat-icon>person_add</mat-icon>
+      Valores adicionais
+    </button>
   </header>
 
-  <!-- Loading -->
-  <div *ngIf="isLoading" class="loading-container">
-    <mat-spinner diameter="50"></mat-spinner>
-    <p>Carregando planos...</p>
+  <div *ngIf="isLoading" class="estado">
+    <mat-spinner diameter="32"></mat-spinner>
+    <span>Carregando planos...</span>
   </div>
 
-  <!-- Cards de Planos (Visualização Moderna) -->
-  <div *ngIf="!isLoading && !mostrarFormulario" class="planos-cards-container">
-    <div class="plano-card-wrapper" *ngFor="let plano of planos">
-      <mat-card class="plano-card" [class.plano-destaque]="isPlanoDestaque(plano)">
-        <div class="plano-card-header">
-          <div class="plano-info">
-            <h3>{{ plano.nome }}</h3>
-            <span class="tipo-badge" [class]="'tipo-' + plano.tipo.toLowerCase()">{{ plano.tipo }}</span>
-          </div>
-          <div class="plano-valor">
-            <span class="moeda">R$</span>
-            <span class="valor">{{ plano.valorMensal }}</span>
-            <span class="periodo">/mês</span>
-          </div>
-        </div>
-
-        <div class="plano-card-body">
-          <div class="plano-descricao">
-            <p><strong>Título:</strong> {{ getPlanoDescricao(plano) }}</p>
-          </div>
-
-          <div class="plano-limites">
-            <h4>Limites de Usuários</h4>
-            <div class="limites-grid">
-              <div class="limite-item">
-                <i class="fa-solid fa-user-shield"></i>
-                <div class="limite-info">
-                  <span class="limite-valor">{{ formatarLimite(plano.limiteAdminOrg) }}</span>
-                  <span class="limite-label">Admins</span>
-                </div>
-              </div>
-              <div class="limite-item">
-                <i class="fa-solid fa-user-doctor"></i>
-                <div class="limite-info">
-                  <span class="limite-valor">{{ formatarLimite(plano.limiteProfissional) }}</span>
-                  <span class="limite-label">Profissionais</span>
-                </div>
-              </div>
-              <div class="limite-item">
-                <i class="fa-solid fa-user-pen"></i>
-                <div class="limite-info">
-                  <span class="limite-valor">{{ formatarLimite(plano.limiteSecretaria) }}</span>
-                  <span class="limite-label">Secretárias</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="plano-recursos-preview">
-            <h4>Recursos ({{ getRecursosFromPlano(plano).length }})</h4>
-            <div class="recursos-chips">
-              <span class="recurso-chip" *ngFor="let recurso of getRecursosFromPlano(plano) | slice:0:3">
-                {{ recurso }}
-              </span>
-              <span class="recurso-chip mais-recursos" *ngIf="getRecursosFromPlano(plano).length > 3">
-                +{{ getRecursosFromPlano(plano).length - 3 }}
-              </span>
-            </div>
-          </div>
-        </div>
-
-        <div class="plano-card-actions">
-          <button mat-raised-button color="primary" (click)="abrirFormularioEdicao(plano)">
-            <i class="fa-solid fa-edit"></i>
-            Editar
-          </button>
-          <button mat-button color="warn" (click)="desativarPlano(plano)">
-            <i class="fa-solid fa-trash"></i>
-            Desativar
-          </button>
-        </div>
-      </mat-card>
-    </div>
-
-    <div *ngIf="planos.length === 0" class="sem-planos">
-      <mat-icon class="empty-icon">inbox</mat-icon>
-      <p>Nenhum plano cadastrado.</p>
-      <button mat-raised-button color="primary" (click)="mostrarFormulario = true; modoEdicao = false; planoForm.reset();">
-        <i class="fa-solid fa-plus"></i>
-        Criar Primeiro Plano
-      </button>
-    </div>
+  <div *ngIf="!isLoading && erroCarregar" class="estado estado--erro" role="alert">
+    <span>Não foi possível carregar os planos.</span>
+    <button type="button" class="btn" (click)="carregarPlanos()">Tentar de novo</button>
   </div>
 
-  <!-- Formulário de Criação/Edição (Simplificado) -->
-  <div *ngIf="mostrarFormulario" class="formulario-container">
-    <mat-card class="formulario-card">
-      <mat-card-header>
-        <mat-card-title>
-          <i class="fa-solid" [class.fa-edit]="modoEdicao" [class.fa-plus]="!modoEdicao"></i>
-          {{ modoEdicao ? 'Editar Plano' : 'Novo Plano' }}
-        </mat-card-title>
-        <button mat-icon-button (click)="fecharFormulario()" class="close-button">
-          <mat-icon>close</mat-icon>
+  <div *ngIf="!isLoading && !erroCarregar && planos.length === 0" class="estado">
+    <mat-icon>inventory_2</mat-icon>
+    <span>Nenhum plano ativo.</span>
+  </div>
+
+  <div *ngIf="!isLoading && !erroCarregar && planos.length > 0" class="planos">
+    <article class="plano" *ngFor="let plano of planos; trackBy: trackPorId" [attr.aria-labelledby]="'plano-' + plano.id">
+      <div class="plano-topo">
+        <h2 class="plano-nome" [id]="'plano-' + plano.id">{{ plano.nome }}</h2>
+        <p class="plano-frase">{{ getPlanoDescricao(plano) }}</p>
+        <p class="plano-preco">
+          <strong>{{ formatarValor(plano.valorMensal) }}</strong>
+          <span>/mês</span>
+        </p>
+      </div>
+
+      <section class="plano-bloco" aria-label="Usuários incluídos">
+        <h3>Usuários incluídos</h3>
+        <dl class="linhas">
+          <div><dt>Administradores</dt><dd>{{ formatarLimite(plano.limiteAdminOrg) }}</dd></div>
+          <div><dt>Profissionais</dt><dd>{{ formatarLimite(plano.limiteProfissional) }}</dd></div>
+          <div><dt>Secretárias</dt><dd>{{ formatarLimite(plano.limiteSecretaria) }}</dd></div>
+        </dl>
+      </section>
+
+      <section class="plano-bloco" aria-label="Valor por usuário extra">
+        <h3>Usuário extra, por mês</h3>
+        <dl class="linhas">
+          <div><dt>Administrador</dt><dd>{{ formatarValor(plano.valorAdicionalAdmin) }}</dd></div>
+          <div><dt>Profissional</dt><dd>{{ formatarValor(plano.valorAdicionalProfissional) }}</dd></div>
+          <div><dt>Secretária</dt><dd>{{ formatarValor(plano.valorAdicionalSecretaria) }}</dd></div>
+        </dl>
+      </section>
+
+      <section class="plano-bloco plano-recursos" aria-label="Recursos">
+        <h3>Recursos</h3>
+        <ul *ngIf="getRecursosFromPlano(plano).length > 0; else semRecursos">
+          <li *ngFor="let recurso of getRecursosFromPlano(plano) | slice:0:RECURSOS_VISIVEIS">
+            <mat-icon aria-hidden="true">check</mat-icon>{{ recurso }}
+          </li>
+          <li *ngIf="getRecursosFromPlano(plano).length > RECURSOS_VISIVEIS" class="mais">
+            e mais {{ getRecursosFromPlano(plano).length - RECURSOS_VISIVEIS }}
+          </li>
+        </ul>
+        <ng-template #semRecursos><p class="vazio">Nenhum recurso cadastrado.</p></ng-template>
+      </section>
+
+      <footer class="plano-acoes">
+        <button type="button" class="btn btn--primario" (click)="editarPlano(plano)" [disabled]="desativandoId === plano.id">
+          Editar plano
         </button>
-      </mat-card-header>
-
-      <mat-card-content>
-        <form [formGroup]="planoForm" class="plano-form">
-          <!-- Seção: Informações Básicas -->
-          <div class="form-section">
-            <h3 class="section-title">
-              <i class="fa-solid fa-info-circle"></i>
-              Informações Básicas
-            </h3>
-            
-            <div class="form-row">
-              <mat-form-field appearance="outline" class="full-width">
-                <mat-label>Nome do Plano</mat-label>
-                <input matInput formControlName="nome" placeholder="Ex: Plano Premium">
-                <mat-icon matPrefix>title</mat-icon>
-                <mat-error *ngIf="planoForm.get('nome')?.hasError('required')">Campo obrigatório</mat-error>
-              </mat-form-field>
-            </div>
-
-            <div class="form-row">
-              <mat-form-field appearance="outline" class="full-width">
-                <mat-label>Valor Mensal (R$)</mat-label>
-                <input matInput type="number" formControlName="valorMensal" min="0" step="0.01">
-                <mat-icon matPrefix>payments</mat-icon>
-                <mat-error *ngIf="planoForm.get('valorMensal')?.hasError('required')">Campo obrigatório</mat-error>
-                <mat-error *ngIf="planoForm.get('valorMensal')?.hasError('min')">Valor deve ser maior que zero</mat-error>
-              </mat-form-field>
-            </div>
-          </div>
-
-          <!-- Seção: Descrição Visual -->
-          <div class="form-section descricao-section">
-            <h3 class="section-title">
-              <i class="fa-solid fa-align-left"></i>
-              Descrição do Plano
-            </h3>
-            
-            <div class="descricao-editor">
-              <div class="descricao-campo">
-                <mat-form-field appearance="outline" class="full-width">
-                  <mat-label>Título Promocional</mat-label>
-                  <input matInput formControlName="titulo" 
-                    placeholder="Ex: Ideal para consultórios e profissionais autônomos"
-                    (input)="onTituloChange()">
-                  <mat-icon matPrefix>campaign</mat-icon>
-                  <mat-hint>Título que aparece na landing page para atrair clientes</mat-hint>
-                  <mat-error *ngIf="planoForm.get('titulo')?.hasError('required')">Campo obrigatório</mat-error>
-                </mat-form-field>
-              </div>
-
-
-            </div>
-          </div>
-
-          <!-- Seção: Recursos (Linha por Linha) -->
-          <div class="form-section recursos-section">
-            <h3 class="section-title">
-              <i class="fa-solid fa-list-check"></i>
-              Recursos do Plano
-            </h3>
-            
-            <div class="recursos-manager">
-              <!-- Campo para recursos (um por linha) -->
-              <div class="form-row">
-                <mat-form-field appearance="outline" class="full-width">
-                  <mat-label>Recursos (um por linha)</mat-label>
-                  <textarea matInput formControlName="recursos" rows="8" 
-                    placeholder="Agendamento online completo
-Prontuário médico e odontológico
-Odontograma digital
-Dashboard com gráficos
-Geração de PDF (receitas e exames)
-Notificações por e-mail"
-                    (input)="onRecursosChange()"></textarea>
-                  <mat-icon matPrefix>stars</mat-icon>
-                  <mat-hint>Digite um recurso por linha para atualizar o preview</mat-hint>
-                </mat-form-field>
-              </div>
-
-              <!-- Preview dos recursos -->
-              <div class="recursos-preview" *ngIf="getRecursosPreview().length > 0">
-                <h4>Preview dos Recursos ({{ getRecursosPreview().length }}):</h4>
-                <div class="recursos-chips-preview">
-                  <span class="recurso-chip-preview" *ngFor="let recurso of getRecursosPreview()">
-                    <i class="fa-solid fa-check"></i>
-                    {{ recurso }}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Seção: Limites de Usuários -->
-          <div class="form-section">
-            <h3 class="section-title">
-              <i class="fa-solid fa-users"></i>
-              Limites de Usuários
-            </h3>
-            <p class="section-hint">Deixe em branco ou 0 para ilimitado</p>
-
-            <div class="limites-form-grid">
-              <div class="limite-form-item">
-                <mat-form-field appearance="outline">
-                  <mat-label>Admins</mat-label>
-                  <input matInput type="number" formControlName="limiteAdminOrg" min="0">
-                  <mat-icon matPrefix>admin_panel_settings</mat-icon>
-                 </mat-form-field>
-              </div>
-
-              <div class="limite-form-item">
-                <mat-form-field appearance="outline">
-                  <mat-label>Profissionais</mat-label>
-                  <input matInput type="number" formControlName="limiteProfissional" min="0">
-                  <mat-icon matPrefix>medical_services</mat-icon>
-                 </mat-form-field>
-              </div>
-
-              <div class="limite-form-item">
-                <mat-form-field appearance="outline">
-                  <mat-label>Secretárias</mat-label>
-                  <input matInput type="number" formControlName="limiteSecretaria" min="0">
-                  <mat-icon matPrefix>support_agent</mat-icon>
-                 </mat-form-field>
-              </div>
-            </div>
-          </div>
-        </form>
-      </mat-card-content>
-
-      <mat-card-actions align="end" class="form-actions">
-        <button mat-button (click)="fecharFormulario()">
-          <i class="fa-solid fa-times"></i>
-          Cancelar
+        <button type="button" class="btn btn--texto btn--perigo" (click)="desativarPlano(plano)" [disabled]="desativandoId !== null">
+          {{ desativandoId === plano.id ? 'Desativando...' : 'Desativar' }}
         </button>
-        <button mat-raised-button color="primary" (click)="salvarPlano()" [disabled]="planoForm.invalid">
-          <i class="fa-solid fa-save"></i>
-          {{ modoEdicao ? 'Atualizar' : 'Criar' }} Plano
-        </button>
-      </mat-card-actions>
-    </mat-card>
+      </footer>
+    </article>
   </div>
 </div>

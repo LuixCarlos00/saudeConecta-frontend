@@ -1,271 +1,247 @@
 <div class="modal-associar-plano">
-  <h2 mat-dialog-title>
-    <mat-icon>business</mat-icon>
-    Gerenciar Organização: {{ data.nomeOrganizacao }}
-  </h2>
+  <header class="dlg-cabecalho">
+    <div>
+      <h2 mat-dialog-title class="dlg-titulo">{{ data.nomeOrganizacao }}</h2>
+      <p class="dlg-subtitulo">Plano, cobranças e limites de usuários desta clínica.</p>
+    </div>
+    <button type="button" class="dlg-fechar" (click)="fechar()" aria-label="Fechar">
+      <mat-icon>close</mat-icon>
+    </button>
+  </header>
 
-  <mat-dialog-content>
-    <!-- Resumo da assinatura atual -->
-    <div *ngIf="modoEdicao && assinaturaAtual" class="plano-atual-info">
-      <strong>Plano Atual:</strong> {{ planoAtualNome }}
-      <span class="status-badge" [ngClass]="getStatusClass(assinaturaAtual.status)">
-        {{ assinaturaAtual.status }}
+  <!-- Resumo da assinatura atual -->
+  <section *ngIf="modoEdicao && assinaturaAtual" class="resumo" aria-label="Assinatura atual">
+    <div class="resumo-item">
+      <span class="resumo-rotulo">Plano atual</span>
+      <span class="resumo-valor">
+        {{ planoAtualNome }}
+        <span class="selo" [ngClass]="getStatusClass(assinaturaAtual.status)">{{ rotuloStatus(assinaturaAtual.status) }}</span>
+        <span *ngIf="assinaturaAtual.cortesia" class="selo selo--cortesia">Cortesia</span>
       </span>
     </div>
+    <div class="resumo-item">
+      <span class="resumo-rotulo">Mensalidade</span>
+      <span class="resumo-valor">{{ formatarValor(assinaturaAtual.valorMensal) }}</span>
+    </div>
+    <div class="resumo-item" *ngIf="assinaturaAtual.dataProximaCobranca">
+      <span class="resumo-rotulo">Próxima cobrança</span>
+      <span class="resumo-valor">{{ assinaturaAtual.dataProximaCobranca | date:'dd/MM/yyyy' }}</span>
+    </div>
+  </section>
 
-    <mat-tab-group (selectedIndexChange)="onTabChange($event)" [selectedIndex]="tabAtiva">
+  <p *ngIf="!isLoading && !modoEdicao" class="aviso-sem-assinatura">
+    Esta clínica ainda não tem assinatura ativa. Escolha um plano para começar.
+  </p>
 
-      <!-- ===================== ABA 1: PLANO ===================== -->
-      <mat-tab label="Plano">
-        <div class="tab-content">
-          <div *ngIf="isLoading" class="loading-container">
-            <mat-spinner diameter="40"></mat-spinner>
-            <p>Carregando planos...</p>
-          </div>
+  <mat-tab-group class="abas" mat-stretch-tabs="false" mat-align-tabs="start" animationDuration="150ms"
+                 (selectedIndexChange)="onTabChange($event)" [selectedIndex]="tabAtiva">
 
-          <div *ngIf="!isLoading" class="planos-container">
-            <mat-radio-group [(ngModel)]="planoSelecionado" class="planos-radio-group">
-              <div *ngFor="let plano of planos" class="plano-card" [class.selected]="planoSelecionado === plano.id">
-                <mat-radio-button [value]="plano.id" class="plano-radio">
-                  <div class="plano-info">
-                    <div class="plano-header">
-                      <h3>{{ plano.nome }}</h3>
-                      <span class="plano-tipo" [class]="'tipo-' + plano.tipo.toLowerCase()">{{ plano.tipo }}</span>
-                    </div>
-                    <p class="plano-descricao">{{ plano.descricao }}</p>
-                    <div class="plano-valor">{{ formatarValor(plano.valorMensal) }}/mês</div>
-                    <div class="plano-limites">
-                      <span><mat-icon class="limite-icon">admin_panel_settings</mat-icon> Admins: {{ formatarLimite(plano.limiteAdminOrg) }}</span>
-                      <span><mat-icon class="limite-icon">medical_services</mat-icon> Profissionais: {{ formatarLimite(plano.limiteProfissional) }}</span>
-                      <span><mat-icon class="limite-icon">support_agent</mat-icon> Secretárias: {{ formatarLimite(plano.limiteSecretaria) }}</span>
-                    </div>
-                  </div>
-                </mat-radio-button>
-              </div>
-            </mat-radio-group>
-
-            <p *ngIf="planos.length === 0" class="sem-planos">Nenhum plano disponível.</p>
-          </div>
-
-          <div class="tab-actions" *ngIf="!isLoading">
-            <button mat-raised-button color="primary" (click)="associarPlano()" [disabled]="!planoSelecionado || isSaving">
-              <mat-spinner *ngIf="isSaving" diameter="20" style="display: inline-block; margin-right: 8px;"></mat-spinner>
-              <span *ngIf="!isSaving">{{ modoEdicao ? 'Alterar Plano' : 'Associar Plano' }}</span>
-              <span *ngIf="isSaving">{{ modoEdicao ? 'Alterando...' : 'Associando...' }}</span>
-            </button>
-          </div>
+    <!-- ===================== ABA: PLANO ===================== -->
+    <mat-tab label="Plano">
+      <div class="dlg-corpo">
+        <div *ngIf="isLoading" class="dlg-carregando">
+          <mat-spinner diameter="28"></mat-spinner>
+          <span>Carregando planos...</span>
         </div>
-      </mat-tab>
 
-      <!-- ===================== ABA 2: COBRANÇAS ===================== -->
-      <mat-tab>
-        <ng-template mat-tab-label>
-          Cobranças
-          <span *ngIf="cobrancasPendentes.length > 0" class="tab-badge">{{ cobrancasPendentes.length }}</span>
-        </ng-template>
+        <ng-container *ngIf="!isLoading">
+          <mat-radio-group [(ngModel)]="planoSelecionado" class="planos" aria-label="Escolha o plano da clínica">
+            <label *ngFor="let plano of planos" class="plano"
+                   [class.plano--selecionado]="planoSelecionado === plano.id"
+                   (click)="selecionarPlano(plano)">
+              <mat-radio-button [value]="plano.id" class="plano-radio" [disabled]="isSaving"></mat-radio-button>
+              <span class="plano-info">
+                <span class="plano-nome">
+                  {{ plano.nome }}
+                  <span *ngIf="modoEdicao && plano.id === assinaturaAtual?.planoId" class="selo">Atual</span>
+                </span>
+                <span class="plano-titulo" *ngIf="tituloDoPlano(plano)">{{ tituloDoPlano(plano) }}</span>
+                <span class="plano-limites">
+                  {{ descreverLimite(plano.limiteAdminOrg, 'administrador', 'administradores') }}
+                  · {{ descreverLimite(plano.limiteProfissional, 'profissional', 'profissionais') }}
+                  · {{ descreverLimite(plano.limiteSecretaria, 'secretária', 'secretárias') }}
+                </span>
+              </span>
+              <span class="plano-preco">
+                <strong>{{ formatarValor(plano.valorMensal) }}</strong>
+                <span>por mês</span>
+              </span>
+            </label>
+          </mat-radio-group>
 
-        <div class="tab-content">
-          <div *ngIf="isLoadingCobrancas" class="loading-container">
-            <mat-spinner diameter="40"></mat-spinner>
-            <p>Carregando cobranças...</p>
+          <div *ngIf="planos.length === 0" class="dlg-vazio">
+            <mat-icon>inventory_2</mat-icon>
+            <p>Nenhum plano ativo cadastrado.</p>
           </div>
 
-          <div *ngIf="!isLoadingCobrancas && cobrancas.length === 0" class="empty-state">
-            <mat-icon>receipt_long</mat-icon>
-            <p>Nenhuma cobrança encontrada para esta organização.</p>
-          </div>
+        </ng-container>
+      </div>
+    </mat-tab>
 
-          <div *ngIf="!isLoadingCobrancas && cobrancas.length > 0" class="cobrancas-table-container">
-            <table class="cobrancas-table">
-              <thead>
-                <tr>
-                  <th>Data</th>
-                  <th>Plano</th>
-                  <th>Valor</th>
-                  <th>Pagamento</th>
-                  <th>Status</th>
-                  <th>Ações</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr *ngFor="let cobranca of cobrancas">
-                  <td>{{ cobranca.criadaEm | date:'dd/MM/yyyy' }}</td>
-                  <td>{{ cobranca.planoNome }}</td>
-                  <td>{{ formatarValor(cobranca.valorTotal) }}</td>
-                  <td>{{ cobranca.dataPagamento ? (cobranca.dataPagamento | date:'dd/MM/yyyy') : '—' }}</td>
-                  <td>
-                    <span class="status-badge" [ngClass]="getStatusClass(cobranca.status)">
-                      {{ cobranca.status }}
-                    </span>
-                  </td>
-                  <td>
-                    <button
-                      *ngIf="cobranca.status === 'PENDENTE'"
-                      mat-raised-button
-                      color="accent"
-                      class="btn-confirmar"
-                      (click)="confirmarPagamento(cobranca.id)"
-                      [disabled]="confirmandoId === cobranca.id">
-                      <mat-spinner *ngIf="confirmandoId === cobranca.id" diameter="18" style="display: inline-block; margin-right: 4px;"></mat-spinner>
-                      <mat-icon *ngIf="confirmandoId !== cobranca.id">check_circle</mat-icon>
-                      {{ confirmandoId === cobranca.id ? 'Confirmando...' : 'Confirmar' }}
+    <!-- ===================== ABA: COBRANÇAS ===================== -->
+    <mat-tab>
+      <ng-template mat-tab-label>
+        Cobranças
+        <span *ngIf="cobrancasPendentes.length > 0" class="contador"
+              [attr.aria-label]="cobrancasPendentes.length + ' pendentes'">{{ cobrancasPendentes.length }}</span>
+      </ng-template>
+
+      <div class="dlg-corpo">
+        <div class="cobrancas-topo" *ngIf="!isLoadingCobrancas && cobrancas.length > 0">
+          <span>{{ cobrancas.length }} {{ cobrancas.length === 1 ? 'cobrança' : 'cobranças' }}</span>
+          <button type="button" class="btn btn--texto btn--pequeno" (click)="carregarCobrancas()">
+            <mat-icon>refresh</mat-icon> Atualizar
+          </button>
+        </div>
+
+        <div *ngIf="isLoadingCobrancas" class="dlg-carregando">
+          <mat-spinner diameter="28"></mat-spinner>
+          <span>Carregando cobranças...</span>
+        </div>
+
+        <div *ngIf="!isLoadingCobrancas && cobrancas.length === 0" class="dlg-vazio">
+          <mat-icon>receipt_long</mat-icon>
+          <p>Nenhuma cobrança gerada para esta clínica ainda.</p>
+          <button type="button" class="btn btn--texto btn--pequeno" (click)="carregarCobrancas()">
+            <mat-icon>refresh</mat-icon> Atualizar
+          </button>
+        </div>
+
+        <table *ngIf="!isLoadingCobrancas && cobrancas.length > 0" class="cobrancas">
+          <thead>
+            <tr>
+              <th scope="col">Gerada em</th>
+              <th scope="col">Plano</th>
+              <th scope="col" class="num">Valor</th>
+              <th scope="col">Status</th>
+              <th scope="col"><span class="sr-only">Ações</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let cobranca of cobrancas">
+              <td>{{ cobranca.criadaEm | date:'dd/MM/yyyy' }}</td>
+              <td>{{ cobranca.planoNome }}</td>
+              <td class="num">{{ formatarValor(cobranca.valorTotal) }}</td>
+              <td>
+                <span class="selo" [ngClass]="getStatusClass(cobranca.status)">{{ rotuloStatus(cobranca.status) }}</span>
+                <span *ngIf="cobranca.status === 'PAGO' && cobranca.dataPagamento" class="cobranca-detalhe">
+                  em {{ cobranca.dataPagamento | date:'dd/MM/yyyy' }}
+                </span>
+              </td>
+              <td class="acao">
+                <button *ngIf="cobranca.status === 'PENDENTE'" type="button" class="btn btn--pequeno"
+                        (click)="confirmarPagamento(cobranca.id)" [disabled]="confirmandoId !== null">
+                  <mat-spinner *ngIf="confirmandoId === cobranca.id" diameter="14" class="btn-spinner"></mat-spinner>
+                  {{ confirmandoId === cobranca.id ? 'Confirmando...' : 'Confirmar pagamento' }}
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </mat-tab>
+
+    <!-- ===================== ABA: PERSONALIZAR ===================== -->
+    <mat-tab label="Limites" [disabled]="!modoEdicao">
+      <div class="dlg-corpo">
+        <div *ngIf="!modoEdicao" class="dlg-vazio">
+          <mat-icon>tune</mat-icon>
+          <p>Associe um plano primeiro para ajustar os limites.</p>
+        </div>
+
+        <ng-container *ngIf="modoEdicao && planoAtual">
+          <p class="dlg-secao-ajuda">
+            Libere mais usuários do que o plano {{ planoAtualNome }} inclui. Cada usuário extra entra na mensalidade.
+          </p>
+
+          <table class="limites">
+            <thead>
+              <tr>
+                <th scope="col">Perfil</th>
+                <th scope="col" class="num">No plano</th>
+                <th scope="col" class="centro">Limite da clínica</th>
+                <th scope="col" class="num">Extra por mês</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let perfil of perfisLimite" [class.limites--com-extra]="extraDo(perfil.campo).quantidade > 0">
+                <th scope="row">
+                  {{ perfil.rotulo }}
+                  <span class="limites-unitario" *ngIf="extraDo(perfil.campo).unitario">
+                    {{ formatarValor(extraDo(perfil.campo).unitario) }} por {{ perfil.singular }} extra
+                  </span>
+                </th>
+                <td class="num">{{ formatarLimite(limiteBase(perfil.campo)) }}</td>
+                <td class="centro">
+                  <span *ngIf="limiteBase(perfil.campo) === null" class="ilimitado">Ilimitado</span>
+                  <span *ngIf="limiteBase(perfil.campo) !== null" class="stepper">
+                    <button type="button" (click)="ajustarLimite(perfil.campo, -1)"
+                            [disabled]="(lerLimite(perfil.campo) ?? 0) <= (limiteBase(perfil.campo) ?? 0)"
+                            [attr.aria-label]="'Diminuir ' + perfil.rotulo">
+                      <mat-icon>remove</mat-icon>
                     </button>
-                    <span *ngIf="cobranca.status === 'PAGO'" class="pago-info">
-                      <mat-icon>verified</mat-icon>
-                      {{ cobranca.dataPagamento | date:'dd/MM/yyyy HH:mm' }}
-                    </span>
-                    <span *ngIf="cobranca.status === 'EXPIRADO'" class="expirado-info">
-                      Expirado
-                    </span>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+                    <input type="number" inputmode="numeric" [min]="limiteBase(perfil.campo)"
+                           [ngModel]="lerLimite(perfil.campo)" (ngModelChange)="definirLimite(perfil.campo, $event)"
+                           [attr.aria-label]="'Limite de ' + perfil.rotulo">
+                    <button type="button" (click)="ajustarLimite(perfil.campo, 1)" [attr.aria-label]="'Aumentar ' + perfil.rotulo">
+                      <mat-icon>add</mat-icon>
+                    </button>
+                  </span>
+                </td>
+                <td class="num">
+                  <ng-container *ngIf="extraDo(perfil.campo).quantidade > 0; else semExtra">
+                    <span class="extra-qtd">+{{ extraDo(perfil.campo).quantidade }}</span>
+                    {{ formatarValor(extraDo(perfil.campo).custo) }}
+                  </ng-container>
+                  <ng-template #semExtra><span class="sem-extra">—</span></ng-template>
+                </td>
+              </tr>
+            </tbody>
+          </table>
 
-          <div class="tab-actions" *ngIf="!isLoadingCobrancas">
-            <button mat-button color="primary" (click)="carregarCobrancas()">
-              <mat-icon>refresh</mat-icon> Atualizar
-            </button>
-          </div>
-        </div>
-      </mat-tab>
-
-      <!-- ===================== ABA 3: PERSONALIZAR ===================== -->
-      <mat-tab label="Personalizar" [disabled]="!modoEdicao">
-        <div class="tab-content">
-          <div *ngIf="!modoEdicao" class="empty-state">
-            <mat-icon>tune</mat-icon>
-            <p>Associe um plano primeiro para personalizar os limites.</p>
-          </div>
-
-          <div *ngIf="modoEdicao && planoAtual" class="customizar-container">
-            <div class="customizar-header">
-              <h3>Personalizar limites — {{ planoAtualNome }}</h3>
-              <p class="customizar-desc">
-                Ajuste os limites de perfis para esta organização. Perfis além do plano base geram cobrança adicional.
-              </p>
+          <dl class="total">
+            <div>
+              <dt>Plano {{ planoAtualNome }}</dt>
+              <dd>{{ formatarValor(planoAtual.valorMensal) }}</dd>
             </div>
-
-            <!-- Admin Org -->
-            <div class="customizar-campo">
-              <div class="campo-header">
-                <mat-icon class="limite-icon">admin_panel_settings</mat-icon>
-                <strong>Administradores</strong>
-                <span class="campo-base">Base do plano: {{ formatarLimite(planoAtual.limiteAdminOrg) }}</span>
-              </div>
-              <div class="campo-input-row">
-                <div class="stepper-input">
-                  <button mat-icon-button type="button" class="stepper-btn" (click)="customLimiteAdmin = (customLimiteAdmin || 0) - 1; onLimiteChange()" [disabled]="(customLimiteAdmin || 0) <= (planoAtual.limiteAdminOrg || 0)">
-                    <mat-icon>remove</mat-icon>
-                  </button>
-                  <mat-form-field appearance="outline" class="campo-input">
-                    <input matInput type="number" name="customLimiteAdmin" [(ngModel)]="customLimiteAdmin" (ngModelChange)="onLimiteChange()" [min]="planoAtual.limiteAdminOrg || 0">
-                  </mat-form-field>
-                  <button mat-icon-button type="button" class="stepper-btn" (click)="customLimiteAdmin = (customLimiteAdmin || 0) + 1; onLimiteChange()">
-                    <mat-icon>add</mat-icon>
-                  </button>
-                </div>
-
-                <div class="campo-extra" *ngIf="extraAdmin > 0">
-                  <span class="extra-badge">+{{ extraAdmin }} extra(s)</span>
-                  <span class="extra-valor">{{ formatarValor(custoExtraAdmin) }}/mês</span>
-                </div>
-              </div>
-              <p class="preco-unitario" *ngIf="planoAtual.valorAdicionalAdmin">
-                {{ formatarValor(planoAtual.valorAdicionalAdmin) }} por admin adicional
-              </p>
+            <div>
+              <dt>Usuários extras</dt>
+              <dd>{{ valorAdicionalTotal > 0 ? '+ ' + formatarValor(valorAdicionalTotal) : formatarValor(0) }}</dd>
             </div>
-
-            <!-- Profissional -->
-            <div class="customizar-campo">
-              <div class="campo-header">
-                <mat-icon class="limite-icon">medical_services</mat-icon>
-                <strong>Profissionais</strong>
-                <span class="campo-base">Base do plano: {{ formatarLimite(planoAtual.limiteProfissional) }}</span>
-              </div>
-              <div class="campo-input-row">
-                <div class="stepper-input">
-                  <button mat-icon-button type="button" class="stepper-btn" (click)="customLimiteProf = (customLimiteProf || 0) - 1; onLimiteChange()" [disabled]="(customLimiteProf || 0) <= (planoAtual.limiteProfissional || 0)">
-                    <mat-icon>remove</mat-icon>
-                  </button>
-                  <mat-form-field appearance="outline" class="campo-input">
-                    <input matInput type="number" name="customLimiteProf" [(ngModel)]="customLimiteProf" (ngModelChange)="onLimiteChange()" [min]="planoAtual.limiteProfissional || 0">
-                  </mat-form-field>
-                  <button mat-icon-button type="button" class="stepper-btn" (click)="customLimiteProf = (customLimiteProf || 0) + 1; onLimiteChange()">
-                    <mat-icon>add</mat-icon>
-                  </button>
-                </div>
-                <div class="campo-extra" *ngIf="extraProf > 0">
-                  <span class="extra-badge">+{{ extraProf }} extra(s)</span>
-                  <span class="extra-valor">{{ formatarValor(custoExtraProf) }}/mês</span>
-                </div>
-              </div>
-              <p class="preco-unitario" *ngIf="planoAtual.valorAdicionalProfissional">
-                {{ formatarValor(planoAtual.valorAdicionalProfissional) }} por profissional adicional
-              </p>
+            <div class="total-final">
+              <dt>Mensalidade</dt>
+              <dd>{{ formatarValor(valorTotalMensal) }}</dd>
             </div>
+          </dl>
+        </ng-container>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
 
-            <!-- Secretária -->
-            <div class="customizar-campo">
-              <div class="campo-header">
-                <mat-icon class="limite-icon">support_agent</mat-icon>
-                <strong>Secretárias</strong>
-                <span class="campo-base">Base do plano: {{ formatarLimite(planoAtual.limiteSecretaria) }}</span>
-              </div>
-              <div class="campo-input-row">
-                <div class="stepper-input">
-                  <button mat-icon-button type="button" class="stepper-btn" (click)="customLimiteSec = (customLimiteSec || 0) - 1; onLimiteChange()" [disabled]="(customLimiteSec || 0) <= (planoAtual.limiteSecretaria || 0)">
-                    <mat-icon>remove</mat-icon>
-                  </button>
-                  <mat-form-field appearance="outline" class="campo-input">
-                    <input matInput type="number" name="customLimiteSec" [(ngModel)]="customLimiteSec" (ngModelChange)="onLimiteChange()" [min]="planoAtual.limiteSecretaria || 0">
-                  </mat-form-field>
-                  <button mat-icon-button type="button" class="stepper-btn" (click)="customLimiteSec = (customLimiteSec || 0) + 1; onLimiteChange()">
-                    <mat-icon>add</mat-icon>
-                  </button>
-                </div>
-                <div class="campo-extra" *ngIf="extraSec > 0">
-                  <span class="extra-badge">+{{ extraSec }} extra(s)</span>
-                  <span class="extra-valor">{{ formatarValor(custoExtraSec) }}/mês</span>
-                </div>
-              </div>
-              <p class="preco-unitario" *ngIf="planoAtual.valorAdicionalSecretaria">
-                {{ formatarValor(planoAtual.valorAdicionalSecretaria) }} por secretária adicional
-              </p>
-            </div>
+  <footer class="dlg-rodape">
+    <ng-container [ngSwitch]="tabAtiva">
+      <ng-container *ngSwitchCase="ABA_PLANO">
+        <button type="button" class="btn btn--texto" (click)="fechar()">Fechar</button>
+        <button type="button" class="btn btn--primario" (click)="associarPlano()" [disabled]="!podeTrocarPlano">
+          <mat-spinner *ngIf="isSaving" diameter="16" class="btn-spinner"></mat-spinner>
+          {{ rotuloAcaoPlano }}
+        </button>
+      </ng-container>
 
-            <!-- Resumo financeiro -->
-            <div class="resumo-financeiro">
-              <div class="resumo-linha">
-                <span>Valor base do plano:</span>
-                <span>{{ formatarValor(planoAtual.valorMensal) }}/mês</span>
-              </div>
-              <div class="resumo-linha" *ngIf="valorAdicionalTotal > 0">
-                <span>Adicional por perfis extras:</span>
-                <span class="valor-adicional">+ {{ formatarValor(valorAdicionalTotal) }}/mês</span>
-              </div>
-              <div class="resumo-linha resumo-total">
-                <span><strong>Total mensal:</strong></span>
-                <span><strong>{{ formatarValor(valorTotalMensal) }}/mês</strong></span>
-              </div>
-            </div>
+      <ng-container *ngSwitchCase="ABA_PERSONALIZAR">
+        <button *ngIf="temExtras" type="button" class="btn btn--texto rodape-esquerda" (click)="restaurarLimitesDoPlano()">
+          Voltar aos limites do plano
+        </button>
+        <button type="button" class="btn btn--texto" (click)="fechar()">Fechar</button>
+        <button type="button" class="btn btn--primario" (click)="salvarCustomizacao()" [disabled]="!limitesAlterados || isSavingCustom">
+          <mat-spinner *ngIf="isSavingCustom" diameter="16" class="btn-spinner"></mat-spinner>
+          {{ isSavingCustom ? 'Salvando...' : 'Salvar limites' }}
+        </button>
+      </ng-container>
 
-            <div class="tab-actions">
-              <button mat-raised-button color="primary" (click)="salvarCustomizacao()" [disabled]="isSavingCustom">
-                <mat-spinner *ngIf="isSavingCustom" diameter="20" style="display: inline-block; margin-right: 8px;"></mat-spinner>
-                <span *ngIf="!isSavingCustom">Salvar Personalização</span>
-                <span *ngIf="isSavingCustom">Salvando...</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      </mat-tab>
-
-    </mat-tab-group>
-  </mat-dialog-content>
-
-  <mat-dialog-actions align="end">
-    <button mat-button (click)="fechar()">Fechar</button>
-  </mat-dialog-actions>
+      <ng-container *ngSwitchDefault>
+        <button type="button" class="btn" (click)="fechar()">Fechar</button>
+      </ng-container>
+    </ng-container>
+  </footer>
 </div>

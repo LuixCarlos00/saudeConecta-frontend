@@ -1,100 +1,136 @@
 import { Component, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { PlanoAssinatura } from 'src/app/shared/models/PlanoAssinatura';
-import { PlanoAssinaturaRequest } from 'src/app/shared/models/PlanoAssinatura';
-import { PlanoApiService } from 'src/app/core/data-access/plano-api.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { forkJoin } from 'rxjs';
+import { PlanoAssinatura, PlanoAssinaturaRequest } from 'src/app/shared/models/PlanoAssinatura';
+import { PlanoApiService } from 'src/app/core/data-access/plano-api.service';
+import { mensagemErroAssinaturaAdmin } from 'src/app/shared/utils/mensagem-erro-http';
 
+/** Campo de valor por usuário extra no plano. */
+export type CampoAdicional = 'valorAdicionalAdmin' | 'valorAdicionalProfissional' | 'valorAdicionalSecretaria';
+
+/**
+ * Diálogo que mostra, numa tabela única, quanto cada plano cobra por usuário extra de cada perfil.
+ * Só envia ao back os planos que tiveram algum valor alterado. Fecha com `true` quando salvou.
+ */
 @Component({
   selector: 'app-modal-valores-adicionais',
   templateUrl: './modal-valores-adicionais.component.html',
-  styleUrls: ['./modal-valores-adicionais.component.css']
+  styleUrls: ['../../../tokens-assinatura.css', '../../../components/dialogo-assinatura.css', './modal-valores-adicionais.component.css']
 })
 export class ModalValoresAdicionaisComponent {
+
+  readonly perfis: { campo: CampoAdicional; rotulo: string }[] = [
+    { campo: 'valorAdicionalAdmin', rotulo: 'Administrador' },
+    { campo: 'valorAdicionalProfissional', rotulo: 'Profissional' },
+    { campo: 'valorAdicionalSecretaria', rotulo: 'Secretária' }
+  ];
+
   planos: PlanoAssinatura[] = [];
-  valoresTemp: Map<number, any> = new Map();
+  /** Valores em edição por plano. Começam iguais aos do plano. */
+  valores = new Map<number, Record<CampoAdicional, number | null>>();
+  salvando = false;
 
   constructor(
-    public dialogRef: MatDialogRef<ModalValoresAdicionaisComponent>,
+    public dialogRef: MatDialogRef<ModalValoresAdicionaisComponent, boolean>,
     @Inject(MAT_DIALOG_DATA) public data: { planos: PlanoAssinatura[] },
     private planoApiService: PlanoApiService,
     private snackBar: MatSnackBar
   ) {
     this.planos = data.planos;
-    this.inicializarValoresTemp();
+    this.planos.forEach(p => this.valores.set(p.id, {
+      valorAdicionalAdmin: p.valorAdicionalAdmin,
+      valorAdicionalProfissional: p.valorAdicionalProfissional,
+      valorAdicionalSecretaria: p.valorAdicionalSecretaria
+    }));
   }
 
-  inicializarValoresTemp(): void {
-    this.valoresTemp.clear();
-    this.planos.forEach(plano => {
-      this.valoresTemp.set(plano.id, {
-        valorAdicionalAdmin: plano.valorAdicionalAdmin,
-        valorAdicionalProfissional: plano.valorAdicionalProfissional,
-        valorAdicionalSecretaria: plano.valorAdicionalSecretaria
-      });
-    });
+  /**
+   * Valor em edição de uma célula.
+   * @param plano coluna
+   * @param campo linha
+   * @returns valor atual
+   */
+  valor(plano: PlanoAssinatura, campo: CampoAdicional): number | null {
+    return this.valores.get(plano.id)![campo];
   }
 
-  atualizarValor(planoId: number, tipo: string, event: Event): void {
-    const planoValores = this.valoresTemp.get(planoId);
-    if (planoValores && event.target) {
-      const inputElement = event.target as HTMLInputElement;
-      const valorNumerico = parseFloat(inputElement.value) || 0;
-      if (tipo === 'admin') {
-        planoValores.valorAdicionalAdmin = valorNumerico;
-      } else if (tipo === 'profissional') {
-        planoValores.valorAdicionalProfissional = valorNumerico;
-      } else if (tipo === 'secretaria') {
-        planoValores.valorAdicionalSecretaria = valorNumerico;
-      }
-      this.valoresTemp.set(planoId, planoValores);
-    }
+  /**
+   * Grava o que foi digitado numa célula. Campo vazio vira null (sem cobrança extra definida).
+   * @param plano coluna
+   * @param campo linha
+   * @param valor valor digitado
+   */
+  definir(plano: PlanoAssinatura, campo: CampoAdicional, valor: number | string | null): void {
+    const numero = valor === '' || valor === null || valor === undefined ? null : Number(valor);
+    this.valores.get(plano.id)![campo] = numero;
+  }
+
+  /**
+   * A célula está diferente do valor salvo?
+   * @param plano coluna
+   * @param campo linha
+   * @returns true se foi alterada
+   */
+  alterado(plano: PlanoAssinatura, campo: CampoAdicional): boolean {
+    return this.valor(plano, campo) !== plano[campo];
+  }
+
+  /** A célula tem valor negativo? */
+  negativo(plano: PlanoAssinatura, campo: CampoAdicional): boolean {
+    const v = this.valor(plano, campo);
+    return v !== null && v < 0;
+  }
+
+  /** Planos com pelo menos um valor alterado. */
+  get planosAlterados(): PlanoAssinatura[] {
+    return this.planos.filter(p => this.perfis.some(({ campo }) => this.alterado(p, campo)));
+  }
+
+  /** Algum valor negativo impede salvar. */
+  get temErro(): boolean {
+    return this.planos.some(p => this.perfis.some(({ campo }) => this.negativo(p, campo)));
   }
 
   salvar(): void {
-    let planosAtualizados = 0;
-    let totalPlanos = this.valoresTemp.size;
+    const alterados = this.planosAlterados;
+    if (alterados.length === 0 || this.temErro) { return; }
 
-    this.valoresTemp.forEach((valores, planoId) => {
-      const plano = this.planos.find(p => p.id === planoId);
-      if (plano) {
-        const request: PlanoAssinaturaRequest = {
-          nome: plano.nome,
-          descricao: plano.descricao,
-          titulo: plano.titulo,
-          recursos: plano.recursos,
-          tipo: plano.tipo,
-          valorMensal: plano.valorMensal,
-          limiteAdminOrg: plano.limiteAdminOrg,
-          limiteProfissional: plano.limiteProfissional,
-          limiteSecretaria: plano.limiteSecretaria,
-          valorAdicionalAdmin: valores.valorAdicionalAdmin,
-          valorAdicionalProfissional: valores.valorAdicionalProfissional,
-          valorAdicionalSecretaria: valores.valorAdicionalSecretaria
-        };
-
-        this.planoApiService.atualizarPlano(planoId, request).subscribe({
-          next: () => {
-            planosAtualizados++;
-            plano.valorAdicionalAdmin = valores.valorAdicionalAdmin;
-            plano.valorAdicionalProfissional = valores.valorAdicionalProfissional;
-            plano.valorAdicionalSecretaria = valores.valorAdicionalSecretaria;
-
-            if (planosAtualizados === totalPlanos) {
-              this.snackBar.open('Valores adicionais atualizados com sucesso!', 'Fechar', { duration: 3000 });
-              this.dialogRef.close(true);
-            }
-          },
-          error: (error) => {
-            console.error('Erro ao atualizar valores adicionais do plano:', error);
-            this.snackBar.open('Erro ao atualizar valores', 'Fechar', { duration: 3000 });
-          }
-        });
+    this.salvando = true;
+    forkJoin(alterados.map(plano => this.planoApiService.atualizarPlano(plano.id, this.montarRequest(plano)))).subscribe({
+      next: () => {
+        const n = alterados.length;
+        this.snackBar.open(n === 1 ? 'Valores do plano atualizados.' : `Valores de ${n} planos atualizados.`, 'Fechar', { duration: 3000 });
+        this.dialogRef.close(true);
+      },
+      error: (err) => {
+        // Alguns planos podem ter salvado antes do erro: fecha com true para a tela recarregar o que vale agora
+        this.salvando = false;
+        this.snackBar.open(mensagemErroAssinaturaAdmin(err, 'Não foi possível salvar todos os valores. Confira e tente de novo.'), 'Fechar', { duration: 5000 });
+        this.dialogRef.close(true);
       }
     });
   }
 
   cancelar(): void {
     this.dialogRef.close(false);
+  }
+
+  private montarRequest(plano: PlanoAssinatura): PlanoAssinaturaRequest {
+    const v = this.valores.get(plano.id)!;
+    return {
+      nome: plano.nome,
+      descricao: plano.descricao,
+      titulo: plano.titulo,
+      recursos: plano.recursos,
+      tipo: plano.tipo,
+      valorMensal: plano.valorMensal,
+      limiteAdminOrg: plano.limiteAdminOrg,
+      limiteProfissional: plano.limiteProfissional,
+      limiteSecretaria: plano.limiteSecretaria,
+      valorAdicionalAdmin: v.valorAdicionalAdmin,
+      valorAdicionalProfissional: v.valorAdicionalProfissional,
+      valorAdicionalSecretaria: v.valorAdicionalSecretaria
+    };
   }
 }

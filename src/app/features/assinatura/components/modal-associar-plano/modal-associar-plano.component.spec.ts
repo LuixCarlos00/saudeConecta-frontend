@@ -105,4 +105,62 @@ describe('ModalAssociarPlanoComponent (super admin)', () => {
       'Há um pagamento anterior em análise. Resolva a pendência no Mercado Pago antes.', 'Fechar', { duration: 5000 });
     expect(dialogRef.close).not.toHaveBeenCalled();
   });
+
+  describe('aba Limites e botão principal', () => {
+    const planoStarter = {
+      id: 1, nome: 'Starter', valorMensal: 149, limiteAdminOrg: 1, limiteProfissional: 2, limiteSecretaria: null,
+      valorAdicionalAdmin: 59, valorAdicionalProfissional: 39, valorAdicionalSecretaria: 29
+    } as any;
+
+    beforeEach(() => {
+      c.planos = [planoStarter, { id: 2, nome: 'Profissional' } as any];
+      c.planoAtual = planoStarter;
+      c.modoEdicao = true;
+      c.assinaturaAtual = { planoId: 1 } as any;
+      c.planoSelecionado = 1;
+      c.customLimiteAdmin = 1;
+      c.customLimiteProf = 2;
+      c.customLimiteSec = null;
+    });
+
+    it('o "−" nunca desce abaixo do que o plano inclui', () => {
+      c.ajustarLimite('admin', -1);
+      expect(c.customLimiteAdmin).toBe(1);
+    });
+
+    it('o "+" cria extra, recalcula a mensalidade e marca alteração pendente', () => {
+      c.ajustarLimite('prof', 1);
+      c.ajustarLimite('prof', 1);
+      expect(c.extraProf).toBe(2);
+      expect(c.valorTotalMensal).toBe(149 + 78);
+      expect(c.limitesAlterados).toBeTrue();
+      expect(c.temExtras).toBeTrue();
+    });
+
+    it('voltar aos limites do plano zera os extras', () => {
+      c.ajustarLimite('admin', 1);
+      c.restaurarLimitesDoPlano();
+      expect(c.temExtras).toBeFalse();
+      expect(c.valorTotalMensal).toBe(149);
+    });
+
+    it('o botão principal diz para qual plano vai trocar e só habilita com plano diferente', () => {
+      expect(c.podeTrocarPlano).toBeFalse();
+      expect(c.rotuloAcaoPlano).toBe('Trocar plano');
+      c.selecionarPlano(c.planos[1]);
+      expect(c.podeTrocarPlano).toBeTrue();
+      expect(c.rotuloAcaoPlano).toBe('Trocar para Profissional');
+    });
+
+    it('frase do plano vem sem o texto cru "Recursos: [...]"', () => {
+      expect(c.tituloDoPlano({ descricao: 'titulo: Ideal para consultórios\nRecursos: ["A"]' } as any))
+        .toBe('Ideal para consultórios');
+    });
+
+    it('limite em texto respeita singular, plural e ilimitado', () => {
+      expect(c.descreverLimite(1, 'secretária', 'secretárias')).toBe('1 secretária');
+      expect(c.descreverLimite(4, 'secretária', 'secretárias')).toBe('4 secretárias');
+      expect(c.descreverLimite(null, 'secretária', 'secretárias')).toBe('secretárias sem limite');
+    });
+  });
 });

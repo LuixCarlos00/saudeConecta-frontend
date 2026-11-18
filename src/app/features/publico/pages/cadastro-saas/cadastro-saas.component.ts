@@ -19,6 +19,8 @@ import {
   textoBrValidator,
 } from 'src/app/shared/validators/form-validators';
 import { PlanoAssinatura } from 'src/app/shared/models/PlanoAssinatura';
+import { CARGO_PADRAO_DONO, CARGOS_ADMIN_OPCOES } from 'src/app/shared/constants/cargos-admin.constant';
+import { PlanoDescricaoParserService } from 'src/app/shared/utils/plano-descricao-parser.service';
 
 /**
  * Auto-cadastro SaaS a partir da landing page.
@@ -78,6 +80,7 @@ export class CadastroSaasComponent implements OnInit {
       nome:         ['', [Validators.required, nomeCompletoValidator(), antiInjectionValidator()]],
       cpf:          ['', [Validators.required, cpfValidator()]],
       email:        ['', [Validators.required, emailValidator()]],
+      cargo:        [CARGO_PADRAO_DONO, Validators.required],
 
       nomeClinica:  ['', [Validators.required, textoBrValidator(3, 100), antiInjectionValidator()]],
       razaoSocial:  ['', [Validators.required, textoBrValidator(3, 150), antiInjectionValidator()]],
@@ -102,6 +105,9 @@ export class CadastroSaasComponent implements OnInit {
   }
 
   /** Etapas visíveis: a de organização só existe para pessoa jurídica. */
+  /** Cargos aceitos pelo back (lista única com as outras telas). */
+  readonly cargos = CARGOS_ADMIN_OPCOES;
+
   get etapas(): string[] {
     const base = ['Tipo', 'Administrador', 'Organização', 'Endereço', 'Plano', 'Confirmação'];
     return this.isJuridica ? base : base.filter(e => e !== 'Organização');
@@ -232,7 +238,7 @@ export class CadastroSaasComponent implements OnInit {
   private camposDaEtapa(etapa: string): string[] {
     switch (etapa) {
       case 'Tipo':          return ['tipoPessoa'];
-      case 'Administrador': return ['nome', 'cpf', 'email'];
+      case 'Administrador': return ['nome', 'cpf', 'cargo', 'email'];
       case 'Organização':   return this.camposJuridica;
       case 'Endereço':      return ['cep', 'uf', 'municipio', 'bairro', 'rua', 'numero'];
       case 'Plano':         return ['planoId'];
@@ -286,6 +292,20 @@ export class CadastroSaasComponent implements OnInit {
       mensagem = erro.error.message;
     }
     this.notificacao.fire({ icon: 'error', title: 'Erro no cadastro', text: mensagem });
+  }
+
+  /**
+   * Frase curta do plano. Planos antigos guardam "titulo: ...\nRecursos: [...]" na descrição;
+   * aqui só o título aparece, nunca o texto cru.
+   *
+   * @param plano plano da lista
+   * @returns frase de destaque
+   */
+  tituloPlano(plano: PlanoAssinatura): string {
+    if (plano.titulo && !plano.titulo.includes('Recursos:')) { return plano.titulo; }
+    const titulo = new PlanoDescricaoParserService().parse(plano.descricao).titulo || '';
+    const corte = titulo.search(/\s*Recursos:/i);
+    return (corte >= 0 ? titulo.slice(0, corte) : titulo).replace(/^titulo:\s*/i, '').trim();
   }
 
   formatarValor(valor: number | undefined): string {

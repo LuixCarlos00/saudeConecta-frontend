@@ -1,290 +1,441 @@
-.cadastro-saas {
-  max-width: 880px;
+/*
+ * Cadastro público (auto-cadastro SaaS). Mesmo mundo visual do login e da landing:
+ * fundo azul-marinho em degradê, brilho ciano e o formulário num cartão claro.
+ * As classes usam o prefixo cs- porque o global.scss já tem um .cadastro-header (modais de cadastro).
+ */
+
+:host {
+  --cs-ciano: #00d9ff;
+  --cs-ciano-escuro: #00a8cc;
+  --cs-ciano-texto: #007a99;
+  --cs-tinta: #0f172a;
+  --cs-texto: #1e293b;
+  --cs-texto-2: #475569;
+  --cs-texto-3: #64748b;
+  --cs-borda: #dbe2ea;
+  --cs-erro: #dc2626;
+  display: block;
+}
+
+/* ---------- Fundo ---------- */
+.cs-pagina {
+  position: relative;
+  min-height: 100vh;
+  padding: 48px 24px;
+  overflow: hidden;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  color: #e2e8f0;
+}
+
+.cs-brilho {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+}
+
+.cs-brilho--1 { width: 420px; height: 420px; top: -140px; left: -120px; background: rgba(0, 217, 255, .16); }
+.cs-brilho--2 { width: 520px; height: 520px; bottom: -220px; right: -160px; background: rgba(95, 39, 205, .18); }
+
+.cs-layout {
+  position: relative;
+  display: grid;
+  grid-template-columns: 280px minmax(0, 1fr);
+  gap: 48px;
+  max-width: 1080px;
   margin: 0 auto;
-  padding: 32px 20px 64px;
-  font-family: inherit;
-  color: #1a1a2e;
+  align-items: start;
 }
 
-.cadastro-header {
-  text-align: center;
-  margin-bottom: 28px;
+/* ---------- Coluna lateral ---------- */
+.cs-lateral {
+  position: sticky;
+  top: 48px;
+  display: flex;
+  flex-direction: column;
 }
 
-.cadastro-logo {
+.cs-marca {
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  font-size: 24px;
+  align-self: flex-start;
+  color: #fff;
+  font-size: 20px;
   font-weight: 700;
-  cursor: pointer;
-  color: #00a8cc;
+  text-decoration: none;
 }
 
-.cadastro-chamada {
-  margin: 6px 0 0;
-  color: #5f5f5f;
-}
-
-/* Trilha de etapas */
-.cadastro-steps {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  list-style: none;
-  padding: 0;
-  margin: 0 0 24px;
-}
-
-.cadastro-step {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 14px;
-  border-radius: 999px;
-  background: #f1f3f5;
-  font-size: 13px;
-  color: #6c757d;
-}
-
-.cadastro-step--ativo {
-  background: #e7f5ff;
-  color: #00a8cc;
-  font-weight: 600;
-}
-
-.cadastro-step--concluido {
-  background: #e6f7ea;
-  color: #2f9e44;
-}
-
-.cadastro-step__num {
+.cs-marca__icone {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  background: currentColor;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--cs-ciano) 0%, var(--cs-ciano-escuro) 100%);
+  font-size: 18px;
+}
+
+.cs-titulo {
+  margin: 36px 0 8px;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
   color: #fff;
+  text-wrap: balance;
+}
+
+.cs-chamada { margin: 0; font-size: 15px; color: #a5b4c8; }
+
+.cs-progresso-texto {
+  margin: 32px 0 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #8fa0b8;
+}
+
+.cs-etapas {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.cs-etapa {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+  font-size: 14px;
+  color: #8fa0b8;
+}
+
+/* Linha que liga as etapas */
+.cs-etapa + .cs-etapa::before {
+  content: '';
+  position: absolute;
+  left: 13px;
+  top: -8px;
+  height: 16px;
+  width: 2px;
+  background: rgba(255, 255, 255, .12);
+}
+
+.cs-etapa--feita + .cs-etapa::before { background: rgba(0, 217, 255, .5); }
+
+.cs-etapa__marcador {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: 2px solid rgba(255, 255, 255, .18);
+  border-radius: 50%;
   font-size: 12px;
   font-weight: 700;
 }
 
-/* Formulário */
-.cadastro-form {
-  background: #fff;
-  border: 1px solid #e9ecef;
-  border-radius: 12px;
-  padding: 28px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+.cs-etapa--ativa { color: #fff; font-weight: 600; }
+.cs-etapa--ativa .cs-etapa__marcador { border-color: var(--cs-ciano); background: var(--cs-ciano); color: var(--cs-tinta); }
+.cs-etapa--feita { color: #cbd5e1; }
+.cs-etapa--feita .cs-etapa__marcador { border-color: rgba(0, 217, 255, .6); color: var(--cs-ciano); }
+
+.cs-login {
+  margin-top: 36px;
+  font-size: 14px;
+  color: #a5b4c8;
+  text-decoration: none;
 }
+
+.cs-login strong { color: var(--cs-ciano); }
+.cs-login:hover strong { text-decoration: underline; }
+
+/* ---------- Cartão do formulário ---------- */
+.cs-principal {
+  overflow: hidden;
+  border-radius: 16px;
+  background: #fff;
+  color: var(--cs-texto);
+  box-shadow: 0 24px 48px -12px rgba(0, 0, 0, .45);
+}
+
+.cs-barra { height: 4px; background: #eef2f7; }
+
+.cs-barra__preenchida {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--cs-ciano) 0%, var(--cs-ciano-escuro) 100%);
+  transition: width .35s cubic-bezier(.22, 1, .36, 1);
+}
+
+.cadastro-form { padding: 32px 36px 28px; }
 
 .secao h2 {
-  margin: 0 0 18px;
-  font-size: 20px;
+  margin: 0 0 6px;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--cs-tinta);
 }
 
+.secao h2 + .form-grid,
+.secao h2 + .planos-grid,
+.secao h2 + .resumo { margin-top: 20px; }
+
+.secao__ajuda { margin: 0 0 20px; font-size: 14px; color: var(--cs-texto-2); }
+
+/* ---------- Campos ---------- */
 .form-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
+  gap: 18px 16px;
 }
 
-.field-group--full {
-  grid-column: 1 / -1;
-}
+.field-group--full { grid-column: 1 / -1; }
 
 .field-label {
-  display: block;
+  display: flex;
+  gap: 3px;
   margin-bottom: 6px;
   font-size: 13px;
   font-weight: 600;
+  color: var(--cs-texto);
 }
 
-.req {
-  color: #e03131;
-}
+/* Campo obrigatório: asterisco discreto depois do rótulo, não um ponto vermelho antes */
+.req { order: 2; margin-right: 2px; color: var(--cs-texto-3); font-weight: 400; }
 
 .field-input {
   width: 100%;
-  padding: 10px 12px;
-  border: 1px solid #ced4da;
-  border-radius: 8px;
+  height: 44px;
+  padding: 0 14px;
+  border: 1px solid var(--cs-borda);
+  border-radius: 10px;
+  background: #f8fafc;
+  color: var(--cs-texto);
+  font: inherit;
   font-size: 14px;
-  background: #fff;
+  transition: border-color .15s ease, box-shadow .15s ease, background-color .15s ease;
 }
+
+.field-input::placeholder { color: #94a3b8; }
+.field-input:hover { border-color: #c3ccd8; }
 
 .field-input:focus {
   outline: none;
-  border-color: #00a8cc;
-  box-shadow: 0 0 0 3px rgba(0, 168, 204, 0.15);
+  border-color: var(--cs-ciano-escuro);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(0, 168, 204, .18);
 }
 
-.field-inline {
-  display: flex;
-  gap: 8px;
-}
+.field-input.ng-invalid.ng-touched { border-color: var(--cs-erro); }
 
-.field-hint {
-  margin-top: 6px;
-  font-size: 12px;
-  color: #6c757d;
-}
+.field-inline { display: flex; gap: 8px; }
+.field-inline .btn-secundario { height: 44px; padding: 0 16px; }
 
-.field-error {
-  margin-top: 6px;
-  font-size: 12px;
-  color: #e03131;
-}
+.field-hint { margin-top: 6px; font-size: 12px; line-height: 1.5; color: var(--cs-texto-3); }
+.field-error { margin-top: 6px; font-size: 12px; color: var(--cs-erro); }
 
-/* Radio de tipo de pessoa */
+/* ---------- Tipo de pessoa ---------- */
 .radio-group {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 12px;
 }
 
 .radio-option {
+  position: relative;
   display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 14px;
-  border: 1px solid #ced4da;
-  border-radius: 8px;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 18px;
+  border: 1px solid var(--cs-borda);
+  border-radius: 12px;
   cursor: pointer;
+  transition: border-color .15s ease, background-color .15s ease, box-shadow .15s ease;
 }
 
-.radio-option:hover {
-  border-color: #00a8cc;
+.radio-option:hover { border-color: #9fdcec; }
+
+.radio-option input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
 }
 
-/* Planos */
+.radio-option:focus-within { box-shadow: 0 0 0 3px rgba(0, 168, 204, .25); }
+
+.radio-option--selecionada {
+  border-color: var(--cs-ciano-escuro);
+  background: #f0fbfe;
+  box-shadow: inset 0 0 0 1px var(--cs-ciano-escuro);
+}
+
+.radio-option__icone {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: #eef2f7;
+  color: var(--cs-texto-2);
+  font-size: 17px;
+}
+
+.radio-option--selecionada .radio-option__icone { background: var(--cs-ciano-escuro); color: #fff; }
+
+.radio-option__texto { display: flex; flex-direction: column; gap: 3px; }
+.radio-option__texto strong { font-size: 15px; color: var(--cs-tinta); }
+.radio-option__texto small { font-size: 13px; line-height: 1.45; color: var(--cs-texto-2); }
+
+/* ---------- Planos ---------- */
 .planos-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 14px;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 12px;
 }
 
 .plano-opcao {
+  position: relative;
   display: flex;
-  gap: 10px;
-  padding: 16px;
-  border: 1px solid #ced4da;
-  border-radius: 10px;
+  padding: 18px;
+  border: 1px solid var(--cs-borda);
+  border-radius: 12px;
   cursor: pointer;
+  transition: border-color .15s ease, background-color .15s ease;
 }
+
+.plano-opcao:hover { border-color: #9fdcec; }
+.plano-opcao input { position: absolute; opacity: 0; pointer-events: none; }
+.plano-opcao:focus-within { box-shadow: 0 0 0 3px rgba(0, 168, 204, .25); }
 
 .plano-opcao--selecionado {
-  border-color: #00a8cc;
-  background: #f2fbfd;
+  border-color: var(--cs-ciano-escuro);
+  background: #f0fbfe;
+  box-shadow: inset 0 0 0 1px var(--cs-ciano-escuro);
 }
 
-.plano-opcao__conteudo {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
+.plano-opcao__conteudo { display: flex; flex-direction: column; gap: 6px; }
+.plano-opcao__conteudo strong { font-size: 16px; color: var(--cs-tinta); }
+.plano-opcao__preco { font-size: 20px; font-weight: 700; color: var(--cs-ciano-texto); }
+.plano-opcao__conteudo small { font-size: 13px; line-height: 1.45; color: var(--cs-texto-2); }
 
-.plano-opcao__preco {
-  color: #00a8cc;
-  font-weight: 700;
-}
-
-.plano-opcao__conteudo small {
-  color: #6c757d;
-}
-
-/* Confirmação */
+/* ---------- Confirmação ---------- */
 .resumo {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 14px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   margin-bottom: 20px;
+  border: 1px solid var(--cs-borda);
+  border-radius: 12px;
+  overflow: hidden;
 }
 
 .resumo__item {
   display: flex;
   flex-direction: column;
-  /* Sem min-width: 0 o item do grid não encolhe abaixo do conteúdo e um e-mail longo vaza */
+  gap: 2px;
+  /* Sem min-width: 0 o item do grid não encolhe e um e-mail longo vaza */
   min-width: 0;
-  padding: 12px;
-  border: 1px solid #e9ecef;
-  border-radius: 8px;
+  padding: 14px 16px;
+  border-bottom: 1px solid #eef2f7;
 }
 
-.resumo__item strong {
-  /* E-mail não tem espaço: quebra em qualquer ponto para caber no cartão */
-  overflow-wrap: anywhere;
-}
-
-.resumo__item span {
-  font-size: 12px;
-  color: #6c757d;
-}
+.resumo__item:nth-child(odd) { border-right: 1px solid #eef2f7; }
+.resumo__item span { font-size: 12px; color: var(--cs-texto-3); }
+.resumo__item strong { font-size: 14px; color: var(--cs-tinta); overflow-wrap: anywhere; }
 
 .destaque-trial {
   display: flex;
-  gap: 12px;
-  padding: 16px;
-  border: 1px solid #40c057;
-  border-left: 4px solid #40c057;
-  border-radius: 8px;
-  background: #ebfbee;
+  gap: 14px;
+  padding: 16px 18px;
+  border-radius: 12px;
+  background: #ecfdf5;
+  color: #065f46;
 }
 
-.destaque-trial i {
-  color: #2f9e44;
-  font-size: 20px;
-}
+.destaque-trial i { margin-top: 2px; font-size: 18px; color: #059669; }
+.destaque-trial strong { color: #064e3b; }
+.destaque-trial p { margin: 4px 0 0; font-size: 14px; line-height: 1.5; color: #047857; }
 
-.destaque-trial p {
-  margin: 4px 0 0;
-  font-size: 14px;
-  color: #495057;
-}
-
-/* Ações */
+/* ---------- Ações ---------- */
 .cadastro-acoes {
   display: flex;
   justify-content: space-between;
   gap: 12px;
-  margin-top: 28px;
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid #eef2f7;
 }
 
 .btn-primario,
 .btn-secundario {
-  padding: 12px 24px;
-  border-radius: 8px;
-  font-size: 14px;
+  height: 46px;
+  padding: 0 24px;
+  border-radius: 10px;
+  font: inherit;
+  font-size: 15px;
   font-weight: 600;
   cursor: pointer;
   border: 1px solid transparent;
+  transition: filter .15s ease, background-color .15s ease, box-shadow .15s ease;
 }
 
 .btn-primario {
-  background: linear-gradient(135deg, #00d9ff 0%, #00a8cc 100%);
-  color: #fff;
+  min-width: 180px;
+  background: linear-gradient(135deg, var(--cs-ciano) 0%, var(--cs-ciano-escuro) 100%);
+  color: var(--cs-tinta);
+  box-shadow: 0 8px 20px -8px rgba(0, 168, 204, .7);
 }
+
+.btn-primario:hover:not(:disabled) { filter: brightness(1.05); }
 
 .btn-secundario {
   background: #fff;
-  border-color: #ced4da;
-  color: #495057;
+  border-color: var(--cs-borda);
+  color: var(--cs-texto-2);
+}
+
+.btn-secundario:hover:not(:disabled) { background: #f8fafc; color: var(--cs-texto); }
+
+.btn-primario:focus-visible,
+.btn-secundario:focus-visible,
+.cs-marca:focus-visible,
+.cs-login:focus-visible {
+  outline: 2px solid var(--cs-ciano);
+  outline-offset: 3px;
 }
 
 .btn-primario:disabled,
-.btn-secundario:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+.btn-secundario:disabled { opacity: .6; cursor: not-allowed; }
+
+/* ---------- Telas menores ---------- */
+@media (max-width: 900px) {
+  .cs-pagina { padding: 24px 16px 40px; }
+  .cs-layout { grid-template-columns: 1fr; gap: 24px; }
+  .cs-lateral { position: static; }
+  .cs-titulo { margin-top: 24px; font-size: 24px; }
+  .cs-progresso-texto { margin-top: 16px; }
+  /* No celular a trilha vira só a etapa atual; a barra no topo do cartão mostra o progresso */
+  .cs-etapa { display: none; }
+  .cs-etapa--ativa { display: flex; }
+  .cs-etapa + .cs-etapa::before { display: none; }
+  .cs-login { display: none; }
 }
 
 @media (max-width: 640px) {
-  .form-grid {
-    grid-template-columns: 1fr;
-  }
+  .cadastro-form { padding: 24px 20px; }
+  .form-grid, .radio-group, .resumo { grid-template-columns: 1fr; }
+  .resumo__item:nth-child(odd) { border-right: 0; }
+  .cadastro-acoes { flex-direction: column-reverse; }
+  .btn-primario, .btn-secundario { width: 100%; }
+}
 
-  .cadastro-acoes {
-    flex-direction: column-reverse;
-  }
+@media (prefers-reduced-motion: reduce) {
+  .cs-barra__preenchida { transition: none; }
 }

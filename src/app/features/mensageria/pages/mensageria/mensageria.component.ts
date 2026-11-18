@@ -106,6 +106,12 @@ export class MensageriaComponent implements OnInit, OnDestroy {
       });
   }
 
+  /** Botão "Recarregar": busca de novo a página atual (com os filtros) e a contagem de falhas. */
+  recarregar(): void {
+    this.carregarMensagens();
+    this.carregarContagemFalhas();
+  }
+
   carregarContagemFalhas(): void {
     this.mensageriaService
       .contarFalhasPendentes()
@@ -238,8 +244,27 @@ export class MensageriaComponent implements OnInit, OnDestroy {
     return new Date(data).toLocaleString('pt-BR');
   }
 
-  get paginasArray(): number[] {
-    return Array.from({ length: this.totalPaginas }, (_, i) => i);
+  /**
+   * Botões de página em janela: primeira, última e até 2 vizinhas da atual.
+   * Antes vinha um botão por página (63 páginas = 63 botões).
+   * `null` marca o "…" entre blocos não contíguos.
+   *
+   * @returns índices de página (base 0) e `null` para reticências
+   */
+  get paginasArray(): (number | null)[] {
+    const total = this.totalPaginas;
+    if (total <= 7) {
+      return Array.from({ length: total }, (_, i) => i);
+    }
+    const vizinhas = 2;
+    const inicio = Math.max(1, this.paginaAtual - vizinhas);
+    const fim = Math.min(total - 2, this.paginaAtual + vizinhas);
+    const paginas: (number | null)[] = [0];
+    if (inicio > 1) { paginas.push(null); }
+    for (let i = inicio; i <= fim; i++) { paginas.push(i); }
+    if (fim < total - 2) { paginas.push(null); }
+    paginas.push(total - 1);
+    return paginas;
   }
 
   isHtml(conteudo: string): boolean {

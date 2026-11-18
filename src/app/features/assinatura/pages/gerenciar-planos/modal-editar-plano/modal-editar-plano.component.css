@@ -1,0 +1,121 @@
+.grade {
+  display: grid;
+  gap: 16px;
+}
+
+.grade--2 { grid-template-columns: 1fr 200px; }
+
+.campo--espaco { margin-top: 16px; }
+
+/* ---------- Tabela de perfis ---------- */
+.perfis {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.perfis thead th {
+  padding: 0 12px 8px 0;
+  border-bottom: 1px solid var(--c-borda);
+  text-align: left;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--c-texto-2);
+  background: transparent;
+}
+
+.perfis tbody th,
+.perfis td {
+  padding: 10px 12px 10px 0;
+  border-bottom: 1px solid var(--c-borda-leve);
+  text-align: left;
+  vertical-align: middle;
+}
+
+.perfis tbody tr:last-child th,
+.perfis tbody tr:last-child td { border-bottom: 0; }
+
+.perfis tbody th { font-weight: 600; color: var(--c-texto); white-space: nowrap; }
+
+.limite {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.entrada--curta { width: 110px; }
+
+.entrada input:disabled { color: var(--c-texto-3); cursor: not-allowed; }
+
+.limite ::ng-deep .mdc-form-field { font-size: 13px; color: var(--c-texto-2); }
+.limite ::ng-deep .mdc-form-field > label { padding-left: 0; }
+
+/* ---------- Recursos com prévia ---------- */
+.recursos {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  align-items: start;
+}
+
+.previa {
+  padding: 12px 14px;
+  border: 1px dashed var(--c-borda);
+  border-radius: 8px;
+  min-height: 100%;
+}
+
+.previa-rotulo {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--c-texto-2);
+}
+
+.previa ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.previa li {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--c-texto);
+}
+
+.previa mat-icon {
+  flex: none;
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+  margin-top: 1px;
+  color: var(--c-sucesso);
+}
+
+.previa-vazia { margin: 0; font-size: 13px; color: var(--c-texto-3); }
+
+@media (max-width: 640px) {
+  .grade--2, .recursos { grid-template-columns: 1fr; }
+  .perfis thead { display: none; }
+  .perfis tr { display: grid; grid-template-columns: 1fr; padding: 10px 0; border-bottom: 1px solid var(--c-borda-leve); }
+  .perfis tbody th, .perfis td { border: 0; padding: 4px 0; }
+}
+
+/* Mesmo motivo do radio: o checkbox traz a cor do tema pronto na própria classe */
+.limite ::ng-deep .mat-mdc-checkbox {
+  --mdc-checkbox-selected-icon-color: var(--c-primario);
+  --mdc-checkbox-selected-focus-icon-color: var(--c-primario);
+  --mdc-checkbox-selected-hover-icon-color: var(--c-primario);
+  --mdc-checkbox-selected-pressed-icon-color: var(--c-primario);
+  --mdc-checkbox-selected-focus-state-layer-color: var(--c-primario);
+  --mdc-checkbox-unselected-icon-color: var(--c-texto-3);
+}
