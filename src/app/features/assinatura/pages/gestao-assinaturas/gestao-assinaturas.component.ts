@@ -14,6 +14,8 @@ import {
 } from 'src/app/features/assinatura/data-access/assinatura-admin-api.service';
 import { AssinaturaApiService } from 'src/app/core/data-access/assinatura-api.service';
 import { formatarDataBr } from 'src/app/shared/utils/data-local';
+import { MatPaginatorIntl } from '@angular/material/paginator';
+import { PaginadorPtBr } from 'src/app/shared/utils/paginador-pt-br';
 import { mensagemErroAssinaturaAdmin } from 'src/app/shared/utils/mensagem-erro-http';
 import { ModalAssociarPlanoComponent } from '../../components/modal-associar-plano/modal-associar-plano.component';
 
@@ -36,7 +38,8 @@ interface PerguntaConfirmacao {
 @Component({
   selector: 'app-gestao-assinaturas',
   templateUrl: './gestao-assinaturas.component.html',
-  styleUrls: ['./gestao-assinaturas.component.css']
+  styleUrls: ['../../tokens-assinatura.css', './gestao-assinaturas.component.css'],
+  providers: [{ provide: MatPaginatorIntl, useClass: PaginadorPtBr }]
 })
 export class GestaoAssinaturasComponent implements OnInit, OnDestroy {
 
@@ -242,12 +245,26 @@ export class GestaoAssinaturasComponent implements OnInit, OnDestroy {
    */
   associarPlano(item: AssinaturaResumoAdmin): void {
     this.dialog.open(ModalAssociarPlanoComponent, {
-      width: '700px',
+      width: '760px',
+      maxWidth: '95vw',
       data: { organizacaoId: item.organizacaoId, nomeOrganizacao: item.organizacaoNome },
       disableClose: true
     }).afterClosed().pipe(takeUntil(this.destroy$)).subscribe((alterou: boolean) => {
       if (alterou) { this.carregar(); }
     });
+  }
+
+  /**
+   * Nome legível do status (o back manda o enum em maiúsculas).
+   *
+   * @param status status da assinatura
+   * @returns texto para a tela
+   */
+  rotuloStatus(status: string): string {
+    const rotulos: Record<string, string> = {
+      TRIAL: 'Em teste', ATIVA: 'Ativa', INADIMPLENTE: 'Inadimplente', SUSPENSA: 'Suspensa', CANCELADA: 'Cancelada'
+    };
+    return rotulos[status] || status;
   }
 
   trackPorAssinatura(_indice: number, item: AssinaturaResumoAdmin): number {

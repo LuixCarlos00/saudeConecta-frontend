@@ -8,13 +8,33 @@ import { PlanoAssinatura, AssinaturaTenant, CobrancaTenant, CustomizarPlanoTenan
 import { forkJoin } from 'rxjs';
 import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
 import { mensagemErroAssinaturaAdmin } from 'src/app/shared/utils/mensagem-erro-http';
+import { PlanoDescricaoParserService } from 'src/app/shared/utils/plano-descricao-parser.service';
+
+/** Perfis cujo limite o SUPER_ADMIN pode personalizar por clínica. */
+export type CampoLimite = 'admin' | 'prof' | 'sec';
+
+/** Índices das abas do modal. */
+export const ABA_PLANO = 0;
+export const ABA_COBRANCAS = 1;
+export const ABA_PERSONALIZAR = 2;
 
 @Component({
   selector: 'app-modal-associar-plano',
   templateUrl: './modal-associar-plano.component.html',
-  styleUrls: ['./modal-associar-plano.component.css']
+  styleUrls: ['../../tokens-assinatura.css', '../dialogo-assinatura.css', './modal-associar-plano.component.css']
 })
 export class ModalAssociarPlanoComponent implements OnInit {
+
+  readonly ABA_PLANO = ABA_PLANO;
+  readonly ABA_COBRANCAS = ABA_COBRANCAS;
+  readonly ABA_PERSONALIZAR = ABA_PERSONALIZAR;
+
+  /** Linhas da aba Personalizar, na ordem em que aparecem. */
+  readonly perfisLimite: { campo: CampoLimite; rotulo: string; singular: string }[] = [
+    { campo: 'admin', rotulo: 'Administradores', singular: 'administrador' },
+    { campo: 'prof', rotulo: 'Profissionais', singular: 'profissional' },
+    { campo: 'sec', rotulo: 'Secretárias', singular: 'secretária' }
+  ];
 
   planos: PlanoAssinatura[] = [];
   planoSelecionado: number | null = null;
@@ -35,7 +55,10 @@ export class ModalAssociarPlanoComponent implements OnInit {
   isSavingCustom = false;
   planoAtual: PlanoAssinatura | null = null;
 
-  // Valores calculados (atualizados via onLimiteChange)
+  /** Limites como estão salvos no back; servem para saber se há alteração pendente. */
+  private limitesSalvos: Record<CampoLimite, number | null> = { admin: null, prof: null, sec: null };
+
+  // Valores calculados (atualizados por recalcularExtras)
   extraAdmin = 0;
   extraProf = 0;
   extraSec = 0;
@@ -45,7 +68,7 @@ export class ModalAssociarPlanoComponent implements OnInit {
   valorAdicionalTotal = 0;
   valorTotalMensal = 0;
 
-  tabAtiva = 0;
+  tabAtiva = ABA_PLANO;
 
   constructor(
     private notificacao: NotificacaoService,
@@ -54,7 +77,8 @@ export class ModalAssociarPlanoComponent implements OnInit {
     private planoApiService: PlanoApiService,
     private assinaturaApiService: AssinaturaApiService,
     private cobrancaApiService: CobrancaApiService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private parser: PlanoDescricaoParserService
   ) {}
 
   ngOnInit(): void {
@@ -86,6 +110,7 @@ export class ModalAssociarPlanoComponent implements OnInit {
             this.customLimiteAdmin = assinaturaAtiva.limiteAdminOrgCustom ?? this.planoAtual?.limiteAdminOrg ?? null;
             this.customLimiteProf = assinaturaAtiva.limiteProfissionalCustom ?? this.planoAtual?.limiteProfissional ?? null;
             this.customLimiteSec = assinaturaAtiva.limiteSecretariaCustom ?? this.planoAtual?.limiteSecretaria ?? null;
+            this.limitesSalvos = { admin: this.customLimiteAdmin, prof: this.customLimiteProf, sec: this.customLimiteSec };
             this.recalcularExtras();
           }
         }
@@ -101,10 +126,11 @@ export class ModalAssociarPlanoComponent implements OnInit {
 
   /**
    * Carrega cobranças da organização ao trocar para a aba de cobranças.
+   * @param index índice da aba selecionada
    */
   onTabChange(index: number): void {
     this.tabAtiva = index;
-    if (index === 1 && this.cobrancas.length === 0) {
+    if (index === ABA_COBRANCAS && this.cobrancas.length === 0) {
       this.carregarCobrancas();
     }
   }
@@ -175,12 +201,83 @@ export class ModalAssociarPlanoComponent implements OnInit {
     this.dialogRef.close(false);
   }
 
+  /**
+   * Seleciona um plano na lista (clique na linha inteira, não só no círculo do radio).
+   * @param plano plano clicado
+   */
+  selecionarPlano(plano: PlanoAssinatura): void {
+    if (this.isSaving) { return; }
+    this.planoSelecionado = plano.id;
+  }
+
+  /** Plano escolhido na aba Plano, ou null. */
+  get planoEscolhido(): PlanoAssinatura | null {
+    return this.planos.find(p => p.id === this.planoSelecionado) || null;
+  }
+
+  /** Só deixa trocar quando há um plano escolhido e ele é diferente do atual. */
+  get podeTrocarPlano(): boolean {
+    if (!this.planoSelecionado || this.isSaving) { return false; }
+    return !this.modoEdicao || this.planoSelecionado !== this.assinaturaAtual?.planoId;
+  }
+
+  /** Texto do botão principal da aba Plano, já com o nome do plano escolhido. */
+  get rotuloAcaoPlano(): string {
+    if (this.isSaving) { return this.modoEdicao ? 'Alterando...' : 'Associando...'; }
+    const nome = this.planoEscolhido?.nome;
+    if (!this.modoEdicao) { return nome ? `Associar ${nome}` : 'Associar plano'; }
+    if (!nome || this.planoSelecionado === this.assinaturaAtual?.planoId) { return 'Trocar plano'; }
+    return `Trocar para ${nome}`;
+  }
+
+  /**
+   * Frase curta do plano. O back guarda "titulo: ...\nRecursos: [...]" na descrição;
+   * aqui só interessa o título, nunca o texto cru.
+   * @param plano plano a descrever
+   * @returns título promocional do plano
+   */
+  tituloDoPlano(plano: PlanoAssinatura): string {
+    if (plano.titulo && !plano.titulo.includes('Recursos:')) { return plano.titulo; }
+    return this.parser.parse(plano.descricao).titulo;
+  }
+
   formatarValor(valor: number): string {
     return valor?.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) || 'R$ 0,00';
   }
 
   formatarLimite(limite: number | null): string {
     return limite === null ? 'Ilimitado' : `${limite}`;
+  }
+
+  /**
+   * Limite em texto corrido, no singular ou plural ("1 administrador", "8 profissionais").
+   * @param limite limite do plano (null = ilimitado)
+   * @param singular nome do perfil no singular
+   * @param plural nome do perfil no plural
+   * @returns texto para a linha de resumo do plano
+   */
+  descreverLimite(limite: number | null, singular: string, plural: string): string {
+    if (limite === null) { return `${plural} sem limite`; }
+    return `${limite} ${limite === 1 ? singular : plural}`;
+  }
+
+  /**
+   * Rótulo legível do status (o back manda o enum em maiúsculas).
+   * @param status status da assinatura ou da cobrança
+   * @returns texto para exibir
+   */
+  rotuloStatus(status: string): string {
+    const rotulos: Record<string, string> = {
+      'TRIAL': 'Em teste',
+      'ATIVA': 'Ativa',
+      'INADIMPLENTE': 'Inadimplente',
+      'SUSPENSA': 'Suspensa',
+      'CANCELADA': 'Cancelada',
+      'PENDENTE': 'Pendente',
+      'PAGO': 'Pago',
+      'EXPIRADO': 'Expirado'
+    };
+    return rotulos[status] || status;
   }
 
   getStatusClass(status: string): string {
@@ -201,12 +298,91 @@ export class ModalAssociarPlanoComponent implements OnInit {
     return this.cobrancas.filter(c => c.status === 'PENDENTE');
   }
 
+
   /**
-   * Chamado pelo (ngModelChange) de cada input de limite.
-   * Recalcula todos os extras e valores derivados.
+   * Botões − e + do limite. Nunca deixa ficar abaixo do que o plano já inclui.
+   * @param campo perfil a ajustar
+   * @param delta +1 ou -1
    */
-  onLimiteChange(): void {
+  ajustarLimite(campo: CampoLimite, delta: number): void {
+    const minimo = this.limiteBase(campo) ?? 0;
+    const atual = Number(this.lerLimite(campo) ?? minimo);
+    this.gravarLimite(campo, Math.max(minimo, atual + delta));
     this.recalcularExtras();
+  }
+
+  /**
+   * Valor atual do limite de um perfil, para o input.
+   * @param campo perfil
+   * @returns limite escolhido
+   */
+  lerLimite(campo: CampoLimite): number | null {
+    return { admin: this.customLimiteAdmin, prof: this.customLimiteProf, sec: this.customLimiteSec }[campo];
+  }
+
+  /**
+   * Grava o limite digitado no input e recalcula os extras.
+   * @param campo perfil
+   * @param valor valor digitado
+   */
+  definirLimite(campo: CampoLimite, valor: number | string | null): void {
+    this.gravarLimite(campo, valor === '' || valor == null ? null : Number(valor));
+    this.recalcularExtras();
+  }
+
+  /**
+   * Limite incluso no plano para o perfil.
+   * @param campo perfil
+   * @returns limite do plano, ou null se ilimitado/sem plano
+   */
+  limiteBase(campo: CampoLimite): number | null {
+    if (!this.planoAtual) { return null; }
+    return { admin: this.planoAtual.limiteAdminOrg, prof: this.planoAtual.limiteProfissional, sec: this.planoAtual.limiteSecretaria }[campo];
+  }
+
+  /**
+   * Extras contratados e custo deles para um perfil.
+   * @param campo perfil
+   * @returns quantidade extra, custo mensal e preço unitário
+   */
+  extraDo(campo: CampoLimite): { quantidade: number; custo: number; unitario: number } {
+    const p = this.planoAtual;
+    const mapa = {
+      admin: { quantidade: this.extraAdmin, custo: this.custoExtraAdmin, unitario: p?.valorAdicionalAdmin || 0 },
+      prof: { quantidade: this.extraProf, custo: this.custoExtraProf, unitario: p?.valorAdicionalProfissional || 0 },
+      sec: { quantidade: this.extraSec, custo: this.custoExtraSec, unitario: p?.valorAdicionalSecretaria || 0 }
+    };
+    return mapa[campo];
+  }
+
+  /** Volta os três limites para o que o plano inclui (sem extras). */
+  restaurarLimitesDoPlano(): void {
+    if (!this.planoAtual) { return; }
+    this.customLimiteAdmin = this.planoAtual.limiteAdminOrg;
+    this.customLimiteProf = this.planoAtual.limiteProfissional;
+    this.customLimiteSec = this.planoAtual.limiteSecretaria;
+    this.recalcularExtras();
+  }
+
+  /** Há limite diferente do que está salvo? Controla o botão Salvar. */
+  get limitesAlterados(): boolean {
+    return this.perfisLimite
+      .some(({ campo }) => this.normalizar(this.lerLimite(campo)) !== this.normalizar(this.limitesSalvos[campo]));
+  }
+
+  /** Há algum perfil contratado além do plano? Controla o atalho de restaurar. */
+  get temExtras(): boolean {
+    return this.extraAdmin + this.extraProf + this.extraSec > 0;
+  }
+
+  private gravarLimite(campo: CampoLimite, valor: number | null): void {
+    if (campo === 'admin') { this.customLimiteAdmin = valor; }
+    if (campo === 'prof') { this.customLimiteProf = valor; }
+    if (campo === 'sec') { this.customLimiteSec = valor; }
+  }
+
+  private normalizar(valor: number | null): number | null {
+    return valor == null ? null : Number(valor);
   }
 
   /**
@@ -254,8 +430,8 @@ export class ModalAssociarPlanoComponent implements OnInit {
         this.isSavingCustom = false;
         this.notificacao.fire({
           icon: 'success',
-          title: 'Plano personalizado!',
-          text: `Limites atualizados com sucesso. Novo valor mensal: R$ ${res.valorMensal?.toFixed(2) || '—'}`,
+          title: 'Limites salvos',
+          text: `Nova mensalidade da clínica: ${this.formatarValor(res?.valorMensal)}.`,
           timer: 4000,
           showConfirmButton: true
         });

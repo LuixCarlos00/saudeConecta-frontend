@@ -1,0 +1,285 @@
+/*
+ * Base visual compartilhada pelos diálogos da área de assinatura
+ * (gerenciar assinatura da clínica, editar plano, valores por perfil extra).
+ * Fica num arquivo só para os três terem o mesmo cabeçalho, rodapé, botões e campos.
+ * Usa apenas os tokens de tema do styles.css, então funciona nos temas claro e escuros.
+ */
+
+:host {
+  display: block;
+  /* O tema escuro global não pinta a superfície do diálogo; o próprio conteúdo pinta */
+  background: var(--c-fundo);
+  color: var(--c-texto);
+  font-variant-numeric: tabular-nums;
+  /* Componentes do Material (radio, checkbox, abas) na cor do produto, não no rosa/índigo do tema pronto */
+  --mdc-radio-selected-icon-color: var(--c-primario);
+  --mdc-radio-selected-focus-icon-color: var(--c-primario);
+  --mdc-radio-selected-hover-icon-color: var(--c-primario);
+  --mdc-radio-selected-pressed-icon-color: var(--c-primario);
+  --mat-radio-checked-ripple-color: var(--c-primario);
+  --mdc-radio-unselected-icon-color: var(--c-texto-3);
+  --mdc-checkbox-selected-icon-color: var(--c-primario);
+  --mdc-checkbox-selected-focus-icon-color: var(--c-primario);
+  --mdc-checkbox-selected-hover-icon-color: var(--c-primario);
+  --mdc-checkbox-selected-pressed-icon-color: var(--c-primario);
+  --mdc-checkbox-unselected-icon-color: var(--c-texto-3);
+  --mdc-tab-indicator-active-indicator-color: var(--c-primario);
+  --mat-tab-header-active-label-text-color: var(--c-texto);
+  --mat-tab-header-active-focus-label-text-color: var(--c-texto);
+  --mat-tab-header-active-hover-label-text-color: var(--c-texto);
+  --mat-tab-header-active-focus-indicator-color: var(--c-primario);
+  --mat-tab-header-active-hover-indicator-color: var(--c-primario);
+  --mat-tab-header-inactive-label-text-color: var(--c-texto-2);
+}
+
+/* ---------- Cabeçalho ---------- */
+.dlg-cabecalho {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid var(--c-borda);
+}
+
+/* O h2 usa a diretiva mat-dialog-title (dá o aria-labelledby do diálogo); anula o espaçamento do Material */
+.dlg-titulo.mat-mdc-dialog-title { padding: 0; }
+.dlg-titulo.mat-mdc-dialog-title::before { display: none; }
+
+.dlg-titulo {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--c-texto);
+}
+
+.dlg-subtitulo {
+  margin: 4px 0 0;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--c-texto-2);
+}
+
+.dlg-fechar {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  margin: -4px -8px 0 0;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--c-texto-2);
+  cursor: pointer;
+}
+
+.dlg-fechar:hover { background: var(--c-hover); color: var(--c-texto); }
+.dlg-fechar mat-icon { font-size: 20px; width: 20px; height: 20px; }
+
+/* ---------- Corpo ---------- */
+.dlg-corpo {
+  padding: 20px 24px;
+  max-height: min(64vh, 640px);
+  overflow-y: auto;
+}
+
+.dlg-secao + .dlg-secao {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--c-borda);
+}
+
+.dlg-secao-titulo {
+  margin: 0 0 4px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--c-texto);
+}
+
+.dlg-secao-ajuda {
+  margin: 0 0 14px;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--c-texto-2);
+}
+
+/* ---------- Rodapé ---------- */
+.dlg-rodape {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 14px 24px;
+  border-top: 1px solid var(--c-borda);
+  background: var(--c-fundo-2);
+}
+
+.dlg-rodape-info {
+  margin-right: auto;
+  font-size: 13px;
+  color: var(--c-texto-2);
+}
+
+/* ---------- Botões ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 0 16px;
+  border: 1px solid var(--c-borda);
+  border-radius: 8px;
+  background: var(--c-fundo);
+  color: var(--c-texto);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color .15s ease, border-color .15s ease, color .15s ease;
+}
+
+.btn:hover:not(:disabled) { background: var(--c-hover); }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+.btn mat-icon { font-size: 18px; width: 18px; height: 18px; }
+
+.btn--primario {
+  background: var(--c-primario-forte);
+  border-color: var(--c-primario-forte);
+  color: #fff;
+  font-weight: 600;
+}
+
+.btn--primario:hover:not(:disabled) { background: var(--c-primario-forte); filter: brightness(.92); }
+
+.btn--texto {
+  border-color: transparent;
+  background: transparent;
+  color: var(--c-texto-2);
+}
+
+.btn--texto:hover:not(:disabled) { color: var(--c-texto); }
+
+.btn--pequeno { min-height: 30px; padding: 0 10px; font-size: 13px; }
+
+.btn:focus-visible,
+.dlg-fechar:focus-visible {
+  outline: 2px solid var(--c-primario);
+  outline-offset: 2px;
+}
+
+.btn-spinner { display: inline-block; }
+
+/* ---------- Campos ---------- */
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.campo-rotulo {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--c-texto);
+}
+
+.campo-dica {
+  font-size: 12px;
+  color: var(--c-texto-3);
+}
+
+.campo-erro {
+  font-size: 12px;
+  color: var(--c-erro);
+}
+
+.entrada {
+  display: flex;
+  align-items: center;
+  min-height: 40px;
+  border: 1px solid var(--c-borda);
+  border-radius: 8px;
+  background: var(--c-fundo);
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+
+.entrada:focus-within {
+  border-color: var(--c-primario);
+  box-shadow: 0 0 0 3px rgba(var(--c-primario-rgb), .18);
+}
+
+.entrada--erro { border-color: var(--c-erro); }
+
+.entrada-prefixo,
+.entrada-sufixo {
+  flex: none;
+  padding: 0 0 0 12px;
+  font-size: 13px;
+  color: var(--c-texto-3);
+}
+
+.entrada-sufixo { padding: 0 12px 0 0; }
+
+.entrada input,
+.entrada textarea {
+  flex: 1;
+  width: 100%;
+  min-width: 0;
+  padding: 9px 12px;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--c-texto);
+  font: inherit;
+  font-size: 14px;
+}
+
+.entrada textarea { resize: vertical; line-height: 1.5; }
+
+.entrada input::placeholder,
+.entrada textarea::placeholder { color: var(--c-texto-3); }
+
+.entrada input[type=number]::-webkit-outer-spin-button,
+.entrada input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.entrada input[type=number] { -moz-appearance: textfield; }
+
+/* ---------- Selos de status ---------- */
+.selo {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 18px;
+  white-space: nowrap;
+  background: var(--c-hover);
+  color: var(--c-texto-2);
+}
+
+.status-ativa, .status-pago { background: rgba(16, 185, 129, .14); color: #047857; }
+.status-trial { background: rgba(59, 130, 246, .14); color: #1d4ed8; }
+.status-inadimplente, .status-pendente { background: rgba(245, 158, 11, .18); color: #92400e; }
+.status-suspensa { background: rgba(239, 68, 68, .14); color: #b91c1c; }
+.status-cancelada, .status-expirado { background: var(--c-hover); color: var(--c-texto-2); }
+
+/* ---------- Estados ---------- */
+.dlg-carregando,
+.dlg-vazio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 40px 16px;
+  text-align: center;
+  font-size: 14px;
+  color: var(--c-texto-2);
+}
+
+.dlg-vazio mat-icon { font-size: 32px; width: 32px; height: 32px; color: var(--c-texto-3); }
+.dlg-vazio p { margin: 0; }
