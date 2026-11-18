@@ -1,39 +1,65 @@
-<div class="cadastro-saas">
+<div class="cs-pagina">
+  <div class="cs-brilho cs-brilho--1" aria-hidden="true"></div>
+  <div class="cs-brilho cs-brilho--2" aria-hidden="true"></div>
 
-  <header class="cadastro-header">
-    <div class="cadastro-logo" (click)="voltar()">
-      <i class="fa-solid fa-heart-pulse"></i>
+  <div class="cs-layout">
+  <aside class="cs-lateral">
+    <a class="cs-marca" href="#/" aria-label="DocClin, voltar ao site">
+      <span class="cs-marca__icone"><i class="fa-solid fa-heart-pulse" aria-hidden="true"></i></span>
       <span>DocClin</span>
-    </div>
-    <p class="cadastro-chamada">30 dias grátis. Sem cartão de crédito.</p>
-  </header>
+    </a>
 
-  <ol class="cadastro-steps">
-    <li *ngFor="let etapa of etapas; let i = index"
-        class="cadastro-step"
-        [class.cadastro-step--ativo]="i === etapaAtual"
-        [class.cadastro-step--concluido]="i < etapaAtual">
-      <span class="cadastro-step__num">{{ i + 1 }}</span>
-      <span class="cadastro-step__label">{{ etapa }}</span>
-    </li>
-  </ol>
+    <h1 class="cs-titulo">Crie a conta da sua clínica</h1>
+    <p class="cs-chamada">30 dias grátis. Sem cartão de crédito.</p>
+
+    <p class="cs-progresso-texto">Etapa {{ etapaAtual + 1 }} de {{ etapas.length }}</p>
+    <ol class="cs-etapas">
+      <li *ngFor="let etapa of etapas; let i = index"
+          class="cs-etapa"
+          [class.cs-etapa--ativa]="i === etapaAtual"
+          [class.cs-etapa--feita]="i < etapaAtual"
+          [attr.aria-current]="i === etapaAtual ? 'step' : null">
+        <span class="cs-etapa__marcador">
+          <i *ngIf="i < etapaAtual" class="fa-solid fa-check" aria-hidden="true"></i>
+          <ng-container *ngIf="i >= etapaAtual">{{ i + 1 }}</ng-container>
+        </span>
+        <span class="cs-etapa__nome">{{ etapa }}</span>
+      </li>
+    </ol>
+
+    <a class="cs-login" href="#/login">Já tem conta? <strong>Entrar</strong></a>
+  </aside>
+
+  <main class="cs-principal">
+    <div class="cs-barra" role="progressbar" [attr.aria-valuenow]="etapaAtual + 1" aria-valuemin="1"
+         [attr.aria-valuemax]="etapas.length" [attr.aria-label]="'Etapa ' + (etapaAtual + 1) + ' de ' + etapas.length">
+      <span class="cs-barra__preenchida" [style.width.%]="((etapaAtual + 1) / etapas.length) * 100"></span>
+    </div>
 
   <form [formGroup]="formulario" class="cadastro-form">
 
     <!-- Etapa: Tipo de pessoa -->
     <section *ngIf="etapaNome === 'Tipo'" class="secao">
       <h2>Como você vai usar o DocClin?</h2>
+      <p class="secao__ajuda">Isso define quem é o titular da conta e qual documento vira o seu login.</p>
       <div class="radio-group">
-        <label class="radio-option">
+        <label class="radio-option" [class.radio-option--selecionada]="formulario.get('tipoPessoa')?.value === 'JURIDICA'">
           <input type="radio" value="JURIDICA" formControlName="tipoPessoa" (change)="onTipoPessoaChange()">
-          <span>Pessoa Jurídica — clínica com CNPJ</span>
+          <span class="radio-option__icone"><i class="fa-solid fa-hospital" aria-hidden="true"></i></span>
+          <span class="radio-option__texto">
+            <strong>Pessoa Jurídica</strong>
+            <small>Clínica com CNPJ. O login é o CNPJ.</small>
+          </span>
         </label>
-        <label class="radio-option">
+        <label class="radio-option" [class.radio-option--selecionada]="formulario.get('tipoPessoa')?.value === 'FISICA'">
           <input type="radio" value="FISICA" formControlName="tipoPessoa" (change)="onTipoPessoaChange()">
-          <span>Pessoa Física — profissional autônomo</span>
+          <span class="radio-option__icone"><i class="fa-solid fa-user-doctor" aria-hidden="true"></i></span>
+          <span class="radio-option__texto">
+            <strong>Pessoa Física</strong>
+            <small>Profissional autônomo. O login é o CPF.</small>
+          </span>
         </label>
       </div>
-      <p class="field-hint">O login será o CNPJ (pessoa jurídica) ou o CPF (pessoa física).</p>
     </section>
 
     <!-- Etapa: Administrador -->
@@ -56,7 +82,14 @@
           </div>
         </div>
 
-        <div class="field-group field-group--full">
+        <div class="field-group">
+          <label class="field-label" for="cs-cargo"><span class="req">*</span> Cargo</label>
+          <select id="cs-cargo" class="field-input" formControlName="cargo">
+            <option *ngFor="let c of cargos" [value]="c.value">{{ c.label }}</option>
+          </select>
+        </div>
+
+        <div class="field-group">
           <label class="field-label"><span class="req">*</span> E-mail</label>
           <input type="email" class="field-input" formControlName="email" placeholder="voce@clinica.com.br">
           <div class="field-error" *ngIf="formulario.get('email')?.invalid && formulario.get('email')?.touched">
@@ -189,7 +222,7 @@
           <div class="plano-opcao__conteudo">
             <strong>{{ plano.nome }}</strong>
             <span class="plano-opcao__preco">{{ formatarValor(plano.valorMensal) }}/mês</span>
-            <small>{{ plano.titulo || plano.descricao }}</small>
+            <small>{{ tituloPlano(plano) }}</small>
           </div>
         </label>
       </div>
@@ -211,6 +244,10 @@
         <div class="resumo__item">
           <span>Login</span>
           <strong>{{ isJuridica ? formulario.get('cnpj')?.value : formulario.get('cpf')?.value }}</strong>
+        </div>
+        <div class="resumo__item">
+          <span>Cargo</span>
+          <strong>{{ formulario.get('cargo')?.value }}</strong>
         </div>
         <div class="resumo__item">
           <span>E-mail</span>
@@ -254,4 +291,6 @@
       </button>
     </div>
   </form>
+  </main>
+  </div>
 </div>
