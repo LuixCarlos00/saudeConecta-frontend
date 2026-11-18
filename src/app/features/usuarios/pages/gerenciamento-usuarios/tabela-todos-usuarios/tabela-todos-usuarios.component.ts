@@ -69,9 +69,9 @@ export class TabelaTodosUsuariosComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    // Adiciona coluna 'plano' se for SUPER_ADMIN
+    // SUPER_ADMIN só vê administradores: troca a coluna 'categoria' (sempre igual) pela do plano da clínica
     if (this.controleAcessoService.isSuperAdmin()) {
-      this.displayedColumns = ['index', 'nome', 'categoria', 'email', 'plano', 'status', 'acoes'];
+      this.displayedColumns = ['index', 'nome', 'email', 'plano', 'status', 'acoes'];
     }
     
     this.inicializarSubscriptions();
@@ -89,7 +89,8 @@ export class TabelaTodosUsuariosComponent implements OnInit, OnDestroy {
     const organizacaoId = Number(params.get('organizacaoId'));
     if (!Number.isInteger(organizacaoId) || organizacaoId <= 0) { return; }
     this.dialog.open(ModalAssociarPlanoComponent, {
-      width: '700px',
+      width: '760px',
+      maxWidth: '95vw',
       data: { organizacaoId, nomeOrganizacao: params.get('nome') || 'Organização' },
       disableClose: true
     }).afterClosed().subscribe((associado: boolean) => {
@@ -452,30 +453,6 @@ export class TabelaTodosUsuariosComponent implements OnInit, OnDestroy {
 
     dialogRef.afterClosed().subscribe((atualizado: boolean) => {
       if (atualizado) {
-        this.carregarUsuarios();
-      }
-    });
-  }
-
-  abrirAssociarPlano(usuario: UsuarioUnificado): void {
-    if (usuario.categoria !== 'Administrador') return;
-    const admin = usuario.dadosOriginais as any;
-    const organizacaoId = admin.organizacaoId || admin.organizacao?.id;
-    const nomeOrganizacao = usuario.nomeOrganizacao || 'Organização';
-
-    if (!organizacaoId) {
-      this.mostrarErro('ID da organização não encontrado.');
-      return;
-    }
-    const dialogRef = this.dialog.open(ModalAssociarPlanoComponent, {
-      width: '700px',
-      data: { organizacaoId, nomeOrganizacao },
-      disableClose: true
-    });
-
-    dialogRef.afterClosed().subscribe((associado: boolean) => {
-      if (associado) {
-        this.mostrarSucesso('Plano associado com sucesso!');
         this.carregarUsuarios();
       }
     });

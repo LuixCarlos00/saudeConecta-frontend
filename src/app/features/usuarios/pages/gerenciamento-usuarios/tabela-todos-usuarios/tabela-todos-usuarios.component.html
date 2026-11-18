@@ -105,11 +105,6 @@
               <span>Alterar senha</span>
             </button>
 
-            <button mat-menu-item *ngIf="controleAcessoService.isSuperAdmin() && isAdministrador(usuario)" (click)="abrirAssociarPlano(usuario)">
-              <i class="fa-solid fa-link menu-item-icon"></i>
-              <span>Associar plano</span>
-            </button>
-
             <button mat-menu-item *ngIf="!isProprioUsuario(usuario)" (click)="alternarStatusUsuario(usuario)">
               <i class="fa-solid menu-item-icon" [ngClass]="usuario.status ? 'fa-lock-open' : 'fa-lock'"></i>
               <span>{{ usuario.status ? 'Bloquear usuário' : 'Desbloquear usuário' }}</span>
