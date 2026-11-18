@@ -1,3 +1,4 @@
+import { CARGOS_ADMIN_OPCOES } from 'src/app/shared/constants/cargos-admin.constant';
 import { Component, OnInit, OnDestroy, Optional, ViewChild, ElementRef } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CepApiService } from 'src/app/core/data-access/cep-api.service';
@@ -54,10 +55,7 @@ export class CadastroAdminOrgComponent implements OnInit, OnDestroy {
     { value: 'UPA', label: 'UPA' },
   ];
 
-  readonly cargos = [
-    { value: 'GERENTE', label: 'Gerente' },
-    { value: 'DIRETOR_ADMINISTRATIVO', label: 'Diretor Administrativo' },
-  ];
+  readonly cargos = CARGOS_ADMIN_OPCOES;
 
   readonly ufs = [
     'AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG',

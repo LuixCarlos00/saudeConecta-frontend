@@ -1,3 +1,4 @@
+import { CARGOS_ADMIN_OPCOES, cargoDaLista } from 'src/app/shared/constants/cargos-admin.constant';
 import { AdministradorApiService } from 'src/app/core/data-access/administrador-api.service';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -70,13 +71,7 @@ export class DadosPessoaisComponent implements OnInit, OnDestroy {
     { value: 'UPA', label: 'UPA' }
   ];
 
-  cargos = [
-    { value: 'DIRETOR', label: 'Diretor(a)' },
-    { value: 'GERENTE', label: 'Gerente' },
-    { value: 'ADMINISTRADOR', label: 'Administrador(a)' },
-    { value: 'COORDENADOR', label: 'Coordenador(a)' },
-    { value: 'SUPERVISOR', label: 'Supervisor(a)' }
-  ];
+  readonly cargos = CARGOS_ADMIN_OPCOES;
 
   ufs = ufOptions;
 
@@ -282,7 +277,7 @@ export class DadosPessoaisComponent implements OnInit, OnDestroy {
     this.IdRegistro = admin.id;
     this.dadosPessoaisForm.patchValue({
       nome: admin.nome,
-      cargo: admin.cargo || '',
+      cargo: cargoDaLista(admin.cargo),
       email: admin.email,
     });
   }
@@ -341,7 +336,8 @@ export class DadosPessoaisComponent implements OnInit, OnDestroy {
     return {
       nome: formValues.nome,
       email: formValues.email,
-      cargo: formValues.cargo,
+      // Vazio vai como null: o back ignora e mantém o cargo atual (string vazia seria recusada)
+      cargo: formValues.cargo || null,
       nomeClinica: orgValues.nomeClinica,
       razaoSocial: orgValues.razaoSocial,
       tipoClinica: orgValues.tipoClinica,

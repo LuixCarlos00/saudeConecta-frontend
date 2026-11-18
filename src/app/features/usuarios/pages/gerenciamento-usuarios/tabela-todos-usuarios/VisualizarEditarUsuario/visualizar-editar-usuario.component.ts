@@ -4,6 +4,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Observable, Subject, takeUntil } from 'rxjs';
 import { NotificacaoService } from 'src/app/core/notificacao/notificacao.service';
 import { extrairMensagemErro } from 'src/app/shared/utils/mensagem-erro-http';
+import { CARGOS_ADMIN_OPCOES, cargoDaLista } from 'src/app/shared/constants/cargos-admin.constant';
 
 import { PacienteApiService } from 'src/app/core/data-access/paciente-api.service';
 import { ProfissionalApiService } from 'src/app/core/data-access/profissional-api.service';
@@ -41,6 +42,9 @@ export class VisualizarEditarUsuarioComponent implements OnInit {
   isSuperAdmin = false;
   /** false quando o logado não pode editar este registro (ex.: Administrador sem ROLE_ADMIN). */
   podeEditar = true;
+
+  /** Cargos aceitos pelo back (lista única com as outras telas). */
+  readonly cargos = CARGOS_ADMIN_OPCOES;
 
   constructor(
     private notificacao: NotificacaoService,
@@ -406,7 +410,7 @@ export class VisualizarEditarUsuarioComponent implements OnInit {
     return {
       id: dados.id,
       nome: dados.nome,
-      cargo: dados.cargo || '',
+      cargo: cargoDaLista(dados.cargo),
       email: dados.email,
       nomeClinica: dados.nomeClinica || '',
       razaoSocial: dados.razaoSocial || '',
