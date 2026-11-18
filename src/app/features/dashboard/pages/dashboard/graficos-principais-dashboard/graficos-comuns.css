@@ -1,3 +1,46 @@
+/*
+ * Tokens locais dos gráficos do dashboard. O app carrega o global.scss, que não define estas
+ * variáveis no tema claro: sem elas os botões de período e os cartões ficavam sem fundo e sem borda.
+ */
+:host {
+  --primary-color: #0066CC;
+  --primary-light: #3d8bda;
+  --primary-rgb: 0, 102, 204;
+  --text-primary: #111827;
+  --text-secondary: #4b5563;
+  --text-muted: #6b7280;
+  --border-color: #e5e7eb;
+  --bg-card: #ffffff;
+  --bg-secondary: #f3f4f6;
+  --bg-input: #ffffff;
+  --error-color: #dc2626;
+  --shadow-sm: 0 1px 2px rgba(17, 24, 39, .05);
+  --shadow-md: 0 4px 6px -1px rgba(17, 24, 39, .08);
+  --btn-primary-bg: #004C99;
+  --btn-primary-hover: #003f80;
+  --btn-primary-text: #ffffff;
+  --btn-secondary-bg: #ffffff;
+  --btn-secondary-hover: #f3f4f6;
+  --btn-secondary-border: #e5e7eb;
+}
+
+:host-context(body.dark-theme) {
+  --primary-color: #60a5fa;
+  --text-primary: var(--dark-text-primary, #f1f5f9);
+  --text-secondary: var(--dark-text-secondary, #d8d9db);
+  --text-muted: #94a3b8;
+  --border-color: var(--dark-border, #334155);
+  --bg-card: var(--dark-bg-card, #1e293b);
+  --bg-secondary: var(--dark-bg-hover, #334155);
+  --bg-input: var(--dark-bg-input, #1e293b);
+  --error-color: #f87171;
+  --btn-primary-bg: #3b82f6;
+  --btn-primary-hover: #2563eb;
+  --btn-secondary-bg: var(--dark-bg-card, #1e293b);
+  --btn-secondary-hover: var(--dark-bg-hover, #334155);
+  --btn-secondary-border: var(--dark-border, #334155);
+}
+
 /* Base de todos os gráficos filhos: o host some do layout para os itens continuarem filhos diretos do grid. */
 :host {
   display: contents;

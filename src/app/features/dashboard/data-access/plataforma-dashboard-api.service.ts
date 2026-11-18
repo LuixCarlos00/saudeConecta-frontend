@@ -76,6 +76,8 @@ export interface ClinicaAtencao {
   motivo: MotivoAtencaoPlataforma;
   dataVencimento: string | null;
   valorMensal: number | null;
+  /** Texto curto extra; na pendência manual é o motivo ("Pagamento em cortesia"). */
+  detalhe?: string | null;
 }
 
 /** Resposta de GET /plataforma/dashboard (contrato CONTRATO-DASHBOARD-PLATAFORMA). */

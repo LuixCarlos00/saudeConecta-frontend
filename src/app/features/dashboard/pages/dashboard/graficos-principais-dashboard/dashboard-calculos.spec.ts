@@ -10,6 +10,7 @@ import {
   contarAgendamentosPorData,
   contarConsultasPorEspecialidade,
   corEspecialidadeCategoria,
+  COR_BARRA_QUANTIDADE,
   extrairDatasAgendamentos,
   extrairDatasConsultas,
   formatarDataAgendamentos,
@@ -175,10 +176,9 @@ describe('dashboard-calculos', () => {
       expect(calcularEspecialidadesCategoria([])).toEqual([]);
     });
 
-    it('cor gira na paleta de 12 cores', () => {
-      expect(corEspecialidadeCategoria(0)).toBe('rgba(59, 130, 246, 0.75)');
-      expect(corEspecialidadeCategoria(12)).toBe('rgba(59, 130, 246, 0.75)');
-      expect(corEspecialidadeCategoria(11)).toBe('rgba(14, 165, 233, 0.75)');
+    it('toda especialidade usa a mesma cor das barras', () => {
+      expect(corEspecialidadeCategoria(0)).toBe(COR_BARRA_QUANTIDADE);
+      expect(corEspecialidadeCategoria(11)).toBe(COR_BARRA_QUANTIDADE);
     });
   });
 

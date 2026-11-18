@@ -17,10 +17,6 @@
   flex-shrink: 0;
 }
 
-.filter-title i {
-  margin-right: 6px;
-}
-
 .quick-filters-inline {
   display: flex;
   align-items: center;
@@ -79,5 +75,6 @@
 }
 
 .custom-period-field {
-  width: 180px;
+  width: 240px;
+  font-size: 13px;
 }

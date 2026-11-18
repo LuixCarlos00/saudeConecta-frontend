@@ -1,672 +1,142 @@
 // =============================================================================
-// DASHBOARD - ESTILOS HEALTHCARE
-// Painel de controle com Design System médico
+// DASHBOARD DA CLÍNICA (gestor, recepção e profissional)
+// O painel do SUPER_ADMIN é outro componente (plataforma/).
+// Fundo claro, cartões com borda fina e o azul do produto como única cor de destaque,
+// igual às outras telas internas. Antes havia carrossel de cards coloridos e um banner
+// de boas-vindas para o clínico; ambos saíram.
 // =============================================================================
 
 @import 'design-system/variables';
 @import 'design-system/mixins';
 
-// =============================================================================
-// LAYOUT PRINCIPAL
-// =============================================================================
+:host {
+  --c-primario: #0066CC;
+  --c-primario-forte: #004C99;
+  --c-texto: #111827;
+  --c-texto-2: #4b5563;
+  --c-texto-3: #6b7280;
+  --c-borda: #e5e7eb;
+  --c-fundo: #ffffff;
+  --c-fundo-2: #f3f4f6;
+  display: block;
+}
+
+:host-context(body.dark-theme) {
+  --c-primario: #60a5fa;
+  --c-primario-forte: #93c5fd;
+  --c-texto: var(--dark-text-primary, #f1f5f9);
+  --c-texto-2: var(--dark-text-secondary, #d8d9db);
+  --c-texto-3: #94a3b8;
+  --c-borda: var(--dark-border, #334155);
+  --c-fundo: var(--dark-bg-card, #1e293b);
+  --c-fundo-2: var(--dark-bg-hover, #334155);
+}
 
 .healthcare-content {
-  padding: $spacing-6;
-
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 24px 24px 48px;
 
   @include mobile {
-    padding: $spacing-4;
+    padding: 16px;
   }
 }
 
-// =============================================================================
-// HEADER DO DASHBOARD
-// =============================================================================
-
+// -----------------------------------------------------------------------------
+// Cabeçalho
+// -----------------------------------------------------------------------------
 .dashboard-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: $spacing-8;
-  flex-wrap: wrap;
-  gap: $spacing-4;
+  margin-bottom: 20px;
 
-  &__title {
-    h1 {
-      display: flex;
-      align-items: center;
-      gap: $spacing-3;
-      font-size: $text-3xl;
-      font-weight: $font-bold;
-      color: $text-primary;
-      margin: 0 0 $spacing-2 0;
-
-      i {
-        color: $primary-blue;
-      }
-
-      @include mobile {
-        font-size: $text-2xl;
-      }
-    }
+  h2 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--c-texto);
   }
 
   &__subtitle {
-    font-size: $text-base;
-    color: $text-secondary;
-    margin: 0;
-  }
-
-  &__actions {
-    display: flex;
-    align-items: center;
-    gap: $spacing-4;
-  }
-
-  &__date {
-    display: flex;
-    align-items: center;
-    gap: $spacing-2;
-    font-size: $text-sm;
-    color: $text-secondary;
-    background: $bg-card;
-    padding: $spacing-2 $spacing-4;
-    border-radius: $radius-md;
-    border: 1px solid $border-light;
-
-    i {
-      color: $primary-blue;
-    }
+    margin: 4px 0 0;
+    font-size: 14px;
+    color: var(--c-texto-2);
   }
 }
-
-// =============================================================================
-// GRID DO DASHBOARD
-// =============================================================================
 
 .dashboard-grid {
   display: flex;
   flex-direction: column;
-  gap: $spacing-6;
+  gap: 20px;
 }
 
-// =============================================================================
-// CARROSSEL DE CARDS DE ESTATÍSTICAS
-// =============================================================================
-
-// ── Paleta de cores individuais por card ─────────────────────────────────────
-$card-colors: (
-  'blue':   (#0066CC, #EBF3FF),
-  'green':  (#16a34a, #DCFCE7),
-  'orange': (#d97706, #FEF3C7),
-  'cyan':   (#0891b2, #CFFAFE),
-  'purple': (#7c3aed, #EDE9FE),
-  'red':    (#dc2626, #FEE2E2),
-  'teal':   (#0d9488, #CCFBF1),
-);
-
-.stats-carousel {
-  display: flex;
-  flex-direction: column;
-  gap: $spacing-2;
-
-  // ── Header da seção ────────────────────────────────────────────────────
-  &__header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  &__title {
-    font-size: $text-xs;
-    font-weight: $font-semibold;
-    color: $text-secondary;
-    display: flex;
-    align-items: center;
-    gap: $spacing-1;
-
-    i { color: $primary-blue; font-size: $text-xs; }
-  }
-
-  &__controls {
-    display: flex;
-    align-items: center;
-    gap: $spacing-1;
-  }
-
-  &__counter {
-    font-size: 10px;
-    color: $text-secondary;
-    min-width: 44px;
-    text-align: right;
-  }
-
-  &__btn {
-    width: 20px;
-    height: 20px;
-    border-radius: $radius-sm;
-    border: 1px solid $border-light;
-    background: $bg-card;
-    color: $text-secondary;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.2s;
-    font-size: 10px;
-
-    &:hover:not(:disabled) {
-      background: $primary-blue;
-      color: #fff;
-      border-color: $primary-blue;
-    }
-
-    &:disabled {
-      opacity: 0.3;
-      cursor: default;
-    }
-  }
-
-  // ── Grade de cards ─────────────────────────────────────────────────────
-  &__grid {
-    display: flex;
-    flex-wrap: nowrap;
-    align-items: stretch;
-    gap: $spacing-3;
-
-    .sc-card {
-      flex: 1 1 0;
-      min-width: 0;
-    }
-
-    @include mobile {
-      flex-wrap: wrap;
-
-      .sc-card {
-        flex: 1 1 calc(50% - #{$spacing-3});
-        max-width: calc(50% - #{$spacing-3});
-      }
-    }
-
-    @include max-width(480px) {
-      flex-direction: column;
-
-      .sc-card {
-        flex: unset;
-        width: 100%;
-        max-width: 100%;
-      }
-    }
-  }
-}
-
-// ── Card de estatística ────────────────────────────────────────────────────────
-// Cada card é seu próprio container de consulta (CSS Container Query),
-// permitindo que ícone/valor/label escalem de acordo com a largura real
-// do card renderizado (que varia conforme a quantidade de cards por página).
-.sc-card {
-  container-type: inline-size;
-  position: relative;
-  background: $bg-card;
-  border-radius: $radius-sm;
-  border: 1px solid $border-light;
-  box-shadow: $shadow-sm;
-  padding: clamp(4px, 8cqw, 12px) clamp(6px, 10cqw, 16px);
-  min-width: 70px;
-  display: flex;
-  align-items: center;
-  gap: clamp(4px, 6cqw, 10px);
-  overflow: hidden;
-  transition: transform 0.2s, box-shadow 0.2s;
-
-  &:hover {
-    transform: translateY(-3px);
-    box-shadow: $shadow-md;
-  }
-
-  // ── Barra de acento lateral ──────────────────────────────────────────────
-  &__accent {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 2px;
-    height: 100%;
-    border-radius: $radius-sm 0 0 $radius-sm;
-  }
-
-  // ── Ícone ────────────────────────────────────────────────────────────────
-  &__icon {
-    width: clamp(18px, 22cqw, 40px);
-    height: clamp(18px, 22cqw, 40px);
-    border-radius: $radius-sm;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: clamp(9px, 11cqw, 18px);
-    flex-shrink: 0;
-  }
-
-  // ── Conteúdo ─────────────────────────────────────────────────────────────
-  &__content {
-    display: flex;
-    flex-direction: column;
-    min-width: 0;
-    flex: 1;
-  }
-
-  &__value {
-    font-size: clamp(11px, 13cqw, 20px);
-    font-weight: $font-bold;
-    color: $text-primary;
-    line-height: 1;
-    display: block;
-  }
-
-  &__label {
-    font-size: clamp(7px, 7.5cqw, 11px);
-    color: $text-secondary;
-    margin-top: 1px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  // ── Skeleton de carregamento ────────────────────────────────────────────
-  &__skeleton {
-    display: inline-block;
-    width: clamp(18px, 22cqw, 40px);
-    height: clamp(10px, 11cqw, 18px);
-    border-radius: $radius-sm;
-    background: linear-gradient(90deg, $border-light 25%, $bg-secondary 50%, $border-light 75%);
-    background-size: 200% 100%;
-    animation: shimmer 1.4s infinite;
-  }
-
-  // ── Variantes de cor ─────────────────────────────────────────────────────
-  @each $nome, $valores in $card-colors {
-    $cor:  nth($valores, 1);
-    $bg:   nth($valores, 2);
-
-    &--#{$nome} {
-      .sc-card__accent { background: $cor; }
-      .sc-card__icon   { background: $bg; color: $cor; }
-    }
-  }
-}
-
-@keyframes shimmer {
-  0%   { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
-}
-
-.hc-stat-card {
-  display: flex;
-  align-items: center;
-  gap: $spacing-4;
-  background: $bg-card;
-  border-radius: $radius-lg;
-  padding: $spacing-5;
-  border: 1px solid $border-light;
-  box-shadow: $shadow-sm;
-  transition: all $transition-normal;
-
-  &:hover {
-    box-shadow: $shadow-md;
-    transform: translateY(-2px);
-  }
-
-  &__icon {
-    width: 56px;
-    height: 56px;
-    border-radius: $radius-lg;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: $text-2xl;
-    flex-shrink: 0;
-
-    &--primary {
-      background: $primary-blue-light;
-      color: $primary-blue;
-    }
-
-    &--success {
-      background: $status-normal-bg;
-      color: $status-normal;
-    }
-
-    &--warning {
-      background: $status-atencao-bg;
-      color: $status-atencao;
-    }
-
-    &--danger {
-      background: $status-critico-bg;
-      color: $status-critico;
-    }
-
-    &--info {
-      background: $status-info-bg;
-      color: $status-info;
-    }
-
-    &--purple {
-      background: rgba(142, 68, 173, 0.12);
-      color: #8e44ad;
-    }
-
-    &--teal {
-      background: rgba(26, 188, 156, 0.12);
-      color: #1abc9c;
-    }
-  }
-
-  &__content {
-    display: flex;
-    flex-direction: column;
-    min-width: 0;
-  }
-
-  &__value {
-    font-size: $text-3xl;
-    font-weight: $font-bold;
-    color: $text-primary;
-    line-height: 1;
-  }
-
-  &__label {
-    font-size: $text-sm;
-    color: $text-secondary;
-    margin-top: $spacing-1;
-  }
-}
-
-// =============================================================================
-// GRÁFICOS
-// =============================================================================
-
-.dashboard-charts {
+// -----------------------------------------------------------------------------
+// Indicadores (stat tiles)
+// -----------------------------------------------------------------------------
+.indicadores {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: $spacing-6;
-
-  @include max-width($breakpoint-lg) {
-    grid-template-columns: 1fr;
-  }
-
-  &--secondary {
-    .dashboard-chart {
-      min-height: 350px;
-    }
-  }
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
 }
 
-.dashboard-chart {
-  min-height: 480px;
-
-  .hc-card__body {
-    height: auto;
-    min-height: 380px;
-    display: block;
-
-    app-graficos-principais-dashboard {
-      display: block;
-      width: 100%;
-    }
-  }
-}
-
-// =============================================================================
-// CARDS HEALTHCARE
-// =============================================================================
-
-.hc-card {
-  background: $bg-card;
-  border-radius: $radius-lg;
-  border: 1px solid $border-light;
-  box-shadow: $shadow-sm;
-  overflow: hidden;
-  transition: box-shadow $transition-normal;
-
-  &:hover {
-    box-shadow: $shadow-md;
-  }
-
-  &__header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: $spacing-4 $spacing-5;
-    border-bottom: 1px solid $border-light;
-    background: $bg-secondary;
-  }
-
-  &__title {
-    display: flex;
-    align-items: center;
-    gap: $spacing-2;
-    font-size: $text-lg;
-    font-weight: $font-semibold;
-    color: $text-primary;
-    margin: 0;
-
-    i {
-      color: $primary-blue;
-      font-size: $text-base;
-    }
-  }
-
-  &__body {
-    padding: $spacing-5;
-  }
-
-  &__footer {
-    padding: $spacing-4 $spacing-5;
-    border-top: 1px solid $border-light;
-    background: $bg-secondary;
-  }
-}
-
-// =============================================================================
-// RESPONSIVIDADE ADICIONAL
-// =============================================================================
-
-@include mobile {
-  .dashboard-header {
-    flex-direction: column;
-    align-items: flex-start;
-
-    &__actions {
-      width: 100%;
-      justify-content: flex-start;
-    }
-  }
-
-  .hc-stat-card {
-    padding: $spacing-4;
-
-    &__icon {
-      width: 48px;
-      height: 48px;
-      font-size: $text-xl;
-    }
-
-    &__value {
-      font-size: $text-2xl;
-    }
-  }
-
-  .dashboard-chart {
-    min-height: 300px;
-  }
-}
-
-// =============================================================================
-// ANIMAÇÕES
-// =============================================================================
-
-.dashboard-stats {
+.indicador {
   display: flex;
-  flex-wrap: nowrap;
-  gap: $spacing-4;
-
-  .hc-stat-card {
-    flex: 1 1 0;
-    min-width: 0;
-  }
-
-  @include mobile {
-    flex-wrap: wrap;
-
-    .hc-stat-card {
-      flex: 1 1 calc(50% - #{$spacing-4});
-    }
-  }
-
-  @include max-width(480px) {
-    flex-direction: column;
-
-    .hc-stat-card {
-      flex: unset;
-      width: 100%;
-    }
-  }
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  padding: 14px;
+  border: 1px solid var(--c-borda);
+  border-radius: 12px;
+  background: var(--c-fundo);
 }
 
-.dashboard-stats .hc-stat-card {
-  animation: fadeInUp 0.4s ease-out;
-  animation-fill-mode: both;
-
-  @for $i from 1 through 4 {
-    &:nth-child(#{$i}) {
-      animation-delay: #{$i * 0.1}s;
-    }
-  }
-}
-
-.dashboard-charts .hc-card {
-  animation: fadeInUp 0.4s ease-out;
-  animation-fill-mode: both;
-  animation-delay: 0.5s;
-}
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-// =============================================================================
-// BOTÃO TOGGLE DE TEMA
-// =============================================================================
-
-.theme-toggle {
-  width: 44px;
-  height: 44px;
-  border-radius: $radius-full;
-  border: 1px solid $border-light;
-  background: $bg-card;
-  color: $text-secondary;
-  cursor: pointer;
-  display: flex;
+.indicador__icone {
+  flex: none;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: $text-lg;
-  transition: all $transition-normal;
-
-  &:hover {
-    background: $bg-hover;
-    color: $primary-blue;
-    border-color: $primary-blue;
-    transform: rotate(15deg);
-  }
-
-  &:active {
-    transform: scale(0.95);
-  }
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: rgba(0, 102, 204, .1);
+  color: var(--c-primario-forte);
+  font-size: 16px;
 }
 
-// =============================================================================
-// BANNER DE BOAS-VINDAS DO MÉDICO
-// =============================================================================
+.indicador__texto {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
 
-.doctor-welcome-banner {
-  background: linear-gradient(135deg, $primary-blue 0%, darken($primary-blue, 15%) 100%);
-  border-radius: $radius-lg;
-  padding: $spacing-6;
-  margin-bottom: $spacing-2;
-  box-shadow: $shadow-md;
-  animation: fadeInUp 0.4s ease-out;
+.indicador__valor {
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.15;
+  color: var(--c-texto);
+  font-variant-numeric: tabular-nums;
+}
 
-  .welcome-content {
-    display: flex;
-    align-items: center;
-    gap: $spacing-5;
-  }
+.indicador__rotulo {
+  margin-top: 2px;
+  font-size: 13px;
+  line-height: 1.3;
+  color: var(--c-texto-2);
+}
 
-  .welcome-icon {
-    width: 72px;
-    height: 72px;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: $radius-full;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
+.indicador__skeleton {
+  display: inline-block;
+  width: 48px;
+  height: 22px;
+  border-radius: 6px;
+  background: var(--c-fundo-2);
+  animation: pulsar 1.2s ease-in-out infinite;
+}
 
-    i {
-      font-size: 2rem;
-      color: white;
-    }
-  }
+@keyframes pulsar {
+  50% { opacity: .5; }
+}
 
-  .welcome-text {
-    h2 {
-      font-size: $text-2xl;
-      font-weight: $font-bold;
-      color: white;
-      margin: 0 0 $spacing-2 0;
-    }
-
-    p {
-      font-size: $text-base;
-      color: rgba(255, 255, 255, 0.9);
-      margin: 0;
-    }
-  }
-
-  @include mobile {
-    padding: $spacing-4;
-
-    .welcome-content {
-      flex-direction: column;
-      text-align: center;
-    }
-
-    .welcome-icon {
-      width: 56px;
-      height: 56px;
-
-      i {
-        font-size: 1.5rem;
-      }
-    }
-
-    .welcome-text {
-      h2 {
-        font-size: $text-xl;
-      }
-
-      p {
-        font-size: $text-sm;
-      }
-    }
-  }
+@media (prefers-reduced-motion: reduce) {
+  .indicador__skeleton { animation: none; }
 }
 
 // =============================================================================
@@ -830,7 +300,3 @@ $card-colors: (
   }
 }
 
-// =============================================================================
-// NOTA: O tema escuro agora é controlado globalmente via body.dark-theme
-// Os estilos estão em src/styles/global.scss
-// =============================================================================

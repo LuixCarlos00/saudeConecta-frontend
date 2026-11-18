@@ -5,9 +5,7 @@ import { Subject, finalize, takeUntil } from 'rxjs';
 import { DashboardFacade } from 'src/app/features/dashboard/data-access/dashboard.facade';
 import {
   EspecialidadeResumo,
-  LARGURA_BARRA_PADRAO,
-  PALETA_BORDAS_CATEGORIA,
-  PALETA_CORES_CATEGORIA,
+  COR_BARRA_QUANTIDADE,
   calcularEspecialidadesCategoria,
   corEspecialidadeCategoria,
 } from '../dashboard-calculos';
@@ -78,8 +76,8 @@ export class GraficoCategoriaComponent implements OnInit, OnDestroy {
 
     const labels = this.especialidadesCategoria.map(e => e.nome);
     const data = this.especialidadesCategoria.map(e => e.quantidade);
-    const bgColors = this.especialidadesCategoria.map((_, i) => PALETA_CORES_CATEGORIA[i % PALETA_CORES_CATEGORIA.length]);
-    const borderColors = this.especialidadesCategoria.map((_, i) => PALETA_BORDAS_CATEGORIA[i % PALETA_BORDAS_CATEGORIA.length]);
+    // Uma cor só: cada barra é a quantidade de clínicos numa especialidade (magnitude).
+    const bgColors = COR_BARRA_QUANTIDADE;
     const maxVal = Math.max(...data, 1);
 
     const config: ChartConfiguration<'bar'> = {
@@ -89,11 +87,10 @@ export class GraficoCategoriaComponent implements OnInit, OnDestroy {
         datasets: [{
           data,
           backgroundColor: bgColors,
-          borderColor: borderColors,
-          borderWidth: 1,
+          borderWidth: 0,
           borderRadius: 4,
-          barPercentage: LARGURA_BARRA_PADRAO.barPercentage,
-          categoryPercentage: LARGURA_BARRA_PADRAO.categoryPercentage,
+          barPercentage: 0.7,
+          categoryPercentage: 0.8,
         }]
       },
       options: {

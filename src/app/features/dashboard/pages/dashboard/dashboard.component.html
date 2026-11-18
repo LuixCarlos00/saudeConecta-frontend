@@ -5,12 +5,9 @@
   <!-- Header do Dashboard -->
   <header class="dashboard-header">
     <div class="dashboard-header__title">
-      <h2>
-        <i class="fa-solid fa-chart-line"></i>
-        Painel de Controle
-      </h2>
+      <h2>Painel de controle</h2>
       <p class="dashboard-header__subtitle">
-        Bem-vindo! Aqui está o resumo das suas atividades.
+        Resumo do dia e da semana na sua clínica.
       </p>
     </div>
   </header>
@@ -44,61 +41,18 @@
        ================================================================ -->
   <div class="dashboard-grid" *ngIf="ControleAcessoService.isDashboardAdministrativo()">
 
-    <!-- Carrossel de Cards de Estatísticas -->
-    <section class="stats-carousel" *ngIf="cardsVisiveis.length > 0">
-
-      <div class="stats-carousel__header">
-        <span class="stats-carousel__title">
-          <i class="fa-solid fa-chart-simple"></i>
-          Estatísticas
-        </span>
-        <div class="stats-carousel__controls">
-          <span class="stats-carousel__counter">
-            {{ carrosselOffset + 1 }}–{{ minVal(carrosselOffset + cardsPorPagina, cardsVisiveis.length) }}
-            de {{ cardsVisiveis.length }}
+    <!-- Indicadores: todos visíveis numa grade (antes era um carrossel paginado) -->
+    <section class="indicadores" *ngIf="cardsVisiveis.length > 0" aria-label="Indicadores">
+      <article class="indicador" *ngFor="let card of cardsVisiveis">
+        <span class="indicador__icone" aria-hidden="true"><i class="fa-solid {{ card.icon }}"></i></span>
+        <div class="indicador__texto">
+          <span class="indicador__valor">
+            <span *ngIf="carregandoEstatisticas" class="indicador__skeleton"></span>
+            <ng-container *ngIf="!carregandoEstatisticas">{{ getValorCard(card.tipo) }}</ng-container>
           </span>
-          <button class="stats-carousel__btn"
-                  (click)="carrosselAnterior()"
-                  [disabled]="!podePrev"
-                  aria-label="Anterior">
-            <i class="fa-solid fa-chevron-left"></i>
-          </button>
-          <button class="stats-carousel__btn"
-                  (click)="carrosselProximo()"
-                  [disabled]="!podeNext"
-                  aria-label="Próximo">
-            <i class="fa-solid fa-chevron-right"></i>
-          </button>
+          <span class="indicador__rotulo">{{ card.label }}</span>
         </div>
-      </div>
-
-      <!-- Grade de cards visíveis (quantidade dinâmica conforme largura da tela) -->
-      <div class="stats-carousel__grid" #cardsGrid>
-        <div class="sc-card sc-card--{{ card.cor }}"
-             *ngFor="let card of cardsNaPagina"
-             [@cardSlide]>
-
-          <div class="sc-card__accent"></div>
-
-          <div class="sc-card__icon">
-            <i class="fa-solid {{ card.icon }}"></i>
-          </div>
-
-          <div class="sc-card__content">
-            <span class="sc-card__value">
-              <ng-container *ngIf="carregandoEstatisticas">
-                <span class="sc-card__skeleton"></span>
-              </ng-container>
-              <ng-container *ngIf="!carregandoEstatisticas">
-                {{ getValorCard(card.tipo) }}
-              </ng-container>
-            </span>
-            <span class="sc-card__label">{{ card.label }}</span>
-          </div>
-
-        </div>
-      </div>
-
+      </article>
     </section>
 
 
@@ -106,8 +60,6 @@
       [exibirConsultasPorPeriodo]="isGraficoAtivo(TipoGraficoDashboard.CONSULTAS_POR_PERIODO)"
       [exibirAgendamentos]="isGraficoAtivo(TipoGraficoDashboard.AGENDAMENTOS_DIAS_SEMANA)">
     </app-graficos-principais-dashboard>
-
-
 
     <!-- Gráficos Secundários -->
     <app-graficos-principais-dashboard
@@ -119,77 +71,42 @@
 
   </div>
 
-
-
-
-
-
-
-
-
-
-
-
-
   <!-- ================================================================
        Dashboard Profissional de Saúde (Médico / Dentista)
        ================================================================ -->
   <div class="dashboard-grid" *ngIf="ControleAcessoService.isDashboardProfissional()">
 
-    <!-- Banner de Boas-vindas -->
-    <section class="doctor-welcome-banner">
-      <div class="welcome-content">
-        <div class="welcome-icon">
-          <i class="fa-solid fa-user-doctor"></i>
-        </div>
-        <div class="welcome-text">
-          <h2>Área do Clínico</h2>
-          <p>Gerencie suas consultas, prontuários e acompanhe seu desempenho</p>
-        </div>
-      </div>
-    </section>
 
-    <!-- Cards de Estatísticas do Médico -->
-    <section class="dashboard-stats">
-      <div class="hc-stat-card">
-        <div class="hc-stat-card__icon hc-stat-card__icon--primary">
-          <i class="fa-solid fa-calendar-check"></i>
+    <!-- Indicadores do profissional -->
+    <section class="indicadores" aria-label="Indicadores">
+      <article class="indicador">
+        <span class="indicador__icone" aria-hidden="true"><i class="fa-solid fa-calendar-check"></i></span>
+        <div class="indicador__texto">
+          <span class="indicador__valor">{{ carregandoEstatisticas ? '--' : consultasHoje }}</span>
+          <span class="indicador__rotulo">Consultas hoje</span>
         </div>
-        <div class="hc-stat-card__content">
-          <span class="hc-stat-card__value">{{ carregandoEstatisticas ? '--' : consultasHoje }}</span>
-          <span class="hc-stat-card__label">Total de Consultas Hoje</span>
+      </article>
+      <article class="indicador">
+        <span class="indicador__icone" aria-hidden="true"><i class="fa-solid fa-circle-check"></i></span>
+        <div class="indicador__texto">
+          <span class="indicador__valor">{{ carregandoEstatisticas ? '--' : consultasAtendidas }}</span>
+          <span class="indicador__rotulo">Finalizadas</span>
         </div>
-      </div>
-
-      <div class="hc-stat-card">
-        <div class="hc-stat-card__icon hc-stat-card__icon--success">
-          <i class="fa-solid fa-check-circle"></i>
+      </article>
+      <article class="indicador">
+        <span class="indicador__icone" aria-hidden="true"><i class="fa-solid fa-clock"></i></span>
+        <div class="indicador__texto">
+          <span class="indicador__valor">{{ carregandoEstatisticas ? '--' : consultasAguardando }}</span>
+          <span class="indicador__rotulo">Aguardando</span>
         </div>
-        <div class="hc-stat-card__content">
-          <span class="hc-stat-card__value">{{ carregandoEstatisticas ? '--' : consultasAtendidas }}</span>
-          <span class="hc-stat-card__label">Finalizadas</span>
+      </article>
+      <article class="indicador">
+        <span class="indicador__icone" aria-hidden="true"><i class="fa-solid fa-calendar-week"></i></span>
+        <div class="indicador__texto">
+          <span class="indicador__valor">{{ carregandoEstatisticas ? '--' : consultasSemana }}</span>
+          <span class="indicador__rotulo">Esta semana</span>
         </div>
-      </div>
-
-      <div class="hc-stat-card">
-        <div class="hc-stat-card__icon hc-stat-card__icon--warning">
-          <i class="fa-solid fa-users"></i>
-        </div>
-        <div class="hc-stat-card__content">
-          <span class="hc-stat-card__value">{{ carregandoEstatisticas ? '--' : consultasAguardando }}</span>
-          <span class="hc-stat-card__label">Aguardando</span>
-        </div>
-      </div>
-
-      <div class="hc-stat-card">
-        <div class="hc-stat-card__icon hc-stat-card__icon--info">
-          <i class="fa-solid fa-calendar-week"></i>
-        </div>
-        <div class="hc-stat-card__content">
-          <span class="hc-stat-card__value">{{ carregandoEstatisticas ? '--' : consultasSemana }}</span>
-          <span class="hc-stat-card__label">Esta Semana</span>
-        </div>
-      </div>
+      </article>
     </section>
 
     <!-- Gráficos do Profissional — controlados pelo mesmo sistema de configuração -->
@@ -201,8 +118,5 @@
 
   </div>
 
-    <br>
-    <br>
-    <br>
 </div>
 </ng-template>

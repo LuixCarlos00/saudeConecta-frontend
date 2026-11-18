@@ -44,35 +44,12 @@ export interface IntervaloDatas {
   fim: string;
 }
 
-export const PALETA_CORES_CATEGORIA: readonly string[] = [
-  'rgba(59, 130, 246, 0.75)',
-  'rgba(16, 185, 129, 0.75)',
-  'rgba(245, 158, 11, 0.75)',
-  'rgba(239, 68, 68, 0.75)',
-  'rgba(139, 92, 246, 0.75)',
-  'rgba(236, 72, 153, 0.75)',
-  'rgba(6, 182, 212, 0.75)',
-  'rgba(249, 115, 22, 0.75)',
-  'rgba(34, 197, 94, 0.75)',
-  'rgba(99, 102, 241, 0.75)',
-  'rgba(168, 85, 247, 0.75)',
-  'rgba(14, 165, 233, 0.75)'
-];
-
-export const PALETA_BORDAS_CATEGORIA: readonly string[] = [
-  'rgba(59, 130, 246, 1)',
-  'rgba(16, 185, 129, 1)',
-  'rgba(245, 158, 11, 1)',
-  'rgba(239, 68, 68, 1)',
-  'rgba(139, 92, 246, 1)',
-  'rgba(236, 72, 153, 1)',
-  'rgba(6, 182, 212, 1)',
-  'rgba(249, 115, 22, 1)',
-  'rgba(34, 197, 94, 1)',
-  'rgba(99, 102, 241, 1)',
-  'rgba(168, 85, 247, 1)',
-  'rgba(14, 165, 233, 1)'
-];
+/**
+ * Cor das barras de quantidade por categoria (consultas e clínicos por especialidade).
+ * Uma cor só: cada barra é uma magnitude, não uma série; cor por barra (arco-íris) sugeria
+ * uma distinção que o dado não tem. Azul do slot 1 da paleta categórica validada.
+ */
+export const COR_BARRA_QUANTIDADE = '#2a78d6';
 
 const DIAS_POR_PERIODO_PADRONIZADO: Readonly<Record<number, number>> = { 1: 7, 2: 30, 3: 60 };
 
@@ -237,9 +214,9 @@ export function calcularEspecialidadesCategoria(profissionais: any[]): Especiali
     .sort((a, b) => b.quantidade - a.quantidade);
 }
 
-/** Cor da especialidade pelo índice; a paleta gira ao passar de 12. */
-export function corEspecialidadeCategoria(index: number): string {
-  return PALETA_CORES_CATEGORIA[index % PALETA_CORES_CATEGORIA.length];
+/** Cor da especialidade na lista: a mesma das barras (ver COR_BARRA_QUANTIDADE). */
+export function corEspecialidadeCategoria(_index: number): string {
+  return COR_BARRA_QUANTIDADE;
 }
 
 // ===========================================================================

@@ -1,7 +1,7 @@
 <section class="plataforma" aria-labelledby="plataforma-titulo">
   <header class="plataforma__header">
     <div>
-      <h2 id="plataforma-titulo"><i class="fa-solid fa-chart-line" aria-hidden="true"></i> Painel da plataforma</h2>
+      <h2 id="plataforma-titulo">Painel da plataforma</h2>
       <p class="plataforma__subtitulo">Saúde do negócio: clínicas, receita, cobrança e uso.</p>
     </div>
     <div class="plataforma__acoes">
@@ -196,7 +196,7 @@
     <span [class]="classeMotivo(item)" data-testid="atencao-motivo">{{ textoMotivo(item) }}</span>
                 <span class="atencao__nome">
                   <strong>{{ item.nome }}</strong>
-                  <small *ngIf="item.plano">{{ item.plano }}</small>
+                  <small *ngIf="item.detalhe || item.plano">{{ item.detalhe || item.plano }}</small>
                 </span>
                 <span class="atencao__dados">
                   <span data-testid="atencao-vencimento" *ngIf="item.dataVencimento">{{ item.motivo === 'PENDENCIA_MANUAL' ? 'Chegou em' : 'Vence' }} {{ formatarData(item.dataVencimento) }}</span>
@@ -212,7 +212,7 @@
     <span [class]="classeMotivo(item)" data-testid="atencao-motivo">{{ textoMotivo(item) }}</span>
                 <span class="atencao__nome">
                   <strong>{{ item.nome }}</strong>
-                  <small *ngIf="item.plano">{{ item.plano }}</small>
+                  <small *ngIf="item.detalhe || item.plano">{{ item.detalhe || item.plano }}</small>
                 </span>
                 <span class="atencao__dados">
                   <span data-testid="atencao-vencimento" *ngIf="item.dataVencimento">{{ item.motivo === 'PENDENCIA_MANUAL' ? 'Chegou em' : 'Vence' }} {{ formatarData(item.dataVencimento) }}</span>
