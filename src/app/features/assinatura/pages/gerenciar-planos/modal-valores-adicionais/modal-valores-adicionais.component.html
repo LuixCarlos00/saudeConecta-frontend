@@ -1,71 +1,54 @@
-<h2 mat-dialog-title>
-  <i class="fa-solid fa-dollar-sign"></i>
-  Valores Adicionais por Plano
-</h2>
-
-<mat-dialog-content>
-  <p class="modal-description">
-    Configure os valores adicionais para cada tipo de usuário extra em cada plano.
-  </p>
-  
-  <div class="planos-valores-grid">
-    <div class="plano-valores-card" *ngFor="let plano of planos">
-      <div class="plano-card-header">
-        <h3>{{ plano.nome }}</h3>
-        <span class="tipo-badge" [class]="'tipo-' + plano.tipo.toLowerCase()">{{ plano.tipo }}</span>
-      </div>
-      
-      <div class="valores-list">
-        <div class="valor-item">
-          <div class="valor-label">
-            <i class="fa-solid fa-user-shield"></i>
-            <span>Admin Clínico</span>
-          </div>
-          <mat-form-field appearance="outline" class="valor-input">
-            <mat-label>R$</mat-label>
-            <input matInput type="number" 
-              [value]="plano.valorAdicionalAdmin"
-              (input)="atualizarValor(plano.id, 'admin', $event)"
-              min="0" step="0.01">
-          </mat-form-field>
-        </div>
-        
-        <div class="valor-item">
-          <div class="valor-label">
-            <i class="fa-solid fa-user-doctor"></i>
-            <span>Profissional</span>
-          </div>
-          <mat-form-field appearance="outline" class="valor-input">
-            <mat-label>R$</mat-label>
-            <input matInput type="number" 
-              [value]="plano.valorAdicionalProfissional"
-              (input)="atualizarValor(plano.id, 'profissional', $event)"
-              min="0" step="0.01">
-          </mat-form-field>
-        </div>
-        
-        <div class="valor-item">
-          <div class="valor-label">
-            <i class="fa-solid fa-user-pen"></i>
-            <span>Secretária</span>
-          </div>
-          <mat-form-field appearance="outline" class="valor-input">
-            <mat-label>R$</mat-label>
-            <input matInput type="number" 
-              [value]="plano.valorAdicionalSecretaria"
-              (input)="atualizarValor(plano.id, 'secretaria', $event)"
-              min="0" step="0.01">
-          </mat-form-field>
-        </div>
-      </div>
-    </div>
+<header class="dlg-cabecalho">
+  <div>
+    <h2 mat-dialog-title class="dlg-titulo">Valores adicionais</h2>
+    <p class="dlg-subtitulo">
+      Quanto a clínica paga por mês por cada usuário além do que o plano inclui.
+    </p>
   </div>
-</mat-dialog-content>
-
-<mat-dialog-actions align="end">
-  <button mat-button (click)="cancelar()">Cancelar</button>
-  <button mat-raised-button color="primary" (click)="salvar()">
-    <i class="fa-solid fa-save"></i>
-    Salvar Alterações
+  <button type="button" class="dlg-fechar" (click)="cancelar()" aria-label="Fechar">
+    <mat-icon>close</mat-icon>
   </button>
-</mat-dialog-actions>
+</header>
+
+<div class="dlg-corpo">
+  <table class="matriz">
+    <thead>
+      <tr>
+        <th scope="col">Usuário extra</th>
+        <th scope="col" *ngFor="let plano of planos">{{ plano.nome }}</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let perfil of perfis">
+        <th scope="row">{{ perfil.rotulo }}</th>
+        <td *ngFor="let plano of planos">
+          <span class="entrada"
+                [class.entrada--alterada]="alterado(plano, perfil.campo)"
+                [class.entrada--erro]="negativo(plano, perfil.campo)">
+            <span class="entrada-prefixo">R$</span>
+            <input type="number" min="0" step="0.01" inputmode="decimal" placeholder="0,00"
+                   [ngModel]="valor(plano, perfil.campo)" (ngModelChange)="definir(plano, perfil.campo, $event)"
+                   [disabled]="salvando"
+                   [attr.aria-label]="perfil.rotulo + ' extra no plano ' + plano.nome">
+          </span>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p class="nota" *ngIf="temErro" role="alert">Os valores não podem ser negativos.</p>
+</div>
+
+<footer class="dlg-rodape">
+  <span class="dlg-rodape-info" aria-live="polite">
+    <ng-container *ngIf="planosAlterados.length === 0">Nenhuma alteração</ng-container>
+    <ng-container *ngIf="planosAlterados.length === 1">1 plano alterado</ng-container>
+    <ng-container *ngIf="planosAlterados.length > 1">{{ planosAlterados.length }} planos alterados</ng-container>
+  </span>
+  <button type="button" class="btn btn--texto" (click)="cancelar()">Cancelar</button>
+  <button type="button" class="btn btn--primario" (click)="salvar()"
+          [disabled]="salvando || temErro || planosAlterados.length === 0">
+    <mat-spinner *ngIf="salvando" diameter="16" class="btn-spinner"></mat-spinner>
+    {{ salvando ? 'Salvando...' : 'Salvar valores' }}
+  </button>
+</footer>

@@ -1,0 +1,123 @@
+<form [formGroup]="form" (ngSubmit)="salvar()" novalidate>
+  <header class="dlg-cabecalho">
+    <div>
+      <h2 mat-dialog-title class="dlg-titulo">Editar plano {{ data.plano.nome }}</h2>
+      <p class="dlg-subtitulo">Preço, limites de usuários e textos exibidos na página de planos.</p>
+    </div>
+    <button type="button" class="dlg-fechar" (click)="cancelar()" aria-label="Fechar">
+      <mat-icon>close</mat-icon>
+    </button>
+  </header>
+
+  <div class="dlg-corpo">
+    <!-- Apresentação -->
+    <section class="dlg-secao">
+      <h3 class="dlg-secao-titulo">Apresentação</h3>
+      <p class="dlg-secao-ajuda">Como o plano aparece para quem vai assinar.</p>
+
+      <div class="grade grade--2">
+        <label class="campo">
+          <span class="campo-rotulo">Nome do plano</span>
+          <span class="entrada" [class.entrada--erro]="invalido('nome')">
+            <input formControlName="nome" maxlength="60" autocomplete="off">
+          </span>
+          <span class="campo-erro" *ngIf="invalido('nome')">Informe o nome do plano.</span>
+        </label>
+
+        <label class="campo">
+          <span class="campo-rotulo">Mensalidade</span>
+          <span class="entrada" [class.entrada--erro]="invalido('valorMensal')">
+            <span class="entrada-prefixo">R$</span>
+            <input type="number" formControlName="valorMensal" min="0" step="0.01" inputmode="decimal">
+          </span>
+          <span class="campo-erro" *ngIf="invalido('valorMensal')">Informe um valor igual ou maior que zero.</span>
+        </label>
+      </div>
+
+      <label class="campo campo--espaco">
+        <span class="campo-rotulo">Frase de destaque</span>
+        <span class="entrada" [class.entrada--erro]="invalido('titulo')">
+          <input formControlName="titulo" maxlength="120" placeholder="Ex.: Ideal para consultórios e profissionais autônomos" autocomplete="off">
+        </span>
+        <span class="campo-erro" *ngIf="invalido('titulo')">Escreva uma frase curta para o plano.</span>
+        <span class="campo-dica" *ngIf="!invalido('titulo')">Aparece logo abaixo do nome, na página de planos.</span>
+      </label>
+    </section>
+
+    <!-- Usuários -->
+    <section class="dlg-secao">
+      <h3 class="dlg-secao-titulo">Usuários</h3>
+      <p class="dlg-secao-ajuda">
+        Quantos usuários de cada perfil o plano inclui e quanto custa cada usuário a mais,
+        quando a clínica precisa passar do limite.
+      </p>
+
+      <table class="perfis">
+        <thead>
+          <tr>
+            <th scope="col">Perfil</th>
+            <th scope="col">Incluídos no plano</th>
+            <th scope="col">Valor por usuário extra</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let p of perfis">
+            <th scope="row">{{ p.rotulo }}</th>
+            <td>
+              <div class="limite">
+                <span class="entrada entrada--curta" [class.entrada--erro]="invalido(p.limite)">
+                  <input type="number" [formControlName]="p.limite" min="1" step="1" inputmode="numeric"
+                         [attr.aria-label]="p.rotulo + ' incluídos no plano'">
+                </span>
+                <mat-checkbox [formControlName]="p.semLimite" (change)="aplicarSemLimite(p, $event.checked)"
+                              color="primary">Sem limite</mat-checkbox>
+              </div>
+              <span class="campo-erro" *ngIf="invalido(p.limite)">Mínimo de 1.</span>
+            </td>
+            <td>
+              <span class="entrada entrada--curta" [class.entrada--erro]="invalido(p.adicional)">
+                <span class="entrada-prefixo">R$</span>
+                <input type="number" [formControlName]="p.adicional" min="0" step="0.01" inputmode="decimal"
+                       [attr.aria-label]="'Valor por ' + p.rotulo.toLowerCase() + ' extra'">
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Recursos -->
+    <section class="dlg-secao">
+      <h3 class="dlg-secao-titulo">Recursos</h3>
+      <p class="dlg-secao-ajuda">Um recurso por linha. Ao lado, a lista como ela vai ficar.</p>
+
+      <div class="recursos">
+        <label class="campo">
+          <span class="entrada">
+            <textarea formControlName="recursos" rows="8" aria-label="Recursos do plano, um por linha"
+                      placeholder="Agendamento online&#10;Prontuário eletrônico&#10;Relatórios"></textarea>
+          </span>
+          <span class="campo-dica">{{ recursosDigitados.length }} {{ recursosDigitados.length === 1 ? 'recurso' : 'recursos' }}</span>
+        </label>
+
+        <div class="previa" aria-live="polite">
+          <span class="previa-rotulo">Prévia</span>
+          <ul *ngIf="recursosDigitados.length > 0; else semRecursos">
+            <li *ngFor="let r of recursosDigitados">
+              <mat-icon aria-hidden="true">check</mat-icon>{{ r }}
+            </li>
+          </ul>
+          <ng-template #semRecursos><p class="previa-vazia">Nenhum recurso ainda.</p></ng-template>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <footer class="dlg-rodape">
+    <button type="button" class="btn btn--texto" (click)="cancelar()">Cancelar</button>
+    <button type="submit" class="btn btn--primario" [disabled]="salvando || form.pristine">
+      <mat-spinner *ngIf="salvando" diameter="16" class="btn-spinner"></mat-spinner>
+      {{ salvando ? 'Salvando...' : 'Salvar alterações' }}
+    </button>
+  </footer>
+</form>
