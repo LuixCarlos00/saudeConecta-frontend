@@ -8,6 +8,7 @@ import {
   LARGURA_BARRA_PADRAO,
   contarConsultasPorEspecialidade,
   extrairDatasConsultas,
+  COR_BARRA_QUANTIDADE,
 } from '../dashboard-calculos';
 
 Chart.register(...registerables);
@@ -133,20 +134,10 @@ export class GraficoConsultasComponent implements OnInit, OnDestroy {
     const labels = dadosPorEspecialidade.map((dados) => dados.especialidade);
     const quantidadeConsultas = dadosPorEspecialidade.map((dados) => dados.quantidade);
 
-    // Cores modernas do Healthcare Design System
-    const cores = [
-      'rgba(0, 102, 204, 0.8)',   // Primary Blue
-      'rgba(16, 185, 129, 0.8)',  // Success Green
-      'rgba(245, 158, 11, 0.8)', // Warning Yellow
-      'rgba(139, 92, 246, 0.8)', // Purple
-      'rgba(236, 72, 153, 0.8)', // Pink
-      'rgba(6, 182, 212, 0.8)',  // Cyan
-      'rgba(249, 115, 22, 0.8)', // Orange
-      'rgba(34, 197, 94, 0.8)',  // Emerald
-    ];
-
-    const backgroundColors = labels.map((_, i) => cores[i % cores.length]);
-    const borderColors = backgroundColors.map(c => c.replace('0.8', '1'));
+    // Uma cor só: cada barra é a quantidade de uma especialidade (magnitude), não uma série.
+    // Cores diferentes por barra sugeriam uma distinção que o dado não tem.
+    const backgroundColors = labels.map(() => COR_BARRA_QUANTIDADE);
+    const borderColors = backgroundColors;
 
     this.chartConsultas = new Chart(this.canvasConsultas.nativeElement, {
       type: 'bar',
@@ -157,8 +148,8 @@ export class GraficoConsultasComponent implements OnInit, OnDestroy {
           data: quantidadeConsultas,
           backgroundColor: backgroundColors,
           borderColor: borderColors,
-          borderWidth: 2,
-          borderRadius: 8,
+          borderWidth: 0,
+          borderRadius: 4,
           barPercentage: LARGURA_BARRA_PADRAO.barPercentage,
           categoryPercentage: LARGURA_BARRA_PADRAO.categoryPercentage,
         }],

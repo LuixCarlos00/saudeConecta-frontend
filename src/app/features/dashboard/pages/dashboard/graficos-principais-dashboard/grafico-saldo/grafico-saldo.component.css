@@ -48,20 +48,32 @@
   flex-direction: column;
   padding: 10px 12px;
   border-radius: 8px;
-  background: var(--bg-secondary, #f8f9fa);
-  border-left: 3px solid transparent;
+  border: 1px solid var(--border-color, #e5e7eb);
+  background: var(--bg-card, #ffffff);
 }
 
-.saldo-resumo-item.consultas {
-  border-left-color: rgba(59, 130, 246, 1);
+/* Bolinha com a cor da série no gráfico empilhado (identidade, como uma legenda) */
+.saldo-resumo-item .saldo-resumo-label::before {
+  content: '';
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-right: 6px;
+  border-radius: 50%;
+  vertical-align: 1px;
+  background: transparent;
 }
 
-.saldo-resumo-item.procedimentos {
-  border-left-color: rgba(16, 185, 129, 1);
+.saldo-resumo-item.consultas .saldo-resumo-label::before {
+  background: rgba(59, 130, 246, 1);
 }
 
-.saldo-resumo-item.total {
-  border-left-color: var(--primary-color, #0066CC);
+.saldo-resumo-item.procedimentos .saldo-resumo-label::before {
+  background: rgba(16, 185, 129, 1);
+}
+
+.saldo-resumo-item.total .saldo-resumo-label::before {
+  display: none;
 }
 
 .saldo-resumo-label {
