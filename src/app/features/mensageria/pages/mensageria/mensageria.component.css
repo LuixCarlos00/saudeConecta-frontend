@@ -458,6 +458,18 @@
   cursor: not-allowed;
 }
 
+.page-ellipsis {
+  min-width: 24px;
+  text-align: center;
+  color: var(--text-muted, #94a3b8);
+  user-select: none;
+}
+
+.page-btn--active:hover:not(:disabled) {
+  background: #1565c0;
+  color: white;
+}
+
 .pagination-info {
   margin-left: auto;
   font-size: 0.8125rem;
@@ -709,3 +721,26 @@
     max-width: 120px;
   }
 }
+
+/* Botão de recarregar no cabeçalho */
+.header-badges { display: flex; align-items: center; gap: 10px; }
+
+.btn-recarregar {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 38px;
+  padding: 0 14px;
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: 8px;
+  background: var(--bg-card, #ffffff);
+  color: var(--text-secondary, #475569);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.btn-recarregar:hover:not(:disabled) { background: #f1f5f9; color: #0f172a; }
+.btn-recarregar:disabled { opacity: .6; cursor: not-allowed; }
+.btn-recarregar:focus-visible { outline: 2px solid #0066CC; outline-offset: 2px; }

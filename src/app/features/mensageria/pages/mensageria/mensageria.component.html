@@ -11,11 +11,16 @@
         <p class="page-subtitle">Controle de mensagens enviadas pelo sistema</p>
       </div>
     </div>
-    <div class="header-badges" *ngIf="totalFalhasPendentes > 0">
-      <span class="alert-badge">
+    <div class="header-badges">
+      <span class="alert-badge" *ngIf="totalFalhasPendentes > 0">
         <i class="fa-solid fa-triangle-exclamation"></i>
         {{ totalFalhasPendentes }} falha(s) pendente(s)
       </span>
+      <button type="button" class="btn-recarregar" (click)="recarregar()" [disabled]="isLoading"
+              title="Recarregar mensagens" aria-label="Recarregar mensagens">
+        <i class="fa-solid fa-rotate-right" [class.fa-spin]="isLoading" aria-hidden="true"></i>
+        Recarregar
+      </button>
     </div>
   </div>
 
@@ -126,17 +131,22 @@
 
     <!-- Paginação -->
     <div class="pagination" *ngIf="totalPaginas > 1">
-      <button class="page-btn" [disabled]="paginaAtual === 0" (click)="irParaPagina(paginaAtual - 1)">
+      <button class="page-btn" [disabled]="paginaAtual === 0" (click)="irParaPagina(paginaAtual - 1)" aria-label="Página anterior">
         <i class="fa-solid fa-chevron-left"></i>
       </button>
-      <button
-        *ngFor="let p of paginasArray"
-        class="page-btn"
-        [class.page-btn--active]="p === paginaAtual"
-        (click)="irParaPagina(p)">
-        {{ p + 1 }}
-      </button>
-      <button class="page-btn" [disabled]="paginaAtual === totalPaginas - 1" (click)="irParaPagina(paginaAtual + 1)">
+      <ng-container *ngFor="let p of paginasArray">
+        <span *ngIf="p === null" class="page-ellipsis" aria-hidden="true">…</span>
+        <button
+          *ngIf="p !== null"
+          class="page-btn"
+          [class.page-btn--active]="p === paginaAtual"
+          [attr.aria-current]="p === paginaAtual ? 'page' : null"
+          [attr.aria-label]="'Página ' + (p + 1)"
+          (click)="irParaPagina(p)">
+          {{ p + 1 }}
+        </button>
+      </ng-container>
+      <button class="page-btn" [disabled]="paginaAtual === totalPaginas - 1" (click)="irParaPagina(paginaAtual + 1)" aria-label="Próxima página">
         <i class="fa-solid fa-chevron-right"></i>
       </button>
       <span class="pagination-info">

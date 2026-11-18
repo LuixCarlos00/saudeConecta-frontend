@@ -70,4 +70,40 @@ describe('MensageriaComponent - sanitização de HTML', () => {
       expect(revogar).toHaveBeenCalledWith('blob:a');
     });
   });
+
+  describe('paginasArray (janela de páginas)', () => {
+    it('até 7 páginas mostra todas', () => {
+      componente.totalPaginas = 5;
+      componente.paginaAtual = 0;
+      expect(componente.paginasArray).toEqual([0, 1, 2, 3, 4]);
+    });
+
+    it('63 páginas no início: primeiras, reticências e a última', () => {
+      componente.totalPaginas = 63;
+      componente.paginaAtual = 0;
+      expect(componente.paginasArray).toEqual([0, 1, 2, null, 62]);
+    });
+
+    it('63 páginas no meio: primeira, vizinhas da atual e última', () => {
+      componente.totalPaginas = 63;
+      componente.paginaAtual = 30;
+      expect(componente.paginasArray).toEqual([0, null, 28, 29, 30, 31, 32, null, 62]);
+    });
+
+    it('63 páginas no fim: sem reticências à direita', () => {
+      componente.totalPaginas = 63;
+      componente.paginaAtual = 62;
+      expect(componente.paginasArray).toEqual([0, null, 60, 61, 62]);
+    });
+  });
+
+  describe('recarregar', () => {
+    it('busca de novo as mensagens e a contagem de falhas', () => {
+      const msgs = spyOn(componente, 'carregarMensagens');
+      const falhas = spyOn(componente, 'carregarContagemFalhas');
+      componente.recarregar();
+      expect(msgs).toHaveBeenCalledTimes(1);
+      expect(falhas).toHaveBeenCalledTimes(1);
+    });
+  });
 });
