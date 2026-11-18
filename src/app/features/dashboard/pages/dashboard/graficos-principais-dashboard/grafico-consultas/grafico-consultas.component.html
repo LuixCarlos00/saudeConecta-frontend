@@ -3,7 +3,6 @@
   <div class="chart-filters-wrapper">
     <div class="filter-header">
       <span class="filter-title">
-        <i class="fa-solid fa-filter"></i>
         Consultas - Filtrar por Período
       </span>
       <div class="quick-filters-inline">
@@ -29,10 +28,8 @@
     </div>
 
     <!-- Período Personalizado Abaixo -->
-    <mat-form-field appearance="fill" class="custom-period-field">
-      <mat-label>
-        <i class="fa-solid fa-calendar-range"></i>
-      </mat-label>
+    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="custom-period-field">
+      <mat-label>Período personalizado</mat-label>
       <mat-date-range-input [rangePicker]="pickerConsultas" [formGroup]="IntervaloDeDatasConsultas">
         <input matStartDate formControlName="start" placeholder="Data inicial">
         <input matEndDate formControlName="end" placeholder="Data final" (dateChange)="atualizarGraficoConsultasPersonalizado()">
