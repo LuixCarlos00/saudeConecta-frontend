@@ -1,102 +1,110 @@
-<div class="historico-container">
-  <div class="header">
-    <h2>Histórico de Alterações de Dados Pessoais</h2>
-    <p class="subtitle">Apenas SUPER_ADMIN pode acessar este histórico</p>
+<section class="pagina" aria-labelledby="auditoria-titulo">
+  <header class="cabecalho">
+    <div>
+      <h1 id="auditoria-titulo">Auditoria de cadastros</h1>
+      <p>Cada campo alterado nos cadastros das clínicas: o valor de antes, o de depois, quem alterou e quando.</p>
+    </div>
+    <button type="button" class="btn" (click)="carregar()" [disabled]="loading"
+            title="Recarregar auditoria" aria-label="Recarregar auditoria">
+      <i class="fa-solid fa-rotate-right" [class.fa-spin]="loading" aria-hidden="true"></i> Recarregar
+    </button>
+  </header>
+
+  <form class="filtros" (ngSubmit)="filtrar()" role="search" aria-label="Filtros da auditoria">
+    <label class="filtro filtro--clinica">
+      <span>Clínica</span>
+      <select name="clinica" [(ngModel)]="filtroClinica" (ngModelChange)="filtrar()">
+        <option [ngValue]="null">Todas as clínicas</option>
+        <option *ngFor="let c of clinicas" [ngValue]="c.id">{{ c.nome }}</option>
+      </select>
+    </label>
+    <label class="filtro">
+      <span>Cadastro</span>
+      <select name="entidade" [(ngModel)]="filtroEntidade" (ngModelChange)="filtrar()">
+        <option value="">Todos</option>
+        <option *ngFor="let e of entidades" [value]="e.valor">{{ e.rotulo }}</option>
+      </select>
+    </label>
+    <label class="filtro">
+      <span>De</span>
+      <input type="date" name="de" [(ngModel)]="filtroDe" (change)="filtrar()">
+    </label>
+    <label class="filtro">
+      <span>Até</span>
+      <input type="date" name="ate" [(ngModel)]="filtroAte" (change)="filtrar()">
+    </label>
+    <label class="filtro filtro--campo">
+      <span>Campo</span>
+      <span class="busca">
+        <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+        <input type="search" name="campo" [(ngModel)]="filtroCampo" placeholder="Ex.: telefone, e-mail" autocomplete="off">
+      </span>
+    </label>
+    <div class="filtros__acoes">
+      <button type="submit" class="btn btn--primario">Filtrar</button>
+      <button type="button" class="btn btn--texto" (click)="limparFiltros()" [disabled]="!temFiltro">Limpar</button>
+    </div>
+  </form>
+
+  <div class="estado estado--erro" *ngIf="error" role="alert">
+    <span>{{ error }}</span>
+    <button type="button" class="btn" (click)="carregar()">Tentar de novo</button>
   </div>
 
-  <!-- Filtros -->
-  <div class="filtros-card">
-    <div class="filtro-tipo">
-      <label>
-        <input type="radio" name="filtroTipo" value="usuario" [(ngModel)]="filtroTipo">
-        Buscar por Usuário
-      </label>
-      <label>
-        <input type="radio" name="filtroTipo" value="entidade" [(ngModel)]="filtroTipo">
-        Buscar por Entidade
-      </label>
-    </div>
-
-    <div *ngIf="filtroTipo === 'usuario'" class="filtro-inputs">
-      <div class="input-group">
-        <label for="idUsuario">ID do Usuário:</label>
-        <input type="number" id="idUsuario" [(ngModel)]="filtroIdUsuario" placeholder="Digite o ID do usuário">
-      </div>
-    </div>
-
-    <div *ngIf="filtroTipo === 'entidade'" class="filtro-inputs">
-      <div class="input-group">
-        <label for="entidade">Tipo de Entidade:</label>
-        <select id="entidade" [(ngModel)]="filtroEntidade">
-          <option value="PACIENTE">Paciente</option>
-          <option value="PROFISSIONAL">Profissional</option>
-          <option value="ADMIN">Administrador</option>
-          <option value="SECRETARIA">Secretária</option>
-          <option value="ORGANIZACAO">Organização</option>
-          <option value="ENDERECO">Endereço</option>
-        </select>
-      </div>
-      <div class="input-group">
-        <label for="idEntidade">ID da Entidade:</label>
-        <input type="number" id="idEntidade" [(ngModel)]="filtroIdEntidade" placeholder="Digite o ID da entidade">
-      </div>
-    </div>
-
-    <div class="botoes">
-      <button class="btn btn-primary" (click)="buscarHistorico()" [disabled]="loading">
-        <span *ngIf="loading">Buscando...</span>
-        <span *ngIf="!loading">Buscar Histórico</span>
-      </button>
-      <button class="btn btn-secondary" (click)="carregarHistoricoRecentes()" [disabled]="loading">
-        Recarregar Recentes
-      </button>
-      <button class="btn btn-secondary" (click)="limparFiltros()" [disabled]="loading">Limpar</button>
-    </div>
-  </div>
-
-  <!-- Mensagens de erro -->
-  <div *ngIf="error" class="alert alert-error">
-    <span class="alert-icon">⚠️</span>
-    {{ error }}
-  </div>
-
-  <!-- Tabela de histórico -->
-  <div *ngIf="historico.length > 0" class="tabela-container">
-    <table class="tabela-historico">
+  <div class="tabela-wrap" *ngIf="!error" [class.tabela-wrap--carregando]="loading">
+    <table class="tabela">
       <thead>
         <tr>
-          <th>Data/Hora</th>
-          <th>Organização ID</th>
-          <th>Entidade</th>
-          <th>ID Entidade</th>
-          <th>Campo</th>
-          <th>Valor Anterior</th>
-          <th>Valor Novo</th>
+          <th scope="col">Quando</th>
+          <th scope="col">Clínica</th>
+          <th scope="col">Cadastro</th>
+          <th scope="col">Campo</th>
+          <th scope="col">Alteração</th>
+          <th scope="col">Alterado por</th>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let item of historico">
-          <td>{{ formatarData(item.criadoEm) }}</td>
-          <td>{{ item.organizacaoId }}</td>
-          <td>{{ getEntidadeLabel(item.entidade) }}</td>
-          <td>{{ item.idEntidade }}</td>
-          <td class="campo-nome">{{ getCampoLabel(item.campo) }}</td>
-          <td class="valor-anterior">{{ item.valorAnterior || '-' }}</td>
-          <td class="valor-novo">{{ item.valorNovo || '-' }}</td>
+        <tr *ngFor="let item of historico; trackBy: trackPorId">
+          <td class="nowrap">{{ formatarData(item.criadoEm) }}</td>
+          <td class="clinica">{{ item.organizacaoNome || ('Clínica #' + item.organizacaoId) }}</td>
+          <td class="nowrap">
+            <span class="tipo">{{ getEntidadeLabel(item.entidade) }}</span>
+            <span class="id">#{{ item.idEntidade }}</span>
+          </td>
+          <td class="campo">{{ getCampoLabel(item.campo) }}</td>
+          <td>
+            <div class="mudanca">
+            <span class="valor valor--antes" [class.valor--vazio]="!item.valorAnterior"
+                  [title]="item.valorAnterior || 'vazio'">{{ item.valorAnterior || 'vazio' }}</span>
+            <i class="fa-solid fa-arrow-right seta" aria-label="mudou para"></i>
+            <span class="valor valor--depois" [class.valor--vazio]="!item.valorNovo"
+                  [title]="item.valorNovo || 'vazio'">{{ item.valorNovo || 'vazio' }}</span>
+            </div>
+          </td>
+          <td class="quem" [title]="item.usuarioLogin ? 'Login: ' + item.usuarioLogin : ''">
+            <span class="quem__nome">{{ item.usuarioNome || item.usuarioLogin || '—' }}</span>
+            <span class="quem__perfil" *ngIf="item.usuarioPerfil">{{ item.usuarioPerfil }}</span>
+          </td>
+        </tr>
+        <tr *ngIf="!loading && historico.length === 0">
+          <td colspan="6" class="vazio">
+            {{ temFiltro ? 'Nenhuma alteração encontrada para esses filtros.' : 'Nenhuma alteração registrada ainda.' }}
+          </td>
         </tr>
       </tbody>
     </table>
+    <p class="carregando" *ngIf="loading" role="status">Carregando...</p>
   </div>
 
-  <!-- Mensagem quando não há dados -->
-  <div *ngIf="!loading && !error && historico.length === 0 && (filtroIdUsuario || filtroIdEntidade)" class="alert alert-info">
-    <span class="alert-icon">ℹ️</span>
-    Nenhum registro de histórico encontrado para os filtros informados.
-  </div>
-
-  <!-- Mensagem inicial -->
-  <div *ngIf="!loading && !error && historico.length === 0 && !filtroIdUsuario && !filtroIdEntidade" class="alert alert-info">
-    <span class="alert-icon">ℹ️</span>
-    Selecione os filtros e clique em "Buscar Histórico" para visualizar as alterações.
-  </div>
-</div>
+  <nav class="paginacao" *ngIf="!error && totalPaginas > 1" aria-label="Páginas da auditoria">
+    <span class="paginacao__faixa">{{ faixa }}</span>
+    <button type="button" class="btn btn--pequeno" (click)="irPara(pagina - 1)" [disabled]="pagina === 0 || loading">
+      <i class="fa-solid fa-chevron-left" aria-hidden="true"></i> Anterior
+    </button>
+    <span class="paginacao__atual">Página {{ pagina + 1 }} de {{ totalPaginas }}</span>
+    <button type="button" class="btn btn--pequeno" (click)="irPara(pagina + 1)" [disabled]="pagina >= totalPaginas - 1 || loading">
+      Próxima <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
+    </button>
+  </nav>
+  <p class="rodape-total" *ngIf="!error && totalPaginas <= 1 && total > 0">{{ total }} {{ total === 1 ? 'alteração' : 'alterações' }}</p>
+</section>

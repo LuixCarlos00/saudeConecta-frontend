@@ -108,6 +108,15 @@
         </button>
       </li>
 
+      <!-- Auditoria de cadastros - Super Admin apenas -->
+      <li class="nav-item" *ngIf="ControleAcessoService.isSuperAdmin()"
+        [class.active]="activeRoute === 'Auditoria'">
+        <button class="nav-link" (click)="navigateTo('Auditoria')" title="Auditoria">
+          <i class="fa-solid fa-clock-rotate-left nav-icon"></i>
+          <span class="nav-text">Auditoria</span>
+        </button>
+      </li>
+
       <!-- Minha Assinatura - Admin Org -->
       <li class="nav-item" *ngIf="ControleAcessoService.isAdmin() && !ControleAcessoService.isSuperAdmin()"
         [class.active]="activeRoute === 'MinhaAssinatura'">
