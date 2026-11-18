@@ -3,11 +3,9 @@ import { DashboardApiService } from 'src/app/core/data-access/dashboard-api.serv
 import { ConfiguracaoCardService } from 'src/app/core/data-access/configuracao-card.service';
 import { ControleAcessoApiService } from 'src/app/core/data-access/controle-acesso-api.service';
 import { AssinaturaApiService } from 'src/app/core/data-access/assinatura-api.service';
-import { Component, OnInit, OnDestroy, AfterViewInit, HostListener, ElementRef, ViewChild } from '@angular/core';
-import { trigger, transition, style, animate } from '@angular/animations';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { ThemeService } from 'src/app/core/theme/theme.service';
-import { Subscription, forkJoin } from 'rxjs';
+import { forkJoin } from 'rxjs';
 import { ConsultaApiService } from 'src/app/core/data-access/consulta-api.service';
 import { AuthService } from 'src/app/core/auth/auth.service';
 import { ConfiguracaoGraficoDashboardService } from 'src/app/core/data-access/configuracao-grafico-dashboard.service';
@@ -18,22 +16,12 @@ import { calcularDataSuspensao } from 'src/app/shared/constants/regua-cobranca.c
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.scss'],
-  animations: [
-    trigger('cardSlide', [
-      transition(':enter', [
-        style({ opacity: 0, transform: 'translateY(12px)' }),
-        animate('220ms ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
-      ])
-    ])
-  ]
+  styleUrls: ['./dashboard.component.scss']
 })
-export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
+export class DashboardComponent implements OnInit {
   today = new Date();
-  isDarkMode = false;
   /** true quando o usuário logado é SUPER_ADMIN: mostra o painel da plataforma em vez do da clínica. */
   superAdmin = false;
-  private themeSubscription?: Subscription;
 
   // Estatísticas do Dashboard
   consultasHoje: number = 0;
@@ -54,18 +42,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   cardsAtivos: Map<TipoCardDashboard, boolean> = new Map();
   carregandoCards: boolean = true;
 
-  // Carrossel de cards
-  carrosselOffset: number = 0;
-  cardsPorPagina: number = 5;
-  // Largura MÍNIMA aceitável por card antes de reduzir a quantidade por página.
-  // Os cards crescem (flex) para preencher o espaço disponível, então isso
-  // define apenas o ponto em que um card ficaria pequeno demais.
-  private readonly CARD_MIN_WIDTH = 90;
-  private readonly CARD_GAP = 12;
-  private resizeTimeout: any;
-
-  @ViewChild('cardsGrid') cardsGridRef?: ElementRef<HTMLElement>;
-
   // Status da assinatura (banner de inadimplência)
   assinaturaInadimplente = false;
   dataLimiteAcesso: Date | null = null;
@@ -76,19 +52,18 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   TipoCardDashboard = TipoCardDashboard;
 
   readonly todosCards = [
-    { tipo: TipoCardDashboard.CONSULTAS_HOJE,       icon: 'fa-calendar-check',  cor: 'blue',   label: 'Total Hoje' },
-    { tipo: TipoCardDashboard.CONSULTAS_ATENDIDAS,  icon: 'fa-user-check',      cor: 'green',  label: 'Atendidos' },
+    { tipo: TipoCardDashboard.CONSULTAS_HOJE,       icon: 'fa-calendar-check',  cor: 'blue',   label: 'Consultas hoje' },
+    { tipo: TipoCardDashboard.CONSULTAS_ATENDIDAS,  icon: 'fa-user-check',      cor: 'green',  label: 'Atendidos hoje' },
     { tipo: TipoCardDashboard.CONSULTAS_AGUARDANDO, icon: 'fa-clock',           cor: 'orange', label: 'Aguardando' },
-    { tipo: TipoCardDashboard.MEDICOS_ATIVOS,       icon: 'fa-user-doctor',     cor: 'cyan',   label: 'Cl\u00ednicos Ativos' },
-    { tipo: TipoCardDashboard.CONSULTAS_SEMANA,     icon: 'fa-calendar-week',   cor: 'purple', label: 'Esta Semana' },
-    { tipo: TipoCardDashboard.CANCELADOS_SEMANA,    icon: 'fa-calendar-xmark',  cor: 'red',    label: 'Cancelados (Semana)' },
-    { tipo: TipoCardDashboard.CONFIRMADOS_SEMANA,   icon: 'fa-calendar-check',  cor: 'teal',   label: 'Confirmados (Semana)' },
+    { tipo: TipoCardDashboard.MEDICOS_ATIVOS,       icon: 'fa-user-doctor',     cor: 'cyan',   label: 'Cl\u00ednicos ativos' },
+    { tipo: TipoCardDashboard.CONSULTAS_SEMANA,     icon: 'fa-calendar-week',   cor: 'purple', label: 'Consultas na semana' },
+    { tipo: TipoCardDashboard.CANCELADOS_SEMANA,    icon: 'fa-calendar-xmark',  cor: 'red',    label: 'Canceladas na semana' },
+    { tipo: TipoCardDashboard.CONFIRMADOS_SEMANA,   icon: 'fa-calendar-check',  cor: 'teal',   label: 'Confirmadas na semana' },
   ];
 
   constructor(
     public ControleAcessoService: ControleAcessoApiService,
     private router: Router,
-    public themeService: ThemeService,
     private consultaApiService: ConsultaApiService,
     private authService: AuthService,
     private configuracaoGraficoService: ConfiguracaoGraficoDashboardService,
@@ -102,9 +77,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     // SUPER_ADMIN vê o painel da plataforma; as chamadas abaixo são de clínica (exigem tenant).
     this.superAdmin = this.ControleAcessoService.isSuperAdmin();
     if (this.superAdmin) { return; }
-    this.themeSubscription = this.themeService.currentTheme$.subscribe(
-      (theme) => this.isDarkMode = theme.isDark
-    );
     this.verificarStatusAssinatura();
   }
 
@@ -115,40 +87,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     this.carregarEstatisticas();
   }
 
-  ngAfterViewInit(): void {
-    this.calcularCardsPorPagina();
-  }
-
-  ngOnDestroy(): void {
-    this.themeSubscription?.unsubscribe();
-    clearTimeout(this.resizeTimeout);
-  }
-
-  @HostListener('window:resize')
-  onWindowResize(): void {
-    clearTimeout(this.resizeTimeout);
-    this.resizeTimeout = setTimeout(() => this.calcularCardsPorPagina(), 150);
-  }
-
-  private calcularCardsPorPagina(): void {
-    const grid = this.cardsGridRef?.nativeElement;
-    const larguraDisponivel = grid?.clientWidth || window.innerWidth;
-    const qtdCalculada = Math.max(
-      1,
-      Math.floor((larguraDisponivel + this.CARD_GAP) / (this.CARD_MIN_WIDTH + this.CARD_GAP))
-    );
-    const novoValor = this.cardsVisiveis.length
-      ? Math.min(qtdCalculada, this.cardsVisiveis.length)
-      : qtdCalculada;
-
-    if (this.cardsPorPagina !== novoValor) {
-      this.cardsPorPagina = novoValor;
-    }
-
-    if (this.carrosselOffset + this.cardsPorPagina > this.cardsVisiveis.length) {
-      this.carrosselOffset = Math.max(0, this.cardsVisiveis.length - this.cardsPorPagina);
-    }
-  }
 
   private carregarEstatisticas(): void {
     if (this.ControleAcessoService.isDashboardAdministrativo()) {
@@ -272,10 +210,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  toggleDarkMode(): void {
-    this.themeService.toggleTheme();
-  }
-
   navegarPara(rota: string): void {
     this.router.navigate([rota]);
   }
@@ -308,23 +242,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     return this.todosCards.filter(c => this.isCardAtivo(c.tipo));
   }
 
-  get cardsNaPagina() {
-    return this.cardsVisiveis.slice(this.carrosselOffset, this.carrosselOffset + this.cardsPorPagina);
-  }
-
-  get podePrev(): boolean { return this.carrosselOffset > 0; }
-  get podeNext(): boolean { return this.carrosselOffset + this.cardsPorPagina < this.cardsVisiveis.length; }
-
-  minVal(a: number, b: number): number { return Math.min(a, b); }
-
-  carrosselAnterior(): void {
-    if (this.podePrev) { this.carrosselOffset--; }
-  }
-
-  carrosselProximo(): void {
-    if (this.podeNext) { this.carrosselOffset++; }
-  }
-
   getValorCard(tipo: TipoCardDashboard): number {
     const map: Record<TipoCardDashboard, number> = {
       [TipoCardDashboard.CONSULTAS_HOJE]:       this.consultasHoje,
@@ -355,14 +272,12 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
           this.cardsAtivos.set(config.tipoCard as TipoCardDashboard, true)
         );
         this.carregandoCards = false;
-        setTimeout(() => this.calcularCardsPorPagina());
       },
       error: () => {
         Object.values(TipoCardDashboard).forEach(tipo =>
           this.cardsAtivos.set(tipo as TipoCardDashboard, true)
         );
         this.carregandoCards = false;
-        setTimeout(() => this.calcularCardsPorPagina());
       },
     });
   }
