@@ -17,7 +17,7 @@ export const LIMITE_OBSERVACAO = 500;
 @Component({
   selector: 'app-pendencias-manuais',
   templateUrl: './pendencias-manuais.component.html',
-  styleUrls: ['./pendencias-manuais.component.css']
+  styleUrls: ['../../tokens-assinatura.css', './pendencias-manuais.component.css']
 })
 export class PendenciasManuaisComponent implements OnInit, OnDestroy {
 

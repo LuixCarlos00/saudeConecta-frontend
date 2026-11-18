@@ -1,74 +1,123 @@
 <section class="pendencias" aria-labelledby="pendencias-titulo">
-  <header class="pendencias__header">
+  <header class="cabecalho">
     <div>
-      <h1 id="pendencias-titulo"><i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i> Pendências manuais</h1>
-      <p class="pendencias__subtitulo">Pagamentos do Mercado Pago que o sistema não soube tratar sozinho. Resolva no painel do Mercado Pago e registre aqui o que foi feito: marcar como resolvida não altera nada no Mercado Pago.</p>
+      <h1 id="pendencias-titulo">Pendências manuais</h1>
+      <p class="subtitulo">
+        Pagamentos do Mercado Pago que o sistema não conseguiu tratar sozinho.
+        Resolva no painel do Mercado Pago e registre aqui o que foi feito.
+      </p>
     </div>
+    <div class="cabecalho__acoes">
+    <button type="button" class="btn" (click)="carregar()" [disabled]="carregando" data-testid="btn-recarregar"
+            title="Recarregar pendências" aria-label="Recarregar pendências">
+      <i class="fa-solid fa-rotate-right" [class.fa-spin]="carregando" aria-hidden="true"></i> Recarregar
+    </button>
     <div class="abas" role="group" aria-label="Situação das pendências">
       <button type="button" class="abas__btn" [class.abas__btn--ativo]="!mostrarResolvidas" [attr.aria-pressed]="!mostrarResolvidas"
-              (click)="alternar(false)" data-testid="aba-abertas">Abertas</button>
+              (click)="alternar(false)" data-testid="aba-abertas">
+        Abertas
+        <span class="abas__contador" *ngIf="!mostrarResolvidas && !carregando && !erro">{{ pendencias.length }}</span>
+      </button>
       <button type="button" class="abas__btn" [class.abas__btn--ativo]="mostrarResolvidas" [attr.aria-pressed]="mostrarResolvidas"
-              (click)="alternar(true)" data-testid="aba-resolvidas">Resolvidas</button>
+              (click)="alternar(true)" data-testid="aba-resolvidas">
+        Resolvidas
+        <span class="abas__contador" *ngIf="mostrarResolvidas && !carregando && !erro">{{ pendencias.length }}</span>
+      </button>
+    </div>
     </div>
   </header>
+
+  <p class="aviso">
+    <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+    Marcar como resolvida só registra o que você fez. Nada é alterado no Mercado Pago.
+  </p>
 
   <details class="legenda">
     <summary>O que significa cada motivo</summary>
     <dl data-testid="legenda">
       <ng-container *ngFor="let m of legenda">
-        <dt><code>{{ m.codigo }}</code> {{ m.titulo }}</dt>
+        <dt>{{ m.titulo }} <code>{{ m.codigo }}</code></dt>
         <dd>{{ m.oQueE }} <strong>No painel do MP:</strong> {{ m.oQueFazer }}</dd>
       </ng-container>
     </dl>
   </details>
 
   <div class="estado estado--erro" *ngIf="erro" role="alert" data-testid="erro">
-    {{ erro }}
+    <span>{{ erro }}</span>
     <button type="button" class="btn" (click)="carregar()">Tentar de novo</button>
   </div>
 
-  <p class="carregando" *ngIf="carregando" role="status">Carregando...</p>
+  <p class="estado" *ngIf="carregando" role="status">Carregando pendências...</p>
 
-  <p class="vazio" *ngIf="!carregando && !erro && pendencias.length === 0" data-testid="vazio">
-    {{ mostrarResolvidas ? 'Nenhuma pendência resolvida ainda.' : 'Nenhuma pendência aberta. Tudo certo por aqui.' }}
-  </p>
+  <div class="estado estado--vazio" *ngIf="!carregando && !erro && pendencias.length === 0" data-testid="vazio">
+    <i class="fa-solid" [ngClass]="mostrarResolvidas ? 'fa-box-archive' : 'fa-circle-check'" aria-hidden="true"></i>
+    <span>{{ mostrarResolvidas ? 'Nenhuma pendência resolvida ainda.' : 'Nenhuma pendência aberta. Tudo certo por aqui.' }}</span>
+  </div>
 
-  <ul class="lista" *ngIf="!erro">
-    <li class="item" *ngFor="let p of pendencias; trackBy: trackPorEvento" data-testid="pendencia">
-      <div class="item__topo">
-        <span class="motivo" data-testid="motivo-codigo">{{ descricao(p)?.titulo || p.motivoCodigo }}</span>
-        <span class="item__clinica" data-testid="clinica">{{ p.organizacaoNome || 'Clínica não identificada' }}</span>
-        <span class="item__data">Chegou em {{ formatarData(p.recebidoEm) }}</span>
+  <ul class="lista" *ngIf="!erro && !carregando && pendencias.length > 0">
+    <li class="item" [class.item--resolvida]="p.resolvida" *ngFor="let p of pendencias; trackBy: trackPorEvento" data-testid="pendencia">
+      <div class="item__cabecalho">
+        <div>
+          <h2 class="item__titulo" data-testid="motivo-codigo">{{ descricao(p)?.titulo || p.motivoCodigo }}</h2>
+          <p class="item__meta">
+            <span class="item__clinica" data-testid="clinica">{{ p.organizacaoNome || 'Clínica não identificada' }}</span>
+            <span aria-hidden="true">·</span>
+            <span>Chegou em {{ formatarData(p.recebidoEm) }}</span>
+            <ng-container *ngIf="p.tentativas > 0">
+              <span aria-hidden="true">·</span>
+              <span>{{ p.tentativas }} {{ p.tentativas === 1 ? 'tentativa' : 'tentativas' }}</span>
+            </ng-container>
+          </p>
+        </div>
+        <button type="button" class="btn btn--primario"
+                *ngIf="!p.resolvida && resolvendoId !== p.eventoId"
+                (click)="iniciarResolucao(p)" data-testid="btn-resolver">Resolver</button>
+        <span class="selo selo--ok" *ngIf="p.resolvida">Resolvida</span>
       </div>
 
-      <p class="item__texto" *ngIf="descricao(p) as d; else textoBack">
-        {{ d.oQueE }} <strong>No painel do MP:</strong> {{ d.oQueFazer }}
-      </p>
-      <ng-template #textoBack><p class="item__texto">{{ p.motivo }}</p></ng-template>
-      <p class="item__detalhe" *ngIf="descricao(p)">{{ p.motivo }}</p>
+      <dl class="item__info">
+        <div *ngIf="descricao(p) as d; else textoBack">
+          <dt>O que aconteceu</dt>
+          <dd>{{ d.oQueE }}</dd>
+        </div>
+        <ng-template #textoBack>
+          <div><dt>O que aconteceu</dt><dd>{{ p.motivo }}</dd></div>
+        </ng-template>
+        <div *ngIf="descricao(p) as d">
+          <dt>O que fazer no Mercado Pago</dt>
+          <dd>{{ d.oQueFazer }}</dd>
+        </div>
+        <div *ngIf="descricao(p)">
+          <dt>Detalhe</dt>
+          <dd class="item__tecnico">{{ p.motivo }}</dd>
+        </div>
+        <div *ngIf="p.erro">
+          <dt>Último erro</dt>
+          <dd class="item__tecnico">{{ p.erro }}</dd>
+        </div>
+      </dl>
 
-      <div class="resolvida" *ngIf="p.resolvida" data-testid="resolucao">
-        Resolvida em {{ formatarData(p.resolvidoEm) }}: {{ p.observacaoResolucao }}
+      <div class="resolucao" *ngIf="p.resolvida" data-testid="resolucao">
+        <span class="resolucao__quando">Resolvida em {{ formatarData(p.resolvidoEm) }}</span>
+        <p>{{ p.observacaoResolucao }}</p>
       </div>
 
-      <ng-container *ngIf="!p.resolvida">
-        <button type="button" class="btn btn--primario" *ngIf="resolvendoId !== p.eventoId" (click)="iniciarResolucao(p)" data-testid="btn-resolver">Resolver</button>
-
-        <form class="form" *ngIf="resolvendoId === p.eventoId" (ngSubmit)="confirmarResolucao(p)" data-testid="form-resolver">
-          <label for="obs-{{ p.eventoId }}">O que foi feito? (obrigatório)</label>
-          <textarea id="obs-{{ p.eventoId }}" name="observacao" rows="3" [maxlength]="limiteObservacao"
-                    [(ngModel)]="observacao" [attr.aria-invalid]="erroObservacao ? 'true' : null"
-                    placeholder="Ex.: Estornado no painel do MP em 05/11" data-testid="observacao"></textarea>
-          <div class="form__rodape">
-            <span class="contador" [class.contador--cheio]="observacao.length >= limiteObservacao" data-testid="contador">{{ observacao.length }}/{{ limiteObservacao }}</span>
-            <span class="form__erro" *ngIf="erroObservacao" role="alert" data-testid="erro-observacao">{{ erroObservacao }}</span>
-          </div>
-          <div class="form__acoes">
-            <button type="submit" class="btn btn--primario" [disabled]="salvando" data-testid="btn-confirmar">Marcar como resolvida</button>
-            <button type="button" class="btn" (click)="cancelarResolucao()" [disabled]="salvando" data-testid="btn-cancelar">Cancelar</button>
-          </div>
-        </form>
-      </ng-container>
+      <form class="form" *ngIf="!p.resolvida && resolvendoId === p.eventoId" (ngSubmit)="confirmarResolucao(p)" data-testid="form-resolver">
+        <label for="obs-{{ p.eventoId }}">O que foi feito?</label>
+        <textarea id="obs-{{ p.eventoId }}" name="observacao" rows="3" [maxlength]="limiteObservacao"
+                  [(ngModel)]="observacao" [attr.aria-invalid]="erroObservacao ? 'true' : null"
+                  placeholder="Ex.: Estornado no painel do MP em 05/11" data-testid="observacao"></textarea>
+        <div class="form__rodape">
+          <span class="form__erro" *ngIf="erroObservacao" role="alert" data-testid="erro-observacao">{{ erroObservacao }}</span>
+          <span class="contador" [class.contador--cheio]="observacao.length >= limiteObservacao" data-testid="contador">{{ observacao.length }}/{{ limiteObservacao }}</span>
+        </div>
+        <div class="form__acoes">
+          <button type="button" class="btn btn--texto" (click)="cancelarResolucao()" [disabled]="salvando" data-testid="btn-cancelar">Cancelar</button>
+          <button type="submit" class="btn btn--primario" [disabled]="salvando" data-testid="btn-confirmar">
+            {{ salvando ? 'Salvando...' : 'Marcar como resolvida' }}
+          </button>
+        </div>
+      </form>
     </li>
   </ul>
 </section>
