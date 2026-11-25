@@ -86,7 +86,9 @@ export class RedefinirSenhaComponent implements OnInit {
           text: resposta?.message || 'Senha redefinida com sucesso. Faça login com a nova senha.',
           confirmButtonColor: '#00d9ff'
         });
-        this.router.navigate(['/login']);
+        // Sai de uma sessão antiga que ainda esteja no navegador (o token dela pode carregar a
+        // troca de senha pendente) e leva ao login para entrar com a senha nova.
+        this.authService.logout();
       },
       error: (erro) => {
         this.isLoading = false;

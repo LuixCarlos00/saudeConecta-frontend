@@ -132,8 +132,13 @@ export class LoginComponent implements OnInit, OnDestroy {
    * Destino após o login. Clínica com assinatura SUSPENSA só consegue usar as rotas de pagamento
    * (o resto devolve 403), então ADMIN e secretária vão direto para /minha-assinatura.
    * Qualquer falha na consulta cai no Dashboard, o destino de sempre.
+   * Primeiro acesso vem antes de tudo: a única tela que funciona é a troca de senha.
    */
   private navegarAposLogin(): void {
+    if (this.authService.deveTrocarSenha()) {
+      this.router.navigate(['/trocaSenha']);
+      return;
+    }
     const podeVerAssinatura = this.authService.isOrgAdmin() || this.authService.isRecepcionista();
     if (!podeVerAssinatura) {
       this.router.navigate(['/Dashboard']);

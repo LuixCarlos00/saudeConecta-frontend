@@ -13,6 +13,9 @@ const ROTAS_PUBLICAS = ['/cadastro', '/recuperaCadastro', '/assinatura', '/quest
 /** Código que o back devolve (403) quando a assinatura da clínica não dá acesso ao sistema. */
 const CODIGO_PLANO_SEM_ACESSO = 'PLANO_SEM_ACESSO';
 
+/** Código que o back devolve (403) enquanto a senha do primeiro acesso não for trocada. */
+const CODIGO_TROCA_SENHA_OBRIGATORIA = 'TROCA_SENHA_OBRIGATORIA';
+
 /** Janela em que um novo aviso de plano suspenso é suprimido após o anterior ser fechado. */
 const DEBOUNCE_AVISO_MS = 5000;
 
@@ -72,11 +75,19 @@ export class ErrorInterceptor implements HttpInterceptor {
   }
 
   /**
-   * Trata erro 403 - Proibido. Quando é plano suspenso/cancelado, avisa uma única vez
+   * Trata erro 403 - Proibido. Primeiro acesso com senha pendente vai para a troca de senha.
+   * Quando é plano suspenso/cancelado, avisa uma única vez
    * (debounce) e leva o admin para "minha assinatura", sem logout.
    */
   private handleForbidden(error: HttpErrorResponse): void {
     console.warn('[ErrorInterceptor] Acesso negado');
+    if (extrairCodigoErro(error) === CODIGO_TROCA_SENHA_OBRIGATORIA) {
+      // Sem aviso: a própria tela de troca explica. Já nela, navegar de novo geraria loop.
+      if (!this.router.url.startsWith('/trocaSenha')) {
+        this.router.navigate(['/trocaSenha']);
+      }
+      return;
+    }
     const mensagem = extrairMensagemErro(error);
     if (!this.isPlanoSemAcesso(error, mensagem)) return;
 

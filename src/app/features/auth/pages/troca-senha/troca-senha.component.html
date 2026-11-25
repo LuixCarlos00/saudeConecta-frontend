@@ -1,7 +1,10 @@
 <div class="pagina">
   <header class="cabecalho">
-    <h1>Segurança da conta</h1>
-    <p>Troque a senha que você usa para entrar no DocClin.</p>
+    <h1>{{ primeiroAcesso ? 'Crie a sua senha' : 'Segurança da conta' }}</h1>
+    <p *ngIf="!primeiroAcesso">Troque a senha que você usa para entrar no DocClin.</p>
+    <p *ngIf="primeiroAcesso" class="cabecalho__aviso" role="status">
+      A sua senha atual é provisória. Escolha uma nova, que só você conheça, para liberar o sistema.
+    </p>
   </header>
 
   <section class="cartao" aria-labelledby="titulo-senha">

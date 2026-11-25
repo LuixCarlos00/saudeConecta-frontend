@@ -85,6 +85,15 @@ describe('LoginComponent', () => {
       api = TestBed.inject(AssinaturaApiService);
     });
 
+    it('primeiro acesso vai direto para /trocaSenha, sem consultar a assinatura', () => {
+      spyOn(auth, 'deveTrocarSenha').and.returnValue(true);
+      spyOn(auth, 'isOrgAdmin').and.returnValue(true);
+      const consulta = spyOn(api, 'minhaAssinatura');
+      (component as any).navegarAposLogin();
+      expect(consulta).not.toHaveBeenCalled();
+      expect(navigate).toHaveBeenCalledOnceWith(['/trocaSenha']);
+    });
+
     it('ADMIN com assinatura SUSPENSA vai direto para /minha-assinatura (uma única navegação, sem passar pelo Dashboard)', () => {
       spyOn(auth, 'isOrgAdmin').and.returnValue(true);
       spyOn(api, 'minhaAssinatura').and.returnValue(of({ status: 'SUSPENSA' } as any));
