@@ -56,4 +56,69 @@ describe('LandingPageComponent — cabeçalho', () => {
     expect(router.navigate).toHaveBeenCalledWith(['/cadastro'], {});
     expect(component.mobileMenuOpen).toBeFalse();
   });
+
+  describe('vídeo de demonstração', () => {
+    const modal = () => fixture.debugElement.query(By.css('.demo-modal'));
+
+    afterEach(() => {
+      document.body.style.overflow = '';
+    });
+
+    it('não carrega o vídeo antes de o visitante pedir', () => {
+      expect(modal()).toBeNull();
+      expect(fixture.debugElement.query(By.css('video'))).toBeNull();
+    });
+
+    it('"Ver Demonstração" abre o modal com o vídeo dos assets e trava a rolagem', () => {
+      fixture.debugElement.query(By.css('.btn-demonstracao')).nativeElement.click();
+      fixture.detectChanges();
+
+      const video = fixture.debugElement.query(By.css('.demo-modal video')).nativeElement as HTMLVideoElement;
+      expect(video.getAttribute('src')).toBe('assets/videos/docclin-demo.mp4');
+      expect(video.controls).toBeTrue();
+      expect(document.body.style.overflow).toBe('hidden');
+    });
+
+    it('fecha pelo botão, tirando o vídeo do DOM e devolvendo a rolagem', () => {
+      component.abrirDemonstracao();
+      fixture.detectChanges();
+
+      fixture.debugElement.query(By.css('.demo-modal-fechar')).nativeElement.click();
+      fixture.detectChanges();
+
+      expect(modal()).toBeNull();
+      expect(document.body.style.overflow).toBe('');
+    });
+
+    it('fecha ao clicar fora do vídeo, mas não ao clicar nele', () => {
+      component.abrirDemonstracao();
+      fixture.detectChanges();
+
+      fixture.debugElement.query(By.css('.demo-modal-conteudo')).nativeElement.click();
+      fixture.detectChanges();
+      expect(modal()).not.toBeNull();
+
+      modal().nativeElement.click();
+      fixture.detectChanges();
+      expect(modal()).toBeNull();
+    });
+
+    it('fecha com a tecla Esc', () => {
+      component.abrirDemonstracao();
+      fixture.detectChanges();
+
+      document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+      fixture.detectChanges();
+
+      expect(modal()).toBeNull();
+    });
+
+    it('Esc com o modal fechado não mexe na rolagem da página', () => {
+      document.body.style.overflow = 'scroll';
+
+      component.fecharDemonstracao();
+
+      expect(document.body.style.overflow).toBe('scroll');
+    });
+  });
 });
