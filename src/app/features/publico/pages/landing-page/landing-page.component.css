@@ -1689,3 +1689,65 @@
     padding: 32px 24px;
   }
 }
+
+/* ========== VÍDEO DE DEMONSTRAÇÃO ========== */
+.demo-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 2000; /* acima do cabeçalho fixo (1000) */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(10, 12, 28, 0.85);
+  backdrop-filter: blur(4px);
+  animation: demo-modal-entrada 0.25s ease;
+}
+
+.demo-modal-conteudo {
+  position: relative;
+  width: min(1100px, 100%);
+}
+
+.demo-video {
+  display: block;
+  width: 100%;
+  max-height: calc(100vh - 96px);
+  aspect-ratio: 16 / 9;
+  background: #000;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+}
+
+.demo-modal-fechar {
+  position: absolute;
+  top: -44px;
+  right: 0;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--white);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 50%;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.demo-modal-fechar:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+@keyframes demo-modal-entrada {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@media (max-width: 480px) {
+  .demo-modal {
+    padding: 12px;
+  }
+}

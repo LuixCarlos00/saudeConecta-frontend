@@ -69,7 +69,7 @@
             Começar Gratuitamente
             <i class="fa-solid fa-arrow-right"></i>
           </button>
-          <button class="btn-secondary" (click)="scrollToSection('funcionalidades')">
+          <button class="btn-secondary btn-demonstracao" (click)="abrirDemonstracao()">
             <i class="fa-solid fa-play"></i>
             Ver Demonstração
           </button>
@@ -489,4 +489,18 @@
       </div>
     </div>
   </footer>
+
+  <!-- Vídeo de demonstração: só entra no DOM (e só baixa o arquivo) quando o visitante pede -->
+  <div class="demo-modal" *ngIf="demonstracaoAberta" role="dialog" aria-modal="true"
+       aria-label="Vídeo de demonstração do DocClin" (click)="fecharDemonstracao()">
+    <div class="demo-modal-conteudo" (click)="$event.stopPropagation()">
+      <button type="button" class="demo-modal-fechar" aria-label="Fechar demonstração" (click)="fecharDemonstracao()">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      <video class="demo-video" [src]="videoDemonstracaoUrl" controls autoplay playsinline preload="metadata">
+        Seu navegador não reproduz vídeos. Baixe a demonstração em
+        <a [href]="videoDemonstracaoUrl">{{ videoDemonstracaoUrl }}</a>.
+      </video>
+    </div>
+  </div>
 </div>

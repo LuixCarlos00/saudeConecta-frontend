@@ -1,4 +1,4 @@
-import { Component, OnInit, HostListener } from '@angular/core';
+import { Component, OnDestroy, OnInit, HostListener } from '@angular/core';
 import { Router } from '@angular/router';
 import { PlanoApiService } from 'src/app/core/data-access/plano-api.service';
 import { PlanoAssinatura } from 'src/app/shared/models/PlanoAssinatura';
@@ -9,11 +9,15 @@ import { PlanoDescricaoParserService } from 'src/app/shared/utils/plano-descrica
   templateUrl: './landing-page.component.html',
   styleUrls: ['./landing-page.component.css']
 })
-export class LandingPageComponent implements OnInit {
+export class LandingPageComponent implements OnInit, OnDestroy {
   isScrolled = false;
   mobileMenuOpen = false;
   activeAccordion: number | null = null;
   isLoadingPlanos = true;
+  /** Controla o modal do vídeo de demonstração aberto pelo botão "Ver Demonstração". */
+  demonstracaoAberta = false;
+  /** Vídeo servido pelos assets do próprio front (sem depender de serviço externo). */
+  readonly videoDemonstracaoUrl = 'assets/videos/docclin-demo.mp4';
 
   funcionalidades = [
     {
@@ -139,6 +143,11 @@ export class LandingPageComponent implements OnInit {
     this.carregarPlanos();
   }
 
+  /** Garante que a rolagem volta ao normal se o visitante sair da página com o vídeo aberto. */
+  ngOnDestroy(): void {
+    document.body.style.overflow = '';
+  }
+
   carregarPlanos(): void {
     this.isLoadingPlanos = true;
     this.planoApiService.listarPlanosAtivos().subscribe({
@@ -215,6 +224,28 @@ export class LandingPageComponent implements OnInit {
   navegarParaCadastro(planoId?: number) {
     this.mobileMenuOpen = false;
     this.router.navigate(['/cadastro'], planoId ? { queryParams: { plano: planoId } } : {});
+  }
+
+  /**
+   * Abre o modal com o vídeo de demonstração e trava a rolagem da página atrás dele.
+   */
+  abrirDemonstracao(): void {
+    this.mobileMenuOpen = false;
+    this.demonstracaoAberta = true;
+    document.body.style.overflow = 'hidden';
+  }
+
+  /**
+   * Fecha o modal do vídeo (botão, clique fora ou tecla Esc) e devolve a rolagem da página.
+   * Como o modal sai do DOM, o vídeo para de tocar junto.
+   */
+  @HostListener('document:keydown.escape')
+  fecharDemonstracao(): void {
+    if (!this.demonstracaoAberta) {
+      return;
+    }
+    this.demonstracaoAberta = false;
+    document.body.style.overflow = '';
   }
 
   scrollToSection(sectionId: string) {
