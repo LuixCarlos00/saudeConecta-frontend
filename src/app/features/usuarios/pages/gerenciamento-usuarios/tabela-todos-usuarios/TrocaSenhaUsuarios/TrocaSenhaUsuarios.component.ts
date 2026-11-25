@@ -89,7 +89,7 @@ export class TrocaSenhaUsuariosComponent implements OnInit {
         this.notificacao.fire({
           icon: 'success',
           title: 'Sucesso',
-          text: 'Senha alterada com sucesso',
+          text: 'Senha alterada. No próximo login, o usuário vai precisar criar uma senha nova.',
           showCloseButton: true,
         }).then(() => {
           this.dialogRef.close(true);

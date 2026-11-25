@@ -22,6 +22,8 @@ export interface DecodedToken {
   perfil?: string;
   tipoProfissional?: string;
   nome?: string;
+  /** true no primeiro acesso: o back só aceita a troca da própria senha até ela ser feita. */
+  deveTrocarSenha?: boolean;
 }
 
 /**
@@ -311,6 +313,15 @@ export class AuthService implements OnDestroy {
    */
   getCurrentUser(): DecodedToken | null {
     return this.currentUserSubject.getValue();
+  }
+
+  /**
+   * Indica se o login atual é um primeiro acesso, em que a senha recebida por e-mail
+   * precisa ser trocada antes de usar o sistema.
+   * @returns true quando o token foi emitido com a troca de senha pendente
+   */
+  deveTrocarSenha(): boolean {
+    return this.getCurrentUser()?.deveTrocarSenha === true;
   }
 
   /**

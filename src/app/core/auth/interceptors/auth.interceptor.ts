@@ -8,7 +8,11 @@ import { API_ENDPOINTS } from 'src/app/shared/constants/api-endpoints.constant';
  * Endpoints que não requerem autenticação
  */
 const PUBLIC_ENDPOINTS: string[] = [
-  API_ENDPOINTS.AUTH.LOGIN
+  API_ENDPOINTS.AUTH.LOGIN,
+  // Recuperação de senha: um token antigo no navegador (plano suspenso, troca de senha pendente)
+  // faria o back responder 403 numa rota que é pública.
+  '/Home/esqueciMinhaSenha',
+  '/Home/redefinirSenha'
 ];
 
 /**

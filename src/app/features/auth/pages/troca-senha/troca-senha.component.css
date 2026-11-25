@@ -37,6 +37,15 @@
 
 .cabecalho h1 { margin: 0; font-size: 24px; font-weight: 700; color: var(--c-texto); }
 .cabecalho p { margin: 4px 0 0; font-size: 14px; color: var(--c-texto-2); }
+/* Primeiro acesso: destaque para o aviso de que a senha do e-mail é provisória */
+.cabecalho .cabecalho__aviso {
+  margin-top: 12px;
+  padding: 12px 14px;
+  border: 1px solid #f5c36b;
+  border-radius: 8px;
+  background: #fff8e6;
+  color: #7a4b00;
+}
 
 /* ---------- Cartão ---------- */
 .cartao {

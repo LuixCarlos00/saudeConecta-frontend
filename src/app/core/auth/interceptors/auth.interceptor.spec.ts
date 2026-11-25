@@ -30,6 +30,13 @@ describe('AuthInterceptor', () => {
     expect(ctrl.expectOne('/api/publico/questionario/abc').request.headers.has('Authorization')).toBeFalse();
   });
 
+  it('não envia Bearer na recuperação de senha (esqueci, validar link e redefinir)', () => {
+    for (const url of ['/api/Home/esqueciMinhaSenha', '/api/Home/redefinirSenha/validar', '/api/Home/redefinirSenha']) {
+      http.post(url, {}).subscribe();
+      expect(ctrl.expectOne(url).request.headers.has('Authorization')).toBeFalse();
+    }
+  });
+
   it('não envia Bearer para arquivos estáticos de assets/', () => {
     http.get('assets/codigos/cid.json').subscribe();
     expect(ctrl.expectOne('assets/codigos/cid.json').request.headers.has('Authorization')).toBeFalse();

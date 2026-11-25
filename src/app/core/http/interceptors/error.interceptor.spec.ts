@@ -101,6 +101,20 @@ describe('ErrorInterceptor (403 plano suspenso)', () => {
     ctrl.expectOne('/api/qualquer').flush(corpo, { status: 403, statusText: 'Forbidden' });
   };
 
+  it('TROCA_SENHA_OBRIGATORIA: vai para /trocaSenha sem aviso e sem logout', () => {
+    dispara403({ code: 'TROCA_SENHA_OBRIGATORIA', message: 'Troque a senha recebida por e-mail para continuar.' });
+    expect(navigate).toHaveBeenCalledOnceWith(['/trocaSenha']);
+    expect(Swal.fire).not.toHaveBeenCalled();
+    expect(logout).not.toHaveBeenCalled();
+  });
+
+  it('TROCA_SENHA_OBRIGATORIA já em /trocaSenha: não navega de novo (sem loop)', () => {
+    urlAtual = '/trocaSenha';
+    dispara403({ code: 'TROCA_SENHA_OBRIGATORIA', message: 'Troque a senha recebida por e-mail para continuar.' });
+    expect(navigate).not.toHaveBeenCalled();
+    expect(Swal.fire).not.toHaveBeenCalled();
+  });
+
   it('admin: mostra aviso, vai para minha-assinatura e não faz logout', () => {
     papel = '[ROLE_ADMIN]';
     dispara403({ message: MSG });

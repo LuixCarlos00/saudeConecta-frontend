@@ -26,6 +26,8 @@ export class TrocaSenhaComponent implements OnInit {
 
   /** Mesmo mínimo do back (8 a 100 caracteres). */
   readonly TAMANHO_MINIMO = 8;
+  /** Senha provisória (enviada por e-mail no cadastro ou definida pelo gestor): precisa ser trocada antes de usar o sistema. */
+  primeiroAcesso = false;
   mostrarSenha = false;
   mostrarConfirmacao = false;
   enviando = false;
@@ -49,7 +51,7 @@ export class TrocaSenhaComponent implements OnInit {
   }
 
   ngOnInit(): void {
-
+    this.primeiroAcesso = this.authService.deveTrocarSenha();
 
     this.FormularioTrocaSenha = this.form.group({
       // Nomes herdados: SenhaAntiga é a nova senha e SenhaNova é a confirmação
@@ -113,6 +115,12 @@ export class TrocaSenhaComponent implements OnInit {
       () => {
         this.enviando = false;
         this.FormularioTrocaSenha.reset();
+        if (this.primeiroAcesso) {
+          // O token atual ainda carrega a troca pendente: um novo login emite o token liberado
+          this.authService.logout();
+          this.notificacao.fire({ icon: 'success', title: 'Senha criada', text: 'Entre novamente com a sua nova senha.' });
+          return;
+        }
         this.notificacao.fire({ icon: 'success', title: 'Senha alterada', text: 'Senha alterada com sucesso' });
       },
       () => {
